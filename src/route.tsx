@@ -32,7 +32,7 @@ interface RouteModule extends RouteComponents {
 }
 
 interface RouteConfig<T = unknown> extends RouteComponents {
-  component: Component<RouteSectionProps<T>>
+  component: Component<RouteSectionProps<NoInfer<T>>>
   preload?: RoutePreloadFunc<T>
 }
 
@@ -48,7 +48,7 @@ export function createRoute<T = unknown>(config: RouteConfig<T>): RouteModule {
     default: wrap(config.component),
     error: wrap(config.error),
     pending: wrap(config.pending),
-    preload: config.pending,
+    preload: config.preload,
   }
 }
 
@@ -137,6 +137,6 @@ export const routes: RouteDefinition[] = [{
     },
   ],
 }]
-export function Routes(props?: Omit<RouterProps, 'children'>) {
-  return <Router {...props}>{routes}</Router>
-}
+export const Routes: Component<Omit<RouterProps, 'children'>> = (
+  props?: Omit<RouterProps, 'children'>,
+) => <Router {...props}>{routes}</Router>
