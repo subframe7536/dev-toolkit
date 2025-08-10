@@ -10,25 +10,25 @@
     "format": "bunx eslint --fix --cache"
   },
   "dependencies": {
-    "solid-js": "^1.9.7"
+    "solid-js": "^1.9.8"
   },
   "devDependencies": {
     "@generouted/solid-router": "^1.20.0",
-    "@iconify-json/lucide": "^1.2.60",
+    "@iconify-json/lucide": "^1.2.62",
     "@kobalte/core": "^0.13.11",
     "@solid-hooks/core": "^0.6.0",
     "@solidjs/router": "^0.15.3",
-    "@subframe7536/eslint-config": "^1.3.1",
-    "@unocss/eslint-plugin": "^66.3.3",
-    "@unocss/reset": "^66.3.3",
+    "@subframe7536/eslint-config": "^1.3.2",
+    "@unocss/eslint-plugin": "^66.4.2",
+    "@unocss/reset": "^66.4.2",
     "cls-variant": "^0.2.1",
-    "eslint": "^9.32.0",
+    "eslint": "^9.33.0",
     "eslint-plugin-solid": "^0.14.5",
-    "typescript": "~5.8",
-    "unocss": "^66.3.3",
+    "typescript": "~5.9.2",
+    "unocss": "^66.4.2",
     "unocss-preset-animations": "^1.2.1",
-    "unocss-preset-completion": "^0.1.1",
-    "vite": "^7.0.6",
+    "unocss-preset-completion": "^0.1.2",
+    "vite": "^7.1.1",
     "vite-plugin-pwa": "^1.0.2",
     "vite-plugin-solid": "^2.11.8",
     "vite-tsconfig-paths": "^5.1.4"
