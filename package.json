@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "bunx vite",
     "build": "bunx vite build",
+    "preview": "bunx vite preview",
     "serve": "bunx vite preview",
     "format": "bunx eslint --fix --cache"
   },

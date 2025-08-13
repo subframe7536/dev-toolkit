@@ -1,11 +1,9 @@
-import type { RouteSectionProps } from '@solidjs/router'
-
 import { useLocation } from '@solidjs/router'
 
 import { createRoute } from '@/route'
 
 export const route = createRoute({
-  component: (props: RouteSectionProps) => {
+  component: (props) => {
     return (
       <>
         <div>{useLocation().pathname}</div>

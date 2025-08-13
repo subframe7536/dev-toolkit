@@ -23,15 +23,19 @@ function Catch(props: { error: Error, reset: () => void }) {
 
 function App(props: ParentProps) {
   // const navigate = useNavigate()
-  // const modals = useModals()
-  console.log(routes)
+  const modals = useModals()
   return (
     <section style={{ margin: '24px' }}>
       <header style={{ display: 'flex', gap: '24px' }}>
         <A href="/">Home</A>
         <A href="/data">data</A>
         <A href="/nest">nest</A>
-        {/* <button onClick={() => modals.open('/modal', { at: '/posts' })}>Open global modal</button> */}
+        <button
+          class="text-red"
+          onClick={() => modals.open('/modal', { at: '/nest/value' })}
+        >
+          Open global modal
+        </button>
       </header>
 
       <main>{props.children}</main>

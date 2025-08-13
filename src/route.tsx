@@ -74,35 +74,11 @@ const ROUTES = import.meta.glob<{ route: RouteModule }>([
 
 const preservedRoutes = generatePreservedRoutes<{ route: RouteModule }>(PRESERVED)
 const modalRoutes = generateModalRoutes<Element>(MODALS)
+const regularRoutes = generateRegularRoutes<RouteInfo, () => Promise<{ route: RouteModule }>>(ROUTES, moduleFn)
 
 const _app = preservedRoutes?._app?.route
 const _404 = preservedRoutes?.['404']?.route
 
-const Default: ParentComponent = _app?.default || (props => <>{props.children}</>)
-
-function Layout(props: ParentProps) {
-  const Modals = createMemo(
-    () => modalRoutes[useLocation<any>().state?.modal || ''] || <></>,
-  )
-  return (
-    <>
-      <Default {...props} />
-      <Modals />
-    </>
-  )
-}
-
-function App(props: ParentProps) {
-  return (
-    <ErrorBoundary fallback={(error, reset) => _app?.error?.({ error, reset })}>
-      <Show when={_app?.pending} fallback={<Layout {...props} />}>
-        <Suspense fallback={_app!.pending!({})}>
-          <Layout {...props} />
-        </Suspense>
-      </Show>
-    </ErrorBoundary>
-  )
-}
 function moduleFn(module: () => Promise<{ route: RouteModule }>): RouteInfo {
   const Default = lazy(() => module().then(mod => mod.route))
   const Pending = lazy(() => module().then(mod => ({
@@ -125,12 +101,39 @@ function moduleFn(module: () => Promise<{ route: RouteModule }>): RouteInfo {
   }
 }
 
+const Default: ParentComponent = _app?.default || (props => <>{props.children}</>)
+
+function Layout(props: ParentProps) {
+  const modalPath = createMemo(() => useLocation<any>().state?.modal)
+  const Modal = createMemo(() => modalRoutes[modalPath()])
+  return (
+    <>
+      <Default {...props} />
+      <Show when={modalPath()}>
+        <Modal />
+      </Show>
+    </>
+  )
+}
+
+function App(props: ParentProps) {
+  return (
+    <ErrorBoundary fallback={(error, reset) => _app?.error?.({ error, reset })}>
+      <Show when={_app?.pending} fallback={<Layout {...props} />}>
+        <Suspense fallback={_app!.pending!({})}>
+          <Layout {...props} />
+        </Suspense>
+      </Show>
+    </ErrorBoundary>
+  )
+}
+
 export const routes: RouteDefinition[] = [{
   path: '',
   component: App,
   preload: _app?.preload,
   children: [
-    ...generateRegularRoutes<RouteInfo, () => Promise<{ route: RouteModule }>>(ROUTES, moduleFn),
+    ...regularRoutes,
     {
       path: '*',
       component: _404?.default || Fragment,

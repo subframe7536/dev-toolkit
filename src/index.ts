@@ -7,6 +7,6 @@ import 'uno.css'
 
 createApp(
   Routes,
-  { base: '/dev-toolkit' },
+  { base: '/dev-toolkit', preload: true },
 )
   .mount('#root')
