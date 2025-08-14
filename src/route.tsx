@@ -28,7 +28,7 @@ interface RouteComponents {
 }
 
 interface RouteModule extends RouteComponents {
-  component: Component
+  component: ParentComponent
   preload?: RoutePreloadFunc
 }
 
@@ -66,8 +66,8 @@ const preservedRoutes = generatePreservedRoutes<{ default: RouteModule }>(PRESER
 const modalRoutes = generateModalRoutes<Element>(MODALS)
 const regularRoutes = generateRegularRoutes<RouteInfo, () => Promise<{ default: RouteModule }>>(ROUTES, moduleFn)
 
-const _app = preservedRoutes?._app?.default
-const _404 = preservedRoutes?.['404']?.default
+const _app = preservedRoutes?._app?.default || { component: props => <>{props.children}</> }
+const NotFoundComponent = preservedRoutes?.['404']?.default.component || Fragment
 
 function moduleFn(module: () => Promise<{ default: RouteModule }>): RouteInfo {
   const Comp = lazy(() => module().then(mod => ({ default: mod.default.component })))
@@ -94,10 +94,9 @@ function moduleFn(module: () => Promise<{ default: RouteModule }>): RouteInfo {
 function Layout(props: ParentProps) {
   const modalPath = createMemo(() => useLocation<any>().state?.modal)
   const Modal = createMemo(() => modalRoutes[modalPath()])
-  const Default: ParentComponent = _app?.component || (props => <>{props.children}</>)
   return (
     <>
-      <Default {...props} />
+      {_app.component(props)}
       <Show when={modalPath()}>
         <Modal />
       </Show>
@@ -106,14 +105,15 @@ function Layout(props: ParentProps) {
 }
 
 function App(props: ParentProps) {
-  const fallback = isDev && !_app
+  const fallback = isDev && !_app.error
     ? (error: any) => (console.error(error), Fragment())
-    : (error: any, reset: VoidFunction) => _app?.error?.({ error, reset })
+    : (error: any, reset: VoidFunction) => _app.error?.({ error, reset })
+
   return (
     <ErrorBoundary fallback={fallback}>
-      <Show when={_app?.pending} fallback={<Layout {...props} />}>
-        <Suspense fallback={_app!.pending!({})}>
-          <Layout {...props} />
+      <Show when={_app.pending} fallback={Layout(props)}>
+        <Suspense fallback={_app.pending!({})}>
+          {Layout(props)}
         </Suspense>
       </Show>
     </ErrorBoundary>
@@ -123,12 +123,12 @@ function App(props: ParentProps) {
 export const routes: RouteDefinition[] = [{
   path: '',
   component: App,
-  preload: _app?.preload,
+  preload: _app.preload,
   children: [
     ...regularRoutes,
     {
       path: '*',
-      component: _404?.component || Fragment,
+      component: NotFoundComponent,
     },
   ],
 }]
