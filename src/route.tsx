@@ -20,6 +20,7 @@ import {
   Show,
   Suspense,
 } from 'solid-js'
+import { isDev } from 'solid-js/web'
 
 interface RouteComponents {
   error?: Component<{ error: any, reset: VoidFunction }>
@@ -27,7 +28,7 @@ interface RouteComponents {
 }
 
 interface RouteModule extends RouteComponents {
-  default: Component
+  component: Component
   preload?: RoutePreloadFunc
 }
 
@@ -36,20 +37,9 @@ interface RouteConfig<T = unknown> extends RouteComponents {
   preload?: RoutePreloadFunc<T>
 }
 
-const Fragment = (_args: any) => <></>
-function wrap<T extends Component | undefined>(
-  el: T,
-): T extends undefined ? undefined : T {
-  // @ts-expect-error fxxk ts
-  return el ? props => el(props) : undefined
-}
+const Fragment = (_args?: any) => <></>
 export function createRoute<T = unknown>(config: RouteConfig<T>): RouteModule {
-  return {
-    default: wrap(config.component),
-    error: wrap(config.error),
-    pending: wrap(config.pending),
-    preload: config.preload,
-  }
+  return config
 }
 
 interface RouteInfo {
@@ -72,40 +62,39 @@ const ROUTES = import.meta.glob<{ route: RouteModule }>([
   '!/src/pages/**/(_!(layout)*(/*)?|_app|404)*',
 ])
 
-const preservedRoutes = generatePreservedRoutes<{ route: RouteModule }>(PRESERVED)
+const preservedRoutes = generatePreservedRoutes<{ default: RouteModule }>(PRESERVED)
 const modalRoutes = generateModalRoutes<Element>(MODALS)
-const regularRoutes = generateRegularRoutes<RouteInfo, () => Promise<{ route: RouteModule }>>(ROUTES, moduleFn)
+const regularRoutes = generateRegularRoutes<RouteInfo, () => Promise<{ default: RouteModule }>>(ROUTES, moduleFn)
 
-const _app = preservedRoutes?._app?.route
-const _404 = preservedRoutes?.['404']?.route
+const _app = preservedRoutes?._app?.default
+const _404 = preservedRoutes?.['404']?.default
 
-function moduleFn(module: () => Promise<{ route: RouteModule }>): RouteInfo {
-  const Default = lazy(() => module().then(mod => mod.route))
+function moduleFn(module: () => Promise<{ default: RouteModule }>): RouteInfo {
+  const Comp = lazy(() => module().then(mod => ({ default: mod.default.component })))
   const Pending = lazy(() => module().then(mod => ({
-    default: mod.route.pending || _app?.pending || Fragment,
+    default: mod.default.pending || Fragment,
   })))
   const Catch = lazy(() => module().then(mod => ({
-    default: mod.route.error || _app?.error || Fragment,
+    default: mod.default.error || ((err: any) => (isDev && console.error(err), Fragment())),
   })))
 
   return {
     component: (props: any) => (
       <ErrorBoundary fallback={(error, reset) => Catch({ error, reset })}>
         <Suspense fallback={<Pending />}>
-          <Default {...props} />
+          <Comp {...props} />
         </Suspense>
       </ErrorBoundary>
     ),
     preload: (args: RoutePreloadFuncArgs) => module()
-      .then(mod => mod?.route.preload?.(args) || undefined),
+      .then(mod => mod?.default.preload?.(args) || undefined),
   }
 }
-
-const Default: ParentComponent = _app?.default || (props => <>{props.children}</>)
 
 function Layout(props: ParentProps) {
   const modalPath = createMemo(() => useLocation<any>().state?.modal)
   const Modal = createMemo(() => modalRoutes[modalPath()])
+  const Default: ParentComponent = _app?.component || (props => <>{props.children}</>)
   return (
     <>
       <Default {...props} />
@@ -117,8 +106,11 @@ function Layout(props: ParentProps) {
 }
 
 function App(props: ParentProps) {
+  const fallback = isDev && !_app
+    ? (error: any) => (console.error(error), Fragment())
+    : (error: any, reset: VoidFunction) => _app?.error?.({ error, reset })
   return (
-    <ErrorBoundary fallback={(error, reset) => _app?.error?.({ error, reset })}>
+    <ErrorBoundary fallback={fallback}>
       <Show when={_app?.pending} fallback={<Layout {...props} />}>
         <Suspense fallback={_app!.pending!({})}>
           <Layout {...props} />
@@ -136,10 +128,11 @@ export const routes: RouteDefinition[] = [{
     ...regularRoutes,
     {
       path: '*',
-      component: _404?.default || Fragment,
+      component: _404?.component || Fragment,
     },
   ],
 }]
-export const Routes: Component<Omit<RouterProps, 'children'>> = (
+
+export const FileRouter: Component<Omit<RouterProps, 'children'>> = (
   props?: Omit<RouterProps, 'children'>,
-) => <Router {...props}>{routes}</Router>
+) => Router({ ...props, children: routes })

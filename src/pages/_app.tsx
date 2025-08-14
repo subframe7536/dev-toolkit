@@ -2,7 +2,7 @@ import type { ParentProps } from 'solid-js'
 
 import { createRoute, routes } from '@/route'
 import { A, useModals, useNavigate } from '@/router.gen'
-export const route = createRoute({
+export default createRoute({
   component: App,
   error: Catch,
   pending: () => <div>Loading...</div>,

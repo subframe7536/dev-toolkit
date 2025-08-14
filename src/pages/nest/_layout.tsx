@@ -2,7 +2,7 @@ import { useLocation } from '@solidjs/router'
 
 import { createRoute } from '@/route'
 
-export const route = createRoute({
+export default createRoute({
   component: (props) => {
     return (
       <>

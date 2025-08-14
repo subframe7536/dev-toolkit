@@ -1,5 +1,5 @@
 import { createRoute } from '@/route'
 
-export const route = createRoute({
+export default createRoute({
   component: () => <div>nest</div>,
 })
