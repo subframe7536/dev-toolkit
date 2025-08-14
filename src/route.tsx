@@ -75,12 +75,14 @@ function moduleFn(module: () => Promise<{ default: RouteModule }>): RouteInfo {
     default: mod.default.pending || Fragment,
   })))
   const Catch = lazy(() => module().then(mod => ({
-    default: mod.default.error || ((err: any) => (isDev && console.error(err), Fragment())),
+    default: mod.default.error
+      // eslint-disable-next-line solid/reactivity
+      || (props => (isDev && console.error(props.error), <Fragment />)),
   })))
 
   return {
     component: (props: any) => (
-      <ErrorBoundary fallback={(error, reset) => Catch({ error, reset })}>
+      <ErrorBoundary fallback={(error, reset) => <Catch error={error} reset={reset} />}>
         <Suspense fallback={<Pending />}>
           <Comp {...props} />
         </Suspense>
@@ -92,11 +94,12 @@ function moduleFn(module: () => Promise<{ default: RouteModule }>): RouteInfo {
 }
 
 function Layout(props: ParentProps) {
+  const App = _app.component
   const modalPath = createMemo(() => useLocation<any>().state?.modal)
   const Modal = createMemo(() => modalRoutes[modalPath()])
   return (
     <>
-      {_app.component(props)}
+      <App>{props.children}</App>
       <Show when={modalPath()}>
         <Modal />
       </Show>
@@ -105,15 +108,18 @@ function Layout(props: ParentProps) {
 }
 
 function App(props: ParentProps) {
-  const fallback = isDev && !_app.error
-    ? (error: any) => (console.error(error), Fragment())
-    : (error: any, reset: VoidFunction) => _app.error?.({ error, reset })
+  const Catch = _app.error
+  const Pending = _app.pending! // fxxk ts
+
+  const fallback = (error: any, reset: VoidFunction) => Catch
+    ? <Catch error={error} reset={reset} />
+    : (isDev && console.error(error), <Fragment />)
 
   return (
     <ErrorBoundary fallback={fallback}>
-      <Show when={_app.pending} fallback={Layout(props)}>
-        <Suspense fallback={_app.pending!({})}>
-          {Layout(props)}
+      <Show when={Pending} fallback={<Layout>{props.children}</Layout>}>
+        <Suspense fallback={<Pending />}>
+          <Layout>{props.children}</Layout>
         </Suspense>
       </Show>
     </ErrorBoundary>
