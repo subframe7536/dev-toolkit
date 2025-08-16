@@ -1,4 +1,4 @@
-import { createRoute } from '@/route'
+import { createRoute } from '#/route'
 
 export default createRoute({
   component: Index,

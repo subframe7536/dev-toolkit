@@ -1,7 +1,7 @@
 import type { ParentProps } from 'solid-js'
 
-import { createRoute, routes } from '@/route'
-import { A, useModals, useNavigate } from '@/router.gen'
+import { createRoute, routes } from '#/route'
+import { A, useModals, useNavigate } from '#/router.gen'
 export default createRoute({
   component: App,
   error: Catch,
