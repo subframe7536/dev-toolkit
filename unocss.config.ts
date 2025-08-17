@@ -42,8 +42,8 @@ export default defineConfig<PresetWind4Theme>({
         foreground: 'hsl(140 40% 20%)',
       },
       muted: {
-        DEFAULT: 'hsl(202 20% 30%)',
-        foreground: 'hsl(202 30% 88%)',
+        DEFAULT: 'hsl(202 30% 88%)',
+        foreground: 'hsl(202 20% 30%)',
       },
       accent: {
         DEFAULT: 'hsl(32 90% 85%)',

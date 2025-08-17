@@ -33,8 +33,8 @@ export const buttonVariants = clsvDefault(
   },
 )
 
-type ButtonProps<T extends ValidComponent = 'button'> = ButtonRootProps<T> &
-  VariantProps<typeof buttonVariants> & {
+type ButtonProps<T extends ValidComponent = 'button'> = ButtonRootProps<T>
+  & VariantProps<typeof buttonVariants> & {
     class?: string
   }
 

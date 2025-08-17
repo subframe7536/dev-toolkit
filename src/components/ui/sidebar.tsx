@@ -467,8 +467,8 @@ const sidebarMenuButtonVariants = clsvDefault(
   },
 )
 
-type SidebarMenuButtonProps<T extends ValidComponent = 'button'> = ComponentProps<T> &
-  VariantProps<typeof sidebarMenuButtonVariants> & {
+type SidebarMenuButtonProps<T extends ValidComponent = 'button'> = ComponentProps<T>
+  & VariantProps<typeof sidebarMenuButtonVariants> & {
     isActive?: boolean
     tooltip?: string
   }

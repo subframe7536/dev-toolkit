@@ -70,8 +70,8 @@ const sheetVariants = clsvDefault(
   { position: 'right' },
 )
 
-type DialogContentProps<T extends ValidComponent = 'div'> = SheetPrimitive.DialogContentProps<T> &
-  VariantProps<typeof sheetVariants> & { class?: string | undefined, children?: JSX.Element }
+type DialogContentProps<T extends ValidComponent = 'div'> = SheetPrimitive.DialogContentProps<T>
+  & VariantProps<typeof sheetVariants> & { class?: string | undefined, children?: JSX.Element }
 
 function SheetContent<T extends ValidComponent = 'div'>(props: PolymorphicProps<T, DialogContentProps<T>>) {
   const [local, others] = splitProps(props as DialogContentProps, ['position', 'class', 'children'])
@@ -127,8 +127,8 @@ function SheetTitle<T extends ValidComponent = 'h2'>(props: PolymorphicProps<T, 
   )
 }
 
-type DialogDescriptionProps<T extends ValidComponent = 'p'> =
-  SheetPrimitive.DialogDescriptionProps<T> & { class?: string | undefined }
+type DialogDescriptionProps<T extends ValidComponent = 'p'>
+  = SheetPrimitive.DialogDescriptionProps<T> & { class?: string | undefined }
 
 function SheetDescription<T extends ValidComponent = 'p'>(props: PolymorphicProps<T, DialogDescriptionProps<T>>) {
   const [local, others] = splitProps(props as DialogDescriptionProps, ['class'])

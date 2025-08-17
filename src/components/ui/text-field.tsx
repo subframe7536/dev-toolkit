@@ -5,8 +5,8 @@ import * as TextFieldPrimitive from '@kobalte/core/text-field'
 import { cls, clsv, clsvDefault } from 'cls-variant'
 import { mergeProps, splitProps } from 'solid-js'
 
-type TextFieldRootProps<T extends ValidComponent = 'div'> =
-  TextFieldPrimitive.TextFieldRootProps<T> & {
+type TextFieldRootProps<T extends ValidComponent = 'div'>
+  = TextFieldPrimitive.TextFieldRootProps<T> & {
     class?: string | undefined
   }
 
@@ -20,8 +20,8 @@ function TextField<T extends ValidComponent = 'div'>(props: PolymorphicProps<T, 
   )
 }
 
-type TextFieldInputProps<T extends ValidComponent = 'input'> =
-  TextFieldPrimitive.TextFieldInputProps<T> & {
+type TextFieldInputProps<T extends ValidComponent = 'input'>
+  = TextFieldPrimitive.TextFieldInputProps<T> & {
     class?: string | undefined
     type?:
       | 'button'
@@ -63,8 +63,8 @@ function TextFieldInput<T extends ValidComponent = 'input'>(rawProps: Polymorphi
   )
 }
 
-type TextFieldTextAreaProps<T extends ValidComponent = 'textarea'> =
-  TextFieldPrimitive.TextFieldTextAreaProps<T> & { class?: string | undefined }
+type TextFieldTextAreaProps<T extends ValidComponent = 'textarea'>
+  = TextFieldPrimitive.TextFieldTextAreaProps<T> & { class?: string | undefined }
 
 function TextFieldTextArea<T extends ValidComponent = 'textarea'>(props: PolymorphicProps<T, TextFieldTextAreaProps<T>>) {
   const [local, others] = splitProps(props as TextFieldTextAreaProps, ['class'])
@@ -95,16 +95,16 @@ const labelVariants = clsvDefault(
   },
 )
 
-type TextFieldLabelProps<T extends ValidComponent = 'label'> =
-  TextFieldPrimitive.TextFieldLabelProps<T> & { class?: string | undefined }
+type TextFieldLabelProps<T extends ValidComponent = 'label'>
+  = TextFieldPrimitive.TextFieldLabelProps<T> & { class?: string | undefined }
 
 function TextFieldLabel<T extends ValidComponent = 'label'>(props: PolymorphicProps<T, TextFieldLabelProps<T>>) {
   const [local, others] = splitProps(props as TextFieldLabelProps, ['class'])
   return <TextFieldPrimitive.Label class={cls(labelVariants(), local.class)} {...others} />
 }
 
-type TextFieldDescriptionProps<T extends ValidComponent = 'div'> =
-  TextFieldPrimitive.TextFieldDescriptionProps<T> & {
+type TextFieldDescriptionProps<T extends ValidComponent = 'div'>
+  = TextFieldPrimitive.TextFieldDescriptionProps<T> & {
     class?: string | undefined
   }
 
@@ -118,8 +118,8 @@ function TextFieldDescription<T extends ValidComponent = 'div'>(props: Polymorph
   )
 }
 
-type TextFieldErrorMessageProps<T extends ValidComponent = 'div'> =
-  TextFieldPrimitive.TextFieldErrorMessageProps<T> & {
+type TextFieldErrorMessageProps<T extends ValidComponent = 'div'>
+  = TextFieldPrimitive.TextFieldErrorMessageProps<T> & {
     class?: string | undefined
   }
 
