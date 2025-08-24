@@ -1,9 +1,9 @@
-import type json from '@iconify-json/lucide/icons.json'
+// import type json from '@iconify-json/lucide/icons.json'
 
 import { cls } from 'cls-variant'
 
 export interface Props {
-  name: `lucide:${keyof typeof json['icons']}`
+  name: `lucide:${string}`
   class?: string
   title?: string
 }

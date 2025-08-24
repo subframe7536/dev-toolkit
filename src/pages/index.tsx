@@ -120,7 +120,7 @@ function Index() {
         <h3 class="text-card-foreground text-lg font-semibold">
           More tools coming soon
         </h3>
-        <p class="text-sm text-muted-foreground mt-2">
+        <p class="text-(sm muted-foreground) mt-2">
           This toolkit is actively being developed with new features added regularly.
         </p>
       </div>
