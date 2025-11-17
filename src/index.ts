@@ -1,12 +1,12 @@
 import { createApp } from '@solid-hooks/core'
-
-import { FileRouter } from './route'
+import { Router } from '@solidjs/router'
+import { fileRoutes, Root } from 'virtual:routes'
 
 import '@unocss/reset/tailwind.css'
 import 'uno.css'
 
 createApp(
-  FileRouter,
-  { base: '/dev-toolkit', preload: true },
+  Router,
+  { base: '/dev-toolkit', preload: true, root: Root, children: fileRoutes },
 )
   .mount('#root')

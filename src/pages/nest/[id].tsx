@@ -1,9 +1,6 @@
 import { createRoute } from 'solid-file-router'
 
 export default createRoute({
-  component: Data,
+  preload: () => ({ id: 1 }),
+  component: props => <div>{props.data.id}</div>,
 })
-
-function Data() {
-  return <div>data</div>
-}

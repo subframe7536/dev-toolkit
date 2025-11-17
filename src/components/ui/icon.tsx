@@ -11,7 +11,7 @@ export interface Props {
 export default function Icon(props: Props) {
   return (
     <div
-      class={cls(`i-${props.name}`, props.class)}
+      class={cls(`i-${props.name} inline-block`, props.class)}
       title={props.title || props.name}
     />
   )

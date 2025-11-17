@@ -1,4 +1,4 @@
-import { createRoute } from '#/route'
+import { createRoute } from 'solid-file-router'
 
 export default createRoute({
   component: JSONFormatter,

@@ -1,5 +1,6 @@
-import { createRoute } from '#/route'
-import { A } from '#/router.gen'
+import { Card } from '#/components/card'
+import { A } from '@solidjs/router'
+import { createRoute } from 'solid-file-router'
 import { For } from 'solid-js'
 
 export default createRoute({
@@ -79,8 +80,8 @@ const toolCategories: ToolCategory[] = [
 
 function Index() {
   return (
-    <div class="space-y-12">
-      <div class="text-center">
+    <div class="flex flex-col gap-8 items-center">
+      <div>
         <h1 class="text-4xl text-foreground tracking-tight font-bold sm:text-5xl">
           Developer Toolkit
         </h1>
@@ -89,20 +90,17 @@ function Index() {
         </p>
       </div>
 
-      <div class="gap-8 grid lg:grid-cols-2 xl:grid-cols-3">
+      <div class="gap-8 grid lg:grid-cols-2 xl:grid-cols-4">
         <For each={toolCategories}>
           {category => (
-            <div class="bg-card p-6 border border-border rounded-lg shadow-sm">
-              <div class="mb-4">
-                <h2 class="text-card-foreground text-xl font-semibold">{category.title}</h2>
-                <p class="text-sm text-muted-foreground mt-1">{category.description}</p>
-              </div>
-
-              <div class="space-y-2">
+            <Card
+              title={category.title}
+              description={category.description}
+              content={(
                 <For each={category.tools}>
                   {tool => (
                     <A
-                      href={tool.href as any}
+                      href={tool.href}
                       class="p-3 rounded-md block transition-colors hover:(text-accent-foreground bg-accent)"
                     >
                       <div class="font-medium">{tool.name}</div>
@@ -110,14 +108,14 @@ function Index() {
                     </A>
                   )}
                 </For>
-              </div>
-            </div>
+              )}
+            />
           )}
         </For>
       </div>
 
-      <div class="bg-card p-8 text-center border border-border rounded-lg">
-        <h3 class="text-card-foreground text-lg font-semibold">
+      <div class="p-8 text-center border border-border rounded-lg bg-card">
+        <h3 class="text-lg text-card-foreground font-semibold">
           More tools coming soon
         </h3>
         <p class="text-(sm muted-foreground) mt-2">

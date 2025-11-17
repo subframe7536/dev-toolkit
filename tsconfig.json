@@ -12,7 +12,8 @@
     },
     "types": [
       "vite/client",
-      "vite-plugin-pwa/solid"
+      "vite-plugin-pwa/solid",
+      "solid-file-router/client"
     ],
     "strictNullChecks": true,
     "noEmit": true,

@@ -1,5 +1,5 @@
-import generouted from '@generouted/solid-router/plugin'
 import unocss from '@unocss/vite'
+import { fileRouterPlugin } from 'solid-file-router/plugin'
 import { defineConfig } from 'vite'
 import { VitePWA as pwa } from 'vite-plugin-pwa'
 import solid from 'vite-plugin-solid'
@@ -13,7 +13,7 @@ export default defineConfig({
     tsconfig(),
     unocss({ inspector: false }),
     solid(),
-    generouted({ output: './src/router.gen.ts' }),
+    fileRouterPlugin() as any,
     pwa({
       registerType: 'autoUpdate',
       devOptions: {

@@ -1,5 +1,5 @@
 import { Button } from '#/components/ui/button'
-import { createRoute } from '#/route'
+import { createRoute } from 'solid-file-router'
 import { createSignal, For } from 'solid-js'
 
 export default createRoute({

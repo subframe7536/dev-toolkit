@@ -1,5 +1,5 @@
-import { createRoute } from '#/route'
 import { useLocation } from '@solidjs/router'
+import { createRoute } from 'solid-file-router'
 
 export default createRoute({
   component: (props) => {

@@ -1,8 +1,14 @@
 import type { ButtonProps } from './button'
 import type { PolymorphicProps } from '@kobalte/core'
 import type { VariantProps } from 'cls-variant'
-import type { Accessor, Component, ComponentProps, JSX, ValidComponent } from 'solid-js'
+import type { Accessor, Component, ComponentProps, FlowProps, JSX, ValidComponent } from 'solid-js'
 
+import { Button } from '#/components/ui/button'
+import { Separator } from '#/components/ui/separator'
+import { Sheet, SheetContent } from '#/components/ui/sheet'
+import { Skeleton } from '#/components/ui/skeleton'
+import { TextField, TextFieldInput } from '#/components/ui/text-field'
+import { Tooltip, TooltipContent, TooltipTrigger } from '#/components/ui/tooltip'
 import { Polymorphic } from '@kobalte/core'
 import { useMediaQuery } from '@solid-hooks/core/web'
 import { cls, clsv, clsvDefault } from 'cls-variant'
@@ -18,13 +24,6 @@ import {
   useContext,
 } from 'solid-js'
 
-import { Button } from '@/components/ui/button'
-import { Separator } from '@/components/ui/separator'
-import { Sheet, SheetContent } from '@/components/ui/sheet'
-import { Skeleton } from '@/components/ui/skeleton'
-import { TextField, TextFieldInput } from '@/components/ui/text-field'
-import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
-
 import Icon from './icon'
 
 const MOBILE_BREAKPOINT = 768
@@ -34,6 +33,9 @@ const SIDEBAR_WIDTH = '16rem'
 const SIDEBAR_WIDTH_MOBILE = '18rem'
 const SIDEBAR_WIDTH_ICON = '3rem'
 // const SIDEBAR_KEYBOARD_SHORTCUT = 'b'
+type FlowPropsWithClass<T extends Record<string, any> = {}> = FlowProps<T & {
+  class?: string
+}>
 
 type TSidebarContext = {
   state: Accessor<'expanded' | 'collapsed'>
@@ -201,24 +203,25 @@ const Sidebar: Component<SidebarProps> = (rawProps) => {
           {/* This is what handles the sidebar gap on desktop */}
           <div
             class={cls(
-              'w-$sidebar-width relative h-svh bg-transparent transition-width duration-200 ease-linear',
+              'w-$sidebar-width relative h-svh bg-transparent transition-width duration-300 ease-out',
               'group-data-[collapsible=offcanvas]:w-0',
               'group-data-[side=right]:rotate-180',
               local.variant === 'floating' || local.variant === 'inset'
-                ? 'group-data-[collapsible=icon]:w-[calc(var(--sidebar-width-icon)_+_1rem)]'
+                ? 'group-data-[collapsible=icon]:w-[calc(var(--sidebar-width-icon)+1rem)]'
                 : 'group-data-[collapsible=icon]:w-$sidebar-width-icon',
             )}
           />
           <div
             class={cls(
-              'w-$sidebar-width fixed inset-y-0 z-10 hidden h-svh transition-[left,right,width] duration-200 ease-linear md:flex',
+              'w-$sidebar-width fixed inset-y-0 z-10 hidden h-svh transition-[left,right,width] duration-300 ease-out md:flex',
               local.side === 'left'
                 ? 'left-0 group-data-[collapsible=offcanvas]:left-[calc(var(--sidebar-width)*-1)]'
                 : 'right-0 group-data-[collapsible=offcanvas]:right-[calc(var(--sidebar-width)*-1)]',
               // Adjust the padding for floating and inset variants.
               local.variant === 'floating' || local.variant === 'inset'
-                ? 'p-2 group-data-[collapsible=icon]:w-[calc(var(--sidebar-width-icon)_+_1rem_+2px)]'
-                : 'group-data-[collapsible=icon]:w-$sidebar-width-icon group-data-[side=left]:border-r group-data-[side=right]:border-l',
+                ? 'p-2 group-data-[collapsible=icon]:w-[calc(var(--sidebar-width-icon)+1rem+2px)]'
+                : 'group-data-[collapsible=icon]:w-$sidebar-width-icon group-data-[side=left]:b-r group-data-[side=right]:b-l b-sidebar-border',
+              local.variant === 'floating' && 'bg-background',
               local.class,
             )}
             {...others}
@@ -262,19 +265,18 @@ function SidebarTrigger<T extends ValidComponent = 'button'>(props: SidebarTrigg
   )
 }
 
-const SidebarRail: Component<ComponentProps<'button'>> = (props) => {
-  const [local, others] = splitProps(props, ['class'])
+function SidebarRail(props: FlowPropsWithClass) {
   const { toggleSidebar } = useSidebar()
 
   return (
-    <Button
+    <button
       data-sidebar="rail"
       aria-label="Toggle Sidebar"
       tabIndex={-1}
       onClick={toggleSidebar}
       title="Toggle Sidebar"
       class={cls(
-        'absolute inset-y-0 z-20 hidden w-4 -translate-x-1/2 transition-all ease-linear',
+        'absolute inset-y-0 z-20 hidden w-4 -translate-x-1/2 transition-all ease-out',
         'after:(absolute inset-y-0 left-1/2 w-2px) hover:after:bg-sidebar-border',
         'group-data-[side=left]:-right-4 group-data-[side=right]:left-0 sm:flex',
         '[[data-side=left]_&]:cursor-w-resize [[data-side=right]_&]:cursor-e-resize',
@@ -282,23 +284,22 @@ const SidebarRail: Component<ComponentProps<'button'>> = (props) => {
         'group-data-[collapsible=offcanvas]:(translate-x-0 after:left-full hover:bg-sidebar)',
         '[[data-side=left][data-collapsible=offcanvas]_&]:-right-2',
         '[[data-side=right][data-collapsible=offcanvas]_&]:-left-2',
-        local.class,
+        props.class,
       )}
-      {...others}
+      children={props.children}
     />
   )
 }
 
-const SidebarInset: Component<ComponentProps<'main'>> = (props) => {
-  const [local, others] = splitProps(props, ['class'])
+function SidebarInset(props: FlowPropsWithClass) {
   return (
     <main
       class={cls(
         'relative flex min-h-svh flex-1 flex-col bg-background',
         'peer-data-[variant=inset]:min-h-[calc(100svh-1rem)] md:(peer-data-[state=collapsed]:peer-data-[variant=inset]:ml-2 peer-data-[variant=inset]:(m-2 ml-0 rounded-xl shadow))',
-        local.class,
+        props.class,
       )}
-      {...others}
+      children={props.children}
     />
   )
 }
@@ -323,24 +324,22 @@ function SidebarInput<T extends ValidComponent = 'input'>(props: SidebarInputPro
   )
 }
 
-const SidebarHeader: Component<ComponentProps<'div'>> = (props) => {
-  const [local, others] = splitProps(props, ['class'])
+function SidebarHeader(props: FlowPropsWithClass) {
   return (
     <div
       data-sidebar="header"
-      class={cls('flex flex-col gap-2 p-2', local.class)}
-      {...others}
+      class={cls('flex flex-col gap-2 p-2', props.class)}
+      children={props.children}
     />
   )
 }
 
-const SidebarFooter: Component<ComponentProps<'div'>> = (props) => {
-  const [local, others] = splitProps(props, ['class'])
+function SidebarFooter(props: FlowPropsWithClass) {
   return (
     <div
       data-sidebar="footer"
-      class={cls('flex flex-col gap-2 p-2', local.class)}
-      {...others}
+      class={cls('flex flex-col gap-2 p-2', props.class)}
+      children={props.children}
     />
   )
 }
@@ -358,90 +357,86 @@ function SidebarSeparator<T extends ValidComponent = 'hr'>(props: SidebarSeparat
   )
 }
 
-const SidebarContent: Component<ComponentProps<'div'>> = (props) => {
-  const [local, others] = splitProps(props, ['class'])
+function SidebarContent(props: FlowPropsWithClass) {
   return (
     <div
       data-sidebar="content"
       class={cls(
         'flex min-h-0 flex-1 flex-col gap-2 overflow-auto group-data-[collapsible=icon]:overflow-hidden',
-        local.class,
+        props.class,
       )}
-      {...others}
+      children={props.children}
     />
   )
 }
 
-const SidebarGroup: Component<ComponentProps<'div'>> = (props) => {
-  const [local, others] = splitProps(props, ['class'])
+function SidebarGroup(props: FlowPropsWithClass) {
   return (
     <div
       data-sidebar="group"
-      class={cls('relative flex w-full min-w-0 flex-col p-2', local.class)}
-      {...others}
+      class={cls('relative flex w-full min-w-0 flex-col p-2', props.class)}
+      children={props.children}
     />
   )
 }
 
-type SidebarGroupLabelProps<T extends ValidComponent = 'div'> = ComponentProps<T>
-
-function SidebarGroupLabel<T extends ValidComponent = 'div'>(props: PolymorphicProps<T, SidebarGroupLabelProps<T>>) {
-  const [local, others] = splitProps(props as SidebarGroupLabelProps, ['class'])
-
+function SidebarGroupLabel(props: FlowPropsWithClass) {
   return (
-    <Polymorphic<SidebarGroupLabelProps>
-      as="div"
+    <div
       data-sidebar="group-label"
       class={cls(
-        'flex h-8 shrink-0 items-center rounded-md px-2 text-xs font-medium text-sidebar-foreground/70 outline-none ring-sidebar-ring transition-[margin,opa] duration-200 ease-linear focus-visible:ring-2 [&>svg]:size-4 [&>svg]:shrink-0',
+        'flex h-8 shrink-0 items-center rounded-md px-2 text-xs font-medium text-sidebar-foreground/70 outline-none ring-sidebar-ring transition-[margin,opa] duration-300 ease-out focus-visible:ring-2 [&>svg]:size-4 [&>svg]:shrink-0',
         'group-data-[collapsible=icon]:-mt-8 group-data-[collapsible=icon]:opacity-0',
-        local.class,
+        props.class,
       )}
-      {...others}
+      children={props.children}
     />
   )
 }
 
-type SidebarGroupActionProps<T extends ValidComponent = 'button'> = ComponentProps<T>
-
-function SidebarGroupAction<T extends ValidComponent = 'button'>(props: PolymorphicProps<T, SidebarGroupActionProps<T>>) {
-  const [local, others] = splitProps(props as SidebarGroupActionProps, ['class'])
+function SidebarGroupAction(props: FlowPropsWithClass) {
   return (
-    <Polymorphic<SidebarGroupActionProps>
-      as="button"
+    <button
       data-sidebar="group-action"
       class={cls(
         'absolute right-3 top-3.5 flex aspect-square w-5 items-center justify-center rounded-md p-0 text-sidebar-foreground outline-none ring-sidebar-ring transition-transform hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:ring-2 [&>svg]:size-4 [&>svg]:shrink-0',
         // Increases the hit area of the button on mobile.
         'after:absolute after:-inset-2 after:md:hidden',
         'group-data-[collapsible=icon]:hidden',
-        local.class,
+        props.class,
       )}
-      {...others}
+      children={props.children}
     />
   )
 }
 
-const SidebarGroupContent: Component<ComponentProps<'div'>> = (props) => {
-  const [local, others] = splitProps(props, ['class'])
-  return <div data-sidebar="group-content" class={cls('w-full text-sm', local.class)} {...others} />
+function SidebarGroupContent(props: FlowPropsWithClass) {
+  return (
+    <div
+      data-sidebar="group-content"
+      class={cls('w-full text-sm', props.class)}
+      children={props.children}
+    />
+  )
 }
 
-const SidebarMenu: Component<ComponentProps<'ul'>> = (props) => {
-  const [local, others] = splitProps(props, ['class'])
+function SidebarMenu(props: FlowPropsWithClass) {
   return (
     <ul
       data-sidebar="menu"
-      class={cls('flex w-full min-w-0 flex-col gap-1', local.class)}
-      {...others}
+      class={cls('flex w-full min-w-0 flex-col gap-1', props.class)}
+      children={props.children}
     />
   )
 }
 
-const SidebarMenuItem: Component<ComponentProps<'li'>> = (props) => {
-  const [local, others] = splitProps(props, ['class'])
+function SidebarMenuItem(props: FlowPropsWithClass) {
   return (
-    <li data-sidebar="menu-item" class={cls('group/menu-item relative', local.class)} {...others} />
+    <li
+      data-sidebar="menu-item"
+      class={cls('group/menu-item relative', props.class)}
+      children={props.children}
+    />
   )
 }
 
@@ -485,8 +480,7 @@ function SidebarMenuButton<T extends ValidComponent = 'button'>(rawProps: Polymo
   const { isMobile, state } = useSidebar()
 
   const button = (
-    <Polymorphic<SidebarMenuButtonProps>
-      as="button"
+    <button
       data-sidebar="menu-button"
       data-size={local.size}
       data-active={local.isActive}
@@ -510,17 +504,9 @@ function SidebarMenuButton<T extends ValidComponent = 'button'>(rawProps: Polymo
   )
 }
 
-type SidebarMenuActionProps<T extends ValidComponent = 'button'> = ComponentProps<T> & {
-  showOnHover?: boolean
-}
-
-function SidebarMenuAction<T extends ValidComponent = 'button'>(rawProps: PolymorphicProps<T, SidebarMenuActionProps<T>>) {
-  const props = mergeProps({ showOnHover: false }, rawProps)
-  const [local, others] = splitProps(props as SidebarMenuActionProps, ['class', 'showOnHover'])
-
+function SidebarMenuAction(props: FlowPropsWithClass<{ showOnHover: boolean }>) {
   return (
-    <Polymorphic<SidebarMenuActionProps>
-      as="button"
+    <button
       data-sidebar="menu-action"
       class={cls(
         'absolute right-1 top-1.5 flex aspect-square w-5 items-center justify-center rounded-md p-0 text-sidebar-foreground outline-none ring-sidebar-ring transition-transform hover:(bg-sidebar-accent text-sidebar-accent-foreground) focus-visible:ring-2 peer-hover/menu-button:text-sidebar-accent-foreground',
@@ -530,17 +516,16 @@ function SidebarMenuAction<T extends ValidComponent = 'button'>(rawProps: Polymo
         'peer-data-[size=default]/menu-button:top-1.5',
         'peer-data-[size=lg]/menu-button:top-2.5',
         'group-data-[collapsible=icon]:hidden',
-        local.showOnHover
+        (props.showOnHover || false)
         && 'group-focus-within/menu-item:opacity-100 group-hover/menu-item:opacity-100 data-[state=open]:opacity-100 peer-data-[active=true]/menu-button:text-sidebar-accent-foreground md:opacity-0',
-        local.class,
+        props.class,
       )}
-      {...others}
+      children={props.children}
     />
   )
 }
 
-const SidebarMenuBadge: Component<ComponentProps<'div'>> = (props) => {
-  const [local, others] = splitProps(props, ['class'])
+function SidebarMenuBadge(props: FlowPropsWithClass) {
   return (
     <div
       data-sidebar="menu-badge"
@@ -551,31 +536,25 @@ const SidebarMenuBadge: Component<ComponentProps<'div'>> = (props) => {
         'peer-data-[size=default]/menu-button:top-1.5',
         'peer-data-[size=lg]/menu-button:top-2.5',
         'group-data-[collapsible=icon]:hidden',
-        local.class,
+        props.class,
       )}
-      {...others}
+      children={props.children}
     />
   )
 }
 
-type SidebarMenuSkeletonProps = ComponentProps<'div'> & {
-  showIcon?: boolean
-}
-
-const SidebarMenuSkeleton: Component<SidebarMenuSkeletonProps> = (rawProps) => {
-  const props = mergeProps({ showIcon: false }, rawProps)
-  const [local, others] = splitProps(props, ['class', 'showIcon'])
-
+function SidebarMenuSkeleton(props: FlowPropsWithClass<{ showIcon: boolean }>) {
   // Random width between 50 to 90%.
   const width = createMemo(() => `${Math.floor(Math.random() * 40) + 50}%`)
 
   return (
     <div
       data-sidebar="menu-skeleton"
-      class={cls('flex h-8 items-center gap-2 rounded-md px-2', local.class)}
-      {...others}
+      class={cls('flex h-8 items-center gap-2 rounded-md px-2', props.class)}
     >
-      {local.showIcon && <Skeleton class="rounded-md size-4" data-sidebar="menu-skeleton-icon" />}
+      <Show when={props.showIcon || false}>
+        <Skeleton class="rounded-md size-4" data-sidebar="menu-skeleton-icon" />
+      </Show>
       <Skeleton
         class="flex-1 h-4 max-w-$skeleton-width"
         data-sidebar="menu-skeleton-text"
@@ -593,7 +572,7 @@ const SidebarMenuSub: Component<ComponentProps<'ul'>> = (props) => {
     <ul
       data-sidebar="menu-sub"
       class={cls(
-        'mx-3.5 flex min-w-0 translate-x-px flex-col gap-1 border-l border-sidebar-border px-2.5 py-0.5',
+        'mx-3.5 flex min-w-0 translate-x-px flex-col gap-1 b-(l sidebar-border) px-2.5 py-0.5',
         'group-data-[collapsible=icon]:hidden',
         local.class,
       )}

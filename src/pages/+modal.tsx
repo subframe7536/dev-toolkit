@@ -1,4 +1,4 @@
-import { useModals } from '#/router.gen'
+import { useModals } from 'solid-file-routerr.gen'
 
 export default function () {
   const modal = useModals()

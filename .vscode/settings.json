@@ -1,3 +1,5 @@
 {
-  "typescript.preferences.preferTypeOnlyAutoImports": false
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "always"
+  }
 }
