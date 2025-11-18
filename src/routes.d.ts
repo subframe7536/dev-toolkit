@@ -9,6 +9,7 @@ declare module 'solid-file-router' {
       '/': never
       '/data': never
       '/encode/base64': never
+      '/json/converter': never
       '/json/formatter': never
       '/nest': never
       '/nest/:id': { $id: string }
