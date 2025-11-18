@@ -1,6 +1,12 @@
 import { createRoute } from 'solid-file-router'
 
 export default createRoute({
+  info: {
+    title: 'Base64 Encoder/Decoder',
+    description: 'Encode and decode Base64 strings',
+    category: 'Encoding',
+    icon: 'lucide:binary',
+  },
   component: Base64Encoder,
 })
 

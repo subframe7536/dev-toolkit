@@ -1,120 +1,137 @@
+import type { RouteDefinition } from '@solidjs/router'
+
 import { Card } from '#/components/card'
+import Icon from '#/components/ui/icon'
 import { A } from '@solidjs/router'
 import { createRoute } from 'solid-file-router'
-import { For } from 'solid-js'
+import { createMemo, For, Show } from 'solid-js'
+import { fileRoutes } from 'virtual:routes'
 
 export default createRoute({
   component: Index,
 })
 
-interface ToolCategory {
-  title: string
-  description: string
-  tools: Array<{
-    name: string
+interface ToolRoute {
+  path: string
+  info: {
+    title: string
     description: string
-    href: string
+    category: string
     icon?: string
-  }>
+  }
 }
 
-const toolCategories: ToolCategory[] = [
-  {
-    title: 'JSON Tools',
-    description: 'Format, validate, and manipulate JSON data',
-    tools: [
-      { name: 'JSON Formatter', description: 'Format and pretty-print JSON', href: '/json/formatter' },
-      { name: 'JSON Validator', description: 'Validate JSON against schema', href: '/json/validator' },
-      { name: 'JSON Path', description: 'Query JSON with JSONPath', href: '/json/path' },
-      { name: 'JSON Converter', description: 'Convert between JSON, CSV, YAML', href: '/json/converter' },
-    ],
-  },
-  {
-    title: 'Encoding',
-    description: 'Encode and decode various formats',
-    tools: [
-      { name: 'Base64', description: 'Encode/decode Base64 strings', href: '/encode/base64' },
-      { name: 'URL Encoding', description: 'URL encode/decode strings', href: '/encode/url' },
-      { name: 'Hex', description: 'Hexadecimal encoding/decoding', href: '/encode/hex' },
-      { name: 'HTML Entities', description: 'Encode/decode HTML entities', href: '/encode/html' },
-    ],
-  },
-  {
-    title: 'Cryptography',
-    description: 'Hash and encrypt data',
-    tools: [
-      { name: 'MD5 Hash', description: 'Generate MD5 hashes', href: '/crypto/md5' },
-      { name: 'AES Encryption', description: 'AES encryption/decryption', href: '/crypto/aes' },
-      { name: 'RSA Encryption', description: 'RSA key generation and encryption', href: '/crypto/rsa' },
-    ],
-  },
-  {
-    title: 'Color Tools',
-    description: 'Work with colors and color formats',
-    tools: [
-      { name: 'Color Picker', description: 'Pick colors from palette', href: '/color/picker' },
-      { name: 'Color Converter', description: 'Convert between color formats', href: '/color/converter' },
-      { name: 'Color Palette', description: 'Generate color palettes', href: '/color/palette' },
-    ],
-  },
-  {
-    title: 'Utilities',
-    description: 'Various development utilities',
-    tools: [
-      { name: 'RegExp Tester', description: 'Test regular expressions', href: '/utils/regexp' },
-      { name: 'UUID Generator', description: 'Generate UUIDs', href: '/utils/uuid' },
-      { name: 'QR Code', description: 'Generate QR codes', href: '/utils/qrcode' },
-      { name: 'Text Diff', description: 'Compare text differences', href: '/utils/diff' },
-    ],
-  },
-  {
-    title: 'SQL Tools',
-    description: 'Work with SQL and databases',
-    tools: [
-      { name: 'SQL Formatter', description: 'Format SQL queries', href: '/sql/formatter' },
-      { name: 'MyBatis Params', description: 'Convert MyBatis parameters', href: '/sql/mybatis' },
-      { name: 'Data Converter', description: 'Convert between SQL and other formats', href: '/sql/converter' },
-    ],
-  },
-]
+interface CategoryGroup {
+  name: string
+  tools: ToolRoute[]
+}
+
+// Utility function to flatten RouteDefinition tree and extract tool routes
+function flattenRoutes(routes: RouteDefinition | RouteDefinition[], parentPath = ''): ToolRoute[] {
+  const routeArray = Array.isArray(routes) ? routes : [routes]
+  const result: ToolRoute[] = []
+
+  for (const route of routeArray) {
+    // Build the full path
+    const currentPath = route.path
+      ? `${parentPath}${route.path.startsWith('/') ? '' : '/'}${route.path}`
+      : parentPath
+
+    // If this route has tool info, add it to results
+    if (route.info?.title && route.info?.category) {
+      result.push({
+        path: currentPath || '/',
+        info: {
+          title: route.info.title,
+          description: route.info.description || '',
+          category: route.info.category,
+          icon: route.info.icon,
+        },
+      })
+    }
+
+    // Recursively process children
+    if (route.children) {
+      result.push(...flattenRoutes(route.children, currentPath))
+    }
+  }
+
+  return result
+}
 
 function Index() {
+  // Extract tool routes from the RouteDefinition tree
+  const toolRoutes = createMemo(() => {
+    return flattenRoutes(fileRoutes)
+  })
+
+  // Group tools by category
+  const categories = createMemo(() => {
+    const grouped = new Map<string, ToolRoute[]>()
+
+    toolRoutes().forEach((route) => {
+      const category = route.info.category
+      if (!grouped.has(category)) {
+        grouped.set(category, [])
+      }
+      grouped.get(category)!.push(route)
+    })
+
+    // Convert to array and sort categories
+    const result: CategoryGroup[] = Array.from(grouped.entries())
+      .map(([name, tools]) => ({ name, tools }))
+      .sort((a, b) => a.name.localeCompare(b.name))
+
+    return result
+  })
+
   return (
     <div class="flex flex-col gap-8 items-center">
-      <div>
+      <div class="text-center">
         <h1 class="text-4xl text-foreground tracking-tight font-bold sm:text-5xl">
           Developer Toolkit
         </h1>
         <p class="text-lg text-muted-foreground mt-4">
-          A collection of essential tools for developers
+          A collection of
+          {' '}
+          {toolRoutes().length}
+          {' '}
+          essential tools for developers
         </p>
       </div>
 
-      <div class="gap-8 grid lg:grid-cols-2 xl:grid-cols-4">
-        <For each={toolCategories}>
+      <div class="gap-8 grid lg:grid-cols-2 xl:grid-cols-3 w-full max-w-7xl">
+        <For each={categories()}>
           {category => (
             <Card
-              title={category.title}
-              description={category.description}
+              title={category.name}
+              description={`${category.tools.length} tool${category.tools.length !== 1 ? 's' : ''}`}
               content={(
-                <For each={category.tools}>
-                  {tool => (
-                    <A
-                      href={tool.href}
-                      class="p-3 rounded-md block transition-colors hover:(text-accent-foreground bg-accent)"
-                    >
-                      <div class="font-medium">{tool.name}</div>
-                      <div class="text-sm text-muted-foreground">{tool.description}</div>
-                    </A>
-                  )}
-                </For>
+                <div class="space-y-1">
+                  <For each={category.tools}>
+                    {tool => (
+                      <A
+                        href={tool.path}
+                        class="p-3 rounded-md flex gap-3 items-start transition-colors hover:(text-accent-foreground bg-accent)"
+                      >
+                        <Show when={tool.info.icon}>
+                          <Icon name={tool.info.icon as `lucide:${string}`} class="mt-0.5 shrink-0" />
+                        </Show>
+                        <div class="flex-1 min-w-0">
+                          <div class="font-medium">{tool.info.title}</div>
+                          <div class="text-sm text-muted-foreground">{tool.info.description}</div>
+                        </div>
+                      </A>
+                    )}
+                  </For>
+                </div>
               )}
             />
           )}
         </For>
       </div>
 
-      <div class="p-8 text-center border border-border rounded-lg bg-card">
+      <div class="p-8 text-center border border-border rounded-lg bg-card max-w-2xl">
         <h3 class="text-lg text-card-foreground font-semibold">
           More tools coming soon
         </h3>

@@ -466,11 +466,13 @@ type SidebarMenuButtonProps<T extends ValidComponent = 'button'> = ComponentProp
   & VariantProps<typeof sidebarMenuButtonVariants> & {
     isActive?: boolean
     tooltip?: string
+    as?: T
   }
 
 function SidebarMenuButton<T extends ValidComponent = 'button'>(rawProps: PolymorphicProps<T, SidebarMenuButtonProps<T>>) {
-  const props = mergeProps({ isActive: false, variant: 'default', size: 'default' }, rawProps)
+  const props = mergeProps({ isActive: false, variant: 'default', size: 'default', as: 'button' }, rawProps)
   const [local, others] = splitProps(props as SidebarMenuButtonProps, [
+    'as',
     'isActive',
     'tooltip',
     'variant',
@@ -480,7 +482,8 @@ function SidebarMenuButton<T extends ValidComponent = 'button'>(rawProps: Polymo
   const { isMobile, state } = useSidebar()
 
   const button = (
-    <button
+    <Polymorphic
+      as={local.as}
       data-sidebar="menu-button"
       data-size={local.size}
       data-active={local.isActive}

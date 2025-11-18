@@ -3,6 +3,12 @@ import { createRoute } from 'solid-file-router'
 import { createSignal, For } from 'solid-js'
 
 export default createRoute({
+  info: {
+    title: 'UUID Generator',
+    description: 'Generate unique identifiers (UUIDs)',
+    category: 'Utilities',
+    icon: 'lucide:fingerprint',
+  },
   component: UUIDGenerator,
 })
 
