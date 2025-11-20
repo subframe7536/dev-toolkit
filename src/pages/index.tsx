@@ -1,25 +1,15 @@
 import { Card } from '#/components/card'
-import { flattenRoutes, groupToolsByCategory } from '#/utils/routes'
+import { getCategories } from '#/utils/routes'
 import { A } from '@solidjs/router'
 import { createRoute } from 'solid-file-router'
-import { createMemo, For } from 'solid-js'
-import { fileRoutes } from 'virtual:routes'
+import { For } from 'solid-js'
 
 export default createRoute({
   component: Index,
 })
 
 function Index() {
-  // Extract tool routes from the RouteDefinition tree
-  const toolRoutes = createMemo(() => {
-    return flattenRoutes(fileRoutes)
-  })
-
-  // Group tools by category
-  const categories = createMemo(() => {
-    return groupToolsByCategory(toolRoutes())
-  })
-
+  const { categories, count } = getCategories()
   return (
     <div class="flex flex-col gap-8 items-center">
       <div class="text-center">
@@ -29,14 +19,14 @@ function Index() {
         <p class="text-lg text-muted-foreground mt-4">
           A collection of
           {' '}
-          {toolRoutes().length}
+          {count}
           {' '}
           essential tools for developers
         </p>
       </div>
 
       <div class="flex flex-col gap-12 max-w-7xl w-full">
-        <For each={categories()}>
+        <For each={categories}>
           {category => (
             <div class="flex flex-col gap-4">
               <h2 class="text-2xl text-foreground font-semibold">{category.name}</h2>

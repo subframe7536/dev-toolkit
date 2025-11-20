@@ -17,12 +17,12 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from '#/components/ui/sidebar'
-import { flattenRoutes, groupToolsByCategory } from '#/utils/routes'
+import { Toaster } from '#/components/ui/sonner'
+import { getCategories } from '#/utils/routes'
 import { useColorMode } from '@solid-hooks/core/web'
 import { A } from '@solidjs/router'
 import { createRoute } from 'solid-file-router'
-import { createMemo, For, Show } from 'solid-js'
-import { fileRoutes } from 'virtual:routes'
+import { For, Show } from 'solid-js'
 
 export default createRoute({
   component: App,
@@ -44,17 +44,7 @@ function Catch(props: { error: Error, reset: () => void }) {
 
 function App(props: ParentProps) {
   const [mode, setMode] = useColorMode()
-
-  // Extract tool routes from the RouteDefinition tree
-  const toolRoutes = createMemo(() => {
-    return flattenRoutes(fileRoutes)
-  })
-
-  // Group tools by category
-  const categories = createMemo(() => {
-    return groupToolsByCategory(toolRoutes())
-  })
-
+  const { categories, count } = getCategories()
   return (
     <SidebarProvider>
       <Sidebar variant="floating">
@@ -64,14 +54,14 @@ function App(props: ParentProps) {
               Developer Toolkit
             </h2>
             <p class="text-xs text-sidebar-foreground/70">
-              {toolRoutes().length}
+              {count}
               {' '}
               tools available
             </p>
           </A>
         </SidebarHeader>
         <SidebarContent>
-          <For each={categories()}>
+          <For each={categories}>
             {category => (
               <SidebarGroup>
                 <SidebarGroupLabel>{category.name}</SidebarGroupLabel>
@@ -115,6 +105,7 @@ function App(props: ParentProps) {
           {props.children}
         </div>
       </SidebarInset>
+      <Toaster />
     </SidebarProvider>
   )
 }

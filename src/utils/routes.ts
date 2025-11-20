@@ -1,5 +1,7 @@
 import type { RouteDefinition } from '@solidjs/router'
 
+import { fileRoutes } from 'virtual:routes'
+
 export interface ToolRoute {
   path: string
   info: {
@@ -18,7 +20,7 @@ export interface CategoryGroup {
 /**
  * Utility function to flatten RouteDefinition tree and extract tool routes
  */
-export function flattenRoutes(routes: RouteDefinition | RouteDefinition[], parentPath = ''): ToolRoute[] {
+function flattenRoutes(routes: RouteDefinition | RouteDefinition[], parentPath = ''): ToolRoute[] {
   const routeArray = Array.isArray(routes) ? routes : [routes]
   const result: ToolRoute[] = []
 
@@ -53,7 +55,7 @@ export function flattenRoutes(routes: RouteDefinition | RouteDefinition[], paren
 /**
  * Group tool routes by category
  */
-export function groupToolsByCategory(tools: ToolRoute[]): CategoryGroup[] {
+function groupToolsByCategory(tools: ToolRoute[]): CategoryGroup[] {
   const grouped = new Map<string, ToolRoute[]>()
 
   tools.forEach((route) => {
@@ -68,4 +70,17 @@ export function groupToolsByCategory(tools: ToolRoute[]): CategoryGroup[] {
   return Array.from(grouped.entries())
     .map(([name, tools]) => ({ name, tools }))
     .sort((a, b) => a.name.localeCompare(b.name))
+}
+
+let count = 0
+let categories: CategoryGroup[] | undefined
+
+export function getCategories() {
+  if (!categories) {
+    const toolRoutes = flattenRoutes(fileRoutes)
+    console.log(fileRoutes, toolRoutes)
+    categories = groupToolsByCategory(toolRoutes)
+    count = toolRoutes.length
+  }
+  return { count, categories }
 }

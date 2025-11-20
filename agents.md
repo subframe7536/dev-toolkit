@@ -22,20 +22,14 @@ src/
     _app.tsx          # App root and layout
     index.tsx         # Home page
     data.tsx          # Data utilities page
-    encode/           # Encoding utilities
+    (encode)/         # Encoding utilities
       base64.tsx
-    json/             # JSON utilities
+    (json)/           # JSON utilities
       formatter.tsx
-    nest/             # Nested route example
-      _layout.tsx
-      index.tsx
-      [id].tsx
-      value.tsx
-    utils/            # General utilities
+    (utils)/          # General utilities
       uuid.tsx
   components/         # Reusable components
     ui/               # UI component library
-    layout/           # Layout components
     card.tsx
   index.ts            # App entry point
   routes.d.ts         # Auto-generated route types
@@ -155,6 +149,8 @@ The project roadmap includes:
 
 ## UI Components
 
+You should always try to reuse these components
+
 The project uses a shadcn-like ui lib built on Kobalte Core, located in `src/components/ui/`:
 
 - `accordion.tsx` - Collapsible content sections
@@ -174,7 +170,14 @@ The project uses a shadcn-like ui lib built on Kobalte Core, located in `src/com
 - `text-field.tsx` - Text input
 - `tooltip.tsx` - Hover tooltips
 
-Note: You should always try to reuse these components
+### Toast
+
+Show messages or notifications, using `solid-sonner` (solidjs port of `sonner`)
+
+```tsx
+import { toast } from "solid-sonner"
+toast("Event has been created.")
+```
 
 ## Styling
 
@@ -211,7 +214,6 @@ The project includes PWA capabilities via `vite-plugin-pwa`:
 
 ## References
 
-- Full routing documentation: `README-solid-file-router.md`
 - SolidJS docs: https://www.solidjs.com/
 - Kobalte UI: https://kobalte.dev/
 - UnoCSS: https://unocss.dev/

@@ -7,14 +7,11 @@ declare module 'solid-file-router' {
   namespace FileRouteInfo {
     interface Path {
       '/': never
+      '/base64': never
+      '/converter': never
       '/data': never
-      '/encode/base64': never
-      '/json/converter': never
-      '/json/formatter': never
-      '/nest': never
-      '/nest/:id': { $id: string }
-      '/nest/value': never
-      '/utils/uuid': never
+      '/formatter': never
+      '/uuid': never
     }
   }
 }
