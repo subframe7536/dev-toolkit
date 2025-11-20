@@ -1,6 +1,16 @@
+import type { JSONError } from '#/utils/json/formatter'
+
+import { Button } from '#/components/ui/button'
+import Icon from '#/components/ui/icon'
+import {
+  TextField,
+  TextFieldLabel,
+  TextFieldTextArea,
+} from '#/components/ui/text-field'
 import { createRoute } from 'solid-file-router'
 import { createSignal, Show } from 'solid-js'
-import { formatJSON, minifyJSON, sortKeys, type JSONError } from '../../utils/json/formatter'
+
+import { formatJSON, minifyJSON, sortKeys } from '../../utils/json/formatter'
 
 export default createRoute({
   info: {
@@ -62,19 +72,23 @@ function JSONFormatter() {
   }
 
   const handleCopy = async () => {
-    if (!output()) return
-    
+    if (!output()) {
+      return
+    }
+
     try {
       await navigator.clipboard.writeText(output())
       setSuccessMessage('Copied to clipboard!')
       setTimeout(() => setSuccessMessage(null), 2000)
-    } catch (err) {
+    } catch {
       setError({ message: 'Failed to copy to clipboard' })
     }
   }
 
   const handleDownload = () => {
-    if (!output()) return
+    if (!output()) {
+      return
+    }
 
     const blob = new Blob([output()], { type: 'application/json' })
     const url = URL.createObjectURL(blob)
@@ -85,7 +99,7 @@ function JSONFormatter() {
     a.click()
     document.body.removeChild(a)
     URL.revokeObjectURL(url)
-    
+
     setSuccessMessage('Downloaded successfully!')
     setTimeout(() => setSuccessMessage(null), 2000)
   }
@@ -102,14 +116,12 @@ function JSONFormatter() {
       <Show when={error()}>
         <div class="p-4 border border-red-500 rounded-md bg-red-50 dark:bg-red-950/20" role="alert">
           <div class="flex gap-2 items-start">
-            <svg class="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
+            <Icon name="lucide:alert-circle" class="text-red-500 mt-0.5 flex-shrink-0 h-5 w-5" />
             <div class="flex-1">
-              <div class="text-sm text-red-800 dark:text-red-200 font-medium">
+              <div class="text-sm text-red-800 font-medium dark:text-red-200">
                 Invalid JSON
               </div>
-              <div class="text-sm text-red-700 dark:text-red-300 mt-1">
+              <div class="text-sm text-red-700 mt-1 dark:text-red-300">
                 {error()?.message}
                 <Show when={error()?.line && error()?.column}>
                   <div class="mt-1">
@@ -125,10 +137,8 @@ function JSONFormatter() {
       <Show when={successMessage()}>
         <div class="p-4 border border-green-500 rounded-md bg-green-50 dark:bg-green-950/20" role="status">
           <div class="flex gap-2 items-center">
-            <svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-            </svg>
-            <div class="text-sm text-green-800 dark:text-green-200 font-medium">
+            <Icon name="lucide:check-circle" class="text-green-500 h-5 w-5" />
+            <div class="text-sm text-green-800 font-medium dark:text-green-200">
               {successMessage()}
             </div>
           </div>
@@ -137,76 +147,71 @@ function JSONFormatter() {
 
       <div class="gap-6 grid lg:grid-cols-2">
         <div class="space-y-4">
-          <div>
-            <label class="text-sm text-foreground font-medium mb-2 block">
-              Input JSON
-            </label>
-            <textarea
-              class="text-sm font-mono p-4 border border-border rounded-md bg-background h-96 w-full resize-none focus:outline-none focus:ring-2 focus:ring-primary"
+          <TextField>
+            <TextFieldLabel>Input JSON</TextFieldLabel>
+            <TextFieldTextArea
+              class="text-sm font-mono h-96"
               placeholder="Paste your JSON here..."
               value={input()}
-              onInput={(e) => setInput(e.currentTarget.value)}
+              onInput={e => setInput(e.currentTarget.value)}
             />
-          </div>
-          <div class="flex gap-2 flex-wrap">
-            <button 
-              class="text-primary-foreground px-4 py-2 rounded-md bg-primary hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed"
+          </TextField>
+          <div class="flex flex-wrap gap-2">
+            <Button
               onClick={handleFormat}
               disabled={!input()}
             >
               Format
-            </button>
-            <button 
-              class="text-secondary-foreground px-4 py-2 rounded-md bg-secondary hover:bg-secondary/90 disabled:opacity-50 disabled:cursor-not-allowed"
+            </Button>
+            <Button
+              variant="secondary"
               onClick={handleMinify}
               disabled={!input()}
             >
               Minify
-            </button>
-            <button 
-              class="text-secondary-foreground px-4 py-2 rounded-md bg-secondary hover:bg-secondary/90 disabled:opacity-50 disabled:cursor-not-allowed"
+            </Button>
+            <Button
+              variant="secondary"
               onClick={handleSortKeys}
               disabled={!input()}
             >
               Sort Keys
-            </button>
-            <button 
-              class="text-secondary-foreground px-4 py-2 rounded-md bg-secondary hover:bg-secondary/90 disabled:opacity-50 disabled:cursor-not-allowed"
+            </Button>
+            <Button
+              variant="secondary"
               onClick={handleClear}
               disabled={!input() && !output()}
             >
               Clear
-            </button>
+            </Button>
           </div>
         </div>
 
         <div class="space-y-4">
-          <div>
-            <label class="text-sm text-foreground font-medium mb-2 block">
-              Output
-            </label>
-            <textarea
-              class="text-sm font-mono p-4 border border-border rounded-md bg-muted/50 h-96 w-full resize-none focus:outline-none focus:ring-2 focus:ring-primary"
+          <TextField>
+            <TextFieldLabel>Output</TextFieldLabel>
+            <TextFieldTextArea
+              class="text-sm font-mono bg-muted/50 h-96"
               readOnly
               placeholder="Formatted JSON will appear here..."
               value={output()}
             />
-          </div>
-          <div class="flex gap-2 flex-wrap">
-            <button 
-              class="text-secondary-foreground px-4 py-2 rounded-md bg-secondary hover:bg-secondary/90 disabled:opacity-50 disabled:cursor-not-allowed"
+          </TextField>
+          <div class="flex flex-wrap gap-2">
+            <Button
+              variant="secondary"
               onClick={handleCopy}
               disabled={!output()}
             >
               Copy
-            </button>
-            <button 
-              class="text-secondary-foreground px-4 py-2 rounded-md bg-secondary hover:bg-secondary/90 disabled:opacity-50 disabled:cursor-not-allowed"
+            </Button>
+            <Button
+              variant="secondary"
               onClick={handleDownload}
               disabled={!output()}
             >
               Download
-            </button>
+            </Button>
           </div>
         </div>
       </div>

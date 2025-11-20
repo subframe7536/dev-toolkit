@@ -1,4 +1,9 @@
 import { Button } from '#/components/ui/button'
+import {
+  TextField,
+  TextFieldInput,
+  TextFieldLabel,
+} from '#/components/ui/text-field'
 import { createRoute } from 'solid-file-router'
 import { createSignal, For } from 'solid-js'
 
@@ -40,21 +45,19 @@ function UUIDGenerator() {
       </div>
 
       <div class="space-y-6">
-        <div class="flex gap-4 items-center">
-          <div>
-            <label class="text-sm text-foreground font-medium mb-1 block">
-              Number of UUIDs
-            </label>
-            <input
+        <div class="flex gap-4 items-end">
+          <TextField class="w-20">
+            <TextFieldLabel>Number of UUIDs</TextFieldLabel>
+            <TextFieldInput
               type="number"
               min="1"
               max="100"
-              value={count()}
-              onInput={e => setCount(Number.parseInt(e.target.value))}
-              class="px-3 py-2 text-center border border-border rounded-md bg-background w-20"
+              value={count().toString()}
+              onInput={e => setCount(Number.parseInt((e.target as any).value) || 1)}
+              class="text-center"
             />
-          </div>
-          <Button onClick={generateUUIDs} class="mt-6">
+          </TextField>
+          <Button onClick={generateUUIDs}>
             Generate UUIDs
           </Button>
         </div>

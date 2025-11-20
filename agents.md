@@ -55,7 +55,7 @@ This project uses `solid-file-router`, a type-safe file-based routing system for
 2. **Route Definition**: All page files MUST export a default route created with `createRoute()`:
    ```tsx
    import { createRoute } from 'solid-file-router'
-   
+
    export default createRoute({
      component: () => <div>Page content</div>,
    })
@@ -78,8 +78,8 @@ This project uses `solid-file-router`, a type-safe file-based routing system for
 `fileRoutes` is `@solidjs/router` 's `RouteDefinition`, which is a tree of the route
 
 ```tsx
-import { render } from 'solid-js/web'
 import { Router } from '@solidjs/router'
+import { render } from 'solid-js/web'
 import { fileRoutes, Root } from 'virtual:routes'
 
 render(() => (
@@ -93,13 +93,13 @@ Type definition:
 
 ```ts
 export type RouteDefinition<S extends string | string[] = any, T = unknown> = {
-  path?: S;
-  matchFilters?: MatchFilters<S>;
-  preload?: RoutePreloadFunc<T>;
-  children?: RouteDefinition | RouteDefinition[];
-  component?: Component<RouteSectionProps<T>>;
-  info?: Record<string, any>;
-};
+  path?: S
+  matchFilters?: MatchFilters<S>
+  preload?: RoutePreloadFunc<T>
+  children?: RouteDefinition | RouteDefinition[]
+  component?: Component<RouteSectionProps<T>>
+  info?: Record<string, any>
+}
 ```
 
 ### Route Configuration Options
@@ -118,8 +118,8 @@ createRoute({
 ### Type-Safe Navigation
 
 ```tsx
-import { generatePath } from 'solid-file-router'
 import { useNavigate } from '@solidjs/router'
+import { generatePath } from 'solid-file-router'
 
 // TypeScript validates paths and parameters
 const path = generatePath('/blog/:id', { $id: '123' })
@@ -155,7 +155,7 @@ The project roadmap includes:
 
 ## UI Components
 
-The project uses a custom UI component library built on Kobalte Core, located in `src/components/ui/`:
+The project uses a shadcn-like ui lib built on Kobalte Core, located in `src/components/ui/`:
 
 - `accordion.tsx` - Collapsible content sections
 - `button.tsx` - Button component
@@ -173,6 +173,8 @@ The project uses a custom UI component library built on Kobalte Core, located in
 - `tabs.tsx` - Tabbed interface
 - `text-field.tsx` - Text input
 - `tooltip.tsx` - Hover tooltips
+
+Note: You should always try to reuse these components
 
 ## Styling
 

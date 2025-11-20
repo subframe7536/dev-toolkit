@@ -105,7 +105,7 @@ function parseJSONError(error: unknown, input: string): JSONError {
   }
 
   const message = error.message
-  
+
   // Try to extract position from error message
   // Chrome: "Unexpected token } in JSON at position 42"
   // Firefox: "JSON.parse: unexpected character at line 2 column 3"
@@ -114,24 +114,24 @@ function parseJSONError(error: unknown, input: string): JSONError {
 
   if (lineColMatch) {
     return {
-      message: message,
-      line: parseInt(lineColMatch[1], 10),
-      column: parseInt(lineColMatch[2], 10),
+      message,
+      line: Number.parseInt(lineColMatch[1], 10),
+      column: Number.parseInt(lineColMatch[2], 10),
     }
   }
 
   if (positionMatch) {
-    const position = parseInt(positionMatch[1], 10)
+    const position = Number.parseInt(positionMatch[1], 10)
     const { line, column } = getLineAndColumn(input, position)
     return {
-      message: message,
+      message,
       line,
       column,
     }
   }
 
   return {
-    message: message,
+    message,
   }
 }
 
@@ -141,7 +141,7 @@ function parseJSONError(error: unknown, input: string): JSONError {
  * @param position - Character position
  * @returns Line and column numbers (1-indexed)
  */
-function getLineAndColumn(input: string, position: number): { line: number; column: number } {
+function getLineAndColumn(input: string, position: number): { line: number, column: number } {
   const lines = input.substring(0, position).split('\n')
   return {
     line: lines.length,

@@ -4,11 +4,11 @@
   "version": "0.0.0",
   "description": "",
   "scripts": {
-    "dev": "bunx vite",
-    "build": "bunx vite build",
-    "preview": "bunx vite preview",
-    "serve": "bunx vite preview",
-    "format": "bunx eslint --fix --cache"
+    "dev": "bun --bun vite",
+    "build": "bun --bun vite build",
+    "preview": "bun --bun vite preview",
+    "serve": "bun --bun vite preview",
+    "format": "bun --bun eslint --fix --cache"
   },
   "dependencies": {
     "js-yaml": "^4.1.1",

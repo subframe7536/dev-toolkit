@@ -3,7 +3,6 @@ import type { PresetWind4Theme } from 'unocss'
 import { presetIcons, presetWind4, transformerVariantGroup } from 'unocss'
 import { presetAnimations } from 'unocss-preset-animations'
 import { presetClassCompletion } from 'unocss-preset-completion'
-import { theme } from 'unocss/preset-wind4'
 import { defineConfig } from 'unocss/vite'
 
 import { presetThemeTW4 } from './unocss-preset-theme'
@@ -26,10 +25,13 @@ export default defineConfig<PresetWind4Theme>({
   ],
   shortcuts: [
     ['effect-fv', 'outline-none ring-1.5 ring-ring ring-offset-(2 background)'],
-    ['effect-dis', 'pointer-events-none opacity-50 cursor-not-allowed'],
+    ['effect-dis', 'pointer-events-none opacity-70 cursor-not-allowed'],
     [/activor:(.*)/, ([, cls]) => `hover:${cls} active:${cls}`],
   ],
   theme: {
+    font: {
+      mono: 'Maple Mono, Maple Mono NF, Maple Mono NF CN, Menlo, Consolas, monospace',
+    },
     radius: {
       xl: `calc(${radius} + 4px)`,
       lg: radius,

@@ -1,6 +1,6 @@
 import type { ParentProps } from 'solid-js'
-import type { RouteDefinition } from '@solidjs/router'
 
+import { Button } from '#/components/ui/button'
 import Icon from '#/components/ui/icon'
 import {
   Sidebar,
@@ -17,6 +17,7 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from '#/components/ui/sidebar'
+import { flattenRoutes, groupToolsByCategory } from '#/utils/routes'
 import { useColorMode } from '@solid-hooks/core/web'
 import { A } from '@solidjs/router'
 import { createRoute } from 'solid-file-router'
@@ -36,62 +37,13 @@ function Catch(props: { error: Error, reset: () => void }) {
       Something went wrong:
       {' '}
       {props.error.message}
-      Caught at _app error boundary
-      <button onClick={() => props.reset}>reset</button>
+      <Button onClick={() => props.reset()}>Reset</Button>
     </div>
   )
 }
 
-interface ToolRoute {
-  path: string
-  info: {
-    title: string
-    description: string
-    category: string
-    icon?: string
-  }
-}
-
-interface CategoryGroup {
-  name: string
-  tools: ToolRoute[]
-}
-
-// Utility function to flatten RouteDefinition tree and extract tool routes
-function flattenRoutes(routes: RouteDefinition | RouteDefinition[], parentPath = ''): ToolRoute[] {
-  const routeArray = Array.isArray(routes) ? routes : [routes]
-  const result: ToolRoute[] = []
-
-  for (const route of routeArray) {
-    // Build the full path
-    const currentPath = route.path
-      ? `${parentPath}${route.path.startsWith('/') ? '' : '/'}${route.path}`
-      : parentPath
-
-    // If this route has tool info, add it to results
-    if (route.info?.title && route.info?.category) {
-      result.push({
-        path: currentPath || '/',
-        info: {
-          title: route.info.title,
-          description: route.info.description || '',
-          category: route.info.category,
-          icon: route.info.icon,
-        },
-      })
-    }
-
-    // Recursively process children
-    if (route.children) {
-      result.push(...flattenRoutes(route.children, currentPath))
-    }
-  }
-
-  return result
-}
-
 function App(props: ParentProps) {
-  const [mode, setMode, isDark] = useColorMode()
+  const [mode, setMode] = useColorMode()
 
   // Extract tool routes from the RouteDefinition tree
   const toolRoutes = createMemo(() => {
@@ -100,29 +52,14 @@ function App(props: ParentProps) {
 
   // Group tools by category
   const categories = createMemo(() => {
-    const grouped = new Map<string, ToolRoute[]>()
-
-    toolRoutes().forEach((route) => {
-      const category = route.info.category
-      if (!grouped.has(category)) {
-        grouped.set(category, [])
-      }
-      grouped.get(category)!.push(route)
-    })
-
-    // Convert to array and sort categories
-    const result: CategoryGroup[] = Array.from(grouped.entries())
-      .map(([name, tools]) => ({ name, tools }))
-      .sort((a, b) => a.name.localeCompare(b.name))
-
-    return result
+    return groupToolsByCategory(toolRoutes())
   })
 
   return (
     <SidebarProvider>
       <Sidebar variant="floating">
         <SidebarHeader>
-          <A href="/" class="px-2 py-1 block transition-colors hover:bg-sidebar-accent rounded-md">
+          <A href="/" class="px-2 py-1 rounded-md block transition-colors hover:bg-sidebar-accent">
             <h2 class="text-lg text-sidebar-foreground font-semibold">
               Developer Toolkit
             </h2>
@@ -159,11 +96,11 @@ function App(props: ParentProps) {
           </For>
         </SidebarContent>
         <SidebarFooter>
-          <div class="px-2 py-1 text-xs text-sidebar-foreground/70">
+          <div class="text-xs text-sidebar-foreground/70 px-2 py-1">
             <div class="flex items-center justify-between">
-              <span>Theme: {isDark() ? 'Dark' : 'Light'}</span>
+              <span>Theme: {mode()}</span>
               <button
-                onClick={() => setMode(m => m === 'dark' ? 'light' : 'dark')}
+                onClick={() => setMode(m => m === 'auto' ? 'light' : m === 'light' ? 'dark' : 'auto')}
                 class="px-2 py-1 rounded hover:bg-sidebar-accent"
               >
                 Toggle

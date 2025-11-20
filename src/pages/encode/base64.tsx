@@ -1,4 +1,11 @@
+import { Button } from '#/components/ui/button'
+import {
+  TextField,
+  TextFieldLabel,
+  TextFieldTextArea,
+} from '#/components/ui/text-field'
 import { createRoute } from 'solid-file-router'
+import { createSignal } from 'solid-js'
 
 export default createRoute({
   info: {
@@ -11,6 +18,43 @@ export default createRoute({
 })
 
 function Base64Encoder() {
+  const [input, setInput] = createSignal('')
+  const [output, setOutput] = createSignal('')
+
+  const encodeToBase64 = () => {
+    try {
+      const encoded = btoa(input())
+      setOutput(encoded)
+    } catch {
+      setOutput('Error: Invalid input for encoding')
+    }
+  }
+
+  const decodeFromBase64 = () => {
+    try {
+      const decoded = atob(input())
+      setOutput(decoded)
+    } catch {
+      setOutput('Error: Invalid Base64 string')
+    }
+  }
+
+  const clear = () => {
+    setInput('')
+    setOutput('')
+  }
+
+  const copyToClipboard = async () => {
+    if (!output()) {
+      return
+    }
+    try {
+      await navigator.clipboard.writeText(output())
+    } catch {
+      console.error('Failed to copy to clipboard')
+    }
+  }
+
   return (
     <div class="space-y-6">
       <div>
@@ -22,43 +66,42 @@ function Base64Encoder() {
 
       <div class="gap-6 grid lg:grid-cols-2">
         <div class="space-y-4">
-          <div>
-            <label class="text-sm text-foreground font-medium mb-2 block">
-              Input Text
-            </label>
-            <textarea
-              class="text-sm font-mono p-4 border border-border rounded-md bg-background h-64 w-full"
-              placeholder="Enter text to encode..."
+          <TextField>
+            <TextFieldLabel>Input Text</TextFieldLabel>
+            <TextFieldTextArea
+              class="text-sm font-mono h-64"
+              placeholder="Enter text to encode or Base64 to decode..."
+              value={input()}
+              onInput={e => setInput(e.currentTarget.value)}
             />
-          </div>
+          </TextField>
           <div class="flex gap-2">
-            <button class="text-primary-foreground px-4 py-2 rounded-md bg-primary hover:bg-primary/90">
+            <Button onClick={encodeToBase64} disabled={!input()}>
               Encode to Base64
-            </button>
-            <button class="text-secondary-foreground px-4 py-2 rounded-md bg-secondary hover:bg-secondary/90">
+            </Button>
+            <Button variant="secondary" onClick={decodeFromBase64} disabled={!input()}>
+              Decode from Base64
+            </Button>
+            <Button variant="secondary" onClick={clear} disabled={!input() && !output()}>
               Clear
-            </button>
+            </Button>
           </div>
         </div>
 
         <div class="space-y-4">
-          <div>
-            <label class="text-sm text-foreground font-medium mb-2 block">
-              Base64 Output
-            </label>
-            <textarea
-              class="text-sm font-mono p-4 border border-border rounded-md bg-muted/50 h-64 w-full"
-              placeholder="Base64 encoded text will appear here..."
+          <TextField>
+            <TextFieldLabel>Base64 Output</TextFieldLabel>
+            <TextFieldTextArea
+              class="text-sm font-mono bg-muted/50 h-64"
               readOnly
+              placeholder="Encoded or decoded text will appear here..."
+              value={output()}
             />
-          </div>
+          </TextField>
           <div class="flex gap-2">
-            <button class="text-secondary-foreground px-4 py-2 rounded-md bg-secondary hover:bg-secondary/90">
-              Decode from Base64
-            </button>
-            <button class="text-secondary-foreground px-4 py-2 rounded-md bg-secondary hover:bg-secondary/90">
+            <Button variant="secondary" onClick={copyToClipboard} disabled={!output()}>
               Copy
-            </button>
+            </Button>
           </div>
         </div>
       </div>

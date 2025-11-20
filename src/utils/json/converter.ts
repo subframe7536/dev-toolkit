@@ -25,33 +25,33 @@ export interface ConversionResult {
 export function jsonToCSV(input: string): ConversionResult {
   try {
     const parsed = JSON.parse(input)
-    
+
     // Handle array of objects
     if (Array.isArray(parsed) && parsed.length > 0) {
       const csv = Papa.unparse(parsed)
       return { success: true, output: csv }
     }
-    
+
     // Handle single object - convert to array with one item
     if (typeof parsed === 'object' && parsed !== null && !Array.isArray(parsed)) {
       const csv = Papa.unparse([parsed])
       return { success: true, output: csv }
     }
-    
+
     return {
       success: false,
       error: {
         message: 'Invalid data format',
-        details: 'JSON must be an object or array of objects to convert to CSV'
-      }
+        details: 'JSON must be an object or array of objects to convert to CSV',
+      },
     }
   } catch (error) {
     return {
       success: false,
       error: {
         message: 'Invalid JSON',
-        details: error instanceof Error ? error.message : 'Unknown parsing error'
-      }
+        details: error instanceof Error ? error.message : 'Unknown parsing error',
+      },
     }
   }
 }
@@ -69,17 +69,17 @@ export function csvToJSON(input: string, hasHeaders?: boolean): ConversionResult
       skipEmptyLines: true,
       dynamicTyping: true, // Automatically convert numbers and booleans
     })
-    
+
     if (parseResult.errors.length > 0) {
       return {
         success: false,
         error: {
           message: 'CSV parsing error',
-          details: parseResult.errors.map(e => e.message).join(', ')
-        }
+          details: parseResult.errors.map(e => e.message).join(', '),
+        },
       }
     }
-    
+
     const json = JSON.stringify(parseResult.data, null, 2)
     return { success: true, output: json }
   } catch (error) {
@@ -87,8 +87,8 @@ export function csvToJSON(input: string, hasHeaders?: boolean): ConversionResult
       success: false,
       error: {
         message: 'CSV conversion failed',
-        details: error instanceof Error ? error.message : 'Unknown error'
-      }
+        details: error instanceof Error ? error.message : 'Unknown error',
+      },
     }
   }
 }
@@ -112,8 +112,8 @@ export function jsonToYAML(input: string): ConversionResult {
       success: false,
       error: {
         message: 'JSON to YAML conversion failed',
-        details: error instanceof Error ? error.message : 'Unknown error'
-      }
+        details: error instanceof Error ? error.message : 'Unknown error',
+      },
     }
   }
 }
@@ -133,8 +133,8 @@ export function yamlToJSON(input: string): ConversionResult {
       success: false,
       error: {
         message: 'YAML to JSON conversion failed',
-        details: error instanceof Error ? error.message : 'Unknown error'
-      }
+        details: error instanceof Error ? error.message : 'Unknown error',
+      },
     }
   }
 }
@@ -147,20 +147,20 @@ export function yamlToJSON(input: string): ConversionResult {
 export function jsonToQueryParams(input: string): ConversionResult {
   try {
     const parsed = JSON.parse(input)
-    
+
     // Only handle flat objects for query parameters
     if (typeof parsed !== 'object' || parsed === null || Array.isArray(parsed)) {
       return {
         success: false,
         error: {
           message: 'Invalid data format',
-          details: 'JSON must be a flat object to convert to query parameters'
-        }
+          details: 'JSON must be a flat object to convert to query parameters',
+        },
       }
     }
-    
+
     const params = new URLSearchParams()
-    
+
     for (const [key, value] of Object.entries(parsed)) {
       if (value !== null && value !== undefined) {
         // Convert complex values to JSON strings
@@ -171,15 +171,15 @@ export function jsonToQueryParams(input: string): ConversionResult {
         }
       }
     }
-    
+
     return { success: true, output: params.toString() }
   } catch (error) {
     return {
       success: false,
       error: {
         message: 'JSON to query parameters conversion failed',
-        details: error instanceof Error ? error.message : 'Unknown error'
-      }
+        details: error instanceof Error ? error.message : 'Unknown error',
+      },
     }
   }
 }
@@ -193,10 +193,10 @@ export function queryParamsToJSON(input: string): ConversionResult {
   try {
     // Remove leading ? if present
     const cleanInput = input.startsWith('?') ? input.slice(1) : input
-    
+
     const params = new URLSearchParams(cleanInput)
     const result: Record<string, any> = {}
-    
+
     for (const [key, value] of params.entries()) {
       // Try to parse as JSON first (for complex values)
       try {
@@ -209,14 +209,14 @@ export function queryParamsToJSON(input: string): ConversionResult {
           result[key] = false
         } else if (value === 'null') {
           result[key] = null
-        } else if (!isNaN(Number(value)) && value !== '') {
+        } else if (!Number.isNaN(Number(value)) && value !== '') {
           result[key] = Number(value)
         } else {
           result[key] = value
         }
       }
     }
-    
+
     const json = JSON.stringify(result, null, 2)
     return { success: true, output: json }
   } catch (error) {
@@ -224,8 +224,8 @@ export function queryParamsToJSON(input: string): ConversionResult {
       success: false,
       error: {
         message: 'Query parameters to JSON conversion failed',
-        details: error instanceof Error ? error.message : 'Unknown error'
-      }
+        details: error instanceof Error ? error.message : 'Unknown error',
+      },
     }
   }
 }
@@ -237,12 +237,14 @@ export function queryParamsToJSON(input: string): ConversionResult {
  */
 export function detectFormat(input: string): 'json' | 'csv' | 'yaml' | 'query' | 'unknown' {
   const trimmed = input.trim()
-  
-  if (!trimmed) return 'unknown'
-  
+
+  if (!trimmed) {
+    return 'unknown'
+  }
+
   // Check for JSON
-  if ((trimmed.startsWith('{') && trimmed.endsWith('}')) || 
-      (trimmed.startsWith('[') && trimmed.endsWith(']'))) {
+  if ((trimmed.startsWith('{') && trimmed.endsWith('}'))
+    || (trimmed.startsWith('[') && trimmed.endsWith(']'))) {
     try {
       JSON.parse(trimmed)
       return 'json'
@@ -250,17 +252,17 @@ export function detectFormat(input: string): 'json' | 'csv' | 'yaml' | 'query' |
       // Not valid JSON
     }
   }
-  
+
   // Check for query parameters
   if (trimmed.includes('=') && (trimmed.includes('&') || !trimmed.includes('\n'))) {
     return 'query'
   }
-  
+
   // Check for CSV (simple heuristic)
   if (trimmed.includes(',') && trimmed.includes('\n')) {
     return 'csv'
   }
-  
+
   // Check for YAML (simple heuristic)
   if (trimmed.includes(':') && (trimmed.includes('\n') || trimmed.includes('- '))) {
     try {
@@ -270,6 +272,6 @@ export function detectFormat(input: string): 'json' | 'csv' | 'yaml' | 'query' |
       // Not valid YAML
     }
   }
-  
+
   return 'unknown'
 }
