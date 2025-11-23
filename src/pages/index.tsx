@@ -38,6 +38,7 @@ function Index() {
                         title={tool.info.title}
                         icon={tool.info.icon}
                         description={tool.info.description}
+                        tags={tool.info.tags}
                         class="h-full cursor-pointer transition-all hover:shadow-md"
                       />
                     </A>

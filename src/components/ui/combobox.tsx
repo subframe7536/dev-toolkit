@@ -74,7 +74,7 @@ function ComboboxControl<T, U extends ValidComponent = 'div'>(props: Polymorphic
   const [local, others] = splitProps(props as ComboboxControlProps<T>, ['class'])
   return (
     <ComboboxPrimitive.Control
-      class={cls('flex h-10 items-center rounded-md border px-3', local.class)}
+      class={cls('flex h-10 items-center rounded-md b-(1 border) px-3', local.class)}
       {...others}
     />
   )
@@ -127,7 +127,7 @@ function ComboboxContent<T extends ValidComponent = 'div'>(props: PolymorphicPro
     <ComboboxPrimitive.Portal>
       <ComboboxPrimitive.Content
         class={cls(
-          'relative z-50 min-w-32 overflow-hidden rounded-md border bg-background text-foreground shadow-md animate-in fade-in-80',
+          'relative z-50 min-w-32 mt--1 overflow-hidden rounded-md b-(1 border) bg-background text-foreground shadow-md animate-in fade-in-80',
           local.class,
         )}
         {...others}

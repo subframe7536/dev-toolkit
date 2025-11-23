@@ -7,8 +7,6 @@ import { defineConfig } from 'unocss/vite'
 
 import { presetThemeTW4 } from './unocss-preset-theme'
 
-const radius = '0.5rem'
-
 export default defineConfig<PresetWind4Theme>({
   presets: [
     presetWind4({
@@ -30,12 +28,6 @@ export default defineConfig<PresetWind4Theme>({
   theme: {
     font: {
       mono: 'Maple Mono, Maple Mono NF, Maple Mono NF CN, Menlo, Consolas, monospace',
-    },
-    radius: {
-      xl: `calc(${radius} + 4px)`,
-      lg: radius,
-      md: `calc(${radius} - 2px)`,
-      sm: `calc(${radius} - 4px)`,
     },
     animation: {
       keyframes: {

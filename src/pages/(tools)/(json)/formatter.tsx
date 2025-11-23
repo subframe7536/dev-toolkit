@@ -17,6 +17,7 @@ export default createRoute({
     description: 'Format, minify, and sort JSON data with error detection',
     category: 'JSON',
     icon: 'lucide:braces',
+    tags: ['json', 'formatter', 'minify', 'beautify'],
   },
   component: JSONFormatter,
 })

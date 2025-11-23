@@ -14,6 +14,7 @@ export default createRoute({
     description: 'Generate unique identifiers (UUIDs)',
     category: 'Utilities',
     icon: 'lucide:fingerprint',
+    tags: ['uuid', 'generator', 'unique', 'identifier'],
   },
   component: UUIDGenerator,
 })

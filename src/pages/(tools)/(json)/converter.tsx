@@ -33,6 +33,7 @@ export default createRoute({
     description: 'Convert JSON to/from CSV, YAML, and query parameters',
     category: 'JSON',
     icon: 'lucide:repeat',
+    tags: ['json', 'csv', 'yaml', 'converter', 'transform'],
   },
   component: JSONConverter,
 })

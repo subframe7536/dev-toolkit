@@ -1,7 +1,7 @@
 import type { JSXElement } from 'solid-js'
 
 import { cls } from 'cls-variant'
-import { Show } from 'solid-js'
+import { For, Show } from 'solid-js'
 
 import Icon from './ui/icon'
 
@@ -10,6 +10,7 @@ type CardProps = {
   title: string
   icon?: string
   description?: string
+  tags?: string[]
   content?: JSXElement
   footer?: JSXElement
 }
@@ -30,6 +31,17 @@ export function Card(props: CardProps) {
           <p class="text-sm text-muted-foreground">
             {props.description}
           </p>
+        </Show>
+        <Show when={props.tags && props.tags.length > 0}>
+          <div class="flex gap-1.5 flex-wrap">
+            <For each={props.tags}>
+              {tag => (
+                <span class="text-xs text-muted-foreground px-1.5 py-0.5 border border-border/50 rounded bg-muted/20">
+                  {tag}
+                </span>
+              )}
+            </For>
+          </div>
         </Show>
       </div>
       <Show when={props.content}>

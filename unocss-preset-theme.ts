@@ -78,7 +78,7 @@ const dark = {
   },
 }
 
-export function presetThemeTW4(): Preset {
+export function presetThemeTW4(radiusRem = 0.5): Preset {
   const darkVars = generateCSSVariables(dark).join(';\n')
   return {
     name: 'theme',
@@ -87,6 +87,21 @@ export function presetThemeTW4(): Preset {
       {
         getCSS: () => `.dark {
 ${darkVars}
+}
+:root {
+  --radius: ${radiusRem}rem;
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+}
+@supports (corner-shape: squircle) {
+  :root {
+    --radius: ${radiusRem * 2}rem;
+  }
+  * {
+    corner-shape: squircle;
+  }
 }`,
       },
     ],

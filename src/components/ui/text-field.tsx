@@ -55,7 +55,7 @@ function TextFieldInput<T extends ValidComponent = 'input'>(rawProps: Polymorphi
     <TextFieldPrimitive.Input
       type={local.type}
       class={cls(
-        'flex h-10 w-full rounded-md b-(1 input) bg-transparent px-3 py-2 text-sm ring-offset-background file:(border-0 bg-transparent text-sm font-medium) placeholder:c-note focus-visible:effect-fv disabled:effect-dis data-[invalid]:b-red',
+        'flex h-10 w-full rounded-md b-(1 border) bg-transparent px-3 py-2 text-sm ring-offset-background file:(border-0 bg-transparent text-sm font-medium) placeholder:c-note focus-visible:effect-fv disabled:effect-dis data-[invalid]:b-red',
         local.class,
       )}
       {...others}
@@ -71,7 +71,7 @@ function TextFieldTextArea<T extends ValidComponent = 'textarea'>(props: Polymor
   return (
     <TextFieldPrimitive.TextArea
       class={cls(
-        'flex min-h-80px w-full rounded-md b-(1 input) bg-background px-3 py-2 text-sm ring-offset-background placeholder:c-note focus-visible:effect-fv disabled:effect-dis',
+        'flex min-h-80px w-full rounded-md b-(1 border) bg-background px-3 py-2 text-sm ring-offset-background placeholder:c-note focus-visible:effect-fv disabled:effect-dis',
         local.class,
       )}
       {...others}

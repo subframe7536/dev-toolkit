@@ -3,7 +3,7 @@ import type { ParentProps } from 'solid-js'
 import Icon from '#/components/ui/icon'
 import { useCurrentMatches } from '@solidjs/router'
 import { createRoute } from 'solid-file-router'
-import { createEffect, Show } from 'solid-js'
+import { createEffect, For, Show } from 'solid-js'
 import { createStore } from 'solid-js/store'
 
 export default createRoute({
@@ -15,6 +15,7 @@ interface ToolInfo {
   description?: string
   category?: string
   icon?: string
+  tags?: string[]
 }
 
 function ToolsLayout(props: ParentProps) {
@@ -49,11 +50,20 @@ function ToolsLayout(props: ParentProps) {
           <p class="text-muted-foreground mt-2">
             {currentTool.description}
           </p>
-          <div>
+          <div class="flex flex-wrap gap-2 items-center">
             <Show when={currentTool.category}>
-              <span class="text-xs text-muted-foreground font-medium px-1 border border-border rounded-md bg-muted/30">
+              <span class="text-xs text-muted-foreground font-medium px-2 py-0.5 border border-border rounded-md bg-muted/30">
                 {currentTool.category}
               </span>
+            </Show>
+            <Show when={currentTool.tags && currentTool.tags.length > 0}>
+              <For each={currentTool.tags}>
+                {tag => (
+                  <span class="text-xs text-muted-foreground px-2 py-0.5 border border-border/50 rounded-md bg-muted/20">
+                    {tag}
+                  </span>
+                )}
+              </For>
             </Show>
           </div>
         </div>

@@ -9,6 +9,7 @@ export interface ToolRoute {
     description: string
     category: string
     icon?: string
+    tags?: string[]
   }
 }
 
@@ -39,6 +40,7 @@ function flattenRoutes(routes: RouteDefinition | RouteDefinition[], parentPath =
           description: route.info.description || '',
           category: route.info.category,
           icon: route.info.icon,
+          tags: route.info.tags,
         },
       })
     }

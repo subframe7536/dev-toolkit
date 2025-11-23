@@ -129,6 +129,160 @@ Components in `src/pages/` should be thin wrappers that:
 - Call utility functions for all computation
 - Render results
 
+### Tool-Specific Utility Interfaces
+
+**JSON Utilities (`src/utils/json/`):**
+
+```typescript
+// formatter.ts
+export function formatJSON(input: string, indent?: number): string
+export function minifyJSON(input: string): string
+export function sortJSONKeys(input: string): string
+
+// converter.ts
+export function jsonToCSV(json: string): string
+export function csvToJSON(csv: string): string
+export function jsonToYAML(json: string): string
+export function yamlToJSON(yaml: string): string
+export function jsonToQueryParams(json: string): string
+export function queryParamsToJSON(params: string): string
+
+// key-converter.ts
+export type CaseStyle = 'camelCase' | 'snake_case' | 'kebab-case' | 'PascalCase' | 'CONSTANT_CASE'
+export function convertKeys(json: string, targetCase: CaseStyle): string
+
+// schema.ts
+export function validateJSON(json: string, schema: string): ValidationResult
+export function generateSchema(json: string): string
+export interface ValidationResult {
+  valid: boolean
+  errors?: Array<{ path: string; message: string }>
+}
+
+// path-repair.ts
+export function evaluateJSONPath(json: string, path: string): any[]
+export function repairJSON(malformed: string): { repaired: string; changes: string[] }
+```
+
+**Encoding Utilities (`src/utils/encode/`):**
+
+```typescript
+// base64.ts
+export function encodeBase64(text: string): string
+export function decodeBase64(encoded: string): string
+
+// hex.ts
+export function encodeHex(text: string): string
+export function decodeHex(hex: string): string
+export function formatHex(hex: string, spacing?: boolean, uppercase?: boolean): string
+
+// url.ts
+export function encodeURL(text: string): string
+export function decodeURL(encoded: string): string
+
+// unicode.ts
+export function encodeUnicode(text: string): string
+export function decodeUnicode(escaped: string): string
+
+// html.ts
+export function encodeHTMLEntities(text: string): string
+export function decodeHTMLEntities(encoded: string): string
+```
+
+**Cryptography Utilities (`src/utils/crypto/`):**
+
+```typescript
+// symmetric.ts
+export type SymmetricAlgorithm = 'AES-128' | 'AES-192' | 'AES-256' | 'DES'
+export function encrypt(plaintext: string, key: string, algorithm: SymmetricAlgorithm): string
+export function decrypt(ciphertext: string, key: string, algorithm: SymmetricAlgorithm): string
+
+// rsa.ts
+export type KeySize = 1024 | 2048 | 4096
+export interface RSAKeyPair {
+  publicKey: string  // PEM format
+  privateKey: string // PEM format
+}
+export function generateRSAKeyPair(keySize: KeySize): Promise<RSAKeyPair>
+export function encryptRSA(plaintext: string, publicKey: string): Promise<string>
+export function decryptRSA(ciphertext: string, privateKey: string): Promise<string>
+
+// hash.ts
+export type HashAlgorithm = 'MD5' | 'SHA-1' | 'SHA-256' | 'SHA-512'
+export function computeHash(text: string, algorithm: HashAlgorithm): string
+export function computeAllHashes(text: string): Record<HashAlgorithm, string>
+```
+
+**Text Utilities (`src/utils/text/`):**
+
+```typescript
+// compare.ts
+export type DiffMode = 'side-by-side' | 'unified'
+export interface DiffResult {
+  mode: DiffMode
+  changes: Array<{
+    type: 'add' | 'delete' | 'unchanged'
+    lineNumber: number
+    content: string
+  }>
+}
+export function generateDiff(text1: string, text2: string, mode: DiffMode): DiffResult
+
+// regex.ts
+export interface RegexMatch {
+  fullMatch: string
+  groups: string[]
+  index: number
+}
+export function validateRegex(pattern: string): { valid: boolean; error?: string }
+export function findMatches(pattern: string, text: string, flags: string): RegexMatch[]
+```
+
+**Color Utilities (`src/utils/color/`):**
+
+```typescript
+// converter.ts
+export interface ColorFormats {
+  rgb: string
+  hex: string
+  hsl: string
+  hwb: string
+  oklch: string
+}
+export function convertColor(input: string): ColorFormats
+export function validateColor(input: string): boolean
+```
+
+**SQL Utilities (`src/utils/sql/`):**
+
+```typescript
+// converter.ts
+export function parseMyBatisSQL(sql: string, params: Record<string, any>): string
+export function jsonToSQL(json: string, tableName: string): string[]
+export function csvToSQL(csv: string, tableName: string): string[]
+export function sqlToEntity(sql: string, language: 'java' | 'typescript'): string
+```
+
+**QR Code Utilities (`src/utils/qr/`):**
+
+```typescript
+// generator.ts
+export interface QROptions {
+  size: number
+  errorCorrection: 'L' | 'M' | 'Q' | 'H'
+}
+export function generateQRCode(text: string, options: QROptions): Promise<string> // Returns data URL
+```
+
+**UUID Utilities (`src/utils/uuid/`):**
+
+```typescript
+// generator.ts
+export function generateUUID(): string
+export function generateBulkUUIDs(count: number): string[]
+export function validateUUIDv4(uuid: string): boolean
+```
+
 ### App Layout and Sidebar
 
 The app layout (`src/pages/_app.tsx`) includes a sidebar that automatically generates navigation items from `fileRoutes`. The sidebar groups tools by category and provides quick navigation:
@@ -293,6 +447,71 @@ interface ConversionResult {
 }
 ```
 
+## Key Design Decisions
+
+### JSON Tools Architecture
+
+**Decision**: Separate JSON tools into distinct pages rather than a single multi-tab tool.
+
+**Rationale**: 
+- Each tool has a specific use case and can be optimized independently
+- Simpler routing and URL sharing (e.g., `/json/formatter` vs `/json?tab=formatter`)
+- Better code splitting - only load libraries needed for each tool
+- Easier to test and maintain individual tools
+
+### Encoding/Decoding Pattern
+
+**Decision**: Use a consistent encode/decode toggle pattern across all encoding tools.
+
+**Rationale**:
+- Familiar UX - users expect encode/decode to be mirror operations
+- Reduces UI complexity - single input/output area with mode toggle
+- Enables round-trip testing - encode then decode should return original
+- Clear error handling - decode errors are distinct from encode errors
+
+### Cryptography Implementation
+
+**Decision**: Use Web Crypto API for modern algorithms (AES, RSA, SHA) and crypto-js for legacy (MD5, DES).
+
+**Rationale**:
+- Web Crypto API is native, faster, and more secure
+- crypto-js provides compatibility for algorithms not in Web Crypto
+- Async operations (Web Crypto) provide better UX for large inputs
+- PEM format support for RSA keys enables interoperability
+
+### Client-Side Processing Guarantee
+
+**Decision**: All processing happens in the browser with no server communication.
+
+**Rationale**:
+- Privacy - sensitive data never leaves the user's device
+- Offline capability - tools work without internet after initial load
+- Performance - no network latency for operations
+- Cost - no server infrastructure needed
+- Trust - users can verify no data transmission via browser dev tools
+
+### Schema Validation Library Choice
+
+**Decision**: Use `ajv` for JSON Schema validation instead of custom implementation.
+
+**Rationale**:
+- Industry standard with comprehensive JSON Schema support
+- Excellent error messages with detailed validation failures
+- High performance with schema compilation
+- Supports all JSON Schema drafts
+- Well-maintained with active community
+
+### SQL Utilities Scope
+
+**Decision**: Focus on data conversion and code generation, not SQL execution.
+
+**Rationale**:
+- Client-side SQL execution requires embedding a database (SQLite WASM)
+- Primary use case is converting data formats and generating boilerplate
+- MyBatis parameter substitution is string manipulation, not execution
+- Entity generation provides high value with low complexity
+- Keeps bundle size reasonable
+
 ## Correctness Properties
 
 *A property is a characteristic or behavior that should hold true across all valid executions of a system—essentially, a formal statement about what the system should do. These properties will be validated through unit tests with specific examples and edge cases.*
@@ -329,7 +548,7 @@ Clicking a tool card should navigate to the correct tool route matching the card
 Rendered tool cards should contain both the tool name and description text.
 **Validates: Requirements 1.2**
 
-### JSON Viewer Properties
+### JSON Formatter Properties
 
 **Property 3: JSON parsing and formatting**
 Valid JSON strings should be parsed and formatted correctly, producing output that can be parsed back to an equivalent structure.
@@ -339,355 +558,317 @@ Valid JSON strings should be parsed and formatted correctly, producing output th
 Invalid JSON strings should result in clear error messages being displayed.
 **Validates: Requirements 2.2**
 
-**Property 5: JSON syntax highlighting**
-Formatted JSON output should contain syntax highlighting markup for keys, values, and data types.
+**Property 5: JSON minify preserves structure**
+*For any* valid JSON, minifying and then parsing should produce an equivalent data structure to the original.
+**Validates: Requirements 2.2**
+
+**Property 6: JSON key sorting**
+*For any* JSON object, sorting keys alphabetically should preserve all values and nested structures.
 **Validates: Requirements 2.3**
 
-**Property 6: JSON collapse/expand controls**
-JSON with nested objects or arrays should include collapse/expand controls for each nested structure.
-**Validates: Requirements 2.5**
+### JSON Import/Export Properties
+
+**Property 7: JSON to CSV conversion**
+*For any* JSON array of objects with consistent keys, conversion to CSV should produce a valid CSV with headers.
+**Validates: Requirements 3.1**
+
+**Property 8: CSV to JSON round-trip**
+*For any* CSV with headers, converting to JSON and back to CSV should preserve the data structure.
+**Validates: Requirements 3.2**
+
+**Property 9: YAML to JSON conversion**
+*For any* valid YAML, conversion to JSON should produce parseable JSON that represents the same data structure.
+**Validates: Requirements 3.3**
+
+**Property 10: Query parameters to JSON**
+*For any* valid URL query string, conversion to JSON should correctly parse all key-value pairs.
+**Validates: Requirements 3.4**
+
+### JSON Key Style Converter Properties
+
+**Property 11: Key style conversion completeness**
+*For any* JSON object and target case style (camelCase, snake_case, kebab-case, PascalCase, CONSTANT_CASE), all keys should be converted to that style.
+**Validates: Requirements 4.1**
+
+**Property 12: Recursive key conversion**
+*For any* JSON with nested objects and arrays, key conversion should recursively process all nested structures.
+**Validates: Requirements 4.2**
+
+**Property 13: Value preservation during key conversion**
+*For any* JSON object and key style conversion, all values should remain unchanged.
+**Validates: Requirements 4.3**
+
+### JSON Schema Properties
+
+**Property 14: Schema validation**
+*For any* valid JSON and valid JSON Schema, validation should correctly identify whether the JSON conforms to the schema.
+**Validates: Requirements 5.1**
+
+**Property 15: Validation error details**
+*For any* JSON that fails schema validation, the tool should provide specific error messages indicating which fields failed.
+**Validates: Requirements 5.2**
+
+**Property 16: Schema generation from JSON**
+*For any* valid JSON object, the tool should generate a valid JSON Schema that validates the input.
+**Validates: Requirements 5.3**
+
+### JSON Path and Repair Properties
+
+**Property 17: JSONPath evaluation**
+*For any* valid JSON and valid JSONPath expression, the tool should return all matching elements.
+**Validates: Requirements 6.1**
+
+**Property 18: JSONPath error handling**
+*For any* invalid JSONPath expression, the tool should display a clear error message.
+**Validates: Requirements 6.2**
+
+**Property 19: JSON repair**
+*For any* malformed JSON with common issues (missing quotes, trailing commas), the repair function should attempt to fix it and produce valid JSON.
+**Validates: Requirements 6.3**
 
 ### Text Compare Properties
 
-**Property 7: Diff generation**
+**Property 20: Diff generation**
 *For any* two text inputs, the diff algorithm should produce a comparison result showing additions, deletions, and unchanged sections.
-**Validates: Requirements 3.1**
+**Validates: Requirements 7.1**
 
-**Property 8: Diff highlighting**
+**Property 21: Diff highlighting**
 *For any* two different texts, the diff output should highlight additions and deletions with distinct visual markers.
-**Validates: Requirements 3.2**
+**Validates: Requirements 7.2**
 
-**Property 9: Line number display**
+**Property 22: Line number display**
 *For any* text comparison, the output should include line numbers for both input texts.
-**Validates: Requirements 3.4**
-
-**Property 10: Diff mode invariant**
-*For any* text inputs and diff mode, switching between diff modes should preserve the original input text content unchanged.
-**Validates: Requirements 3.5**
-
-### Case Converter Properties
-
-**Property 11: Case conversion completeness**
-*For any* text input, the case converter should provide all six conversion options: camelCase, PascalCase, snake_case, kebab-case, CONSTANT_CASE, and Title Case.
-**Validates: Requirements 4.1**
-
-**Property 12: Case conversion correctness**
-*For any* multi-word text input and selected case type, the converter should correctly identify word boundaries and apply the appropriate case convention.
-**Validates: Requirements 4.2, 4.3**
-
-### Token Counter Properties
-
-**Property 13: Token count calculation**
-*For any* text input, the token counter should calculate and display character count, word count, and token count.
-**Validates: Requirements 5.1, 5.2**
-
-**Property 14: Model-specific tokenization**
-*For any* text input and two different AI models, the token counts should differ according to each model's tokenization method.
-**Validates: Requirements 5.3**
-
-**Property 15: Cost calculation**
-*For any* text input and selected model, the token counter should display an estimated API cost based on the token count and model pricing.
-**Validates: Requirements 5.4**
-
-**Property 16: Real-time count updates**
-*For any* text input change, all counts (characters, words, tokens) should update to reflect the new input.
-**Validates: Requirements 5.5**
-
-### UUID Generator Properties
-
-**Property 17: UUID v4 format validation**
-*For any* generated UUID, it should match the UUID v4 format specification (8-4-4-4-12 hexadecimal pattern with version and variant bits).
-**Validates: Requirements 6.1**
-
-**Property 18: Bulk UUID generation count**
-*For any* specified quantity N, bulk generation should produce exactly N UUIDs.
-**Validates: Requirements 6.4, 6.5**
-
-**Property 19: UUID uniqueness**
-*For any* bulk generation request, all generated UUIDs should be unique (no duplicates).
-**Validates: Requirements 6.5**
-
-### Base64 Converter Properties
-
-**Property 20: Base64 round-trip**
-Text encoded to Base64 and then decoded should produce the original text.
-**Validates: Requirements 7.1, 7.2**
-
-**Property 21: Base64 decode error handling**
-Invalid Base64 strings should result in error messages when attempting to decode.
-**Validates: Requirements 7.3**
-
-**Property 22: Base64 mode switching**
-Switching between encode and decode modes should clear the output area.
 **Validates: Requirements 7.4**
 
-### JSON to TypeScript Properties
+**Property 23: Diff mode invariant**
+*For any* text inputs and diff mode, switching between diff modes should preserve the original input text content unchanged.
+**Validates: Requirements 7.5**
 
-**Property 23: TypeScript interface generation**
-*For any* valid JSON object, the tool should generate valid TypeScript interface definitions that can be compiled by the TypeScript compiler.
-**Validates: Requirements 8.1**
+### Base64 Encoder/Decoder Properties
 
-**Property 24: Nested interface generation**
-*For any* JSON with nested objects, the tool should create separate named interfaces for each nested structure.
-**Validates: Requirements 8.2**
+**Property 24: Base64 round-trip**
+*For any* text string, encoding to Base64 and then decoding should produce the original text.
+**Validates: Requirements 8.1, 8.2**
 
-**Property 25: Array type inference**
-*For any* JSON containing arrays, the generated TypeScript should use correct array type syntax (Type[] or Array<Type>).
+**Property 25: Base64 decode error handling**
+*For any* invalid Base64 string, attempting to decode should result in a clear error message.
 **Validates: Requirements 8.3**
 
-**Property 26: JSON to TypeScript error handling**
-*For any* invalid JSON input, the tool should display a parsing error message.
+**Property 26: Base64 mode switching**
+*For any* previous results, switching between encode and decode modes should clear the output area.
 **Validates: Requirements 8.4**
 
-### JWT Decoder Properties
+### Hex Encoder/Decoder Properties
 
-**Property 27: JWT section parsing**
-*For any* valid JWT token, the decoder should extract and display three sections: header, payload, and signature.
-**Validates: Requirements 9.1**
+**Property 27: Hex round-trip**
+*For any* text string, encoding to hexadecimal and then decoding should produce the original text.
+**Validates: Requirements 9.1, 9.2**
 
-**Property 28: JWT payload formatting**
-*For any* JWT token, the payload section should be formatted as readable JSON with syntax highlighting.
-**Validates: Requirements 9.2**
-
-**Property 29: JWT decode error handling**
-*For any* malformed JWT token, the decoder should display an error message.
+**Property 28: Hex decode error handling**
+*For any* invalid hexadecimal string, attempting to decode should result in a clear error message.
 **Validates: Requirements 9.3**
 
-**Property 30: JWT timestamp formatting**
-*For any* JWT containing timestamp claims (exp, iat, nbf), those timestamps should be displayed in human-readable date format.
-**Validates: Requirements 9.5**
+**Property 29: Hex formatting**
+*For any* encoded hex output, the tool should display it in a readable format with optional spacing.
+**Validates: Requirements 9.4**
 
-### SQL Formatter Properties
+### URL Encoder/Decoder Properties
 
-**Property 31: SQL formatting**
-*For any* SQL query string, the formatter should produce output with proper indentation and line breaks.
-**Validates: Requirements 10.1**
+**Property 30: URL encoding round-trip**
+*For any* text string, URL encoding and then decoding should produce the original text.
+**Validates: Requirements 10.1, 10.2**
 
-**Property 32: SQL keyword highlighting**
-*For any* SQL query, the formatted output should apply highlighting to SQL keywords (SELECT, FROM, WHERE, etc.).
-**Validates: Requirements 10.2**
-
-**Property 33: SQL expansion**
-*For any* minified single-line SQL query, the formatter should expand it into a multi-line format.
+**Property 31: URL special character handling**
+*For any* text with special characters and Unicode, URL encoding should correctly encode all characters.
 **Validates: Requirements 10.3**
 
-**Property 34: SQL error tolerance**
-*For any* SQL input (valid or invalid), the formatter should not throw errors and should attempt to format the input.
-**Validates: Requirements 10.5**
+**Property 32: URL encoder mode switching**
+*For any* previous results, switching between encode and decode modes should clear the output area.
+**Validates: Requirements 10.4**
 
-### Number Base Converter Properties
+### Unicode Encoder/Decoder Properties
 
-**Property 35: Multi-base conversion**
-*For any* valid number in any base, the converter should display conversions to binary, octal, decimal, and hexadecimal.
+**Property 33: Unicode encoding**
+*For any* text with Unicode characters, encoding should convert them to Unicode escape sequences.
 **Validates: Requirements 11.1**
 
-**Property 36: Base-specific validation**
-*For any* input and selected base, the converter should reject digits that are invalid for that base (e.g., '8' in octal, 'G' in hex).
+**Property 34: Unicode decoding**
+*For any* valid Unicode escape sequences (both \\uXXXX and \\u{XXXXXX} formats), decoding should produce the original characters.
 **Validates: Requirements 11.2, 11.3**
 
-**Property 37: Base conversion reactivity**
-*For any* input change, all four base representations should update to reflect the new value.
-**Validates: Requirements 11.4**
+**Property 35: Unicode decode error handling**
+*For any* invalid Unicode escape sequences, attempting to decode should result in a clear error message.
+**Validates: Requirements 11.5**
 
-### CSV/JSON Converter Properties
+### HTML Entity Encoder/Decoder Properties
 
-**Property 38: CSV/JSON round-trip**
-*For any* CSV with headers, converting to JSON and back to CSV should preserve the data structure and headers.
-**Validates: Requirements 12.1, 12.2**
+**Property 36: HTML entity encoding**
+*For any* text with special HTML characters (&lt;, &gt;, &amp;, &quot;, etc.), encoding should convert them to HTML entities.
+**Validates: Requirements 12.1**
 
-**Property 39: CSV/JSON mode invariant**
-*For any* input data, switching between CSV-to-JSON and JSON-to-CSV modes should preserve the input content unchanged.
-**Validates: Requirements 12.4**
+**Property 37: HTML entity decoding**
+*For any* text with HTML entities, decoding should convert them to readable characters.
+**Validates: Requirements 12.2**
 
-### Image Format Converter Properties
+**Property 38: HTML entity round-trip**
+*For any* text with special HTML characters, encoding and then decoding should produce the original text.
+**Validates: Requirements 12.3**
 
-**Property 40: Image preview display**
-*For any* uploaded image file, the converter should display a preview of the image.
-**Validates: Requirements 13.1**
+### AES/DES Encryption Properties
 
-**Property 41: Image format conversion**
-*For any* image and target format, the converter should produce a valid image file in the specified format (PNG, JPEG, WebP, or BMP).
-**Validates: Requirements 13.2**
+**Property 39: AES encryption round-trip**
+*For any* plaintext and encryption key, encrypting with AES and then decrypting with the same key should produce the original plaintext.
+**Validates: Requirements 13.1, 13.2**
 
-**Property 42: Client-side image processing**
-*For any* image conversion operation, no network requests should be made to external servers.
+**Property 40: AES output format**
+*For any* encrypted data, the output should be in Base64 or hexadecimal format.
+**Validates: Requirements 13.3**
+
+**Property 41: AES incorrect key error**
+*For any* ciphertext and incorrect decryption key, attempting to decrypt should result in an error message.
+**Validates: Requirements 13.4**
+
+**Property 42: Algorithm selection**
+*For any* encryption operation, the tool should support AES-128, AES-192, AES-256, and DES algorithms.
 **Validates: Requirements 13.5**
 
-### Markdown Editor Properties
+### RSA Encryption Properties
 
-**Property 43: Markdown live preview**
-*For any* Markdown input, the preview should display the rendered HTML representation.
-**Validates: Requirements 14.1**
+**Property 43: RSA key pair generation**
+*For any* requested key size (1024, 2048, 4096 bits), the tool should generate a valid RSA public/private key pair.
+**Validates: Requirements 14.1, 14.4**
 
-**Property 44: Markdown element rendering**
-*For any* Markdown containing headings, lists, code blocks, links, or images, the preview should render each element type correctly.
-**Validates: Requirements 14.2**
+**Property 44: RSA encryption round-trip**
+*For any* plaintext, RSA public key, and corresponding private key, encrypting with the public key and decrypting with the private key should produce the original plaintext.
+**Validates: Requirements 14.2, 14.3**
 
-**Property 45: Markdown mode invariant**
-*For any* Markdown content, switching between edit and preview modes should preserve the content unchanged.
-**Validates: Requirements 14.3**
-
-**Property 46: Code block syntax highlighting**
-*For any* Markdown code block with a specified language, the preview should apply syntax highlighting.
+**Property 45: RSA key export format**
+*For any* generated key pair, exporting should provide keys in PEM format.
 **Validates: Requirements 14.5**
 
-### Cron Calculator Properties
+### MD5 Hash Generator Properties
 
-**Property 47: Cron execution time calculation**
-*For any* valid cron expression, the calculator should display the next scheduled execution times.
-**Validates: Requirements 15.1**
+**Property 46: MD5 hash generation**
+*For any* text input, the tool should compute and display the MD5 hash in hexadecimal format.
+**Validates: Requirements 15.1, 15.5**
 
-**Property 48: Cron expression generation**
-*For any* visual builder configuration, the generated cron expression should be valid and parseable.
+**Property 47: MD5 real-time updates**
+*For any* input change, the MD5 hash should recalculate in real-time.
 **Validates: Requirements 15.2**
 
-**Property 49: Cron validation error handling**
-*For any* invalid cron expression, the calculator should display an error message with details.
-**Validates: Requirements 15.3**
-
-**Property 50: Cron execution count**
-*For any* valid cron expression, the calculator should display at least 5 next scheduled execution times.
+**Property 48: MD5 empty string**
+*For any* empty input, the tool should display the MD5 hash of an empty string.
 **Validates: Requirements 15.4**
 
-### Regex Generator Properties
+### Regular Expression Tester Properties
 
-**Property 51: Regex pattern validation**
+**Property 49: Regex pattern validation**
 *For any* regex pattern input, the tool should validate the syntax and report whether it's valid or invalid.
 **Validates: Requirements 16.1**
 
-**Property 52: Regex match highlighting**
+**Property 50: Regex match highlighting**
 *For any* valid regex pattern and test text, all matches should be highlighted in the text.
 **Validates: Requirements 16.2**
 
-**Property 53: Regex group display**
+**Property 51: Regex group display**
 *For any* regex with capture groups and matching text, the tool should display both full matches and individual capture groups.
 **Validates: Requirements 16.3**
 
-**Property 54: Regex flag reactivity**
+**Property 52: Regex flag reactivity**
 *For any* regex pattern and test text, changing flags should trigger re-evaluation and update the matches.
 **Validates: Requirements 16.4**
 
-**Property 55: Regex error handling**
+**Property 53: Regex error handling**
 *For any* invalid regex pattern, the tool should display a detailed error message.
 **Validates: Requirements 16.5**
 
-### Code Playground Properties
+### Color Converter Properties
 
-**Property 56: Code syntax highlighting**
-*For any* code input and selected language, the editor should apply syntax highlighting appropriate for that language.
+**Property 54: Color format conversion**
+*For any* valid color in any format, the tool should convert it to RGB, HEX, HSL, HWB, and OKLCH formats.
 **Validates: Requirements 17.1**
 
-**Property 57: Code execution**
-*For any* valid code, clicking run should execute it and display the output.
+**Property 55: Color picker real-time updates**
+*For any* color picker adjustment, all format representations should update in real-time.
 **Validates: Requirements 17.2**
 
-**Property 58: Code error display**
-*For any* code that produces errors, the playground should display error messages with line numbers.
+**Property 56: Color format copy**
+*For any* displayed color format, clicking on it should copy that format value to the clipboard.
+**Validates: Requirements 17.3**
+
+**Property 57: Color validation error**
+*For any* invalid color input, the tool should display a clear error message.
 **Validates: Requirements 17.4**
-
-**Property 59: Code persistence**
-*For any* code saved by the user, it should be stored in browser localStorage and retrievable on next visit.
-**Validates: Requirements 17.5**
-
-### Timestamp Converter Properties
-
-**Property 60: Timestamp round-trip**
-*For any* Unix timestamp, converting to date and back to timestamp should produce the original value (within timezone precision).
-**Validates: Requirements 18.1, 18.2**
-
-**Property 61: Timestamp multi-format display**
-*For any* timestamp or date input, the converter should display the result in multiple date formats and timezones.
-**Validates: Requirements 18.3**
-
-### Hash Generator Properties
-
-**Property 62: Multi-algorithm hash generation**
-*For any* text input, the hash generator should compute and display MD5, SHA-1, SHA-256, and SHA-512 hashes simultaneously.
-**Validates: Requirements 19.1, 19.2**
-
-**Property 63: Hash reactivity**
-*For any* input text change, all four hash values should recalculate and update.
-**Validates: Requirements 19.3**
-
-### URL Encoder Properties
-
-**Property 64: URL encoding round-trip**
-*For any* text string, URL encoding and then decoding should produce the original text.
-**Validates: Requirements 20.1, 20.2, 20.3**
-
-**Property 65: URL encoder mode switching**
-*For any* previous results, switching between encode and decode modes should clear the output area.
-**Validates: Requirements 20.4**
-
-### Lorem Generator Properties
-
-**Property 66: Lorem paragraph count**
-*For any* specified paragraph count N, the generator should produce exactly N paragraphs.
-**Validates: Requirements 21.1**
-
-**Property 67: Lorem word count**
-*For any* specified word count N, the generator should produce text with approximately N words (within ±10% tolerance).
-**Validates: Requirements 21.2**
-
-**Property 68: Lorem sentence count**
-*For any* specified sentence count N, the generator should produce exactly N sentences.
-**Validates: Requirements 21.3**
 
 ### QR Code Generator Properties
 
-**Property 69: QR code generation**
+**Property 58: QR code generation**
 *For any* text or URL input, the generator should produce a valid QR code image that can be scanned.
-**Validates: Requirements 22.1**
+**Validates: Requirements 18.1**
 
-**Property 70: QR code sizing**
+**Property 59: QR code sizing**
 *For any* specified dimensions, the generated QR code should match those dimensions.
-**Validates: Requirements 22.3**
+**Validates: Requirements 18.3**
 
-**Property 71: QR code download format**
+**Property 60: QR code download format**
 *For any* generated QR code, the download should provide a valid PNG image file.
-**Validates: Requirements 22.4**
+**Validates: Requirements 18.4**
 
-### Color Palette Generator Properties
+### UUID Generator Properties
 
-**Property 72: Palette generation**
-*For any* base color, the generator should produce a color palette with multiple colors.
-**Validates: Requirements 23.1**
+**Property 61: UUID v4 format validation**
+*For any* generated UUID, it should match the UUID v4 format specification (8-4-4-4-12 hexadecimal pattern with version and variant bits).
+**Validates: Requirements 19.1**
 
-**Property 73: Palette type generation**
-*For any* base color and palette type (complementary, analogous, triadic, monochromatic), the generator should produce colors following that color theory rule.
-**Validates: Requirements 23.2**
+**Property 62: Bulk UUID generation count**
+*For any* specified quantity N, bulk generation should produce exactly N UUIDs.
+**Validates: Requirements 19.4, 19.5**
 
-**Property 74: Color format display**
-*For any* generated color in the palette, it should be displayed with hex, RGB, and HSL values.
-**Validates: Requirements 23.3**
+**Property 63: UUID uniqueness**
+*For any* bulk generation request, all generated UUIDs should be unique (no duplicates).
+**Validates: Requirements 19.5**
 
-**Property 75: Palette reactivity**
-*For any* base color change, the entire palette should regenerate with new colors.
-**Validates: Requirements 23.5**
+### SQL Utilities Properties
+
+**Property 64: MyBatis parameter substitution**
+*For any* MyBatis SQL with parameters, the tool should parse and display the actual SQL with parameter values substituted.
+**Validates: Requirements 20.1**
+
+**Property 65: JSON to SQL conversion**
+*For any* JSON array of objects, the tool should generate valid SQL INSERT statements.
+**Validates: Requirements 20.2**
+
+**Property 66: CSV to SQL conversion**
+*For any* CSV data with headers, the tool should generate valid SQL INSERT statements.
+**Validates: Requirements 20.3**
+
+**Property 67: SQL to entity generation**
+*For any* SQL CREATE TABLE or SELECT statement, the tool should generate corresponding Java or TypeScript entity classes with proper type annotations.
+**Validates: Requirements 20.4, 20.5**
 
 ### Privacy Properties
 
-**Property 76: Client-side processing**
+**Property 68: Client-side processing**
 *For any* tool operation, no network requests should be made to external servers (excluding initial page load and CDN resources).
-**Validates: Requirements 24.1, 24.2**
+**Validates: Requirements 21.1, 21.2**
 
-**Property 77: Offline functionality**
+**Property 69: Offline functionality**
 *For any* tool, after initial page load, the tool should function without network connectivity.
-**Validates: Requirements 24.5**
+**Validates: Requirements 21.5**
 
 ### Accessibility Properties
 
-**Property 78: Responsive layout**
+**Property 70: Responsive layout**
 *For any* tool page and viewport size (mobile, tablet, desktop), the layout should be readable and usable.
-**Validates: Requirements 25.1, 25.4**
+**Validates: Requirements 22.1, 22.4**
 
-**Property 79: Keyboard accessibility**
+**Property 71: Keyboard accessibility**
 *For any* interactive element (buttons, inputs, links), it should be accessible via keyboard navigation.
-**Validates: Requirements 25.2**
+**Validates: Requirements 22.2**
 
-**Property 80: ARIA labels**
+**Property 72: ARIA labels**
 *For any* interactive element, appropriate ARIA labels and semantic HTML should be present.
-**Validates: Requirements 25.3**
+**Validates: Requirements 22.3**
 
 ## Error Handling
 
@@ -841,10 +1022,57 @@ describe('Base64 Converter', () => {
 2. Create shared UI components
 3. Implement home page with tool cards
 4. Set up testing infrastructure
+5. Implement sidebar navigation from fileRoutes
 
-### Phase 2: Text & Data Tools
+### Phase 2: JSON Tools Suite
 
-1. JSON Viewer with syntax highlighting
+1. JSON Formatter (enhance existing - format, minify, sort)
+2. JSON Import/Export (CSV, YAML, query params)
+3. JSON Key Style Converter
+4. JSON Schema Validator and Generator
+5. JSON Path and Repair
+
+### Phase 3: Text & Comparison Tools
+
+1. Text Compare tool (side-by-side and unified diff)
+
+### Phase 4: Encoding/Decoding Tools
+
+1. Base64 Encoder/Decoder (enhance existing)
+2. Hex Encoder/Decoder
+3. URL Encoder/Decoder
+4. Unicode Encoder/Decoder
+5. HTML Entity Encoder/Decoder
+
+### Phase 5: Cryptography Tools
+
+1. AES/DES Encryption/Decryption
+2. RSA Encryption/Decryption
+3. MD5 Hash Generator (with SHA-1, SHA-256, SHA-512)
+
+### Phase 6: Developer Utilities
+
+1. Regular Expression Tester
+2. Color Converter and Picker
+3. QR Code Generator
+4. UUID Generator (enhance existing)
+5. SQL Utilities (MyBatis parser, converters, entity generator)
+
+### Phase 7: Privacy & Accessibility
+
+1. Verify client-side processing (no network requests)
+2. Implement offline functionality
+3. Add keyboard navigation
+4. Add ARIA labels and semantic HTML
+5. Test responsive design across devices
+
+### Phase 8: Polish & Optimization
+
+1. Shared clipboard utility
+2. Consistent error handling
+3. Loading states for heavy operations
+4. PWA service worker
+5. Bundle optimizationntax highlighting
 2. JSON to TypeScript converter
 3. Text Compare tool
 4. Case Converter
@@ -894,50 +1122,44 @@ describe('Base64 Converter', () => {
 **JSON Processing:**
 - Native `JSON.parse()` and `JSON.stringify()` for basic operations
 - Custom formatter for syntax highlighting
+- `ajv` for JSON Schema validation
+- `jsonpath-plus` for JSONPath queries
+- `js-yaml` for YAML conversion
 
 **Text Comparison:**
 - `diff` library for generating diffs
 - Custom renderer for side-by-side and unified views
 
-**Markdown:**
-- `marked` for Markdown parsing
-- `highlight.js` for code block syntax highlighting
+**Encoding/Decoding:**
+- Native `btoa`/`atob` for Base64 (with Buffer fallback for Node.js compatibility)
+- Native `encodeURIComponent`/`decodeURIComponent` for URL encoding
+- Custom implementations for Hex, Unicode escape sequences, and HTML entities
+
+**Cryptography:**
+- Native Web Crypto API for AES, RSA, and SHA hashes
+- `crypto-js` for MD5 and DES (not in Web Crypto API)
+- PEM format handling for RSA key export
 
 **Regex:**
 - Native JavaScript RegExp
-- Custom match highlighter
-
-**Code Execution:**
-- `eval()` for JavaScript (sandboxed)
-- `typescript` compiler API for TypeScript
-- iframe sandbox for HTML/CSS
-
-**Cryptography:**
-- Native Web Crypto API for SHA hashes
-- `crypto-js` for MD5 (not in Web Crypto)
-
-**QR Codes:**
-- `qrcode` library for generation
+- Custom match highlighter with capture group extraction
 
 **Color Theory:**
-- `tinycolor2` for color manipulation and palette generation
+- `tinycolor2` for color manipulation and format conversion
 
-**Image Processing:**
-- Native Canvas API for format conversion (PNG, JPEG, WebP, BMP)
-- SVG support for vector image conversion and optimization
+**QR Codes:**
+- `qrcode` library for generation with error correction
 
-**Cron:**
-- `cron-parser` for parsing and calculating execution times
-
-**JWT:**
-- Custom decoder (JWT is just Base64 + JSON)
+**UUID:**
+- `uuid` library for v4 generation
+- Custom validator for UUID format
 
 **CSV:**
-- `papaparse` for robust CSV parsing
+- `papaparse` for robust CSV parsing and generation
 
-**Token Counting:**
-- `gpt-tokenizer` for OpenAI models
-- Custom tokenizers for other models
+**SQL:**
+- Custom parser for MyBatis parameter substitution
+- Custom code generator for entity classes
 
 ### Why These Choices
 

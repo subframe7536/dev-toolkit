@@ -14,6 +14,7 @@ export default createRoute({
     description: 'Encode and decode Base64 strings',
     category: 'Encoding',
     icon: 'lucide:binary',
+    tags: ['base64', 'encode', 'decode', 'binary'],
   },
   component: Base64Encoder,
 })
