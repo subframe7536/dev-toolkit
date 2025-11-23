@@ -78,7 +78,6 @@ let categories: CategoryGroup[] | undefined
 export function getCategories() {
   if (!categories) {
     const toolRoutes = flattenRoutes(fileRoutes)
-    console.log(fileRoutes, toolRoutes)
     categories = groupToolsByCategory(toolRoutes)
     count = toolRoutes.length
   }

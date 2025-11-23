@@ -1,4 +1,4 @@
-import type { ConversionError, ConversionResult } from '#/utils/json/converter'
+import type { ConversionResult } from '#/utils/json/converter'
 
 import { Button } from '#/components/ui/button'
 import {
@@ -9,15 +9,11 @@ import {
   ComboboxItem,
   ComboboxTrigger,
 } from '#/components/ui/combobox'
-import Icon from '#/components/ui/icon'
 import {
   TextField,
   TextFieldLabel,
   TextFieldTextArea,
 } from '#/components/ui/text-field'
-import { createRoute } from 'solid-file-router'
-import { createSignal, Show } from 'solid-js'
-
 import {
   csvToJSON,
   detectFormat,
@@ -26,7 +22,10 @@ import {
   jsonToYAML,
   queryParamsToJSON,
   yamlToJSON,
-} from '../../utils/json/converter'
+} from '#/utils/json/converter'
+import { createRoute } from 'solid-file-router'
+import { createSignal } from 'solid-js'
+import { toast } from 'solid-sonner'
 
 export default createRoute({
   info: {
@@ -49,8 +48,6 @@ function JSONConverter() {
   const [input, setInput] = createSignal('')
   const [output, setOutput] = createSignal('')
   const [mode, setMode] = createSignal<ConversionMode>('json-to-csv')
-  const [error, setError] = createSignal<ConversionError | null>(null)
-  const [successMessage, setSuccessMessage] = createSignal<string | null>(null)
 
   const conversionModes = [
     { value: 'json-to-csv', label: 'JSON → CSV' },
@@ -62,11 +59,8 @@ function JSONConverter() {
   ] as const
 
   const handleConvert = () => {
-    setError(null)
-    setSuccessMessage(null)
-
     if (!input().trim()) {
-      setError({ message: 'Please provide input to convert' })
+      toast.error('Please provide input to convert')
       return
     }
 
@@ -97,10 +91,12 @@ function JSONConverter() {
 
     if (result.success && result.output) {
       setOutput(result.output)
-      setSuccessMessage('Conversion completed successfully!')
-      setTimeout(() => setSuccessMessage(null), 2000)
+      toast.success('Conversion completed successfully')
     } else {
-      setError(result.error!)
+      const error = result.error!
+      toast.error('Conversion failed', {
+        description: error.details ? `${error.message}: ${error.details}` : error.message,
+      })
       setOutput('')
     }
   }
@@ -114,7 +110,6 @@ function JSONConverter() {
 
     switch (detected) {
       case 'json':
-        // Default to JSON to CSV for JSON input
         setMode('json-to-csv')
         break
       case 'csv':
@@ -127,19 +122,18 @@ function JSONConverter() {
         setMode('query-to-json')
         break
       default:
-        setError({ message: 'Could not detect input format. Please select conversion mode manually.' })
+        toast.error('Could not detect input format', {
+          description: 'Please select conversion mode manually',
+        })
         return
     }
 
-    setSuccessMessage(`Detected ${detected.toUpperCase()} format`)
-    setTimeout(() => setSuccessMessage(null), 2000)
+    toast.success(`Detected ${detected.toUpperCase()} format`)
   }
 
   const handleClear = () => {
     setInput('')
     setOutput('')
-    setError(null)
-    setSuccessMessage(null)
   }
 
   const handleCopy = async () => {
@@ -149,10 +143,9 @@ function JSONConverter() {
 
     try {
       await navigator.clipboard.writeText(output())
-      setSuccessMessage('Copied to clipboard!')
-      setTimeout(() => setSuccessMessage(null), 2000)
+      toast.success('Copied to clipboard')
     } catch {
-      setError({ message: 'Failed to copy to clipboard' })
+      toast.error('Failed to copy to clipboard')
     }
   }
 
@@ -192,8 +185,7 @@ function JSONConverter() {
     document.body.removeChild(a)
     URL.revokeObjectURL(url)
 
-    setSuccessMessage('Downloaded successfully!')
-    setTimeout(() => setSuccessMessage(null), 2000)
+    toast.success('Downloaded successfully')
   }
 
   const getInputPlaceholder = () => {
@@ -231,46 +223,7 @@ function JSONConverter() {
   }
 
   return (
-    <div class="space-y-6">
-      <div>
-        <h1 class="text-3xl text-foreground font-bold">JSON Converter</h1>
-        <p class="text-muted-foreground mt-2">
-          Convert JSON to/from CSV, YAML, and query parameters
-        </p>
-      </div>
-
-      <Show when={error()}>
-        <div class="p-4 border border-red-500 rounded-md bg-red-50 dark:bg-red-950/20" role="alert">
-          <div class="flex gap-2 items-start">
-            <Icon name="lucide:alert-circle" class="text-red-500 mt-0.5 flex-shrink-0 h-5 w-5" />
-            <div class="flex-1">
-              <div class="text-sm text-red-800 font-medium dark:text-red-200">
-                Conversion Error
-              </div>
-              <div class="text-sm text-red-700 mt-1 dark:text-red-300">
-                {error()?.message}
-                <Show when={error()?.details}>
-                  <div class="text-xs mt-1">
-                    {error()?.details}
-                  </div>
-                </Show>
-              </div>
-            </div>
-          </div>
-        </div>
-      </Show>
-
-      <Show when={successMessage()}>
-        <div class="p-4 border border-green-500 rounded-md bg-green-50 dark:bg-green-950/20" role="status">
-          <div class="flex gap-2 items-center">
-            <Icon name="lucide:check-circle" class="text-green-500 h-5 w-5" />
-            <div class="text-sm text-green-800 font-medium dark:text-green-200">
-              {successMessage()}
-            </div>
-          </div>
-        </div>
-      </Show>
-
+    <>
       <div class="space-y-4">
         <div class="flex flex-wrap gap-4 items-center">
           <TextField class="w-48">
@@ -363,6 +316,6 @@ function JSONConverter() {
           </div>
         </div>
       </div>
-    </div>
+    </>
   )
 }

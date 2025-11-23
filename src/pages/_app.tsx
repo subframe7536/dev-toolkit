@@ -1,4 +1,4 @@
-import type { ParentProps } from 'solid-js'
+import type { RouteSectionProps } from '@solidjs/router'
 
 import { Button } from '#/components/ui/button'
 import Icon from '#/components/ui/icon'
@@ -42,9 +42,10 @@ function Catch(props: { error: Error, reset: () => void }) {
   )
 }
 
-function App(props: ParentProps) {
+function App(props: RouteSectionProps) {
   const [mode, setMode] = useColorMode()
   const { categories, count } = getCategories()
+
   return (
     <SidebarProvider>
       <Sidebar variant="floating">
@@ -70,7 +71,12 @@ function App(props: ParentProps) {
                     <For each={category.tools}>
                       {tool => (
                         <SidebarMenuItem>
-                          <SidebarMenuButton as={A} href={tool.path} tooltip={tool.info.title}>
+                          <SidebarMenuButton
+                            as={A}
+                            href={tool.path}
+                            tooltip={tool.info.title}
+                            isActive={props.location.pathname.endsWith(tool.path)}
+                          >
                             <Show when={tool.info.icon}>
                               <Icon name={tool.info.icon as `lucide:${string}`} />
                             </Show>
@@ -101,11 +107,11 @@ function App(props: ParentProps) {
       </Sidebar>
       <SidebarInset>
         <SidebarTrigger class="left-2 top-2 absolute" />
-        <div class="px-24 pt-24">
+        <div class="p-12 md:p-24">
           {props.children}
         </div>
+        <Toaster />
       </SidebarInset>
-      <Toaster />
     </SidebarProvider>
   )
 }

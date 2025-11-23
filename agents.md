@@ -22,12 +22,15 @@ src/
     _app.tsx          # App root and layout
     index.tsx         # Home page
     data.tsx          # Data utilities page
-    (encode)/         # Encoding utilities
-      base64.tsx
-    (json)/           # JSON utilities
-      formatter.tsx
-    (utils)/          # General utilities
-      uuid.tsx
+    (tools)/          # Tools section (route group)
+      _layout.tsx     # Layout for all tools
+      (encode)/       # Encoding utilities
+        base64.tsx
+      (generation)/   # Generation utilities
+        uuid.tsx
+      (json)/         # JSON utilities
+        formatter.tsx
+        converter.tsx
   components/         # Reusable components
     ui/               # UI component library
     card.tsx

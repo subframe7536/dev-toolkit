@@ -2,7 +2,7 @@ import type { PresetWind4Theme } from 'unocss'
 
 import { presetIcons, presetWind4, transformerVariantGroup } from 'unocss'
 import { presetAnimations } from 'unocss-preset-animations'
-import { presetClassCompletion } from 'unocss-preset-completion'
+import { presetFunctionCompletion, presetObjectCompletion } from 'unocss-preset-completion'
 import { defineConfig } from 'unocss/vite'
 
 import { presetThemeTW4 } from './unocss-preset-theme'
@@ -17,9 +17,8 @@ export default defineConfig<PresetWind4Theme>({
     presetIcons({
       scale: 1.2,
     }),
-    presetClassCompletion({
-      autocompleteFunctions: ['cls', 'clsv'],
-    }),
+    presetFunctionCompletion(),
+    presetObjectCompletion(),
     presetAnimations(),
     presetThemeTW4(),
   ],

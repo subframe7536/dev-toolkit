@@ -496,12 +496,10 @@ function SidebarMenuButton<T extends ValidComponent = 'button'>(rawProps: Polymo
   )
 
   return (
-    <Show when={local.tooltip} fallback={button}>
+    <Show when={local.tooltip && state() === 'collapsed' && !isMobile()} fallback={button}>
       <Tooltip placement="right">
         <TooltipTrigger class="w-full">{button}</TooltipTrigger>
-        <TooltipContent hidden={state() !== 'collapsed' || isMobile()}>
-          {local.tooltip}
-        </TooltipContent>
+        <TooltipContent>{local.tooltip}</TooltipContent>
       </Tooltip>
     </Show>
   )
