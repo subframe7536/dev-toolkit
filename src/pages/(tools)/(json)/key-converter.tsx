@@ -16,6 +16,7 @@ import {
   TextFieldLabel,
   TextFieldTextArea,
 } from '#/components/ui/text-field'
+import { copyToClipboard, downloadFile } from '#/utils/download'
 import { convertKeys } from '#/utils/json/key-converter'
 import { createRoute } from 'solid-file-router'
 import { createSignal } from 'solid-js'
@@ -32,20 +33,20 @@ export default createRoute({
   component: JSONKeyConverter,
 })
 
+const caseOptions: Array<{ value: CaseStyle, label: string, example: string }> = [
+  { value: 'camelCase', label: 'camelCase', example: 'firstName' },
+  { value: 'snake_case', label: 'snake_case', example: 'first_name' },
+  { value: 'kebab-case', label: 'kebab-case', example: 'first-name' },
+  { value: 'PascalCase', label: 'PascalCase', example: 'FirstName' },
+  { value: 'CONSTANT_CASE', label: 'CONSTANT_CASE', example: 'FIRST_NAME' },
+  { value: 'lowercase', label: 'lowercase', example: 'firstname' },
+  { value: 'UPPERCASE', label: 'UPPERCASE', example: 'FIRSTNAME' },
+]
+
 function JSONKeyConverter() {
   const [input, setInput] = createSignal('')
   const [output, setOutput] = createSignal('')
   const [targetCase, setTargetCase] = createSignal<CaseStyle>('camelCase')
-
-  const caseOptions: Array<{ value: CaseStyle, label: string, example: string }> = [
-    { value: 'camelCase', label: 'camelCase', example: 'firstName' },
-    { value: 'snake_case', label: 'snake_case', example: 'first_name' },
-    { value: 'kebab-case', label: 'kebab-case', example: 'first-name' },
-    { value: 'PascalCase', label: 'PascalCase', example: 'FirstName' },
-    { value: 'CONSTANT_CASE', label: 'CONSTANT_CASE', example: 'FIRST_NAME' },
-    { value: 'lowercase', label: 'lowercase', example: 'firstname' },
-    { value: 'UPPERCASE', label: 'UPPERCASE', example: 'FIRSTNAME' },
-  ]
 
   const handleConvert = () => {
     const result = convertKeys(input(), targetCase())
@@ -71,31 +72,18 @@ function JSONKeyConverter() {
     if (!output()) {
       return
     }
-
-    try {
-      await navigator.clipboard.writeText(output())
-      toast.success('Copied to clipboard')
-    } catch {
-      toast.error('Failed to copy to clipboard')
-    }
+    await copyToClipboard(output())
   }
 
   const handleDownload = () => {
     if (!output()) {
       return
     }
-
-    const blob = new Blob([output()], { type: 'application/json' })
-    const url = URL.createObjectURL(blob)
-    const a = document.createElement('a')
-    a.href = url
-    a.download = `converted-${targetCase()}.json`
-    document.body.appendChild(a)
-    a.click()
-    document.body.removeChild(a)
-    URL.revokeObjectURL(url)
-
-    toast.success('Downloaded successfully')
+    downloadFile({
+      content: output(),
+      filename: `converted-${targetCase()}.json`,
+      mimeType: 'application/json',
+    })
   }
 
   return (

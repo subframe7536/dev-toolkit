@@ -14,6 +14,7 @@ import {
   TextFieldLabel,
   TextFieldTextArea,
 } from '#/components/ui/text-field'
+import { copyToClipboard, downloadFile } from '#/utils/download'
 import {
   csvToJSON,
   detectFormat,
@@ -141,13 +142,7 @@ function JSONConverter() {
     if (!output()) {
       return
     }
-
-    try {
-      await navigator.clipboard.writeText(output())
-      toast.success('Copied to clipboard')
-    } catch {
-      toast.error('Failed to copy to clipboard')
-    }
+    await copyToClipboard(output())
   }
 
   const handleDownload = () => {
@@ -176,17 +171,11 @@ function JSONConverter() {
     const extension = modeToExtension[mode()]
     const mimeType = modeToMimeType[mode()]
 
-    const blob = new Blob([output()], { type: mimeType })
-    const url = URL.createObjectURL(blob)
-    const a = document.createElement('a')
-    a.href = url
-    a.download = `converted.${extension}`
-    document.body.appendChild(a)
-    a.click()
-    document.body.removeChild(a)
-    URL.revokeObjectURL(url)
-
-    toast.success('Downloaded successfully')
+    downloadFile({
+      content: output(),
+      filename: `converted.${extension}`,
+      mimeType,
+    })
   }
 
   const getInputPlaceholder = () => {

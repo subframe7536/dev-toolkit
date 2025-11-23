@@ -4,6 +4,7 @@ import {
   TextFieldLabel,
   TextFieldTextArea,
 } from '#/components/ui/text-field'
+import { copyToClipboard } from '#/utils/download'
 import { createRoute } from 'solid-file-router'
 import { createSignal } from 'solid-js'
 import { toast } from 'solid-sonner'
@@ -50,16 +51,11 @@ function Base64Encoder() {
     setOutput('')
   }
 
-  const copyToClipboard = async () => {
+  const handleCopy = async () => {
     if (!output()) {
       return
     }
-    try {
-      await navigator.clipboard.writeText(output())
-      toast.success('Copied to clipboard')
-    } catch {
-      toast.error('Failed to copy to clipboard')
-    }
+    await copyToClipboard(output())
   }
 
   return (
@@ -98,7 +94,7 @@ function Base64Encoder() {
           />
         </TextField>
         <div class="flex gap-2">
-          <Button variant="secondary" onClick={copyToClipboard} disabled={!output()}>
+          <Button variant="secondary" onClick={handleCopy} disabled={!output()}>
             Copy
           </Button>
         </div>

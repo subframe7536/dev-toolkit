@@ -4,6 +4,7 @@ import {
   TextFieldInput,
   TextFieldLabel,
 } from '#/components/ui/text-field'
+import { copyToClipboard } from '#/utils/download'
 import { createRoute } from 'solid-file-router'
 import { createSignal, For, Show } from 'solid-js'
 import { toast } from 'solid-sonner'
@@ -30,22 +31,12 @@ function UUIDGenerator() {
     toast.success(`Generated ${count()} UUID${count() > 1 ? 's' : ''}`)
   }
 
-  const copyToClipboard = async (text: string) => {
-    try {
-      await navigator.clipboard.writeText(text)
-      toast.success('Copied to clipboard')
-    } catch {
-      toast.error('Failed to copy to clipboard')
-    }
+  const handleCopy = async (text: string) => {
+    await copyToClipboard(text)
   }
 
   const copyAll = async () => {
-    try {
-      await navigator.clipboard.writeText(uuids().join('\n'))
-      toast.success(`Copied ${uuids().length} UUIDs to clipboard`)
-    } catch {
-      toast.error('Failed to copy to clipboard')
-    }
+    await copyToClipboard(uuids().join('\n'))
   }
 
   return (
@@ -86,7 +77,7 @@ function UUIDGenerator() {
                   <Button
                     variant="ghost"
                     size="sm"
-                    onClick={() => copyToClipboard(uuid)}
+                    onClick={() => handleCopy(uuid)}
                   >
                     Copy
                   </Button>

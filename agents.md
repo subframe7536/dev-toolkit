@@ -2,7 +2,53 @@
 
 ## Project Overview
 
-Dev Toolkit is a web-based developer toolset providing various utilities for common development tasks. It's built with SolidJS and uses a file-based routing system via `solid-file-router`.
+Dev Toolkit is a comprehensive web-based developer toolset providing 22+ essential utilities for common development tasks. It's built with SolidJS and uses a file-based routing system via `solid-file-router`. The project emphasizes privacy-first design with all processing happening client-side, enabling offline functionality after initial load.
+
+## Current Development Status (dev-tool-clone spec)
+
+The project is actively implementing a full suite of developer tools organized into categories:
+
+**Completed:**
+- ✅ App layout with automatic sidebar navigation from fileRoutes
+- ✅ Home page with automatic tool card generation from fileRoutes
+- ✅ JSON Formatter (format, minify, sort keys)
+- ✅ JSON Key Style Converter (camelCase, snake_case, kebab-case, PascalCase, CONSTANT_CASE)
+- ✅ Base64 Encoder/Decoder (basic implementation)
+- ✅ UUID Generator (basic implementation)
+
+**In Progress / Planned:**
+- JSON Import/Export (CSV, YAML, query params, Java Map format)
+- JSON Schema Validator and Generator
+- JSON Path and Repair
+- Text Compare tool
+- Additional encoding tools (Hex, URL, Unicode, HTML entities)
+- Cryptography tools (AES/DES, RSA, MD5/SHA hashes)
+- Regular Expression Tester
+- Color Converter and Picker
+- QR Code Generator
+- SQL Utilities (MyBatis parser, converters, entity generator)
+
+**Key Implementation Pattern:**
+Every tool page MUST define metadata in the route's `info` property. Both the homepage and sidebar automatically generate their content by reading `fileRoutes`:
+
+```typescript
+export default createRoute({
+  info: {
+    title: 'Tool Name',
+    description: 'Brief description',
+    category: 'Category Name', // JSON, Encoding, Crypto, Text, Color, SQL
+    icon: 'lucide:icon-name', // Optional
+  },
+  component: ToolComponent,
+})
+```
+
+**Architecture Principles:**
+- All computation logic separated into utility modules under `src/utils/`
+- Page components are thin wrappers managing UI state and user interactions
+- Client-side only processing - no server communication for privacy
+- Utility functions are pure and testable independently from UI
+- UI components in `src/components/ui/` do not require tests (Kobalte primitives)
 
 ## Tech Stack
 

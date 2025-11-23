@@ -6,6 +6,7 @@ import {
   TextFieldLabel,
   TextFieldTextArea,
 } from '#/components/ui/text-field'
+import { copyToClipboard, downloadFile } from '#/utils/download'
 import { formatJSON, minifyJSON, sortKeys } from '#/utils/json/formatter'
 import { createRoute } from 'solid-file-router'
 import { createSignal } from 'solid-js'
@@ -80,31 +81,18 @@ function JSONFormatter() {
     if (!output()) {
       return
     }
-
-    try {
-      await navigator.clipboard.writeText(output())
-      toast.success('Copied to clipboard')
-    } catch {
-      toast.error('Failed to copy to clipboard')
-    }
+    await copyToClipboard(output())
   }
 
   const handleDownload = () => {
     if (!output()) {
       return
     }
-
-    const blob = new Blob([output()], { type: 'application/json' })
-    const url = URL.createObjectURL(blob)
-    const a = document.createElement('a')
-    a.href = url
-    a.download = 'formatted.json'
-    document.body.appendChild(a)
-    a.click()
-    document.body.removeChild(a)
-    URL.revokeObjectURL(url)
-
-    toast.success('Downloaded successfully')
+    downloadFile({
+      content: output(),
+      filename: 'formatted.json',
+      mimeType: 'application/json',
+    })
   }
 
   return (
