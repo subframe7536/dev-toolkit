@@ -77,9 +77,7 @@ function App(props: RouteSectionProps) {
                             tooltip={tool.info.title}
                             isActive={props.location.pathname.endsWith(tool.path)}
                           >
-                            <Show when={tool.info.icon}>
-                              <Icon name={tool.info.icon as `lucide:${string}`} />
-                            </Show>
+                            <Icon name={tool.info.icon} />
                             <span>{tool.info.title}</span>
                           </SidebarMenuButton>
                         </SidebarMenuItem>

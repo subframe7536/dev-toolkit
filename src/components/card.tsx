@@ -33,7 +33,7 @@ export function Card(props: CardProps) {
           </p>
         </Show>
         <Show when={props.tags && props.tags.length > 0}>
-          <div class="flex gap-1.5 flex-wrap">
+          <div class="flex flex-wrap gap-1.5">
             <For each={props.tags}>
               {tag => (
                 <span class="text-xs text-muted-foreground px-1.5 py-0.5 border border-border/50 rounded bg-muted/20">

@@ -13,7 +13,16 @@ export default defineConfig({
     tsconfig(),
     unocss({ inspector: false }),
     solid(),
-    fileRouter() as any,
+    fileRouter({
+      infoDts: {
+        title: 'string',
+        description: 'string',
+        category: 'string',
+        // eslint-disable-next-line no-template-curly-in-string
+        icon: '`lucide:${string}`',
+        tags: 'string[]',
+      },
+    }) as any,
     pwa({
       registerType: 'autoUpdate',
       devOptions: {
