@@ -13,7 +13,15 @@ export default defineConfig({
     tsconfig(),
     unocss({ inspector: false }),
     solid(),
-    fileRouter() as any,
+    fileRouter({
+      infoDts: {
+        title: 'string',
+        description: 'string',
+        category: 'string',
+        icon: 'string',
+        tags: 'string[]',
+      },
+    }),
     pwa({
       registerType: 'autoUpdate',
       devOptions: {
