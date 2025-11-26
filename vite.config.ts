@@ -18,10 +18,11 @@ export default defineConfig({
         title: 'string',
         description: 'string',
         category: 'string',
-        icon: 'string',
+        // eslint-disable-next-line no-template-curly-in-string
+        icon: '`lucide:${string}`',
         tags: 'string[]',
       },
-    }),
+    }) as any,
     pwa({
       registerType: 'autoUpdate',
       devOptions: {

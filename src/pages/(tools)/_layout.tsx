@@ -1,3 +1,4 @@
+import type { FileRouteInfo } from 'solid-file-router'
 import type { ParentProps } from 'solid-js'
 
 import Icon from '#/components/ui/icon'
@@ -10,17 +11,9 @@ export default createRoute({
   component: ToolsLayout,
 })
 
-interface ToolInfo {
-  title?: string
-  description?: string
-  category?: string
-  icon?: string
-  tags?: string[]
-}
-
 function ToolsLayout(props: ParentProps) {
   const matches = useCurrentMatches()
-  const [currentTool, setCurrentTool] = createStore<ToolInfo>({})
+  const [currentTool, setCurrentTool] = createStore<FileRouteInfo>({} as any)
 
   // Extract route info from the current match
   createEffect(() => {
@@ -37,26 +30,22 @@ function ToolsLayout(props: ParentProps) {
       <Show when={currentTool.title}>
         <div class="space-y-2">
           <div class="flex gap-3 items-end">
-            <Show when={currentTool.icon}>
-              <div class="border border-border rounded-lg bg-muted/50 size-8">
-                <Icon
-                  name={currentTool.icon as `lucide:${string}`}
-                  class="text-foreground m-1.5"
-                />
-              </div>
-            </Show>
+            <div class="border border-border rounded-lg bg-muted/50 size-8">
+              <Icon
+                name={currentTool.icon}
+                class="text-foreground m-1.5"
+              />
+            </div>
             <h1 class="text-3xl text-foreground leading-none font-bold">{currentTool.title}</h1>
           </div>
           <p class="text-muted-foreground mt-2">
             {currentTool.description}
           </p>
           <div class="flex flex-wrap gap-2 items-center">
-            <Show when={currentTool.category}>
-              <span class="text-xs text-muted-foreground font-medium px-2 py-0.5 border border-border rounded-md bg-muted/30">
-                {currentTool.category}
-              </span>
-            </Show>
-            <Show when={currentTool.tags && currentTool.tags.length > 0}>
+            <span class="text-xs text-muted-foreground font-medium px-2 py-0.5 border border-border rounded-md bg-muted/30">
+              {currentTool.category}
+            </span>
+            <Show when={currentTool.tags.length > 0}>
               <For each={currentTool.tags}>
                 {tag => (
                   <span class="text-xs text-muted-foreground px-2 py-0.5 border border-border/50 rounded-md bg-muted/20">

@@ -18,7 +18,7 @@ declare module 'solid-file-router' {
     title: string
     description: string
     category: string
-    icon: string
+    icon: `lucide:${string}`
     tags: string[]
   }
 }

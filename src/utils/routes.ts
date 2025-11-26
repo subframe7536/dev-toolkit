@@ -1,16 +1,11 @@
 import type { RouteDefinition } from '@solidjs/router'
+import type { FileRouteInfo } from 'solid-file-router'
 
 import { fileRoutes } from 'virtual:routes'
 
 export interface ToolRoute {
   path: string
-  info: {
-    title: string
-    description: string
-    category: string
-    icon?: string
-    tags?: string[]
-  }
+  info: FileRouteInfo
 }
 
 export interface CategoryGroup {
