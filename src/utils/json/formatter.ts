@@ -3,6 +3,8 @@
  * Provides functions for formatting, minifying, and sorting JSON data
  */
 
+import { jsonrepair } from 'jsonrepair'
+
 export interface JSONError {
   message: string
   line?: number
@@ -160,5 +162,29 @@ export function isValidJSON(input: string): boolean {
     return true
   } catch {
     return false
+  }
+}
+
+/**
+ * Repair malformed JSON string using jsonrepair
+ * @param input - JSON string to repair
+ * @returns Repaired JSON string
+ * @throws JSONError if repair fails
+ */
+export function repairJSON(input: string): string {
+  try {
+    // First check if it's already valid
+    if (isValidJSON(input)) {
+      return input
+    }
+
+    // Attempt to repair
+    const repaired = jsonrepair(input)
+    
+    // Validate the repaired result
+    JSON.parse(repaired)
+    return repaired
+  } catch (error) {
+    throw parseJSONError(error, input)
   }
 }

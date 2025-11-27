@@ -23,6 +23,7 @@
         "cls-variant": "^0.2.1",
         "eslint": "^9.39.1",
         "eslint-plugin-solid": "^0.14.5",
+        "jsonrepair": "^3.13.1",
         "solid-file-router": "^0.1.5",
         "solid-sonner": "^0.2.8",
         "typescript": "~5.9.3",
@@ -971,6 +972,8 @@
     "jsonfile": ["jsonfile@6.1.0", "https://registry.npmmirror.com/jsonfile/-/jsonfile-6.1.0.tgz", { "dependencies": { "universalify": "^2.0.0" }, "optionalDependencies": { "graceful-fs": "^4.1.6" } }, "sha512-5dgndWOriYSm5cnYaJNhalLNDKOqFwyDB/rr1E9ZsGciGvKPs8R2xYGCacuf3z6K1YKDz182fd+fY3cn3pMqXQ=="],
 
     "jsonpointer": ["jsonpointer@5.0.1", "https://registry.npmmirror.com/jsonpointer/-/jsonpointer-5.0.1.tgz", {}, "sha512-p/nXbhSEcu3pZRdkW1OfJhpsVtW1gd4Wa1fnQc9YLiTfAjn0312eMKimbdIQzuZl9aa9xUGaRlP9T/CJE/ditQ=="],
+
+    "jsonrepair": ["jsonrepair@3.13.1", "https://registry.npmmirror.com/jsonrepair/-/jsonrepair-3.13.1.tgz", { "bin": { "jsonrepair": "bin/cli.js" } }, "sha512-WJeiE0jGfxYmtLwBTEk8+y/mYcaleyLXWaqp5bJu0/ZTSeG0KQq/wWQ8pmnkKenEdN6pdnn6QtcoSUkbqDHWNw=="],
 
     "kebab-case": ["kebab-case@1.0.2", "https://registry.npmmirror.com/kebab-case/-/kebab-case-1.0.2.tgz", {}, "sha512-7n6wXq4gNgBELfDCpzKc+mRrZFs7D+wgfF5WRFLNAr4DA/qtr9Js8uOAVAfHhuLMfAcQ0pRKqbpjx+TcJVdE1Q=="],
 

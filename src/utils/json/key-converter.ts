@@ -3,6 +3,8 @@
  * Provides functions for converting JSON key naming conventions
  */
 
+import { repairJSON } from './formatter'
+
 export type CaseStyle = 'camelCase' | 'snake_case' | 'kebab-case' | 'PascalCase' | 'CONSTANT_CASE' | 'lowercase' | 'UPPERCASE'
 
 export interface ConversionError {
@@ -20,11 +22,34 @@ export interface ConversionResult {
  * Convert JSON keys to specified case style
  * @param input - JSON string to convert
  * @param targetCase - Target case style
+ * @param repair - If true, attempt to repair JSON before parsing (default: false)
  * @returns ConversionResult with converted JSON or error
  */
-export function convertKeys(input: string, targetCase: CaseStyle): ConversionResult {
+export function convertKeys(input: string, targetCase: CaseStyle, repair: boolean = false): ConversionResult {
   try {
-    const parsed = JSON.parse(input)
+    let jsonToParse = input
+    
+    // Attempt repair if requested and input is invalid
+    if (repair) {
+      try {
+        JSON.parse(input)
+      } catch {
+        // Input is invalid, try to repair
+        try {
+          jsonToParse = repairJSON(input)
+        } catch (repairError) {
+          return {
+            success: false,
+            error: {
+              message: 'Invalid JSON and repair failed',
+              details: repairError instanceof Error ? repairError.message : 'Unknown repair error',
+            },
+          }
+        }
+      }
+    }
+    
+    const parsed = JSON.parse(jsonToParse)
     const converted = convertObjectKeys(parsed, targetCase)
     const output = JSON.stringify(converted, null, 2)
     return { success: true, output }
