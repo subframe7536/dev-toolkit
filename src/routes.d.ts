@@ -11,7 +11,6 @@ declare module 'solid-file-router' {
     '/converter': never
     '/data': never
     '/formatter': never
-    '/key-converter': never
     '/uuid': never
   }
   interface FileRouteInfo {

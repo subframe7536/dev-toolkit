@@ -5,7 +5,7 @@
 
 import { repairJSON } from './formatter'
 
-export type CaseStyle = 'camelCase' | 'snake_case' | 'kebab-case' | 'PascalCase' | 'CONSTANT_CASE' | 'lowercase' | 'UPPERCASE'
+export type CaseStyle = 'As is' | 'camelCase' | 'snake_case' | 'kebab-case' | 'PascalCase' | 'CONSTANT_CASE' | 'lowercase' | 'UPPERCASE'
 
 export interface ConversionError {
   message: string
@@ -28,7 +28,7 @@ export interface ConversionResult {
 export function convertKeys(input: string, targetCase: CaseStyle, repair: boolean = false): ConversionResult {
   try {
     let jsonToParse = input
-    
+
     // Attempt repair if requested and input is invalid
     if (repair) {
       try {
@@ -48,9 +48,9 @@ export function convertKeys(input: string, targetCase: CaseStyle, repair: boolea
         }
       }
     }
-    
+
     const parsed = JSON.parse(jsonToParse)
-    const converted = convertObjectKeys(parsed, targetCase)
+    const converted = targetCase !== 'As is' ? convertObjectKeys(parsed, targetCase) : parsed
     const output = JSON.stringify(converted, null, 2)
     return { success: true, output }
   } catch (error) {

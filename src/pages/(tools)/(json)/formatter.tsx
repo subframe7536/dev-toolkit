@@ -1,5 +1,5 @@
-import type { CaseStyle, ConversionError } from '#/utils/json/key-converter'
 import type { JSONError } from '#/utils/json/formatter'
+import type { CaseStyle, ConversionError } from '#/utils/json/key-converter'
 
 import { Button } from '#/components/ui/button'
 import {
@@ -41,21 +41,22 @@ export default createRoute({
   component: JSONFormatter,
 })
 
-const caseOptions: Array<{ value: CaseStyle, label: string, example: string }> = [
-  { value: 'camelCase', label: 'camelCase', example: 'firstName' },
-  { value: 'snake_case', label: 'snake_case', example: 'first_name' },
-  { value: 'kebab-case', label: 'kebab-case', example: 'first-name' },
-  { value: 'PascalCase', label: 'PascalCase', example: 'FirstName' },
-  { value: 'CONSTANT_CASE', label: 'CONSTANT_CASE', example: 'FIRST_NAME' },
-  { value: 'lowercase', label: 'lowercase', example: 'firstname' },
-  { value: 'UPPERCASE', label: 'UPPERCASE', example: 'FIRSTNAME' },
+const caseOptions: Array<{ value: CaseStyle, label: string }> = [
+  { value: 'As is', label: 'As is' },
+  { value: 'camelCase', label: 'camelCase' },
+  { value: 'snake_case', label: 'snake_case' },
+  { value: 'kebab-case', label: 'kebab-case' },
+  { value: 'PascalCase', label: 'PascalCase' },
+  { value: 'CONSTANT_CASE', label: 'CONSTANT_CASE' },
+  { value: 'lowercase', label: 'lowercase' },
+  { value: 'UPPERCASE', label: 'UPPERCASE' },
 ]
 
 function JSONFormatter() {
   const [input, setInput] = createSignal('')
   const [output, setOutput] = createSignal('')
   const [autoRepair, setAutoRepair] = createSignal(false)
-  const [targetCase, setTargetCase] = createSignal<CaseStyle>('camelCase')
+  const [targetCase, setTargetCase] = createSignal<CaseStyle>('As is')
 
   const tryRepairIfEnabled = (inputValue: string): string => {
     if (autoRepair()) {
@@ -67,7 +68,7 @@ function JSONFormatter() {
           const repaired = repairJSON(inputValue)
           toast.success('JSON repaired automatically')
           return repaired
-        } catch (repairError) {
+        } catch {
           // Repair failed, continue with original input
         }
       }
@@ -163,7 +164,7 @@ function JSONFormatter() {
 
   return (
     <div class="space-y-4">
-      <div class="flex flex-wrap items-center gap-4">
+      <div class="flex flex-wrap gap-4 items-center">
         <Switch checked={autoRepair()} onChange={setAutoRepair}>
           <SwitchLabel>Auto-repair JSON</SwitchLabel>
           <SwitchControl>
@@ -171,7 +172,7 @@ function JSONFormatter() {
           </SwitchControl>
         </Switch>
         <div class="w-fit space-y-2">
-          <label class="text-sm font-medium">Target Case Style</label>
+          <label class="text-sm font-medium">Key Case Style</label>
           <Combobox<CaseStyle>
             value={targetCase()}
             onChange={setTargetCase}
@@ -185,9 +186,6 @@ function JSONFormatter() {
                   <div class="flex flex-col">
                     <span class="font-medium">
                       {caseOptions.find(o => o.value === props.item.rawValue)?.label}
-                    </span>
-                    <span class="text-xs text-muted-foreground">
-                      Example: {caseOptions.find(o => o.value === props.item.rawValue)?.example}
                     </span>
                   </div>
                 </ComboboxItemLabel>
