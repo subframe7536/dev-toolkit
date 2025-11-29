@@ -8,16 +8,15 @@ declare module 'solid-file-router' {
   interface FileRoutePath {
     '/': never
     '/base64': never
-    '/color': never
-    '/converter': never
-    '/data': never
-    '/formatter': never
+    '/color-converter': never
     '/hex': never
     '/html': never
-    '/schema-generator': never
+    '/json-converter': never
+    '/json-formatter': never
+    '/json-schema-generator': never
     '/unicode': never
     '/url': never
-    '/uuid': never
+    '/uuid-generator': never
   }
   interface FileRouteInfo {
     title: string
