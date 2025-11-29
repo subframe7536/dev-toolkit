@@ -17,8 +17,8 @@ const DropdownMenu: Component<DropdownMenuPrimitive.DropdownMenuRootProps> = (pr
   return <DropdownMenuPrimitive.Root gutter={4} {...props} />
 }
 
-type DropdownMenuContentProps<T extends ValidComponent = 'div'>
-  = DropdownMenuPrimitive.DropdownMenuContentProps<T> & {
+type DropdownMenuContentProps<T extends ValidComponent = 'div'> =
+  DropdownMenuPrimitive.DropdownMenuContentProps<T> & {
     class?: string | undefined
   }
 
@@ -37,8 +37,8 @@ function DropdownMenuContent<T extends ValidComponent = 'div'>(props: Polymorphi
   )
 }
 
-type DropdownMenuItemProps<T extends ValidComponent = 'div'>
-  = DropdownMenuPrimitive.DropdownMenuItemProps<T> & {
+type DropdownMenuItemProps<T extends ValidComponent = 'div'> =
+  DropdownMenuPrimitive.DropdownMenuItemProps<T> & {
     class?: string | undefined
   }
 
@@ -70,8 +70,8 @@ const DropdownMenuLabel: Component<ComponentProps<'div'> & { inset?: boolean }> 
   )
 }
 
-type DropdownMenuSeparatorProps<T extends ValidComponent = 'hr'>
-  = DropdownMenuPrimitive.DropdownMenuSeparatorProps<T> & {
+type DropdownMenuSeparatorProps<T extends ValidComponent = 'hr'> =
+  DropdownMenuPrimitive.DropdownMenuSeparatorProps<T> & {
     class?: string | undefined
   }
 
@@ -85,8 +85,8 @@ function DropdownMenuSeparator<T extends ValidComponent = 'hr'>(props: Polymorph
   )
 }
 
-type DropdownMenuSubTriggerProps<T extends ValidComponent = 'div'>
-  = DropdownMenuPrimitive.DropdownMenuSubTriggerProps<T> & {
+type DropdownMenuSubTriggerProps<T extends ValidComponent = 'div'> =
+  DropdownMenuPrimitive.DropdownMenuSubTriggerProps<T> & {
     class?: string | undefined
     children?: JSX.Element
   }
@@ -118,8 +118,8 @@ function DropdownMenuSubTrigger<T extends ValidComponent = 'div'>(props: Polymor
   )
 }
 
-type DropdownMenuSubContentProps<T extends ValidComponent = 'div'>
-  = DropdownMenuPrimitive.DropdownMenuSubContentProps<T> & {
+type DropdownMenuSubContentProps<T extends ValidComponent = 'div'> =
+  DropdownMenuPrimitive.DropdownMenuSubContentProps<T> & {
     class?: string | undefined
   }
 
@@ -136,8 +136,8 @@ function DropdownMenuSubContent<T extends ValidComponent = 'div'>(props: Polymor
   )
 }
 
-type DropdownMenuCheckboxItemProps<T extends ValidComponent = 'div'>
-  = DropdownMenuPrimitive.DropdownMenuCheckboxItemProps<T> & {
+type DropdownMenuCheckboxItemProps<T extends ValidComponent = 'div'> =
+  DropdownMenuPrimitive.DropdownMenuCheckboxItemProps<T> & {
     class?: string | undefined
     children?: JSX.Element
   }
@@ -173,8 +173,8 @@ function DropdownMenuCheckboxItem<T extends ValidComponent = 'div'>(props: Polym
   )
 }
 
-type DropdownMenuGroupLabelProps<T extends ValidComponent = 'span'>
-  = DropdownMenuPrimitive.DropdownMenuGroupLabelProps<T> & {
+type DropdownMenuGroupLabelProps<T extends ValidComponent = 'span'> =
+  DropdownMenuPrimitive.DropdownMenuGroupLabelProps<T> & {
     class?: string | undefined
   }
 
@@ -188,8 +188,8 @@ function DropdownMenuGroupLabel<T extends ValidComponent = 'span'>(props: Polymo
   )
 }
 
-type DropdownMenuRadioItemProps<T extends ValidComponent = 'div'>
-  = DropdownMenuPrimitive.DropdownMenuRadioItemProps<T> & {
+type DropdownMenuRadioItemProps<T extends ValidComponent = 'div'> =
+  DropdownMenuPrimitive.DropdownMenuRadioItemProps<T> & {
     class?: string | undefined
     children?: JSX.Element
   }

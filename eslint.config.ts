@@ -5,4 +5,7 @@ export default defineEslintConfig({
   ignoreRuleOnFile: [
     { files: '**/*.md', rules: ['style/eol-last'] },
   ],
+  overrideRules: {
+    'style/operator-linebreak': ['error', 'before', { overrides: { '=': 'after' } }],
+  },
 })

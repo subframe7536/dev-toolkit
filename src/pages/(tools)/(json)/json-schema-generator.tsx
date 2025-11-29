@@ -1,5 +1,5 @@
 import { Button } from '#/components/ui/button'
-import { Switcher } from '#/components/ui/switch'
+import { Switch } from '#/components/ui/switch'
 import {
   TextField,
   TextFieldInput,
@@ -93,8 +93,8 @@ function JSONSchemaGenerator() {
       </div>
 
       <div class="flex flex-wrap gap-6">
-        <Switcher checked={required()} onChange={setRequired} text="Mark fields as required" />
-        <Switcher
+        <Switch checked={required()} onChange={setRequired} text="Mark fields as required" />
+        <Switch
           checked={additionalProperties()}
           onChange={setAdditionalProperties}
           text="Allow additional properties"

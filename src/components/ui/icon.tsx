@@ -8,7 +8,7 @@ export interface Props {
   title?: string
 }
 
-export default function Icon(props: Props) {
+export function Icon(props: Props) {
   return (
     <div
       class={cls(`i-${props.name} inline-block`, props.class)}
@@ -16,3 +16,5 @@ export default function Icon(props: Props) {
     />
   )
 }
+
+export default Icon

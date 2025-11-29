@@ -14,8 +14,8 @@ import Icon from './icon'
 
 export const Accordion = AccordionPrimitive.Root
 
-type accordionItemProps<T extends ValidComponent = 'div'>
-  = AccordionItemProps<T> & {
+type accordionItemProps<T extends ValidComponent = 'div'> =
+  AccordionItemProps<T> & {
     class?: string
   }
 

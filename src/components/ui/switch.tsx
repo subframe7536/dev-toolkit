@@ -1,11 +1,11 @@
 import * as SwitchPrimitive from '@kobalte/core/switch'
 import { splitProps } from 'solid-js'
 
-interface SwitcherProps extends Omit<SwitchPrimitive.SwitchRootOptions, 'children'> {
+interface SwitchProps extends Omit<SwitchPrimitive.SwitchRootOptions, 'children'> {
   text: string
 }
 
-export function Switcher(props: SwitcherProps) {
+export function Switch(props: SwitchProps) {
   const [local, rest] = splitProps(props, ['text'])
   return (
     <SwitchPrimitive.Root class="inline-flex gap-2 items-center" {...rest}>

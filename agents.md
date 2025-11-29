@@ -9,19 +9,26 @@ Dev Toolkit is a comprehensive web-based developer toolset providing 22+ essenti
 The project is actively implementing a full suite of developer tools organized into categories:
 
 **Key Implementation Pattern:**
-Every tool page MUST define metadata in the route's `info` property. Both the homepage and sidebar automatically generate their content by reading `fileRoutes`:
+Every tool page MUST define metadata in the route's `info` property. Both the homepage and sidebar automatically generate their content by reading `fileRoutes` via `src/utils/routes.ts`:
 
 ```typescript
 export default createRoute({
   info: {
-    title: 'Tool Name',
-    description: 'Brief description',
-    category: 'Category Name', // JSON, Encoding, Crypto, Text, Color, SQL
-    icon: 'lucide:icon-name', // Optional
+    title: 'Tool Name',              // Required: Display name
+    description: 'Brief description', // Required: Tool description
+    category: 'Category Name',        // Required: JSON, Encoding, Crypto, Text, Color, SQL
+    icon: 'lucide:icon-name',        // Optional: Lucide icon name
+    tags: ['tag1', 'tag2'],          // Optional: Search/filter tags
   },
   component: ToolComponent,
 })
 ```
+
+The `getCategories()` function in `src/utils/routes.ts` automatically:
+- Flattens the route tree from `fileRoutes`
+- Extracts all routes with `info.title` and `info.category`
+- Groups tools by category
+- Provides the total tool count
 
 **Architecture Principles:**
 - All computation logic separated into utility modules under `src/utils/`
@@ -46,20 +53,35 @@ export default createRoute({
 src/
   pages/              # File-based routes (see Routing section)
     _app.tsx          # App root and layout
-    index.tsx         # Home page
-    data.tsx          # Data utilities page
+    index.tsx         # Home page (auto-generates from fileRoutes)
+    404.tsx           # Not found page
     (tools)/          # Tools section (route group)
       _layout.tsx     # Layout for all tools
-      (encode)/       # Encoding utilities
-        base64.tsx
-      (generation)/   # Generation utilities
+      (utilities)/    # Normal tools
+        color.tsx
         uuid.tsx
-      (json)/         # JSON utilities
-        formatter.tsx
-        converter.tsx
+      (encode)/       # Encoding tools
+        base64.tsx
+        hex.tsx
+        html.tsx
+        unicode.tsx
+        url.tsx
+      (json)/         # JSON tools
+        json-converter.tsx
+        json-formatter.tsx
+        json-schema-generator.tsx
   components/         # Reusable components
-    ui/               # UI component library
-    card.tsx
+    ui/               # UI component library (Kobalte-based)
+    card.tsx          # Tool card component
+  utils/              # Pure utility functions
+    json/             # JSON processing utilities
+      converter.ts
+      formatter.ts
+      key-converter.ts
+      schema-generator.ts
+    color.ts          # Color conversion utilities
+    download.ts       # File download helper
+    routes.ts         # Route extraction and categorization
   index.ts            # App entry point
   routes.d.ts         # Auto-generated route types
 ```
@@ -161,52 +183,92 @@ bun run format   # Format code with ESLint
 bun run lint   # Lint code with ESLint
 ```
 
-### Adding New Routes
+### Adding New Tool Pages
 
-1. Create a new file in `src/pages/` directory
-2. Export a default route using `createRoute()`
-3. The route is automatically available based on file path
-4. Types are auto-generated in `src/routes.d.ts`
+1. Create a new file in `src/pages/(tools)/` directory
+2. Export a default route using `createRoute()` with required `info` metadata
+3. Implement the tool logic in a separate utility file under `src/utils/`
+4. The route is automatically available and appears on the homepage
+5. Types are auto-generated in `src/routes.d.ts`
 
-### Adding New Features
+Example structure:
+```tsx
+// src/pages/(tools)/my-tool.tsx
+import { createRoute } from 'solid-file-router'
+import { myToolFunction } from '#/utils/my-tool'
 
-The project roadmap includes:
-- JSON utilities (formatter, validator, converter)
-- Encoding/decoding tools (Base64, Hex, URL, etc.)
-- Cryptography utilities (AES, RSA, MD5)
-- Developer tools (Regex tester, color utils, QR codes, UUID generator)
-- Text comparison and SQL utilities
+export default createRoute({
+  info: {
+    title: 'My Tool',
+    description: 'Does something useful',
+    category: 'Text',
+    icon: 'lucide:wrench',
+  },
+  component: MyTool,
+})
+
+function MyTool() {
+  // UI logic here, calling myToolFunction from utils
+}
+```
+
+```ts
+// src/utils/my-tool.ts
+export function myToolFunction(input: string): string {
+  // Pure computation logic
+  return input.toUpperCase()
+}
+```
 
 ## UI Components
 
-You should always try to reuse these components
+Always reuse existing components before creating new ones.
 
-The project uses a shadcn-like ui lib built on Kobalte Core, located in `src/components/ui/`:
+The project uses a shadcn-like UI library built on Kobalte Core, located in `src/components/ui/`:
 
 - `accordion.tsx` - Collapsible content sections
-- `button.tsx` - Button component
+- `button.tsx` - Button component with variants (default, destructive, outline, ghost, link)
 - `checkbox.tsx` - Checkbox input
-- `combobox.tsx` - Searchable select
+- `combobox.tsx` - Searchable select dropdown
 - `dialog.tsx` - Modal dialogs
-- `icon.tsx` - Icon component (uses Iconify)
+- `dropdown.tsx` - Dropdown menu component
+- `icon.tsx` - Icon component (uses Iconify with Lucide icons)
 - `label.tsx` - Form labels
+- `select.tsx` - Select dropdown component
 - `separator.tsx` - Visual dividers
 - `sheet.tsx` - Slide-out panels
 - `sidebar.tsx` - Navigation sidebar
 - `skeleton.tsx` - Loading placeholders
-- `slider.tsx` - Range input
+- `slider.tsx` - Range input slider
+- `sonner.tsx` - Toast notifications (solid-sonner)
 - `switch.tsx` - Toggle switch
 - `tabs.tsx` - Tabbed interface
-- `text-field.tsx` - Text input
+- `text-field.tsx` - Text input with label support
 - `tooltip.tsx` - Hover tooltips
 
-### Toast
+Additional components:
+- `card.tsx` - Tool card component for displaying tool info on homepage
 
-Show messages or notifications, using `solid-sonner` (solidjs port of `sonner`)
+### Toast Notifications
+
+Show messages or notifications using `solid-sonner` (SolidJS port of `sonner`):
 
 ```tsx
-import { toast } from "solid-sonner"
-toast("Event has been created.")
+import { toast } from 'solid-sonner'
+
+// Basic toast
+toast('Event has been created.')
+
+// Success toast
+toast.success('Operation completed!')
+
+// Error toast
+toast.error('Something went wrong.')
+
+// With description
+toast('Event Created', {
+  description: 'Your event has been scheduled.',
+})
 ```
 
 ## Styling

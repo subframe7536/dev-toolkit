@@ -98,7 +98,7 @@ function ColorConverter() {
       {/* Left Column */}
       <div class="flex-1 w-full space-y-6 lg:max-w-80">
         {/* Color Preview with Picker */}
-        <label class="group border-2 border-border rounded-lg h-48 w-full block cursor-pointer shadow-lg transition-all relative overflow-hidden focus-within:(shadow-xl scale-[1.02]) hover:(shadow-xl scale-[1.02])">
+        <label class="group b-(2 border) rounded-lg h-48 w-full block cursor-pointer shadow-lg transition-all relative overflow-hidden focus-within:(shadow-xl scale-[1.02]) hover:(shadow-xl scale-[1.02])">
           <div
             class="h-full w-full transition-opacity group-hover:opacity-90"
             style={{ 'background-color': rgbToHex(rgb()) }}

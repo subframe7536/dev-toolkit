@@ -126,8 +126,8 @@ function SheetTitle<T extends ValidComponent = 'h2'>(props: PolymorphicProps<T, 
   )
 }
 
-type DialogDescriptionProps<T extends ValidComponent = 'p'>
-  = SheetPrimitive.DialogDescriptionProps<T> & { class?: string | undefined }
+type DialogDescriptionProps<T extends ValidComponent = 'p'> =
+  SheetPrimitive.DialogDescriptionProps<T> & { class?: string | undefined }
 
 function SheetDescription<T extends ValidComponent = 'p'>(props: PolymorphicProps<T, DialogDescriptionProps<T>>) {
   const [local, others] = splitProps(props as DialogDescriptionProps, ['class'])

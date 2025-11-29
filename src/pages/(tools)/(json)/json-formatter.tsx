@@ -9,7 +9,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '#/components/ui/select'
-import { Switcher } from '#/components/ui/switch'
+import { Switch } from '#/components/ui/switch'
 import {
   TextField,
   TextFieldLabel,
@@ -47,7 +47,7 @@ const caseOptions: Array<{ value: CaseStyle, label: string }> = [
 function JSONFormatter() {
   const [input, setInput] = createSignal('')
   const [output, setOutput] = createSignal('')
-  const [autoRepair, setAutoRepair] = createSignal(false)
+  const [autoRepair, setAutoRepair] = createSignal(true)
   const [targetCase, setTargetCase] = createSignal<CaseStyle>('As is')
 
   const tryRepairIfEnabled = (inputValue: string): string => {
@@ -57,9 +57,7 @@ function JSONFormatter() {
         return inputValue
       } catch {
         try {
-          const repaired = repairJSON(inputValue)
-          toast.success('JSON repaired automatically')
-          return repaired
+          return repairJSON(inputValue)
         } catch {
           // Repair failed, continue with original input
         }
@@ -158,7 +156,7 @@ function JSONFormatter() {
     <div class="space-y-6">
       <div class="flex flex-wrap gap-3 items-end">
         <div class="flex h-10 items-center">
-          <Switcher checked={autoRepair()} onChange={setAutoRepair} text="Auto-repair JSON" />
+          <Switch checked={autoRepair()} onChange={setAutoRepair} text="Auto-repair JSON" />
         </div>
         <div class="space-y-2">
           <label class="text-sm font-medium">Key Case Style</label>

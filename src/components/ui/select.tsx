@@ -11,8 +11,8 @@ const Select = SelectPrimitive.Root
 const SelectValue = SelectPrimitive.Value
 const SelectHiddenSelect = SelectPrimitive.HiddenSelect
 
-type SelectTriggerProps<T extends ValidComponent = 'button'>
-  = SelectPrimitive.SelectTriggerProps<T> & {
+type SelectTriggerProps<T extends ValidComponent = 'button'> =
+  SelectPrimitive.SelectTriggerProps<T> & {
     class?: string | undefined
     children?: JSX.Element
   }
@@ -33,8 +33,8 @@ function SelectTrigger<T extends ValidComponent = 'button'>(props: PolymorphicPr
   )
 }
 
-type SelectContentProps<T extends ValidComponent = 'div'>
-  = SelectPrimitive.SelectContentProps<T> & { class?: string | undefined }
+type SelectContentProps<T extends ValidComponent = 'div'> =
+  SelectPrimitive.SelectContentProps<T> & { class?: string | undefined }
 
 function SelectContent<T extends ValidComponent = 'div'>(props: PolymorphicProps<T, SelectContentProps<T>>) {
   const [local, others] = splitProps(props as SelectContentProps, ['class'])
@@ -101,8 +101,8 @@ function SelectLabel<T extends ValidComponent = 'label'>(props: PolymorphicProps
   return <SelectPrimitive.Label class={cls(labelVariants(), local.class)} {...others} />
 }
 
-type SelectDescriptionProps<T extends ValidComponent = 'div'>
-  = SelectPrimitive.SelectDescriptionProps<T> & {
+type SelectDescriptionProps<T extends ValidComponent = 'div'> =
+  SelectPrimitive.SelectDescriptionProps<T> & {
     class?: string | undefined
   }
 
@@ -116,8 +116,8 @@ function SelectDescription<T extends ValidComponent = 'div'>(props: PolymorphicP
   )
 }
 
-type SelectErrorMessageProps<T extends ValidComponent = 'div'>
-  = SelectPrimitive.SelectErrorMessageProps<T> & {
+type SelectErrorMessageProps<T extends ValidComponent = 'div'> =
+  SelectPrimitive.SelectErrorMessageProps<T> & {
     class?: string | undefined
   }
 

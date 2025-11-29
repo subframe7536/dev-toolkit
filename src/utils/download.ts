@@ -2,7 +2,7 @@ import { useCopy } from '@solid-hooks/core/web'
 import { toast } from 'solid-sonner'
 
 export interface DownloadOptions {
-  content: string
+  content: string | Blob
   filename: string
   mimeType?: string
 }

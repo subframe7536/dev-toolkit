@@ -38,7 +38,8 @@ export default createRoute({
   component: JSONConverter,
 })
 
-type ConversionMode = | 'json-to-csv'
+type ConversionMode =
+  | 'json-to-csv'
   | 'csv-to-json'
   | 'json-to-yaml'
   | 'yaml-to-json'
