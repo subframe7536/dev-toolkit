@@ -58,7 +58,7 @@ const dark = {
     accent: { DEFAULT: 'rgb(96, 112, 118)', foreground: 'rgb(217, 220, 227)' },
     destructive: { DEFAULT: 'rgb(217, 175, 175)', foreground: 'rgb(43, 43, 43)' },
     border: 'rgb(79, 79, 79)',
-    input: 'rgb(51, 51, 51)',
+    input: 'rgb(65, 65, 65)',
     ring: 'rgb(192, 192, 192)',
     chart: {
       1: 'rgb(239, 239, 239)',
@@ -94,14 +94,6 @@ ${darkVars}
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
-}
-@supports (corner-shape: squircle) {
-  :root {
-    --radius: ${radiusRem * 2}rem;
-  }
-  * {
-    corner-shape: squircle;
-  }
 }`,
       },
     ],

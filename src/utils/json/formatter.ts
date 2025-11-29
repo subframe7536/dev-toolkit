@@ -180,7 +180,7 @@ export function repairJSON(input: string): string {
 
     // Attempt to repair
     const repaired = jsonrepair(input)
-    
+
     // Validate the repaired result
     JSON.parse(repaired)
     return repaired

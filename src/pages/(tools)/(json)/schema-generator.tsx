@@ -1,0 +1,147 @@
+import { Button } from '#/components/ui/button'
+import { Switcher } from '#/components/ui/switch'
+import {
+  TextField,
+  TextFieldInput,
+  TextFieldLabel,
+  TextFieldTextArea,
+} from '#/components/ui/text-field'
+import { copyToClipboard, downloadFile } from '#/utils/download'
+import { generateJsonSchema } from '#/utils/json/schema-generator'
+import { createRoute } from 'solid-file-router'
+import { createSignal } from 'solid-js'
+import { toast } from 'solid-sonner'
+
+export default createRoute({
+  info: {
+    title: 'JSON Schema Generator',
+    description: 'Generate JSON Schema from JSON data',
+    category: 'JSON',
+    icon: 'lucide:file-json-2',
+    tags: ['json', 'schema', 'generator', 'validation'],
+  },
+  component: JSONSchemaGenerator,
+})
+
+function JSONSchemaGenerator() {
+  const [input, setInput] = createSignal('')
+  const [output, setOutput] = createSignal('')
+  const [required, setRequired] = createSignal(true)
+  const [additionalProperties, setAdditionalProperties] = createSignal(false)
+  const [title, setTitle] = createSignal('')
+  const [description, setDescription] = createSignal('')
+
+  const handleGenerate = () => {
+    try {
+      const schema = generateJsonSchema(input(), {
+        required: required(),
+        additionalProperties: additionalProperties(),
+        title: title() || undefined,
+        description: description() || undefined,
+      })
+      setOutput(schema)
+      toast.success('Schema generated successfully')
+    } catch {
+      toast.error('Invalid JSON input')
+    }
+  }
+
+  const handleCopy = async () => {
+    if (!output()) {
+      return
+    }
+    await copyToClipboard(output())
+  }
+
+  const handleDownload = () => {
+    if (!output()) {
+      return
+    }
+    downloadFile({
+      content: output(),
+      filename: 'schema.json',
+      mimeType: 'application/json',
+    })
+  }
+
+  const handleClear = () => {
+    setInput('')
+    setOutput('')
+    setTitle('')
+    setDescription('')
+  }
+
+  return (
+    <div class="space-y-4">
+      <div class="flex flex-wrap gap-4 items-center">
+        <TextField class="flex-1 min-w-60">
+          <TextFieldLabel>Schema Title (optional)</TextFieldLabel>
+          <TextFieldInput
+            value={title()}
+            onInput={e => setTitle(e.currentTarget.value)}
+            placeholder="My Schema"
+          />
+        </TextField>
+        <TextField class="flex-1 min-w-60">
+          <TextFieldLabel>Schema Description (optional)</TextFieldLabel>
+          <TextFieldInput
+            value={description()}
+            onInput={e => setDescription(e.currentTarget.value)}
+            placeholder="Description of the schema"
+          />
+        </TextField>
+      </div>
+
+      <div class="flex flex-wrap gap-6">
+        <Switcher checked={required()} onChange={setRequired} text="Mark fields as required" />
+        <Switcher
+          checked={additionalProperties()}
+          onChange={setAdditionalProperties}
+          text="Allow additional properties"
+        />
+      </div>
+
+      <div class="gap-6 grid lg:grid-cols-2">
+        <div class="space-y-4">
+          <TextField>
+            <TextFieldLabel>Input JSON</TextFieldLabel>
+            <TextFieldTextArea
+              class="text-sm font-mono h-96"
+              placeholder='{"name": "John", "age": 30}'
+              value={input()}
+              onInput={e => setInput(e.currentTarget.value)}
+            />
+          </TextField>
+          <div class="flex flex-wrap gap-2">
+            <Button onClick={handleGenerate} disabled={!input()}>
+              Generate Schema
+            </Button>
+            <Button variant="secondary" onClick={handleClear} disabled={!input() && !output()}>
+              Clear
+            </Button>
+          </div>
+        </div>
+
+        <div class="space-y-4">
+          <TextField>
+            <TextFieldLabel>JSON Schema Output</TextFieldLabel>
+            <TextFieldTextArea
+              class="text-sm font-mono bg-muted/50 h-96"
+              readOnly
+              placeholder="Generated schema will appear here"
+              value={output()}
+            />
+          </TextField>
+          <div class="flex flex-wrap gap-2">
+            <Button variant="secondary" onClick={handleCopy} disabled={!output()}>
+              Copy
+            </Button>
+            <Button variant="secondary" onClick={handleDownload} disabled={!output()}>
+              Download
+            </Button>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}

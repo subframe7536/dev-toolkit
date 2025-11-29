@@ -22,7 +22,7 @@ import { getCategories } from '#/utils/routes'
 import { useColorMode } from '@solid-hooks/core/web'
 import { A } from '@solidjs/router'
 import { createRoute } from 'solid-file-router'
-import { For, Show } from 'solid-js'
+import { For } from 'solid-js'
 
 export default createRoute({
   component: App,

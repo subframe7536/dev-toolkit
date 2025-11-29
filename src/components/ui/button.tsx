@@ -13,10 +13,10 @@ export const buttonVariants = clsvDefault(
     {
       variant: {
         default: 'bg-primary text-primary-foreground shadow hover:bg-primary/90',
-        secondary: 'bg-secondary text-secondary-foreground shadow-sm hover:bg-secondary/90',
-        outline: 'b-(2 border) bg-background shadow-sm hover:(bg-accent c-accent-foreground)',
-        ghost: 'hover:bg-accent hover:text-accent-foreground',
-        link: 'animated-underline w-fit',
+        outline: 'b-(1 border) bg-background shadow-xs hover:(bg-accent text-accent-foreground)',
+        secondary: 'bg-secondary text-secondary-foreground hover:bg-secondary/80',
+        ghost: 'hover:(bg-accent text-accent-foreground hover:bg-accent/50)',
+        link: 'text-primary underline-offset-4 hover:underline',
       },
       size: {
         default: 'h-9 px-4 py-2 text-sm',

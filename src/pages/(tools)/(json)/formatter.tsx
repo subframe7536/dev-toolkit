@@ -3,21 +3,13 @@ import type { CaseStyle, ConversionError } from '#/utils/json/key-converter'
 
 import { Button } from '#/components/ui/button'
 import {
-  Combobox,
-  ComboboxContent,
-  ComboboxControl,
-  ComboboxInput,
-  ComboboxItem,
-  ComboboxItemIndicator,
-  ComboboxItemLabel,
-  ComboboxTrigger,
-} from '#/components/ui/combobox'
-import {
-  Switch,
-  SwitchControl,
-  SwitchLabel,
-  SwitchThumb,
-} from '#/components/ui/switch'
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '#/components/ui/select'
+import { Switcher } from '#/components/ui/switch'
 import {
   TextField,
   TextFieldLabel,
@@ -163,50 +155,40 @@ function JSONFormatter() {
   }
 
   return (
-    <div class="space-y-4">
-      <div class="flex flex-wrap gap-4 items-center">
-        <Switch checked={autoRepair()} onChange={setAutoRepair}>
-          <SwitchLabel>Auto-repair JSON</SwitchLabel>
-          <SwitchControl>
-            <SwitchThumb />
-          </SwitchControl>
-        </Switch>
-        <div class="w-fit space-y-2">
+    <div class="space-y-6">
+      <div class="flex flex-wrap gap-3 items-end">
+        <div class="flex h-10 items-center">
+          <Switcher checked={autoRepair()} onChange={setAutoRepair} text="Auto-repair JSON" />
+        </div>
+        <div class="space-y-2">
           <label class="text-sm font-medium">Key Case Style</label>
-          <Combobox<CaseStyle>
+          <Select
             value={targetCase()}
             onChange={setTargetCase}
-            options={caseOptions.map(opt => opt.value)}
-            optionValue={option => option}
-            optionLabel={option => caseOptions.find(o => o.value === option)?.label ?? option}
+            options={caseOptions.map(o => o.value)}
             placeholder="Select case style..."
             itemComponent={props => (
-              <ComboboxItem item={props.item}>
-                <ComboboxItemLabel>
-                  <div class="flex flex-col">
-                    <span class="font-medium">
-                      {caseOptions.find(o => o.value === props.item.rawValue)?.label}
-                    </span>
-                  </div>
-                </ComboboxItemLabel>
-                <ComboboxItemIndicator />
-              </ComboboxItem>
+              <SelectItem item={props.item}>
+                {caseOptions.find(o => o.value === props.item.rawValue)?.label}
+              </SelectItem>
             )}
           >
-            <ComboboxControl>
-              <ComboboxInput />
-              <ComboboxTrigger />
-            </ComboboxControl>
-            <ComboboxContent />
-          </Combobox>
+            <SelectTrigger class="w-48">
+              <SelectValue<CaseStyle>>
+                {state => caseOptions.find(o => o.value === state.selectedOption())?.label}
+              </SelectValue>
+            </SelectTrigger>
+            <SelectContent />
+          </Select>
         </div>
       </div>
+
       <div class="gap-6 grid lg:grid-cols-2">
-        <div class="space-y-4">
-          <TextField>
+        <div class="flex flex-col gap-3">
+          <TextField class="flex-1">
             <TextFieldLabel>Input JSON</TextFieldLabel>
             <TextFieldTextArea
-              class="text-sm font-mono h-96"
+              class="text-sm font-mono h-96 resize-none"
               placeholder="Paste your JSON here..."
               value={input()}
               onInput={e => setInput(e.currentTarget.value)}
@@ -250,11 +232,11 @@ function JSONFormatter() {
           </div>
         </div>
 
-        <div class="space-y-4">
-          <TextField>
+        <div class="flex flex-col gap-3">
+          <TextField class="flex-1">
             <TextFieldLabel>Output</TextFieldLabel>
             <TextFieldTextArea
-              class="text-sm font-mono bg-muted/50 h-96"
+              class="text-sm font-mono bg-muted/50 h-96 resize-none"
               readOnly
               placeholder="Formatted JSON will appear here..."
               value={output()}

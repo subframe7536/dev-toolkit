@@ -2,13 +2,12 @@ import type { ConversionResult } from '#/utils/json/converter'
 
 import { Button } from '#/components/ui/button'
 import {
-  Combobox,
-  ComboboxContent,
-  ComboboxControl,
-  ComboboxInput,
-  ComboboxItem,
-  ComboboxTrigger,
-} from '#/components/ui/combobox'
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '#/components/ui/select'
 import {
   TextField,
   TextFieldLabel,
@@ -126,6 +125,7 @@ function JSONConverter() {
       default:
         toast.error('Could not detect input format', {
           description: 'Please select conversion mode manually',
+          duration: 99900,
         })
         return
     }
@@ -213,49 +213,46 @@ function JSONConverter() {
   }
 
   return (
-    <>
-      <div class="space-y-4">
-        <div class="flex flex-wrap gap-4 items-center">
-          <TextField class="w-48">
-            <TextFieldLabel>Conversion Mode</TextFieldLabel>
-            <Combobox<ConversionMode>
-              value={mode()}
-              onChange={setMode}
-              class="w-full"
-              options={conversionModes.map(({ value }) => value)}
-              optionValue={option => option}
-              optionLabel={option => conversionModes.find(m => m.value === option)?.label ?? option}
-              itemComponent={props => (
-                <ComboboxItem item={props.item}>
-                  {conversionModes.find(m => m.value === props.item.rawValue)?.label ?? props.item.rawValue}
-                </ComboboxItem>
-              )}
-            >
-              <ComboboxControl>
-                <ComboboxInput />
-                <ComboboxTrigger />
-              </ComboboxControl>
-              <ComboboxContent />
-            </Combobox>
-          </TextField>
-
-          <Button
-            variant="secondary"
-            onClick={handleAutoDetect}
-            disabled={!input().trim()}
-            class="mt-6"
+    <div class="space-y-6">
+      <div class="flex flex-wrap gap-3 items-end">
+        <div class="space-y-2">
+          <label class="text-sm font-medium">Conversion Mode</label>
+          <Select
+            value={mode()}
+            onChange={setMode}
+            options={conversionModes.map(({ value }) => value)}
+            placeholder="Select conversion mode..."
+            class="w-54"
+            itemComponent={props => (
+              <SelectItem item={props.item}>
+                {conversionModes.find(m => m.value === props.item.rawValue)?.label}
+              </SelectItem>
+            )}
           >
-            Auto-Detect Format
-          </Button>
+            <SelectTrigger class="w-48">
+              <SelectValue<ConversionMode>>
+                {state => conversionModes.find(m => m.value === state.selectedOption())?.label}
+              </SelectValue>
+            </SelectTrigger>
+            <SelectContent />
+          </Select>
         </div>
+
+        <Button
+          variant="secondary"
+          onClick={handleAutoDetect}
+          disabled={!input().trim()}
+        >
+          Auto-Detect Format
+        </Button>
       </div>
 
       <div class="gap-6 grid lg:grid-cols-2">
-        <div class="space-y-4">
-          <TextField>
+        <div class="flex flex-col gap-3">
+          <TextField class="flex-1">
             <TextFieldLabel>Input</TextFieldLabel>
             <TextFieldTextArea
-              class="text-sm font-mono h-96"
+              class="text-sm font-mono h-96 resize-none"
               placeholder={getInputPlaceholder()}
               value={input()}
               onInput={e => setInput(e.currentTarget.value)}
@@ -278,11 +275,11 @@ function JSONConverter() {
           </div>
         </div>
 
-        <div class="space-y-4">
-          <TextField>
+        <div class="flex flex-col gap-3">
+          <TextField class="flex-1">
             <TextFieldLabel>{getOutputLabel()}</TextFieldLabel>
             <TextFieldTextArea
-              class="text-sm font-mono bg-muted/50 h-96"
+              class="text-sm font-mono bg-muted/50 h-96 resize-none"
               readOnly
               placeholder="Converted output will appear here..."
               value={output()}
@@ -306,6 +303,6 @@ function JSONConverter() {
           </div>
         </div>
       </div>
-    </>
+    </div>
   )
 }

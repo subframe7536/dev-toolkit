@@ -17,7 +17,7 @@ export default defineConfig({
       infoDts: {
         title: 'string',
         description: 'string',
-        category: 'string',
+        category: '"Encoding" | "JSON" | "Utilities"',
         // eslint-disable-next-line no-template-curly-in-string
         icon: '`lucide:${string}`',
         tags: 'string[]',

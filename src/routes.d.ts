@@ -8,15 +8,21 @@ declare module 'solid-file-router' {
   interface FileRoutePath {
     '/': never
     '/base64': never
+    '/color': never
     '/converter': never
     '/data': never
     '/formatter': never
+    '/hex': never
+    '/html': never
+    '/schema-generator': never
+    '/unicode': never
+    '/url': never
     '/uuid': never
   }
   interface FileRouteInfo {
     title: string
     description: string
-    category: string
+    category: "Encoding" | "JSON" | "Utilities"
     icon: `lucide:${string}`
     tags: string[]
   }

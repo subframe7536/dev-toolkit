@@ -15,7 +15,9 @@ export default defineConfig<PresetWind4Theme>({
     presetIcons({
       scale: 1.2,
     }),
-    presetFunctionCompletion(),
+    presetFunctionCompletion({
+      autocompleteFunctions: ['cls', 'clsv'],
+    }),
     presetObjectCompletion(),
     presetAnimations(),
     presetThemeTW4(),
@@ -24,6 +26,7 @@ export default defineConfig<PresetWind4Theme>({
     ['effect-fv', 'outline-none ring-1.5 ring-ring ring-offset-(2 background)'],
     ['effect-dis', 'pointer-events-none opacity-70 cursor-not-allowed'],
     [/activor:(.*)/, ([, cls]) => `hover:${cls} active:${cls}`],
+    ['border', 'b-1 b-border'],
   ],
   theme: {
     font: {

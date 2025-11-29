@@ -8,26 +8,6 @@ Dev Toolkit is a comprehensive web-based developer toolset providing 22+ essenti
 
 The project is actively implementing a full suite of developer tools organized into categories:
 
-**Completed:**
-- ✅ App layout with automatic sidebar navigation from fileRoutes
-- ✅ Home page with automatic tool card generation from fileRoutes
-- ✅ JSON Formatter (format, minify, sort keys)
-- ✅ JSON Key Style Converter (camelCase, snake_case, kebab-case, PascalCase, CONSTANT_CASE)
-- ✅ Base64 Encoder/Decoder (basic implementation)
-- ✅ UUID Generator (basic implementation)
-
-**In Progress / Planned:**
-- JSON Import/Export (CSV, YAML, query params, Java Map format)
-- JSON Schema Validator and Generator
-- JSON Path and Repair
-- Text Compare tool
-- Additional encoding tools (Hex, URL, Unicode, HTML entities)
-- Cryptography tools (AES/DES, RSA, MD5/SHA hashes)
-- Regular Expression Tester
-- Color Converter and Picker
-- QR Code Generator
-- SQL Utilities (MyBatis parser, converters, entity generator)
-
 **Key Implementation Pattern:**
 Every tool page MUST define metadata in the route's `info` property. Both the homepage and sidebar automatically generate their content by reading `fileRoutes`:
 
@@ -178,6 +158,7 @@ bun run dev      # Start development server
 bun run build    # Build for production
 bun run preview  # Preview production build
 bun run format   # Format code with ESLint
+bun run lint   # Lint code with ESLint
 ```
 
 ### Adding New Routes
