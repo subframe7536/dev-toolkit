@@ -160,6 +160,7 @@ function ImageConverter() {
               accept={['image/*']}
               multiple
               info="Supports JPEG, PNG, WebP, GIF, AVIF, TIFF, SVG"
+              icon="lucide:image"
             />
             <Show when={images.length > 0}>
               <div class="mt-6 flex flex-wrap gap-4 justify-evenly">
