@@ -1,11 +1,11 @@
-import type { CellValue, ColumnDefinition, TableData, TableRow } from '#/utils/table/types'
+import type { CellValue, TableData, TableRow } from '#/utils/table/types'
 import type { ColumnDef, SortingState } from '@tanstack/solid-table'
 
 import Icon from '#/components/ui/icon'
 import { Tooltip, TooltipContent, TooltipTrigger } from '#/components/ui/tooltip'
 import { createSolidTable, flexRender, getCoreRowModel, getSortedRowModel } from '@tanstack/solid-table'
 import { cls } from 'cls-variant'
-import { createEffect, createSignal, For, Show } from 'solid-js'
+import { createEffect, createMemo, createSignal, For, Show } from 'solid-js'
 
 export interface DataTableProps {
   data: TableData
@@ -20,10 +20,6 @@ export function DataTable(props: DataTableProps) {
   const [sorting, setSorting] = createSignal<SortingState>([])
   const [columnPinning, setColumnPinning] = createSignal<{ left?: string[], right?: string[] }>({ left: [] })
   const [internalColumnVisibility, setInternalColumnVisibility] = createSignal<Record<string, boolean>>({})
-
-  // Drag and drop state
-  const [draggedColumn, setDraggedColumn] = createSignal<string | null>(null)
-  const [dragOverColumn, setDragOverColumn] = createSignal<string | null>(null)
 
   // Cell editing state
   const [editingCell, setEditingCell] = createSignal<{ rowId: string, columnId: string } | null>(null)
@@ -43,9 +39,17 @@ export function DataTable(props: DataTableProps) {
   // Initialize column pinning from data
   createEffect(() => {
     const pinnedCols = props.data.columns.filter(col => col.isPinned).map(col => col.id)
-    if (pinnedCols.length > 0) {
-      setColumnPinning({ left: pinnedCols })
-    }
+    setColumnPinning({ left: pinnedCols })
+  })
+
+  // Initialize sorting from data
+  createEffect(() => {
+    const sortedCols = props.data.columns.filter(col => col.sortDirection)
+    const sortingState: SortingState = sortedCols.map(col => ({
+      id: col.id,
+      desc: col.sortDirection === 'desc',
+    }))
+    setSorting(sortingState)
   })
 
   // Sync external column visibility
@@ -93,58 +97,6 @@ export function DataTable(props: DataTableProps) {
     })
   }
 
-  // Handle keyboard navigation
-  const handleKeyDown = (e: KeyboardEvent, rowIndex: number, columnIndex: number, tableInstance: ReturnType<typeof createSolidTable<TableRow>>) => {
-    const rows = tableInstance.getRowModel().rows
-    const visibleColumns = tableInstance.getVisibleLeafColumns()
-
-    if (editingCell()) {
-      // Don't handle navigation when editing
-      return
-    }
-
-    switch (e.key) {
-      case 'ArrowUp':
-        e.preventDefault()
-        if (rowIndex > 0) {
-          setFocusedCell({ rowIndex: rowIndex - 1, columnIndex })
-        }
-        break
-      case 'ArrowDown':
-        e.preventDefault()
-        if (rowIndex < rows.length - 1) {
-          setFocusedCell({ rowIndex: rowIndex + 1, columnIndex })
-        }
-        break
-      case 'ArrowLeft':
-        e.preventDefault()
-        if (columnIndex > 0) {
-          setFocusedCell({ rowIndex, columnIndex: columnIndex - 1 })
-        }
-        break
-      case 'ArrowRight':
-        e.preventDefault()
-        if (columnIndex < visibleColumns.length - 1) {
-          setFocusedCell({ rowIndex, columnIndex: columnIndex + 1 })
-        }
-        break
-      case 'Enter':
-        if (props.editable) {
-          e.preventDefault()
-          const row = rows[rowIndex]
-          const column = visibleColumns[columnIndex]
-          if (row && column) {
-            const rowId = row.original.id
-            const columnId = column.id
-            const value = row.original.cells[columnId]
-            setEditingCell({ rowId, columnId })
-            setEditValue(value?.toString() ?? '')
-          }
-        }
-        break
-    }
-  }
-
   // Create column definitions
   const columns = (): ColumnDef<TableRow>[] => {
     return props.data.columns.map((col): ColumnDef<TableRow> => ({
@@ -157,32 +109,34 @@ export function DataTable(props: DataTableProps) {
         const rowId = info.row.original.id
         const columnId = col.id
         const value = info.getValue() as CellValue
-        const isEditing = editingCell()?.rowId === rowId && editingCell()?.columnId === columnId
+        const isEditing = createMemo(() => editingCell()?.rowId === rowId && editingCell()?.columnId === columnId)
         const rowIndex = info.row.index
         const columnIndex = info.table.getVisibleLeafColumns().findIndex(c => c.id === columnId)
-        const isFocused = focusedCell()?.rowIndex === rowIndex && focusedCell()?.columnIndex === columnIndex
+        const isFocused = createMemo(() => focusedCell()?.rowIndex === rowIndex && focusedCell()?.columnIndex === columnIndex)
+
+        const startEditing = () => {
+          if (props.editable) {
+            setEditingCell({ rowId, columnId })
+            setEditValue(value?.toString() ?? '')
+          }
+        }
 
         return (
           <Show
-            when={isEditing}
+            when={isEditing()}
             fallback={(
               <div
                 class={cls(
                   'cursor-text px-3 py-2 outline-none',
                   props.editable && 'hover:bg-accent/50',
-                  isFocused && 'ring-2 ring-primary ring-inset',
+                  isFocused() && 'ring-2 ring-primary ring-inset',
                 )}
                 tabIndex={0}
                 role="gridcell"
                 aria-label={`${col.name}: ${value?.toString() ?? 'empty'}`}
-                onClick={() => {
-                  if (props.editable) {
-                    setEditingCell({ rowId, columnId })
-                    setEditValue(value?.toString() ?? '')
-                  }
-                }}
+                onDblClick={startEditing}
                 onFocus={() => setFocusedCell({ rowIndex, columnIndex })}
-                onKeyDown={e => handleKeyDown(e, rowIndex, columnIndex, info.table)}
+                onBlur={() => setFocusedCell({ columnIndex: -1, rowIndex: -1 })}
               >
                 {value?.toString() ?? ''}
               </div>
@@ -202,9 +156,6 @@ export function DataTable(props: DataTableProps) {
                 }
               }}
               onBlur={() => handleCellSave(rowId, columnId, editValue())}
-              ref={(el) => {
-                setTimeout(() => el.focus(), 0)
-              }}
             />
           </Show>
         )
@@ -243,62 +194,6 @@ export function DataTable(props: DataTableProps) {
     enableSorting: true,
     enableColumnPinning: true,
   })
-
-  // Handle column drag start
-  const handleDragStart = (columnId: string) => {
-    return (e: DragEvent) => {
-      setDraggedColumn(columnId)
-      if (e.dataTransfer) {
-        e.dataTransfer.effectAllowed = 'move'
-      }
-    }
-  }
-
-  // Handle column drag over
-  const handleDragOver = (columnId: string) => {
-    return (e: DragEvent) => {
-      e.preventDefault()
-      setDragOverColumn(columnId)
-      if (e.dataTransfer) {
-        e.dataTransfer.dropEffect = 'move'
-      }
-    }
-  }
-
-  // Handle column drop
-  const handleDrop = (e: DragEvent, targetColumnId: string) => {
-    e.preventDefault()
-    const sourceColumnId = draggedColumn()
-
-    if (sourceColumnId && sourceColumnId !== targetColumnId) {
-      const currentOrder = columnOrder()
-      const sourceIndex = currentOrder.indexOf(sourceColumnId)
-      const targetIndex = currentOrder.indexOf(targetColumnId)
-
-      if (sourceIndex !== -1 && targetIndex !== -1) {
-        const newOrder = [...currentOrder]
-        newOrder.splice(sourceIndex, 1)
-        newOrder.splice(targetIndex, 0, sourceColumnId)
-        setColumnOrder(newOrder)
-
-        // Update column order in data
-        const newColumns = newOrder.map(id => props.data.columns.find(col => col.id === id)!).filter(Boolean)
-        props.onDataChange({
-          ...props.data,
-          columns: newColumns,
-        })
-      }
-    }
-
-    setDraggedColumn(null)
-    setDragOverColumn(null)
-  }
-
-  // Handle column drag end
-  const handleDragEnd = () => {
-    setDraggedColumn(null)
-    setDragOverColumn(null)
-  }
 
   // Handle column pin toggle
   const handlePinToggle = (columnId: string) => {
@@ -359,7 +254,7 @@ export function DataTable(props: DataTableProps) {
   }
 
   return (
-    <div class="border border-border rounded-lg overflow-x-auto">
+    <div class="border rounded-lg">
       <table class="w-full border-collapse" role="grid" aria-label="Data table">
         <thead class="bg-muted/50" role="rowgroup">
           <For each={table.getHeaderGroups()}>
@@ -369,26 +264,17 @@ export function DataTable(props: DataTableProps) {
                   <For each={headerGroup.headers}>
                     {(header) => {
                       const columnId = header.column.id
-                      const isPinned = (columnPinning().left || []).includes(columnId)
-                      const isDragging = draggedColumn() === columnId
-                      const isDragOver = dragOverColumn() === columnId
+                      const isPinned = createMemo(() => (columnPinning().left || []).includes(columnId))
                       const sortState = sorting().find(s => s.id === columnId)
 
                       return (
                         <th
                           class={cls(
-                            'select-none border-b border-border bg-muted/50 text-left text-sm font-semibold',
-                            isPinned && 'sticky left-0 z-10 bg-muted shadow-[2px_0_4px_rgba(0,0,0,0.1)]',
-                            isDragging && 'opacity-50',
-                            isDragOver && 'bg-accent',
+                            'select-none b-(b r border) text-left text-sm font-semibold min-w-30',
+                            isPinned() ? 'sticky left-0 z-10 bg-muted shadow-[2px_0_8px_rgba(0,0,0,0.1)] border-r-2!' : 'bg-muted/50',
                           )}
                           role="columnheader"
                           aria-sort={sortState ? (sortState.desc ? 'descending' : 'ascending') : 'none'}
-                          draggable
-                          onDragStart={handleDragStart(columnId)}
-                          onDragOver={handleDragOver(columnId)}
-                          onDrop={e => handleDrop(e, columnId)}
-                          onDragEnd={handleDragEnd}
                         >
                           <div class="px-3 py-2 flex gap-2 items-center">
                             <div
@@ -407,17 +293,18 @@ export function DataTable(props: DataTableProps) {
                             <Tooltip>
                               <TooltipTrigger
                                 as="button"
-                                class="p-1 rounded hover:bg-accent"
+                                class="px-1 rounded hover:bg-accent"
                                 onClick={() => handlePinToggle(columnId)}
-                                aria-label={isPinned ? `Unpin ${flexRender(header.column.columnDef.header, header.getContext())} column` : `Pin ${flexRender(header.column.columnDef.header, header.getContext())} column`}
+                                aria-label={isPinned() ? `Unpin ${flexRender(header.column.columnDef.header, header.getContext())} column` : `Pin ${flexRender(header.column.columnDef.header, header.getContext())} column`}
                               >
                                 <Icon
-                                  name={isPinned ? 'lucide:pin-off' : 'lucide:pin'}
-                                  class={cls('size-4', isPinned && 'text-primary')}
+                                  name={isPinned() ? 'lucide:pin-off' : 'lucide:pin'}
+                                  class={cls('mt-1', isPinned() && 'text-primary')}
+                                  title=""
                                 />
                               </TooltipTrigger>
                               <TooltipContent>
-                                {isPinned ? 'Unpin column' : 'Pin column'}
+                                {isPinned() ? 'Unpin column' : 'Pin column'}
                               </TooltipContent>
                             </Tooltip>
                           </div>
@@ -434,18 +321,17 @@ export function DataTable(props: DataTableProps) {
           <For each={table.getRowModel().rows}>
             {(row, index) => {
               return (
-                <tr class={cls('border-b border-border', index() % 2 === 0 ? 'bg-background' : 'bg-muted/20')} role="row">
+                <tr class={cls('b-(b border)', index() % 2 === 0 ? 'bg-background/20' : 'bg-muted/20')} role="row">
                   <For each={row.getVisibleCells()}>
                     {(cell) => {
                       const columnId = cell.column.id
-                      const isPinned = (columnPinning().left || []).includes(columnId)
+                      const isPinned = createMemo(() => (columnPinning().left || []).includes(columnId))
 
                       return (
                         <td
                           class={cls(
-                            'text-sm',
-                            isPinned && 'sticky left-0 z-10 shadow-[2px_0_4px_rgba(0,0,0,0.05)]',
-                            isPinned && index() % 2 === 0 ? 'bg-background' : 'bg-muted/20',
+                            'text-sm min-w-30 b-(r border)',
+                            isPinned() && ['sticky left-0 z-10 shadow-sm', index() % 2 === 0 ? 'bg-background' : 'bg-muted'],
                           )}
                         >
                           {flexRender(cell.column.columnDef.cell, cell.getContext())}

@@ -21,7 +21,7 @@ function TooltipContent<T extends ValidComponent = 'div'>(props: PolymorphicProp
     <TooltipPrimitive.Portal>
       <TooltipPrimitive.Content
         class={cls(
-          'z-50 origin-$kb-tooltip-content-transform-origin overflow-hidden rounded-md border bg-background/80 px-3 py-1.5 text-sm text-foreground/80 shadow-md animate-in fade-in-0 zoom-in-95',
+          'z-50 origin-$kb-tooltip-content-transform-origin overflow-hidden rounded-md border bg-muted px-3 py-1.5 text-sm text-muted-foreground shadow-md animate-in fade-in-0 zoom-in-95',
           local.class,
         )}
         {...others}

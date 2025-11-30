@@ -11,6 +11,7 @@ interface TableActionsProps {
   tableData: TableData
   columnVisibility: Record<string, boolean>
   onColumnVisibilityChange: (visibility: Record<string, boolean>) => void
+  onReset: () => void
   onClear: () => void
 }
 
@@ -33,41 +34,45 @@ export const TableActions: Component<TableActionsProps> = (props) => {
 
   return (
     <div class="flex gap-2 items-center justify-between">
-      <div class="w-56">
-        <Select<string>
-          multiple
-          value={visibleColumnIds()}
-          onChange={handleColumnVisibilityChange}
-          options={props.tableData.columns.map(col => col.id)}
-          placeholder="Select columns..."
-          itemComponent={p => (
-            <SelectItem item={p.item}>
-              {props.tableData.columns.find(col => col.id === p.item.rawValue)?.name}
-            </SelectItem>
-          )}
-        >
-          <SelectTrigger>
-            <SelectValue<string>>
-              {() => {
-                const selected = visibleColumnIds()
-                if (selected.length === 0) {
-                  return 'No columns'
-                }
-                if (selected.length === props.tableData.columns.length) {
-                  return 'All columns'
-                }
-                return `${selected.length} column${selected.length > 1 ? 's' : ''}`
-              }}
-            </SelectValue>
-          </SelectTrigger>
-          <SelectContent />
-        </Select>
-      </div>
+      <Select<string>
+        multiple
+        value={visibleColumnIds()}
+        onChange={handleColumnVisibilityChange}
+        options={props.tableData.columns.map(col => col.id)}
+        placeholder="Select columns..."
+        class="w-48"
+        itemComponent={p => (
+          <SelectItem item={p.item}>
+            {props.tableData.columns.find(col => col.id === p.item.rawValue)?.name}
+          </SelectItem>
+        )}
+      >
+        <SelectTrigger>
+          <SelectValue<string>>
+            {() => {
+              const selected = visibleColumnIds()
+              if (selected.length === 0) {
+                return 'No columns'
+              }
+              if (selected.length === props.tableData.columns.length) {
+                return 'All columns'
+              }
+              return `${selected.length} column${selected.length > 1 ? 's' : ''}`
+            }}
+          </SelectValue>
+        </SelectTrigger>
+        <SelectContent />
+      </Select>
 
       <div class="flex gap-2">
-        <ExportDialog tableData={props.tableData} />
+        <ExportDialog {...props.tableData} />
 
-        <Button variant="outline" onClick={props.onClear} class="text-destructive hover:text-destructive">
+        <Button variant="secondary" onClick={props.onReset}>
+          <Icon name="lucide:rotate-ccw" class="mr-2 size-4" />
+          Reset
+        </Button>
+
+        <Button variant="outline" onClick={props.onClear} class="text-destructive-foreground bg-destructive hover:bg-destructive/80">
           <Icon name="lucide:trash-2" class="mr-2 size-4" />
           Clear
         </Button>

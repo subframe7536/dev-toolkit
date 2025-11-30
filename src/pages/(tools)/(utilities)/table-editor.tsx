@@ -3,6 +3,7 @@ import type { TableData } from '#/utils/table/types'
 import { DataTable } from '#/components/data-table'
 import { InputSection } from '#/components/table-editor/input-section'
 import { TableActions } from '#/components/table-editor/table-actions'
+import { useSidebar } from '#/components/ui/sidebar'
 import { createRoute } from 'solid-file-router'
 import { createSignal, Show } from 'solid-js'
 import { createStore } from 'solid-js/store'
@@ -34,12 +35,26 @@ function TableEditor() {
     setTableData(data)
   }
 
+  // Reset handler - clears sorting and pinning
+  const handleReset = () => {
+    const resetColumns = tableData.columns.map(col => ({
+      ...col,
+      isPinned: false,
+      sortDirection: undefined,
+    }))
+    // Create a completely new object to trigger reactivity
+    setTableData({ columns: resetColumns, rows: [...tableData.rows] })
+    toast.success('Table reset to original state')
+  }
+
   // Clear handler
   const handleClear = () => {
     setTableData({ columns: [], rows: [] })
     setColumnVisibility({})
     toast.success('All data cleared')
   }
+
+  const { isMobile, open } = useSidebar()
 
   return (
     <Show
@@ -50,15 +65,22 @@ function TableEditor() {
             tableData={tableData}
             columnVisibility={columnVisibility()}
             onColumnVisibilityChange={setColumnVisibility}
+            onReset={handleReset}
             onClear={handleClear}
           />
-
-          <DataTable
-            data={tableData}
-            onDataChange={setTableData}
-            editable={true}
-            columnVisibility={columnVisibility()}
-          />
+          <div
+            class="border rounded-lg overflow-x-scroll"
+            style={{
+              width: !isMobile() && open() ? 'calc(100vw - 12rem - var(--sidebar-width))' : 'calc(100vw - 12rem)',
+            }}
+          >
+            <DataTable
+              data={tableData}
+              onDataChange={setTableData}
+              editable={true}
+              columnVisibility={columnVisibility()}
+            />
+          </div>
         </div>
       )}
     >

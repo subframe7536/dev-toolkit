@@ -1,43 +1,35 @@
-import type { CheckboxControlProps } from '@kobalte/core/checkbox'
-import type { PolymorphicProps } from '@kobalte/core/polymorphic'
-import type { ValidComponent, VoidProps } from 'solid-js'
-
 import * as CheckboxPrimitive from '@kobalte/core/checkbox'
-import { cls } from 'cls-variant'
-import { splitProps } from 'solid-js'
+import { Show, splitProps } from 'solid-js'
 
 import Icon from './icon'
 
 export const CheckboxLabel = CheckboxPrimitive.Label
-export const Checkbox = CheckboxPrimitive.Root
 export const CheckboxErrorMessage = CheckboxPrimitive.ErrorMessage
 export const CheckboxDescription = CheckboxPrimitive.Description
 
-type checkboxControlProps<T extends ValidComponent = 'div'> = VoidProps<
-  CheckboxControlProps<T> & { class?: string }
->
+interface CheckboxProps extends CheckboxPrimitive.CheckboxRootOptions {
+  class?: string
+  text?: string
+}
 
-export function CheckboxControl<T extends ValidComponent = 'div'>(props: PolymorphicProps<T, checkboxControlProps<T>>) {
-  const [local, rest] = splitProps(props as checkboxControlProps, [
-    'class',
-    'children',
+export function Checkbox(props: CheckboxProps) {
+  const [local, rest] = splitProps(props, [
+    'text',
   ])
 
   return (
-    <>
-      <CheckboxPrimitive.Input class="[&:focus-visible+div]:(outline-none ring-1.5 ring-ring ring-offset-2 ring-offset-background)" />
+    <CheckboxPrimitive.Root {...rest}>
+      <CheckboxPrimitive.Input class="[&:focus-visible+div]:effect-fv" />
       <CheckboxPrimitive.Control
-        class={cls(
-          'h-4 w-4 shrink-0 rounded-sm border border-primary shadow focus-visible:(outline-none ring-1.5 ring-ring) data-[disabled]:(cursor-not-allowed opacity-50) data-[checked]:(bg-primary text-primary-foreground) transition-shadow',
-          local.class,
-        )}
-        {...rest}
+        class="border border-primary rounded-sm shrink-0 size-4 shadow transition-shadow data-[checked]:(text-primary-foreground bg-primary) data-[disabled]:effect-dis"
       >
         <CheckboxPrimitive.Indicator class="text-current flex items-center justify-center">
-          <Icon name="lucide:check" class="size-4" />
-          <title>Checkbox</title>
+          <Icon name="lucide:check" class="size-4" title="Checkbox" />
         </CheckboxPrimitive.Indicator>
       </CheckboxPrimitive.Control>
-    </>
+      <Show when={local.text}>
+        <CheckboxPrimitive.Label>{local.text}</CheckboxPrimitive.Label>
+      </Show>
+    </CheckboxPrimitive.Root>
   )
 }

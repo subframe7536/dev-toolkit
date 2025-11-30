@@ -2,6 +2,7 @@ import type { TableData } from '#/utils/table/types'
 import type { Component } from 'solid-js'
 
 import { Button } from '#/components/ui/button'
+import { Checkbox } from '#/components/ui/checkbox'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '#/components/ui/dialog'
 import Icon from '#/components/ui/icon'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '#/components/ui/select'
@@ -30,14 +31,13 @@ const exportOptions: Array<{ value: ExportFormat, label: string }> = [
   { value: 'markdown', label: 'Markdown' },
 ]
 
-interface ExportDialogProps {
-  tableData: TableData
+interface ExportDialogProps extends TableData {
 }
 
 export const ExportDialog: Component<ExportDialogProps> = (props) => {
   // Local state for export functionality
   const [tableName, setTableName] = createSignal('my_table')
-  const [useSnakeCase, setUseSnakeCase] = createSignal(false)
+  const [useSnakeCase, setUseSnakeCase] = createSignal(true)
   const [exportFormat, setExportFormat] = createSignal<ExportFormat>('sql-insert')
   const [keyColumns, setKeyColumns] = createSignal<string[]>([])
   const [isExporting, setIsExporting] = createSignal(false)
@@ -45,7 +45,7 @@ export const ExportDialog: Component<ExportDialogProps> = (props) => {
 
   // Export handler
   const handleExport = async () => {
-    if (props.tableData.columns.length === 0) {
+    if (props.columns.length === 0) {
       toast.error('No data to export')
       return
     }
@@ -80,16 +80,16 @@ export const ExportDialog: Component<ExportDialogProps> = (props) => {
 
       switch (format) {
         case 'sql-insert':
-          output = generateSQLInsert(props.tableData, name, useSnakeCase())
+          output = generateSQLInsert(props, name, useSnakeCase())
           break
         case 'sql-update':
-          output = generateSQLUpdate(props.tableData, name, keyColumns(), useSnakeCase())
+          output = generateSQLUpdate(props, name, keyColumns(), useSnakeCase())
           break
         case 'create-table':
-          output = generateCreateTable(props.tableData, name, useSnakeCase())
+          output = generateCreateTable(props, name, useSnakeCase())
           break
         case 'excel': {
-          const blob = await exportToExcel(props.tableData, useSnakeCase())
+          const blob = await exportToExcel(props, useSnakeCase())
           downloadFile({
             content: blob,
             filename: `${name || 'table'}.xlsx`,
@@ -99,10 +99,10 @@ export const ExportDialog: Component<ExportDialogProps> = (props) => {
           return
         }
         case 'csv':
-          output = exportToCSV(props.tableData, useSnakeCase())
+          output = exportToCSV(props, useSnakeCase())
           break
         case 'markdown':
-          output = exportToMarkdown(props.tableData, useSnakeCase())
+          output = exportToMarkdown(props, useSnakeCase())
           break
       }
 
@@ -160,14 +160,14 @@ export const ExportDialog: Component<ExportDialogProps> = (props) => {
         <Icon name="lucide:download" class="mr-2 size-4" />
         Export
       </DialogTrigger>
-      <DialogContent class="max-h-[80vh] max-w-4xl">
+      <DialogContent>
         <DialogHeader>
           <DialogTitle>Export Options</DialogTitle>
           <DialogDescription>
             Configure export settings and generate output
           </DialogDescription>
         </DialogHeader>
-        <div class="space-y-4">
+        <div class="space-y-6">
           <div class="gap-4 grid grid-cols-1 md:grid-cols-2">
             <TextField>
               <TextFieldLabel>Table Name</TextFieldLabel>
@@ -210,29 +210,24 @@ export const ExportDialog: Component<ExportDialogProps> = (props) => {
           </div>
 
           <Show when={exportFormat() === 'sql-update'}>
-            <div class="flex flex-col gap-2">
-              <label class="text-sm font-medium">Key Columns (for UPDATE)</label>
-              <div class="p-2 border border-border rounded-md bg-input max-h-32 overflow-y-auto">
-                <For each={props.tableData.columns}>
-                  {col => (
-                    <label class="px-1 py-1 rounded flex gap-2 cursor-pointer items-center hover:bg-accent">
-                      <input
-                        type="checkbox"
-                        checked={keyColumns().includes(col.id)}
-                        onChange={(e) => {
-                          if (e.currentTarget.checked) {
-                            setKeyColumns([...keyColumns(), col.id])
-                          } else {
-                            setKeyColumns(keyColumns().filter(id => id !== col.id))
-                          }
-                        }}
-                        class="size-4"
-                      />
-                      <span class="text-sm">{col.name}</span>
-                    </label>
-                  )}
-                </For>
-              </div>
+            <label class="text-sm font-medium">Key Columns (for UPDATE)</label>
+            <div class="p-2 border rounded-md bg-input flex flex-row flex-wrap gap-3">
+              <For each={props.columns}>
+                {col => (
+                  <Checkbox
+                    class="flex gap-2 items-center"
+                    checked={keyColumns().includes(col.id)}
+                    onChange={(checked) => {
+                      if (checked) {
+                        setKeyColumns([...keyColumns(), col.id])
+                      } else {
+                        setKeyColumns(keyColumns().filter(id => id !== col.id))
+                      }
+                    }}
+                    text={col.name}
+                  />
+                )}
+              </For>
             </div>
           </Show>
 
