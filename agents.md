@@ -2,7 +2,7 @@
 
 ## Project Overview
 
-Dev Toolkit is a comprehensive web-based developer toolset providing 22+ essential utilities for common development tasks. It's built with SolidJS and uses a file-based routing system via `solid-file-router`. The project emphasizes privacy-first design with all processing happening client-side, enabling offline functionality after initial load.
+Dev Toolkit is a comprehensive web-based developer toolset providing 14+ essential utilities for common development tasks. It's built with SolidJS and uses a file-based routing system via `solid-file-router`. The project emphasizes privacy-first design with all processing happening client-side, enabling offline functionality after initial load.
 
 ## Current Development Status
 
@@ -16,7 +16,7 @@ export default createRoute({
   info: {
     title: 'Tool Name',              // Required: Display name
     description: 'Brief description', // Required: Tool description
-    category: 'Category Name',        // Required: JSON, Encoding, Crypto, Text, Color, SQL
+    category: 'Category Name',        // Required: JSON, Encoding, Utilities
     icon: 'lucide:icon-name',        // Optional: Lucide icon name
     tags: ['tag1', 'tag2'],          // Optional: Search/filter tags
   },
@@ -58,10 +58,12 @@ src/
     (tools)/          # Tools section (route group)
       _layout.tsx     # Layout for all tools
       (utilities)/    # Utility tools
-        color.tsx     # Color converter and picker
-        datetime.tsx  # Date/time converter and formatter
-        image.tsx     # Image converter and processor
-        uuid.tsx      # UUID generator
+        color.tsx           # Color converter and picker
+        datetime.tsx        # Date/time converter and formatter
+        image.tsx           # Image converter and processor
+        sql-param-fill.tsx  # SQL parameter filler
+        table-editor.tsx    # Table editor with import/export
+        uuid.tsx            # UUID generator
       (encode)/       # Encoding/decoding tools
         base64.tsx    # Base64 encoder/decoder
         hex.tsx       # Hex encoder/decoder
@@ -74,8 +76,9 @@ src/
         json-schema-generator.tsx # JSON schema generator
   components/         # Reusable components
     ui/               # UI component library (Kobalte-based)
-    card.tsx          # Card component
-    file-upload.tsx   # File upload component
+    card.tsx          # Card component for tool display
+    data-table.tsx    # Data table component with editing
+    file-upload.tsx   # File upload component with drag-and-drop
     image-card.tsx    # Image display card component
   utils/              # Pure utility functions
     json/             # JSON processing utilities
@@ -83,11 +86,21 @@ src/
       formatter.ts    # JSON formatting/minification
       key-converter.ts # Key case conversion helpers
       schema-generator.ts # JSON schema generation
+    table/            # Table processing utilities
+      parser/         # Table parsers
+        excel-parser.ts      # Excel/CSV parser
+        mysql-parser.ts      # MySQL CREATE TABLE parser
+        type-inference.ts    # Column type inference
+        index.ts             # Parser exports
+      export.ts       # Table export utilities (CSV, JSON, SQL, Excel)
+      operations.ts   # Table operations (add/delete/sort/filter)
+      types.ts        # Table type definitions
     color.ts          # Color conversion utilities
     datetime.ts       # Date/time conversion utilities
     download.ts       # File download helper
     image.ts          # Image processing utilities
     routes.ts         # Route extraction and categorization
+    sql.ts            # SQL utilities (parameter filling)
   index.ts            # App entry point
   routes.d.ts         # Auto-generated route types
 ```
@@ -186,7 +199,8 @@ bun run dev      # Start development server
 bun run build    # Build for production
 bun run preview  # Preview production build
 bun run format   # Format code with ESLint
-bun run lint   # Lint code with ESLint
+bun run lint     # Lint code with ESLint
+bun run test     # Test code with bun:test
 ```
 
 ### Adding New Tool Pages
@@ -200,7 +214,7 @@ bun run lint   # Lint code with ESLint
 
 Example structure:
 ```tsx
-// src/pages/(tools)/my-tool.tsx
+// src/pages/(tools)/(utilities)/my-tool.tsx
 import { createRoute } from 'solid-file-router'
 import { myToolFunction } from '#/utils/my-tool'
 
@@ -208,14 +222,24 @@ export default createRoute({
   info: {
     title: 'My Tool',
     description: 'Does something useful',
-    category: 'Text',
+    category: 'Utilities',
     icon: 'lucide:wrench',
+    tags: ['tool'],
   },
   component: MyTool,
 })
 
 function MyTool() {
   // UI logic here, calling myToolFunction from utils
+  const [input, setInput] = createSignal('')
+  const output = () => myToolFunction(input())
+  
+  return (
+    <div>
+      <TextField value={input()} onInput={(e) => setInput(e.target.value)} />
+      <div>{output()}</div>
+    </div>
+  )
 }
 ```
 
@@ -225,6 +249,32 @@ export function myToolFunction(input: string): string {
   // Pure computation logic
   return input.toUpperCase()
 }
+```
+
+### Testing Utilities
+
+When creating utility functions, write tests using Bun's built-in test runner:
+
+```ts
+// src/utils/my-tool.test.ts
+import { describe, expect, test } from 'bun:test'
+import { myToolFunction } from './my-tool'
+
+describe('myToolFunction', () => {
+  test('converts to uppercase', () => {
+    expect(myToolFunction('hello')).toBe('HELLO')
+  })
+  
+  test('handles empty string', () => {
+    expect(myToolFunction('')).toBe('')
+  })
+})
+```
+
+Run tests with:
+```bash
+bun test                    # Run all tests
+bun test src/utils/my-tool  # Run specific test file
 ```
 
 ## UI Components
@@ -255,6 +305,7 @@ The project uses a shadcn-like UI library built on Kobalte Core, located in `src
 
 Additional components:
 - `card.tsx` - Tool card component for displaying tool info on homepage
+- `data-table.tsx` - Data table component with inline editing, sorting, and filtering
 - `file-upload.tsx` - File upload component with drag-and-drop support
 - `image-card.tsx` - Image display card component for image tools
 
@@ -290,13 +341,20 @@ toast('Event Created', {
 ## Important Notes for Agents
 
 1. **Always use `createRoute()`**: Every page file must export a default route using `createRoute()`
-2. **Path parameters**: Use `$` prefix for path params in `generatePath()` (e.g., `$id`)
-3. **Base path**: The app is deployed at `/dev-toolkit` base path (see `src/index.ts`)
-4. **Virtual module**: Routes are imported from `virtual:routes` (Vite plugin)
-5. **Type safety**: Route types are auto-generated - don't manually edit `routes.d.ts`
-6. **Component props**: Route components receive `props.children`, `props.data`, etc.
-7. **Preloading**: Use `preload` function for data fetching before render
-8. **Error handling**: Use `errorComponent` for route-level error boundaries
+2. **Required route metadata**: All tool pages MUST include `info` with `title`, `description`, and `category`
+3. **Path parameters**: Use `$` prefix for path params in `generatePath()` (e.g., `$id`)
+4. **Base path**: The app is deployed at `/dev-toolkit` base path (see `src/index.ts`)
+5. **Virtual module**: Routes are imported from `virtual:routes` (Vite plugin)
+6. **Type safety**: Route types are auto-generated - don't manually edit `routes.d.ts`
+7. **Component props**: Route components receive `props.children`, `props.data`, etc.
+8. **Preloading**: Use `preload` function for data fetching before render
+9. **Error handling**: Use `errorComponent` for route-level error boundaries
+10. **Separation of concerns**: Keep UI logic in page components, computation logic in utils
+11. **Testing**: Write tests for utility functions using Bun's test runner
+12. **Import alias**: Use `#/` prefix for imports (e.g., `import { foo } from '#/utils/bar'`)
+13. **DO NOT** use `cat > /path/to/file << 'EOF'` to write files
+14. **Tool categories**: Use existing categories: JSON, Encoding, Utilities
+15. **Reuse components**: Always check `src/components/` and `src/components/ui/` before creating new ones
 
 ## Configuration Files
 

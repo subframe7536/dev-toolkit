@@ -9,12 +9,15 @@
     "preview": "bun --bun vite preview",
     "serve": "bun --bun vite preview",
     "lint": "bun --bun eslint",
-    "format": "bun --bun eslint --fix --cache"
+    "format": "bun --bun eslint --fix --cache",
+    "test": "bun test"
   },
   "dependencies": {
+    "@tanstack/solid-table": "^8.21.3",
     "js-yaml": "^4.1.1",
     "papaparse": "^5.5.3",
-    "solid-js": "^1.9.10"
+    "solid-js": "^1.9.10",
+    "xlsx": "^0.18.5"
   },
   "devDependencies": {
     "@iconify-json/lucide": "^1.2.76",
@@ -27,9 +30,11 @@
     "@types/papaparse": "^5.5.0",
     "@unocss/eslint-plugin": "^66.5.9",
     "@unocss/reset": "^66.5.9",
+    "bun-types": "^1.3.3",
     "cls-variant": "^0.2.1",
     "eslint": "^9.39.1",
     "eslint-plugin-solid": "^0.14.5",
+    "fast-check": "^4.3.0",
     "jsonrepair": "^3.13.1",
     "solid-file-router": "^0.1.5",
     "solid-sonner": "^0.2.8",

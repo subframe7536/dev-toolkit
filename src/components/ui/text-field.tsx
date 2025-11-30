@@ -14,7 +14,7 @@ function TextField<T extends ValidComponent = 'div'>(props: PolymorphicProps<T, 
   const [local, others] = splitProps(props as TextFieldRootProps, ['class'])
   return (
     <TextFieldPrimitive.Root
-      class={cls('flex flex-col gap-1', local.class)}
+      class={cls('flex flex-col gap-2', local.class)}
       {...others}
     />
   )
@@ -55,7 +55,7 @@ function TextFieldInput<T extends ValidComponent = 'input'>(rawProps: Polymorphi
     <TextFieldPrimitive.Input
       type={local.type}
       class={cls(
-        'flex h-10 w-full rounded-md b-(1 border) bg-input px-3 py-2 text-sm ring-offset-background file:(border-0 bg-transparent text-sm font-medium) placeholder:(c-note select-none) focus-visible:effect-fv disabled:effect-dis data-[invalid]:b-red',
+        'flex h-8 w-full rounded-md b-(1 border) bg-input px-3 py-2 text-sm ring-offset-background file:(border-0 bg-transparent text-sm font-medium) placeholder:(c-note select-none) focus-visible:effect-fv disabled:effect-dis data-[invalid]:b-red',
         local.class,
       )}
       {...others}
@@ -81,7 +81,7 @@ function TextFieldTextArea<T extends ValidComponent = 'textarea'>(props: Polymor
 
 const labelVariants = clsvDefault(
   clsv(
-    'text-sm font-500 leading-relaxed peer-disabled:effect-dis c-note',
+    'text-sm font-500 peer-disabled:effect-dis c-note',
     {
       variant: {
         label: 'data-[invalid]:c-red',

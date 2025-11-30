@@ -3,7 +3,7 @@ import type { Component } from 'solid-js'
 import { Button } from '#/components/ui/button'
 import { Icon } from '#/components/ui/icon'
 import { TextField, TextFieldInput } from '#/components/ui/text-field'
-import { createEffect, on, onMount, Show } from 'solid-js'
+import { createEffect, on, Show } from 'solid-js'
 
 export interface ImageFileData {
   id: string
