@@ -4,7 +4,7 @@
 
 Dev Toolkit is a comprehensive web-based developer toolset providing 22+ essential utilities for common development tasks. It's built with SolidJS and uses a file-based routing system via `solid-file-router`. The project emphasizes privacy-first design with all processing happening client-side, enabling offline functionality after initial load.
 
-## Current Development Status (dev-tool-clone spec)
+## Current Development Status
 
 The project is actively implementing a full suite of developer tools organized into categories:
 
@@ -57,30 +57,36 @@ src/
     404.tsx           # Not found page
     (tools)/          # Tools section (route group)
       _layout.tsx     # Layout for all tools
-      (utilities)/    # Normal tools
-        color.tsx
-        uuid.tsx
-      (encode)/       # Encoding tools
-        base64.tsx
-        hex.tsx
-        html.tsx
-        unicode.tsx
-        url.tsx
+      (utilities)/    # Utility tools
+        color.tsx     # Color converter and picker
+        datetime.tsx  # Date/time converter and formatter
+        image.tsx     # Image converter and processor
+        uuid.tsx      # UUID generator
+      (encode)/       # Encoding/decoding tools
+        base64.tsx    # Base64 encoder/decoder
+        hex.tsx       # Hex encoder/decoder
+        html.tsx      # HTML entity encoder/decoder
+        unicode.tsx   # Unicode converter
+        url.tsx       # URL encoder/decoder
       (json)/         # JSON tools
-        json-converter.tsx
-        json-formatter.tsx
-        json-schema-generator.tsx
+        json-converter.tsx        # JSON key case converter
+        json-formatter.tsx        # JSON formatter/minifier
+        json-schema-generator.tsx # JSON schema generator
   components/         # Reusable components
     ui/               # UI component library (Kobalte-based)
-    card.tsx          # Tool card component
+    card.tsx          # Card component
+    file-upload.tsx   # File upload component
+    image-card.tsx    # Image display card component
   utils/              # Pure utility functions
     json/             # JSON processing utilities
-      converter.ts
-      formatter.ts
-      key-converter.ts
-      schema-generator.ts
+      converter.ts    # JSON key case conversion
+      formatter.ts    # JSON formatting/minification
+      key-converter.ts # Key case conversion helpers
+      schema-generator.ts # JSON schema generation
     color.ts          # Color conversion utilities
+    datetime.ts       # Date/time conversion utilities
     download.ts       # File download helper
+    image.ts          # Image processing utilities
     routes.ts         # Route extraction and categorization
   index.ts            # App entry point
   routes.d.ts         # Auto-generated route types
@@ -190,6 +196,7 @@ bun run lint   # Lint code with ESLint
 3. Implement the tool logic in a separate utility file under `src/utils/`
 4. The route is automatically available and appears on the homepage
 5. Types are auto-generated in `src/routes.d.ts`
+6. No need to setup title, description and other route infos, because they will auto loaded by the route layout
 
 Example structure:
 ```tsx
@@ -248,6 +255,8 @@ The project uses a shadcn-like UI library built on Kobalte Core, located in `src
 
 Additional components:
 - `card.tsx` - Tool card component for displaying tool info on homepage
+- `file-upload.tsx` - File upload component with drag-and-drop support
+- `image-card.tsx` - Image display card component for image tools
 
 ### Toast Notifications
 

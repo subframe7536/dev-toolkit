@@ -22,7 +22,7 @@ function SelectTrigger<T extends ValidComponent = 'button'>(props: PolymorphicPr
   return (
     <SelectPrimitive.Trigger
       class={cls(
-        'flex h-8 w-full items-center justify-between rounded-md b-(1 border) bg-transparent px-3 pl-2 pr-1.5 text-sm ring-offset-background placeholder:text-muted-foreground focus:effect-fv disabled:effect-dis',
+        'flex h-8 w-full items-center justify-between rounded-md b-(1 border) bg-input px-3 pl-2 pr-1.5 text-sm ring-offset-background placeholder:text-muted-foreground focus:effect-fv disabled:effect-dis',
         local.class,
       )}
       {...others}
