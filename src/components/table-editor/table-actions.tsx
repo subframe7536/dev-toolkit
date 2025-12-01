@@ -72,7 +72,7 @@ export const TableActions: Component<TableActionsProps> = (props) => {
           Reset
         </Button>
 
-        <Button variant="outline" onClick={props.onClear} class="text-destructive-foreground bg-destructive hover:bg-destructive/80">
+        <Button variant="desctructive" onClick={props.onClear}>
           <Icon name="lucide:trash-2" class="mr-2 size-4" />
           Clear
         </Button>

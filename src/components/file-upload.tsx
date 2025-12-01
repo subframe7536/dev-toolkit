@@ -58,7 +58,7 @@ export function FileUpload(props: Props) {
         </Show>
         <FileField.Trigger
           as={(triggerProps: FileFieldTriggerProps) => (
-            <Button {...triggerProps} class="text-sm flex gap-2 w-80% items-center sm:w-unset">
+            <Button {...triggerProps} variant="secondary" class="text-sm flex gap-2 w-80% items-center sm:w-unset">
               <Icon name="lucide:upload" />
               <span>Drag or Click to upload</span>
             </Button>

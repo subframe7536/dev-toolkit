@@ -17,6 +17,7 @@ export const buttonVariants = clsvDefault(
         secondary: 'bg-secondary text-secondary-foreground hover:bg-secondary/80',
         ghost: 'hover:(bg-accent text-accent-foreground hover:bg-accent/50)',
         link: 'text-primary underline-offset-4 hover:underline',
+        desctructive: 'text-destructive-foreground bg-destructive hover:bg-destructive/80',
       },
       size: {
         default: 'h-9 px-4 py-2 text-sm',
@@ -52,6 +53,7 @@ function Button<T extends ValidComponent = 'button'>(props: PolymorphicProps<T, 
           size: local.size,
           variant: local.variant,
         }),
+        props.disabled && 'cursor-not-allowed',
         local.class,
       )}
       {...rest}

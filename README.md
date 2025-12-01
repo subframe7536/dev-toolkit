@@ -37,3 +37,8 @@ A web-based developer toolset that provides various utilities for common develop
   - [ ] Mybatis SQL Param
   - [ ] JSON Array / CSV / Excel / Markdown table / Insert SQL mutual converter
   - [ ] SQL to Java / TS
+
+## Todo
+
+- [ ] mysql output parse more test for long text
+- [ ] json formatter full screen, layout optimize
