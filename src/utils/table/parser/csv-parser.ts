@@ -1,15 +1,9 @@
 import type { CellValue, ColumnDefinition, ParseResult, TableData, TableRow } from '../types'
 
+import { generateId } from '#/utils/random'
 import Papa from 'papaparse'
 
 import { inferDataType } from './type-inference'
-
-/**
- * Generate a unique ID for columns and rows
- */
-function generateId(): string {
-  return `${Date.now()}-${Math.random().toString(36).substring(2, 9)}`
-}
 
 /**
  * Parse CSV text into normalized table data

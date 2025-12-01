@@ -1,240 +1,286 @@
-import type { CellValue, ColumnDefinition, ParseResult, TableData, TableRow } from '../types'
+import type {
+  CellValue,
+  ColumnDefinition,
+  DataType,
+  ParseResult,
+  TableRow,
+} from '../types'
+
+import { generateId } from '#/utils/random'
+import { createUniqueId } from 'solid-js'
 
 /**
- * Generate a unique ID for columns and rows
+ * Infers data type from a list of cell values.
+ * Note: Date/datetime types are intentionally treated as 'string' per requirements.
  */
-function generateId(): string {
-  return `${Date.now()}-${Math.random().toString(36).substring(2, 9)}`
-}
+export function inferDataType(values: CellValue[]): DataType {
+  // Filter out nulls and empty strings for type inference
+  const nonEmptyValues = values.filter(v =>
+    v !== null
+    && (typeof v !== 'string' || v.trim() !== ''),
+  )
 
-/**
- * Extract column positions from a MySQL separator line
- * Returns array of [start, end] positions for each column
- */
-function extractColumnPositions(separatorLine: string): Array<[number, number]> {
-  const positions: Array<[number, number]> = []
-  let start = -1
-
-  for (let i = 0; i < separatorLine.length; i++) {
-    const char = separatorLine[i]
-
-    if (char === '+' || char === '|') {
-      if (start !== -1) {
-        // End of a column
-        positions.push([start, i])
-      }
-      // Start of next column
-      start = i
-    }
+  // If all values are empty/null, default to string
+  if (nonEmptyValues.length === 0) {
+    return 'string'
   }
 
-  return positions
-}
-
-/**
- * Extract values from a MySQL table line using column positions
- * Trims whitespace from each value
- */
-function extractValuesFromLine(
-  line: string,
-  positions: Array<[number, number]>,
-): string[] {
-  const values: string[] = []
-
-  for (const [start, end] of positions) {
-    // Extract substring between positions
-    let value = line.substring(start, end)
-
-    // Remove leading and trailing | characters
-    value = value.replace(/^\|/, '').replace(/\|$/, '')
-
-    // Trim whitespace
-    value = value.trim()
-
-    values.push(value)
-  }
-
-  return values
-}
-
-/**
- * Parse MySQL CLI output text into normalized table data
- *
- * MySQL CLI output format:
- * +----+----------+-------+
- * | id | name     | age   |
- * +----+----------+-------+
- * |  1 | Alice    |    30 |
- * |  2 | Bob      |    25 |
- * +----+----------+-------+
- *
- * @param input - MySQL CLI output text
- * @returns ParseResult with success status and data or error
- */
-export function parseMySQLOutput(input: string): ParseResult {
-  // Validate input
-  if (!input || input.trim().length === 0) {
-    return {
-      success: false,
-      error: {
-        message: 'Please paste MySQL output text.',
-      },
+  // Check for boolean values
+  const allBoolean = nonEmptyValues.every((v) => {
+    if (typeof v !== 'string') {
+      return false
     }
-  }
-
-  const lines = input.split('\n').map(line => line.trimEnd())
-
-  // Filter out empty lines
-  const nonEmptyLines = lines.filter(line => line.length > 0)
-
-  if (nonEmptyLines.length < 3) {
-    return {
-      success: false,
-      error: {
-        message: 'Invalid MySQL output format. Expected table with +---+ borders.',
-        details: 'MySQL output should have at least a separator, header, and separator line.',
-      },
-    }
-  }
-
-  // Find separator lines (lines that start with + and contain only +, -, and |)
-  const separatorPattern = /^\+[-+|]+\+$/
-  const separatorIndices: number[] = []
-
-  nonEmptyLines.forEach((line, index) => {
-    if (separatorPattern.test(line)) {
-      separatorIndices.push(index)
-    }
+    const lower = v.trim().toLowerCase()
+    return ['true', 'false', '1', '0'].includes(lower)
   })
-
-  if (separatorIndices.length < 2) {
-    return {
-      success: false,
-      error: {
-        message: 'Invalid MySQL output format. Expected table with +---+ borders.',
-        details: 'Could not find header separator lines.',
-      },
-    }
+  if (allBoolean) {
+    return 'boolean'
   }
 
-  // The header row should be between the first two separator lines
-  const firstSeparatorIndex = separatorIndices[0]
-  const secondSeparatorIndex = separatorIndices[1]
+  // Check for numeric values
+  let allInteger = true
+  let allDecimal = true
 
-  if (secondSeparatorIndex - firstSeparatorIndex !== 2) {
-    return {
-      success: false,
-      error: {
-        message: 'Invalid MySQL output format. Expected table with +---+ borders.',
-        details: 'Header row should be immediately after the first separator.',
-      },
+  for (const v of nonEmptyValues) {
+    if (typeof v !== 'string') {
+      allInteger = false
+      allDecimal = false
+      break
     }
-  }
 
-  const headerLine = nonEmptyLines[firstSeparatorIndex + 1]
-  const firstSeparatorLine = nonEmptyLines[firstSeparatorIndex]
-
-  // Extract column positions from the separator line
-  const columnPositions = extractColumnPositions(firstSeparatorLine)
-
-  if (columnPositions.length === 0) {
-    return {
-      success: false,
-      error: {
-        message: 'Invalid MySQL output format. Could not determine column positions.',
-      },
-    }
-  }
-
-  // Extract column names from header line
-  const columnNames = extractValuesFromLine(headerLine, columnPositions)
-
-  if (columnNames.length === 0) {
-    return {
-      success: false,
-      error: {
-        message: 'Invalid MySQL output format. Could not extract column headers.',
-      },
-    }
-  }
-
-  // Create column definitions
-  const columns: ColumnDefinition[] = columnNames.map(name => ({
-    id: generateId(),
-    name,
-    originalName: name,
-    dataType: 'string', // Will be inferred later
-    isPinned: false,
-  }))
-
-  // Extract data rows (all lines after the second separator, excluding the last separator if present)
-  const dataStartIndex = secondSeparatorIndex + 1
-  const rows: TableRow[] = []
-
-  for (let i = dataStartIndex; i < nonEmptyLines.length; i++) {
-    const line = nonEmptyLines[i]
-
-    // Skip separator lines
-    if (separatorPattern.test(line)) {
+    const numStr = v.trim()
+    // Skip empty strings (already filtered but double-check)
+    if (numStr === '') {
       continue
     }
 
-    // Check if line looks like a data row (starts with |)
-    if (!line.startsWith('|')) {
-      return {
-        success: false,
-        error: {
-          message: `Malformed row at line ${i + 1}. Expected row to start with '|'.`,
-          line: i + 1,
-        },
-      }
+    // Check integer pattern: optional sign followed by digits only
+    if (!/^-?\d+$/.test(numStr)) {
+      allInteger = false
     }
 
-    // Check if line has enough pipes for the expected columns
-    const pipeCount = (line.match(/\|/g) || []).length
-    const expectedPipes = columnNames.length + 1 // One more pipe than columns
-    if (pipeCount < expectedPipes) {
-      return {
-        success: false,
-        error: {
-          message: `Row ${rows.length + 1} has mismatched column count. Expected ${columnNames.length}, got ${pipeCount - 1}.`,
-          line: i + 1,
-        },
-      }
+    // Check decimal pattern: optional sign, digits with optional decimal point
+    if (!/^-?(?:\d+(?:\.\d*)?|\.\d+)$/.test(numStr)) {
+      allDecimal = false
     }
-
-    // Extract cell values
-    const cellValues = extractValuesFromLine(line, columnPositions)
-
-    if (cellValues.length !== columnNames.length) {
-      return {
-        success: false,
-        error: {
-          message: `Row ${rows.length + 1} has mismatched column count. Expected ${columnNames.length}, got ${cellValues.length}.`,
-          line: i + 1,
-        },
-      }
-    }
-
-    // Create row with cells mapped to column IDs
-    const cells: Record<string, CellValue> = {}
-    columns.forEach((col, index) => {
-      cells[col.id] = cellValues[index]
-    })
-
-    rows.push({
-      id: generateId(),
-      cells,
-    })
   }
 
-  const tableData: TableData = {
-    columns,
-    rows,
+  if (allInteger) {
+    return 'integer'
+  }
+  if (allDecimal) {
+    return 'decimal'
   }
 
-  return {
-    success: true,
-    data: tableData,
+  // All other cases (including dates) are treated as strings per requirements
+  return 'string'
+}
+
+/**
+ * Parses MySQL ASCII table output into structured data.
+ * Handles cell values with newlines and enforces strict column validation.
+ */
+export function parseMySQLOutput(tableStr: string): ParseResult {
+  try {
+    // Normalize line endings and remove empty lines
+    const lines = tableStr
+      .split(/(?<!\n)\r?\n(?!\r?\n)/g) // preserve multiple wrap line
+      .map(line => line.replace(/\r/g, ''))
+      .filter(line => line.trim() !== '')
+
+    if (lines.length < 3) {
+      return {
+        success: false,
+        error: {
+          message: 'Invalid table format',
+          details: 'Expected at least 3 non-empty lines (header separator, header, data separator)',
+        },
+      }
+    }
+
+    // Find separator lines (e.g., "+----+------+")
+    const separatorIndices: number[] = []
+    for (let i = 0; i < lines.length; i++) {
+      const lineTrim = lines[i].trim()
+      // Must start and end with '+', and contain only '+', '-', '=', and spaces
+      if (
+        lineTrim.startsWith('+')
+        && lineTrim.endsWith('+')
+        && !/[^+\-=\s]/.test(lineTrim)
+      ) {
+        separatorIndices.push(i)
+      }
+    }
+
+    if (separatorIndices.length < 2) {
+      return {
+        success: false,
+        error: {
+          message: 'Invalid table format',
+          details: 'Missing required separator lines',
+        },
+      }
+    }
+
+    const firstSepIndex = separatorIndices[0]
+    const secondSepIndex = separatorIndices[1]
+
+    // ✅ Correct column count calculation by splitting on '+' and filtering empty parts
+    const separatorParts = lines[firstSepIndex]
+      .trim()
+      .split('+')
+      .filter(part => part.trim() !== '')
+    const columnCount = separatorParts.length
+
+    if (columnCount === 0) {
+      return {
+        success: false,
+        error: {
+          message: 'Invalid table format',
+          details: 'Cannot determine column count from separator line',
+        },
+      }
+    }
+
+    // Parse header row
+    const headerLine = lines[firstSepIndex + 1]
+    if (!headerLine || !/^\s*\|/.test(headerLine)) {
+      return {
+        success: false,
+        error: {
+          message: 'Invalid table format',
+          details: 'Missing or invalid header row',
+        },
+      }
+    }
+
+    const headerParts = headerLine
+      .split('|')
+      .map(part => part.trim())
+      .filter((part, index, array) =>
+        index > 0 && index < array.length - 1, // Remove first and last empty parts
+      )
+
+    if (headerParts.length !== columnCount) {
+      return {
+        success: false,
+        error: {
+          message: 'Header column count mismatch',
+          details: `Expected ${columnCount} columns, found ${headerParts.length} in header row`,
+          line: firstSepIndex + 2,
+        },
+      }
+    }
+
+    // Reconstruct data rows (handling multi-line cells)
+    const dataLines: string[] = []
+    let currentRow = ''
+
+    for (let i = secondSepIndex + 1; i < lines.length; i++) {
+      const line = lines[i] // <- DO NOT trim here!
+
+      // Check for end of table: line like "+----+------+"
+      const trimmedLine = line.trim()
+      if (trimmedLine.startsWith('+') && trimmedLine.endsWith('+') && !/[^+\-=\s]/.test(trimmedLine)) {
+        break
+      }
+
+      // New row starts if the line begins with '|' (after optional whitespace)
+      if (/^\s*\|/.test(line)) {
+        if (currentRow !== '') {
+          dataLines.push(currentRow)
+        }
+        currentRow = line
+      } else if (currentRow !== '') {
+        // Continuation of multi-line cell
+        currentRow += `\n${line}`
+      }
+      // Ignore any line before first data row (should not happen)
+    }
+
+    if (currentRow !== '') {
+      dataLines.push(currentRow)
+    }
+
+    // Parse and validate each data row
+    const rawRows: string[][] = []
+    for (let i = 0; i < dataLines.length; i++) {
+      const line = dataLines[i]
+      const parts = line
+        .split('|')
+        .map(part => part.trim())
+        .filter((_, index, array) =>
+          index > 0 && index < array.length - 1, // Remove first and last empty parts
+        )
+
+      if (parts.length !== columnCount) {
+        return {
+          success: false,
+          error: {
+            message: 'Data row column count mismatch',
+            details: `Expected ${columnCount} columns, found ${parts.length} in row: "${line.trim()}"`,
+            line: secondSepIndex + 2 + i,
+          },
+        }
+      }
+      rawRows.push(parts)
+    }
+
+    // Create column definitions with type inference
+    const columns: ColumnDefinition[] = headerParts.map((name, idx) => {
+      const colId = generateId()
+      // Collect values for this column (only trim, don't convert yet)
+      const columnValues = rawRows.map((row) => {
+        const rawValue = row[idx]
+        // Only convert explicit "NULL" to null, everything else remains string (including empty)
+        return rawValue.trim().toLowerCase() === 'null' ? null : rawValue
+      })
+
+      const dataType = inferDataType(columnValues)
+      return {
+        id: colId,
+        name,
+        originalName: name,
+        dataType,
+        isPinned: false,
+      }
+    })
+
+    // Create rows with appropriate type conversion
+    const rows: TableRow[] = rawRows.map((rawRow) => {
+      const cells: Record<string, CellValue> = {}
+
+      rawRow.forEach((rawValue, colIndex) => {
+        const trimmed = rawValue.trim()
+
+        // Only convert explicit "NULL" to null
+        if (trimmed.toLowerCase() === 'null') {
+          cells[columns[colIndex].id] = null
+        } else {
+          cells[columns[colIndex].id] = trimmed
+        }
+      })
+
+      return {
+        id: generateId(),
+        cells,
+      }
+    })
+
+    return {
+      success: true,
+      data: {
+        columns,
+        rows,
+      },
+    }
+  } catch (err) {
+    return {
+      success: false,
+      error: {
+        message: 'Unexpected parsing error',
+        details: err instanceof Error ? err.message : String(err),
+      },
+    }
   }
 }

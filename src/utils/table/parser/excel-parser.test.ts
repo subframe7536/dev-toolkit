@@ -1,7 +1,6 @@
 import { describe, expect, it } from 'bun:test'
-import * as fc from 'fast-check'
 
-import { getExcelSheetNames, parseExcelFile } from './excel-parser'
+import { parseExcelFile } from './excel-parser'
 
 describe('parseExcelFile', () => {
   it('should parse a simple Excel file with basic data', async () => {
@@ -208,7 +207,6 @@ describe('parseExcelFile', () => {
     })
 
     const result = await parseExcelFile(file, 1) // Parse second sheet
-
     expect(result.success).toBe(true)
     expect(result.data!.columns[0].name).toBe('col2')
     expect(result.data!.rows[0].cells[result.data!.columns[0].id]).toBe('value2')

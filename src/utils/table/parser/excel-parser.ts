@@ -1,13 +1,7 @@
 import type { CellValue, ColumnDefinition, ParseResult, TableData, TableRow } from '../types'
 
+import { generateId } from '#/utils/random'
 import * as XLSX from 'xlsx'
-
-/**
- * Generate a unique ID for columns and rows
- */
-function generateId(): string {
-  return `${Date.now()}-${Math.random().toString(36).substring(2, 9)}`
-}
 
 /**
  * Get list of sheet names from an Excel file

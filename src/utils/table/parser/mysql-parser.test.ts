@@ -1,3 +1,5 @@
+import type { TableData } from '../types'
+
 import { describe, expect, it } from 'bun:test'
 import * as fc from 'fast-check'
 
@@ -45,14 +47,14 @@ describe('parseMySQLOutput', () => {
     const result = parseMySQLOutput('')
 
     expect(result.success).toBe(false)
-    expect(result.error?.message).toBe('Please paste MySQL output text.')
+    expect(result.error?.message).toBe('Invalid table format')
   })
 
   it('should handle whitespace-only input', () => {
     const result = parseMySQLOutput('   \n  \n  ')
 
     expect(result.success).toBe(false)
-    expect(result.error?.message).toBe('Please paste MySQL output text.')
+    expect(result.error?.message).toBe('Invalid table format')
   })
 
   it('should handle invalid format without separators', () => {
@@ -63,7 +65,7 @@ describe('parseMySQLOutput', () => {
     const result = parseMySQLOutput(input)
 
     expect(result.success).toBe(false)
-    expect(result.error?.message).toContain('Invalid MySQL output format')
+    expect(result.error?.message).toContain('Invalid table format')
   })
 
   it('should handle special characters in cell values', () => {
@@ -119,7 +121,7 @@ describe('parseMySQLOutput', () => {
     const result = parseMySQLOutput(input)
 
     expect(result.success).toBe(false)
-    expect(result.error?.message).toContain('mismatched column count')
+    expect(result.error?.message).toContain('Data row column count mismatch')
   })
 
   it('should preserve whitespace within cell values', () => {
@@ -310,11 +312,136 @@ describe('parseMySQLOutput - Property-Based Tests', () => {
             const originalValue = originalRow[colIndex]
 
             // Cell values should be preserved exactly (trimmed, as MySQL output has padding)
-            expect(parsedValue).toBe(originalValue.trim())
+            expect(String(parsedValue)).toBe(originalValue.trim())
           })
         })
       }),
       { numRuns: 100 },
     )
+  })
+})
+
+/**
+ * Helper to validate parsed table structure
+ */
+function validateTable(
+  result: ReturnType<typeof parseMySQLOutput>,
+  expectedRows: number,
+  expectedCols: number,
+  cellChecks: (data: TableData) => void,
+) {
+  expect(result.success).toBe(true)
+  expect(result.data).toBeDefined()
+
+  const data = result.data!
+  expect(data.columns).toHaveLength(expectedCols)
+  expect(data.rows).toHaveLength(expectedRows)
+
+  cellChecks(data)
+}
+
+describe('MySQL ASCII Table Parser – Multi-line Cell Support', () => {
+  it('should correctly parse a cell containing a single newline', () => {
+    const input = `+----+---------------+
+| id | description   |
++----+---------------+
+|  1 | Line1
+Line2 |
+|  2 | Normal        |
++----+---------------+`
+
+    const result = parseMySQLOutput(input)
+
+    validateTable(result, 2, 2, (data) => {
+      const row0 = data.rows[0]
+      const descCol = data.columns.find(c => c.name === 'description')!
+
+      // The cell should contain the literal newline
+      expect(row0.cells[descCol.id]).toBe('Line1\nLine2')
+
+      // Second row should be unaffected
+      const row1 = data.rows[1]
+      expect(row1.cells[descCol.id]).toBe('Normal')
+    })
+  })
+
+  it('should handle multiple newlines in a single cell', () => {
+    const input = `+----+------------------+
+| id | notes            |
++----+------------------+
+| 10 | First line
+Second line
+Third line |
+| 20 | OK               |
++----+------------------+`
+
+    const result = parseMySQLOutput(input)
+
+    validateTable(result, 2, 2, (data) => {
+      const notesCol = data.columns.find(c => c.name === 'notes')!
+      const value = data.rows[0].cells[notesCol.id] as string
+
+      expect(value).toBe('First line\nSecond line\nThird line')
+    })
+  })
+
+  it('should parse a table where the first cell has a newline', () => {
+    const input = `+------------------+------+
+| message          | code |
++------------------+------+
+| Start
+Middle
+End | 200  |
+| OK               | 201  |
++------------------+------+`
+
+    const result = parseMySQLOutput(input)
+
+    validateTable(result, 2, 2, (data) => {
+      const msgCol = data.columns.find(c => c.name === 'message')!
+      expect(data.rows[0].cells[msgCol.id]).toBe('Start\nMiddle\nEnd')
+      expect(data.rows[1].cells[msgCol.id]).toBe('OK')
+    })
+  })
+
+  it('should handle empty lines within a cell', () => {
+    const input = `+----+--------------+
+| id | content      |
++----+--------------+
+|  1 | Text
+
+Blank line above |
+|  2 | Simple       |
++----+--------------+`
+
+    const result = parseMySQLOutput(input)
+
+    validateTable(result, 2, 2, (data) => {
+      const contentCol = data.columns.find(c => c.name === 'content')!
+      const value = data.rows[0].cells[contentCol.id] as string
+
+      // Note: MySQL CLI usually preserves the blank line as an empty line
+      expect(value).toBe('Text\n\nBlank line above')
+    })
+  })
+
+  it('should not trim internal whitespace or newlines', () => {
+    const input = `+----+------------------+
+| id | spaced           |
++----+------------------+
+|  1 |  A
+ B  |
+|  2 |   C   |
++----+------------------+`
+
+    const result = parseMySQLOutput(input)
+
+    validateTable(result, 2, 2, (data) => {
+      const col = data.columns.find(c => c.name === 'spaced')!
+      // Only leading/trailing spaces (from MySQL padding) are trimmed
+      // Internal spaces and newlines are preserved
+      expect(data.rows[0].cells[col.id]).toBe('A\n B')
+      expect(data.rows[1].cells[col.id]).toBe('C')
+    })
   })
 })

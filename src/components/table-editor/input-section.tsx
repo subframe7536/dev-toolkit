@@ -41,12 +41,6 @@ export const InputSection: Component<InputSectionProps> = (props) => {
   const [selectedSheet, setSelectedSheet] = createSignal<string>('')
   const [isParsing, setIsParsing] = createSignal(false)
 
-  // Auto-detect text input type based on prefix
-  const detectTextType = (text: string): 'mysql' | 'csv' => {
-    const trimmed = text.trim()
-    return trimmed.startsWith('+-') ? 'mysql' : 'csv'
-  }
-
   // Auto-detect file type based on extension or mime type
   const detectFileType = (file: File): 'excel' | 'csv' => {
     const name = file.name.toLowerCase()
@@ -67,10 +61,9 @@ export const InputSection: Component<InputSectionProps> = (props) => {
       return
     }
 
-    const type = detectTextType(input)
-
-    if (type === 'mysql') {
+    if (input.trim().startsWith('+-')) {
       const result = parseMySQLOutput(input)
+      console.log(result)
       if (result.success && result.data) {
         props.onDataParsed(result.data)
         toast.success('MySQL output parsed successfully!')
