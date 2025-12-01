@@ -19,7 +19,7 @@ import { copyToClipboard, downloadFile } from '#/utils/download'
 import { formatJSON, minifyJSON, repairJSON, sortKeys } from '#/utils/json/formatter'
 import { convertKeys } from '#/utils/json/key-converter'
 import { createRoute } from 'solid-file-router'
-import { createSignal } from 'solid-js'
+import { createSignal, Show } from 'solid-js'
 import { toast } from 'solid-sonner'
 
 export default createRoute({
@@ -49,6 +49,7 @@ function JSONFormatter() {
   const [output, setOutput] = createSignal('')
   const [autoRepair, setAutoRepair] = createSignal(true)
   const [targetCase, setTargetCase] = createSignal<CaseStyle>('As is')
+  const [isFullscreen, setIsFullscreen] = createSignal(false)
 
   const tryRepairIfEnabled = (inputValue: string): string => {
     if (autoRepair()) {
@@ -255,9 +256,34 @@ function JSONFormatter() {
             >
               Download
             </Button>
+            <Button
+              variant="secondary"
+              onClick={() => setIsFullscreen(true)}
+              disabled={!output()}
+            >
+              Fullscreen
+            </Button>
           </div>
         </div>
       </div>
+      <Show when={isFullscreen()}>
+        <div class="p-4 bg-background/95 flex flex-col gap-4 inset-0 fixed z-50 overflow-hidden">
+          <div class="flex items-center justify-between">
+            <h2 class="text-lg font-semibold">Formatted JSON (Fullscreen)</h2>
+            <Button variant="secondary" size="sm" onClick={() => setIsFullscreen(false)}>
+              Close
+            </Button>
+          </div>
+          <TextField class="flex-1">
+            <TextFieldLabel>Output</TextFieldLabel>
+            <TextFieldTextArea
+              class="text-sm font-mono bg-muted/50 h-full resize-none"
+              readOnly
+              value={output()}
+            />
+          </TextField>
+        </div>
+      </Show>
     </div>
   )
 }
