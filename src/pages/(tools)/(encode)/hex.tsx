@@ -1,12 +1,5 @@
-import { CopyButton } from '#/components/copy-button'
-import { Button } from '#/components/ui/button'
-import {
-  TextField,
-  TextFieldLabel,
-  TextFieldTextArea,
-} from '#/components/ui/text-field'
+import { EncoderLayout } from '#/components/encoder-layout'
 import { createRoute } from 'solid-file-router'
-import { createSignal } from 'solid-js'
 import { toast } from 'solid-sonner'
 
 export default createRoute({
@@ -21,86 +14,43 @@ export default createRoute({
 })
 
 function HexEncoder() {
-  const [input, setInput] = createSignal('')
-  const [output, setOutput] = createSignal('')
-
-  const encodeToHex = () => {
+  const encodeToHex = (input: string) => {
     try {
-      const hex = Array.from(input())
+      const hex = Array.from(input)
         .map(char => char.charCodeAt(0).toString(16).padStart(2, '0'))
         .join('')
-      setOutput(hex)
       toast.success('Encoded to Hex')
+      return hex
     } catch {
       toast.error('Invalid input for encoding')
-      setOutput('')
+      return ''
     }
   }
 
-  const decodeFromHex = () => {
+  const decodeFromHex = (input: string) => {
     try {
-      const cleaned = input().replace(/[^0-9a-f]/gi, '')
+      const cleaned = input.replace(/[^0-9a-f]/gi, '')
       if (cleaned.length % 2 !== 0) {
         throw new Error('Invalid hex string length')
       }
       const decoded = cleaned.match(/.{2}/g)
         ?.map(byte => String.fromCharCode(Number.parseInt(byte, 16)))
         .join('') || ''
-      setOutput(decoded)
       toast.success('Decoded from Hex')
+      return decoded
     } catch {
       toast.error('Invalid hexadecimal string')
-      setOutput('')
+      return ''
     }
   }
 
-  const clear = () => {
-    setInput('')
-    setOutput('')
-  }
-
   return (
-    <div class="gap-6 grid lg:grid-cols-2">
-      <div class="space-y-4">
-        <TextField>
-          <TextFieldLabel>Input Text</TextFieldLabel>
-          <TextFieldTextArea
-            class="text-sm font-mono h-64"
-            placeholder="Enter text to encode or hex to decode..."
-            value={input()}
-            onInput={e => setInput(e.currentTarget.value)}
-          />
-        </TextField>
-        <div class="flex gap-2">
-          <Button onClick={encodeToHex} disabled={!input()}>
-            Encode to Hex
-          </Button>
-          <Button variant="secondary" onClick={decodeFromHex} disabled={!input()}>
-            Decode from Hex
-          </Button>
-          <Button variant="secondary" onClick={clear} disabled={!input() && !output()}>
-            Clear
-          </Button>
-        </div>
-      </div>
-
-      <div class="space-y-4">
-        <TextField>
-          <TextFieldLabel>Hex Output</TextFieldLabel>
-          <TextFieldTextArea
-            class="text-sm font-mono bg-muted/50 h-64"
-            readOnly
-            placeholder="Encoded or decoded text will appear here..."
-            value={output()}
-          />
-        </TextField>
-        <div class="flex gap-2">
-          <CopyButton
-            content={output()}
-            variant="secondary"
-          />
-        </div>
-      </div>
-    </div>
+    <EncoderLayout
+      onEncode={encodeToHex}
+      onDecode={decodeFromHex}
+      inputPlaceholder="Enter text to encode or hex to decode..."
+      outputLabel="Hex Output"
+      outputPlaceholder="Encoded or decoded text will appear here..."
+    />
   )
 }

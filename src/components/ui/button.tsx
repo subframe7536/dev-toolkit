@@ -9,7 +9,7 @@ import { splitProps } from 'solid-js'
 
 export const buttonVariants = clsvDefault(
   clsv(
-    'inline-flex items-center justify-center rounded-md font-500 transition focus-visible:effect-fv disabled:(effect-dis cursor-not-allowed) select-none whitespace-nowrap',
+    'inline-flex items-center justify-center rounded-md font-500 transition cursor-pointer focus-visible:effect-fv disabled:(effect-dis cursor-not-allowed) select-none whitespace-nowrap',
     {
       variant: {
         default: 'bg-primary text-primary-foreground shadow hover:bg-primary/90',
@@ -17,7 +17,7 @@ export const buttonVariants = clsvDefault(
         secondary: 'bg-secondary text-secondary-foreground hover:bg-secondary/80',
         ghost: 'hover:(bg-accent text-accent-foreground hover:bg-accent/50)',
         link: 'text-primary underline-offset-4 hover:underline',
-        desctructive: 'text-destructive-foreground bg-destructive hover:bg-destructive/80',
+        destructive: 'text-destructive-foreground bg-destructive hover:bg-destructive/80',
       },
       size: {
         default: 'h-9 px-4 py-2 text-sm',

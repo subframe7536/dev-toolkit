@@ -1,12 +1,13 @@
 import { CopyButton } from '#/components/copy-button'
+import { DownloadButton } from '#/components/download-button'
+import { EncoderLayout } from '#/components/encoder-layout'
+import { FileUpload } from '#/components/file-upload'
 import { Button } from '#/components/ui/button'
-import {
-  TextField,
-  TextFieldLabel,
-  TextFieldTextArea,
-} from '#/components/ui/text-field'
+import { Icon } from '#/components/ui/icon'
+import { Switch } from '#/components/ui/switch'
+import { Tabs, TabsContent, TabsIndicator, TabsList, TabsTrigger } from '#/components/ui/tabs'
 import { createRoute } from 'solid-file-router'
-import { createSignal } from 'solid-js'
+import { createMemo, createSignal, Show } from 'solid-js'
 import { toast } from 'solid-sonner'
 
 export default createRoute({
@@ -21,78 +22,137 @@ export default createRoute({
 })
 
 function Base64Encoder() {
-  const [input, setInput] = createSignal('')
-  const [output, setOutput] = createSignal('')
-
-  const encodeToBase64 = () => {
+  const encodeToBase64 = (input: string) => {
     try {
-      const encoded = btoa(input())
-      setOutput(encoded)
-      toast.success('Encoded to Base64')
+      return btoa(input)
     } catch {
       toast.error('Invalid input for encoding')
-      setOutput('')
+      return ''
     }
   }
 
-  const decodeFromBase64 = () => {
+  const decodeFromBase64 = (input: string) => {
     try {
-      const decoded = atob(input())
-      setOutput(decoded)
-      toast.success('Decoded from Base64')
+      return atob(input)
     } catch {
       toast.error('Invalid Base64 string')
-      setOutput('')
+      return ''
     }
-  }
-
-  const clear = () => {
-    setInput('')
-    setOutput('')
   }
 
   return (
-    <div class="gap-6 grid lg:grid-cols-2">
+    <Tabs defaultValue="text" class="w-full">
+      <TabsList>
+        <TabsTrigger value="text">Text Mode</TabsTrigger>
+        <TabsTrigger value="file">File Mode</TabsTrigger>
+        <TabsIndicator />
+      </TabsList>
+
+      <TabsContent value="text">
+        <EncoderLayout
+          onEncode={encodeToBase64}
+          onDecode={decodeFromBase64}
+          inputPlaceholder="Enter text to encode or Base64 to decode..."
+          outputLabel="Base64 Output"
+          outputPlaceholder="Encoded or decoded text will appear here..."
+        />
+      </TabsContent>
+
+      <TabsContent value="file">
+        <FileMode />
+      </TabsContent>
+    </Tabs>
+  )
+}
+
+function fileToBase64(file: File): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader()
+
+    reader.onloadend = () => {
+      const dataURL = reader.result as string
+      resolve(dataURL)
+    }
+
+    reader.onerror = () => {
+      reject(new Error('Failed to read file'))
+    }
+
+    reader.readAsDataURL(file)
+  })
+}
+
+function FileMode() {
+  const [file, setFile] = createSignal<File | undefined>()
+  const [output, setOutput] = createSignal('')
+  const [includeDataURL, setIncludeDataURL] = createSignal(false)
+
+  const targetOutput = createMemo(() => includeDataURL() ? output() : output().split(',')[1])
+
+  const processFile = async (file: File) => {
+    try {
+      setFile(file)
+      const text = await fileToBase64(file)
+      setOutput(text)
+    } catch {
+      toast.error('Failed to encode file')
+      setOutput('')
+    }
+  }
+
+  return (
+    <div class="space-y-8">
       <div class="space-y-4">
-        <TextField>
-          <TextFieldLabel>Input Text</TextFieldLabel>
-          <TextFieldTextArea
-            class="text-sm font-mono h-64"
-            placeholder="Enter text to encode or Base64 to decode..."
-            value={input()}
-            onInput={e => setInput(e.currentTarget.value)}
-          />
-        </TextField>
-        <div class="flex gap-2">
-          <Button onClick={encodeToBase64} disabled={!input()}>
-            Encode to Base64
-          </Button>
-          <Button variant="secondary" onClick={decodeFromBase64} disabled={!input()}>
-            Decode from Base64
-          </Button>
-          <Button variant="secondary" onClick={clear} disabled={!input() && !output()}>
-            Clear
-          </Button>
-        </div>
+        <FileUpload
+          file={file()}
+          setFile={processFile}
+          icon="lucide:file"
+          info="Upload any file to encode to Base64"
+        />
+        <Show when={file()}>
+          <div class="p-4 border rounded-lg bg-input/50 flex flex-wrap gap-4 w-fit items-center">
+            <span>{file()?.name}</span>
+            <Button
+              variant="destructive"
+              onClick={() => {
+                setFile(undefined)
+                setOutput('')
+              }}
+              disabled={!file() && !output()}
+            >
+              <Icon name="lucide:trash-2" class="mr-2" />
+              Clear
+            </Button>
+          </div>
+        </Show>
       </div>
 
-      <div class="space-y-4">
-        <TextField>
-          <TextFieldLabel>Base64 Output</TextFieldLabel>
-          <TextFieldTextArea
-            class="text-sm font-mono bg-muted/50 h-64"
-            readOnly
-            placeholder="Encoded or decoded text will appear here..."
-            value={output()}
-          />
-        </TextField>
-        <div class="flex gap-2">
-          <CopyButton
-            content={output()}
-            variant="secondary"
-          />
+      <Show when={output()}>
+        <div class="space-y-4">
+          <div class="flex items-center justify-between">
+            <h3 class="text-lg text-foreground font-semibold">
+              Base64 Output
+            </h3>
+            <div class="flex gap-4">
+              <Switch
+                checked={includeDataURL()}
+                onChange={setIncludeDataURL}
+                text="Include Data URL prefix"
+              />
+              <CopyButton content={targetOutput()} variant="secondary" size="sm" />
+              <DownloadButton
+                content={targetOutput()}
+                filename={`${file()!.name}.base64.txt`}
+                variant="secondary"
+                size="sm"
+              />
+            </div>
+          </div>
+          <div class="text-sm font-mono p-4 border rounded-md bg-muted/50 max-h-96 break-all of-y-auto">
+            {targetOutput()}
+          </div>
         </div>
-      </div>
+      </Show>
     </div>
   )
 }

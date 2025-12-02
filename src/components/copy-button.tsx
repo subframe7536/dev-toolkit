@@ -2,7 +2,7 @@ import type { JSX } from 'solid-js'
 
 import { useCopy } from '@solid-hooks/core/web'
 import { cls } from 'cls-variant'
-import { Show } from 'solid-js'
+import { createMemo, Show } from 'solid-js'
 import { toast } from 'solid-sonner'
 
 import { Button } from './ui/button'
@@ -12,6 +12,7 @@ interface CopyButtonProps {
   content: string
   variant?: 'default' | 'outline' | 'ghost' | 'secondary'
   size?: 'sm' | 'default' | 'lg'
+  disabled?: boolean
   class?: string
   text?: boolean | string
 }
@@ -27,19 +28,20 @@ export function CopyButton(props: CopyButtonProps) {
       toast.error('Failed to copy to clipboard')
     }
   }
-
-  const icon = <Icon name={isCopied() ? 'lucide:check' : 'lucide:copy'} class={cls(props.text && 'mr-2')} />
+  const text = createMemo(() => props.text ?? true)
+  const icon = <Icon name={isCopied() ? 'lucide:check' : 'lucide:copy'} class={cls(text() && 'mr-2')} />
   return (
     <Button
       variant={props.variant ?? 'outline'}
       size={props.size}
       class={props.class}
+      disabled={props.disabled}
       onClick={handleCopy}
     >
-      <Show when={props.text} fallback={icon}>
+      <Show when={text()} fallback={icon}>
         <>
           {icon}
-          {isCopied() ? 'Copied!' : (props.text === true ? 'Copy' : props.text)}
+          {isCopied() ? 'Copied!' : (text() ? 'Copy' : props.text)}
         </>
       </Show>
     </Button>

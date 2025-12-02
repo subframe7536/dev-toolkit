@@ -219,7 +219,7 @@ export const InputSection: Component<InputSectionProps> = (props) => {
                 CSV Example
               </Button>
               <Button
-                variant="desctructive"
+                variant="destructive"
                 onClick={() => setTextInput('')}
                 disabled={!textInput().trim()}
               >

@@ -1,12 +1,5 @@
-import { CopyButton } from '#/components/copy-button'
-import { Button } from '#/components/ui/button'
-import {
-  TextField,
-  TextFieldLabel,
-  TextFieldTextArea,
-} from '#/components/ui/text-field'
+import { EncoderLayout } from '#/components/encoder-layout'
 import { createRoute } from 'solid-file-router'
-import { createSignal } from 'solid-js'
 import { toast } from 'solid-sonner'
 
 export default createRoute({
@@ -21,78 +14,31 @@ export default createRoute({
 })
 
 function URLEncoder() {
-  const [input, setInput] = createSignal('')
-  const [output, setOutput] = createSignal('')
-
-  const encodeToURL = () => {
+  const encodeToURL = (input: string) => {
     try {
-      const encoded = encodeURIComponent(input())
-      setOutput(encoded)
-      toast.success('Encoded to URL')
+      return encodeURIComponent(input)
     } catch {
       toast.error('Invalid input for encoding')
-      setOutput('')
+      return ''
     }
   }
 
-  const decodeFromURL = () => {
+  const decodeFromURL = (input: string) => {
     try {
-      const decoded = decodeURIComponent(input())
-      setOutput(decoded)
-      toast.success('Decoded from URL')
+      return decodeURIComponent(input)
     } catch {
       toast.error('Invalid URL-encoded string')
-      setOutput('')
+      return ''
     }
-  }
-
-  const clear = () => {
-    setInput('')
-    setOutput('')
   }
 
   return (
-    <div class="gap-6 grid lg:grid-cols-2">
-      <div class="space-y-4">
-        <TextField>
-          <TextFieldLabel>Input Text</TextFieldLabel>
-          <TextFieldTextArea
-            class="text-sm font-mono h-64"
-            placeholder="Enter text to encode or URL-encoded text to decode..."
-            value={input()}
-            onInput={e => setInput(e.currentTarget.value)}
-          />
-        </TextField>
-        <div class="flex gap-2">
-          <Button onClick={encodeToURL} disabled={!input()}>
-            Encode to URL
-          </Button>
-          <Button variant="secondary" onClick={decodeFromURL} disabled={!input()}>
-            Decode from URL
-          </Button>
-          <Button variant="secondary" onClick={clear} disabled={!input() && !output()}>
-            Clear
-          </Button>
-        </div>
-      </div>
-
-      <div class="space-y-4">
-        <TextField>
-          <TextFieldLabel>URL Output</TextFieldLabel>
-          <TextFieldTextArea
-            class="text-sm font-mono bg-muted/50 h-64"
-            readOnly
-            placeholder="Encoded or decoded text will appear here..."
-            value={output()}
-          />
-        </TextField>
-        <div class="flex gap-2">
-          <CopyButton
-            content={output()}
-            variant="secondary"
-          />
-        </div>
-      </div>
-    </div>
+    <EncoderLayout
+      onEncode={encodeToURL}
+      onDecode={decodeFromURL}
+      inputPlaceholder="Enter text to encode or URL-encoded text to decode..."
+      outputLabel="URL Output"
+      outputPlaceholder="Encoded or decoded text will appear here..."
+    />
   )
 }
