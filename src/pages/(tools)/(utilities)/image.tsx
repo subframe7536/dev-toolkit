@@ -11,8 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '#
 import { Slider } from '#/components/ui/slider'
 import { Switch } from '#/components/ui/switch'
 import { TextField, TextFieldInput } from '#/components/ui/text-field'
-import { downloadFile } from '#/utils/download'
-import { convertImage, getFileExtension, getMimeType } from '#/utils/image'
+import { convertImage, getFileExtension } from '#/utils/image'
 import { createRoute } from 'solid-file-router'
 import { createSignal, For, onCleanup, Show } from 'solid-js'
 import { createStore } from 'solid-js/store'
@@ -119,10 +118,18 @@ function ImageConverter() {
         })
 
         const filename = img.file.name.replace(/\.[^.]+$/, `.${getFileExtension(targetFormat())}`)
-        downloadFile({ content: result.blob, filename, mimeType: getMimeType(targetFormat()) })
+        const blob = result.blob
+        const url = URL.createObjectURL(blob)
+        const a = document.createElement('a')
+        a.href = url
+        a.download = filename
+        document.body.appendChild(a)
+        a.click()
+        document.body.removeChild(a)
+        URL.revokeObjectURL(url)
       }
 
-      toast.success(`Converted ${images.length} image${images.length > 1 ? 's' : ''}`)
+      toast.success(`Downloaded ${images.length} image${images.length > 1 ? 's' : ''}`)
     } catch (error) {
       toast.error('Conversion failed', {
         description: error instanceof Error ? error.message : 'Unknown error',

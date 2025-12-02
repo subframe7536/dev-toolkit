@@ -1,6 +1,7 @@
 import type { ColorFormat, RGB } from '#/utils/color'
 
 import { Card } from '#/components/card'
+import { CopyButton } from '#/components/copy-button'
 import { Button } from '#/components/ui/button'
 import Icon from '#/components/ui/icon'
 import { Slider } from '#/components/ui/slider'
@@ -76,11 +77,6 @@ function ColorConverter() {
   const applySavedColor = (hex: string) => {
     setRgb(hexToRgb(hex))
     setInputValue(hex)
-  }
-
-  const copyToClipboard = (text: string) => {
-    navigator.clipboard.writeText(text)
-    toast.success('Copied to clipboard!')
   }
 
   const updateFromSliders = (component: 'r' | 'g' | 'b', value: number) => {
@@ -256,13 +252,12 @@ function ColorConverter() {
                         </div>
                         <code class="text-sm font-mono">{value()}</code>
                       </div>
-                      <Button
-                        onClick={() => copyToClipboard(value())}
+                      <CopyButton
+                        content={value()}
                         variant="ghost"
                         size="sm"
-                      >
-                        <Icon name="lucide:copy" />
-                      </Button>
+                        text={false}
+                      />
                     </div>
                   )
                 }}

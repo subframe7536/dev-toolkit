@@ -1,4 +1,4 @@
-import type { CellValue, ColumnDefinition, TableData, TableRow } from './types'
+import type { CellValue, TableData } from './types'
 
 /**
  * Reorder columns by moving a column from source index to target index

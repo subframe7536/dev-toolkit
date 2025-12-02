@@ -18,7 +18,7 @@ const light = {
   colors: {
     background: 'rgb(248, 247, 244)',
     foreground: 'rgb(26, 31, 46)',
-    card: { DEFAULT: 'rgb(249, 251, 250)', foreground: 'rgb(26, 31, 46)' },
+    card: { DEFAULT: 'rgb(250, 250, 248)', foreground: 'rgb(26, 31, 46)' },
     popover: { DEFAULT: 'rgb(255, 255, 255)', foreground: 'rgb(26, 31, 46)' },
     primary: { DEFAULT: 'rgb(124, 144, 130)', foreground: 'rgb(239, 246, 241)' },
     secondary: { DEFAULT: 'rgb(153, 165, 120)', foreground: 'rgb(238, 241, 239)' },

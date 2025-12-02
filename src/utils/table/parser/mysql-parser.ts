@@ -7,7 +7,6 @@ import type {
 } from '../types'
 
 import { generateId } from '#/utils/random'
-import { createUniqueId } from 'solid-js'
 
 /**
  * Infers data type from a list of cell values.

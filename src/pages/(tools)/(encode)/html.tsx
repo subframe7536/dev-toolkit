@@ -1,10 +1,10 @@
+import { CopyButton } from '#/components/copy-button'
 import { Button } from '#/components/ui/button'
 import {
   TextField,
   TextFieldLabel,
   TextFieldTextArea,
 } from '#/components/ui/text-field'
-import { copyToClipboard } from '#/utils/download'
 import { createRoute } from 'solid-file-router'
 import { createSignal } from 'solid-js'
 import { toast } from 'solid-sonner'
@@ -77,13 +77,6 @@ function HTMLEncoder() {
     setOutput('')
   }
 
-  const handleCopy = async () => {
-    if (!output()) {
-      return
-    }
-    await copyToClipboard(output())
-  }
-
   return (
     <div class="gap-6 grid lg:grid-cols-2">
       <div class="space-y-4">
@@ -120,9 +113,10 @@ function HTMLEncoder() {
           />
         </TextField>
         <div class="flex gap-2">
-          <Button variant="secondary" onClick={handleCopy} disabled={!output()}>
-            Copy
-          </Button>
+          <CopyButton
+            content={output()}
+            variant="secondary"
+          />
         </div>
       </div>
     </div>

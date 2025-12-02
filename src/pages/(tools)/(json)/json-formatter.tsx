@@ -1,6 +1,8 @@
 import type { JSONError } from '#/utils/json/formatter'
 import type { CaseStyle, ConversionError } from '#/utils/json/key-converter'
 
+import { CopyButton } from '#/components/copy-button'
+import { DownloadButton } from '#/components/download-button'
 import { Button } from '#/components/ui/button'
 import {
   Select,
@@ -15,7 +17,6 @@ import {
   TextFieldLabel,
   TextFieldTextArea,
 } from '#/components/ui/text-field'
-import { copyToClipboard, downloadFile } from '#/utils/download'
 import { formatJSON, minifyJSON, repairJSON, sortKeys } from '#/utils/json/formatter'
 import { convertKeys } from '#/utils/json/key-converter'
 import { createRoute } from 'solid-file-router'
@@ -135,24 +136,6 @@ function JSONFormatter() {
     setOutput('')
   }
 
-  const handleCopy = async () => {
-    if (!output()) {
-      return
-    }
-    await copyToClipboard(output())
-  }
-
-  const handleDownload = () => {
-    if (!output()) {
-      return
-    }
-    downloadFile({
-      content: output(),
-      filename: 'formatted.json',
-      mimeType: 'application/json',
-    })
-  }
-
   return (
     <div class="space-y-6">
       <div class="flex flex-wrap gap-3 items-end">
@@ -242,20 +225,16 @@ function JSONFormatter() {
             />
           </TextField>
           <div class="flex flex-wrap gap-2">
-            <Button
+            <CopyButton
+              content={output()}
               variant="secondary"
-              onClick={handleCopy}
-              disabled={!output()}
-            >
-              Copy
-            </Button>
-            <Button
+            />
+            <DownloadButton
+              content={output()}
+              filename="formatted.json"
+              mimeType="application/json"
               variant="secondary"
-              onClick={handleDownload}
-              disabled={!output()}
-            >
-              Download
-            </Button>
+            />
             <Button
               variant="secondary"
               onClick={() => setIsFullscreen(true)}

@@ -1,6 +1,8 @@
 import type { TableData } from '#/utils/table/types'
 import type { Component } from 'solid-js'
 
+import { CopyButton } from '#/components/copy-button'
+import { DownloadButton } from '#/components/download-button'
 import { Button } from '#/components/ui/button'
 import { Checkbox } from '#/components/ui/checkbox'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '#/components/ui/dialog'
@@ -8,7 +10,6 @@ import Icon from '#/components/ui/icon'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '#/components/ui/select'
 import { Switch } from '#/components/ui/switch'
 import { TextField, TextFieldInput, TextFieldLabel, TextFieldTextArea } from '#/components/ui/text-field'
-import { copyToClipboard, downloadFile } from '#/utils/download'
 import {
   exportToCSV,
   exportToExcel,
@@ -90,11 +91,14 @@ export const ExportDialog: Component<ExportDialogProps> = (props) => {
           break
         case 'excel': {
           const blob = await exportToExcel(props, useSnakeCase())
-          downloadFile({
-            content: blob,
-            filename: `${name || 'table'}.xlsx`,
-            mimeType: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-          })
+          const url = URL.createObjectURL(blob)
+          const a = document.createElement('a')
+          a.href = url
+          a.download = `${name || 'table'}.xlsx`
+          document.body.appendChild(a)
+          a.click()
+          document.body.removeChild(a)
+          URL.revokeObjectURL(url)
           toast.success('Excel file downloaded')
           return
         }
@@ -117,41 +121,34 @@ export const ExportDialog: Component<ExportDialogProps> = (props) => {
     }
   }
 
-  const handleCopyExport = async () => {
-    await copyToClipboard(exportOutput())
-  }
-
-  const handleDownloadExport = () => {
+  const getExportFilename = () => {
     const name = tableName().trim() || 'table'
     const format = exportFormat()
-    let filename = name
-    let mimeType = 'text/plain'
 
     switch (format) {
       case 'sql-insert':
-        filename = `${name}_insert.sql`
-        break
+        return `${name}_insert.sql`
       case 'sql-update':
-        filename = `${name}_update.sql`
-        break
+        return `${name}_update.sql`
       case 'create-table':
-        filename = `${name}_create.sql`
-        break
+        return `${name}_create.sql`
       case 'csv':
-        filename = `${name}.csv`
-        mimeType = 'text/csv'
-        break
+        return `${name}.csv`
       case 'markdown':
-        filename = `${name}.md`
-        break
+        return `${name}.md`
+      default:
+        return `${name}.txt`
     }
+  }
 
-    downloadFile({
-      content: exportOutput(),
-      filename,
-      mimeType,
-    })
-    toast.success('File downloaded')
+  const getExportMimeType = () => {
+    const format = exportFormat()
+    switch (format) {
+      case 'csv':
+        return 'text/csv'
+      default:
+        return 'text/plain'
+    }
   }
 
   return (
@@ -255,14 +252,21 @@ export const ExportDialog: Component<ExportDialogProps> = (props) => {
               <div class="flex gap-2 items-center justify-between">
                 <label class="text-sm font-medium">Output</label>
                 <div class="flex gap-2">
-                  <Button size="sm" variant="outline" onClick={handleCopyExport}>
-                    <Icon name="lucide:copy" class="mr-2 size-4" />
-                    Copy
-                  </Button>
-                  <Button size="sm" variant="outline" onClick={handleDownloadExport}>
+                  <CopyButton
+                    content={exportOutput()}
+                    size="sm"
+                    variant="outline"
+                  />
+                  <DownloadButton
+                    content={exportOutput()}
+                    filename={getExportFilename()}
+                    mimeType={getExportMimeType()}
+                    size="sm"
+                    variant="outline"
+                  >
                     <Icon name="lucide:download" class="mr-2 size-4" />
                     Download
-                  </Button>
+                  </DownloadButton>
                 </div>
               </div>
               <TextField class="flex-1">

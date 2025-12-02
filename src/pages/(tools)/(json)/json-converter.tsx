@@ -1,5 +1,7 @@
 import type { ConversionResult } from '#/utils/json/converter'
 
+import { CopyButton } from '#/components/copy-button'
+import { DownloadButton } from '#/components/download-button'
 import { Button } from '#/components/ui/button'
 import {
   Select,
@@ -13,7 +15,6 @@ import {
   TextFieldLabel,
   TextFieldTextArea,
 } from '#/components/ui/text-field'
-import { copyToClipboard, downloadFile } from '#/utils/download'
 import {
   csvToJSON,
   detectFormat,
@@ -139,18 +140,7 @@ function JSONConverter() {
     setOutput('')
   }
 
-  const handleCopy = async () => {
-    if (!output()) {
-      return
-    }
-    await copyToClipboard(output())
-  }
-
-  const handleDownload = () => {
-    if (!output()) {
-      return
-    }
-
+  const getFileExtension = () => {
     const modeToExtension = {
       'json-to-csv': 'csv',
       'csv-to-json': 'json',
@@ -159,7 +149,10 @@ function JSONConverter() {
       'json-to-query': 'txt',
       'query-to-json': 'json',
     }
+    return modeToExtension[mode()]
+  }
 
+  const getMimeType = () => {
     const modeToMimeType = {
       'json-to-csv': 'text/csv',
       'csv-to-json': 'application/json',
@@ -168,15 +161,7 @@ function JSONConverter() {
       'json-to-query': 'text/plain',
       'query-to-json': 'application/json',
     }
-
-    const extension = modeToExtension[mode()]
-    const mimeType = modeToMimeType[mode()]
-
-    downloadFile({
-      content: output(),
-      filename: `converted.${extension}`,
-      mimeType,
-    })
+    return modeToMimeType[mode()]
   }
 
   const getInputPlaceholder = () => {
@@ -287,20 +272,16 @@ function JSONConverter() {
             />
           </TextField>
           <div class="flex flex-wrap gap-2">
-            <Button
+            <CopyButton
+              content={output()}
               variant="secondary"
-              onClick={handleCopy}
-              disabled={!output()}
-            >
-              Copy
-            </Button>
-            <Button
+            />
+            <DownloadButton
+              content={output()}
+              filename={`converted.${getFileExtension()}`}
+              mimeType={getMimeType()}
               variant="secondary"
-              onClick={handleDownload}
-              disabled={!output()}
-            >
-              Download
-            </Button>
+            />
           </div>
         </div>
       </div>

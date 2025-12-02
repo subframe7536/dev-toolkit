@@ -1,12 +1,13 @@
+import { CopyButton } from '#/components/copy-button'
 import { Button } from '#/components/ui/button'
+import { Icon } from '#/components/ui/icon'
 import {
   TextField,
   TextFieldInput,
   TextFieldLabel,
 } from '#/components/ui/text-field'
-import { copyToClipboard } from '#/utils/download'
 import { createRoute } from 'solid-file-router'
-import { createSignal, For, Show } from 'solid-js'
+import { createSignal, For, onMount, Show } from 'solid-js'
 import { toast } from 'solid-sonner'
 
 export default createRoute({
@@ -22,22 +23,17 @@ export default createRoute({
 
 function UUIDGenerator() {
   const [uuids, setUuids] = createSignal<string[]>([])
-  const [count, setCount] = createSignal(1)
+  const [count, setCount] = createSignal(5)
 
   const generateUUIDs = () => {
-    const newUuids = Array.from({ length: count() }, () =>
-      crypto.randomUUID())
+    const newUuids = Array.from({ length: count() }, () => crypto.randomUUID())
     setUuids(newUuids)
     toast.success(`Generated ${count()} UUID${count() > 1 ? 's' : ''}`)
   }
 
-  const handleCopy = async (text: string) => {
-    await copyToClipboard(text)
-  }
-
-  const copyAll = async () => {
-    await copyToClipboard(uuids().join('\n'))
-  }
+  onMount(() => {
+    generateUUIDs()
+  })
 
   return (
     <div class="space-y-6">
@@ -64,23 +60,25 @@ function UUIDGenerator() {
             <h3 class="text-lg text-foreground font-semibold">
               Generated UUIDs ({uuids().length})
             </h3>
-            <Button variant="secondary" size="sm" onClick={copyAll}>
-              Copy All
-            </Button>
+            <CopyButton
+              content={uuids().join('\n')}
+              variant="secondary"
+              size="sm"
+              text="Copy All"
+            />
           </div>
 
           <div class="space-y-2">
             <For each={uuids()}>
               {uuid => (
-                <div class="text-sm font-mono p-3 border border-border rounded-md bg-muted/50 flex gap-2 items-center">
+                <div class="text-sm font-mono p-3 border rounded-md bg-muted/50 flex gap-2 items-center">
                   <span class="flex-1">{uuid}</span>
-                  <Button
+                  <CopyButton
+                    content={uuid}
                     variant="ghost"
                     size="sm"
-                    onClick={() => handleCopy(uuid)}
-                  >
-                    Copy
-                  </Button>
+                    text={false}
+                  />
                 </div>
               )}
             </For>

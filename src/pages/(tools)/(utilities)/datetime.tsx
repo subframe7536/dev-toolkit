@@ -1,4 +1,5 @@
 import { Card } from '#/components/card'
+import { CopyButton } from '#/components/copy-button'
 import { Button } from '#/components/ui/button'
 import { Icon } from '#/components/ui/icon'
 import {
@@ -107,11 +108,6 @@ function DateTimeTool() {
     } else {
       toast.error('Invalid date format')
     }
-  }
-
-  const copyToClipboard = (text: string, label: string) => {
-    navigator.clipboard.writeText(text)
-    toast.success(`${label} copied to clipboard`)
   }
 
   const locales = ['en-US', 'en-GB', 'de-DE', 'fr-FR', 'es-ES', 'ja-JP', 'zh-CN', 'ar-SA']
@@ -321,13 +317,12 @@ function DateTimeTool() {
                         <div class="text-xs text-muted-foreground mb-1">Result:</div>
                         <div class="text-sm font-mono font-semibold truncate">{manipulatedTime()}</div>
                       </div>
-                      <Button
+                      <CopyButton
+                        content={manipulatedTime()!}
                         size="sm"
                         variant="ghost"
-                        onClick={() => copyToClipboard(manipulatedTime()!, 'Result')}
-                      >
-                        <Icon name="lucide:copy" class="h-4 w-4" />
-                      </Button>
+                        text={false}
+                      />
                     </div>
                   </div>
                 </Show>
@@ -367,13 +362,12 @@ function DateTimeTool() {
                             {formatWithPattern(customDate() || currentTime(), customFormat())}
                           </div>
                         </div>
-                        <Button
+                        <CopyButton
+                          content={formatWithPattern(customDate() || currentTime(), customFormat())}
                           size="sm"
                           variant="ghost"
-                          onClick={() => copyToClipboard(formatWithPattern(customDate() || currentTime(), customFormat()), 'Custom format')}
-                        >
-                          <Icon name="lucide:copy" class="h-4 w-4" />
-                        </Button>
+                          text={false}
+                        />
                       </div>
                     </div>
                   </Show>
@@ -390,13 +384,12 @@ function DateTimeTool() {
                             <div class="text-xs text-muted-foreground">{format().label}</div>
                             <div class="text-sm font-mono truncate">{format().value}</div>
                           </div>
-                          <Button
+                          <CopyButton
+                            content={format().value}
                             size="sm"
                             variant="ghost"
-                            onClick={() => copyToClipboard(format().value, format().label)}
-                          >
-                            <Icon name="lucide:copy" class="h-4 w-4" />
-                          </Button>
+                            text={false}
+                          />
                         </div>
                       )}
                     </Index>

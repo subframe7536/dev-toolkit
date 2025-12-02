@@ -46,7 +46,7 @@ export function FileUpload(props: Props) {
       onFileAccept={handleFileAccept}
     >
       <FileField.Dropzone
-        class="text-center b-(2 border dashed) rounded-md flex flex-col gap-4 h-60 transition-all items-center justify-center data-[dragging=true]:(bg-muted)"
+        class="text-center b-(2 border dashed) rounded-md bg-input flex flex-col gap-4 h-60 transition-all items-center justify-center data-[dragging=true]:bg-muted"
       >
         <Show when={props.icon}>
           <Icon name={props.icon!} class="size-12" />

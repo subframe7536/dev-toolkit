@@ -1,3 +1,5 @@
+import { CopyButton } from '#/components/copy-button'
+import { DownloadButton } from '#/components/download-button'
 import { Button } from '#/components/ui/button'
 import { Switch } from '#/components/ui/switch'
 import {
@@ -6,7 +8,6 @@ import {
   TextFieldLabel,
   TextFieldTextArea,
 } from '#/components/ui/text-field'
-import { copyToClipboard, downloadFile } from '#/utils/download'
 import { generateJsonSchema } from '#/utils/json/schema-generator'
 import { createRoute } from 'solid-file-router'
 import { createSignal } from 'solid-js'
@@ -44,24 +45,6 @@ function JSONSchemaGenerator() {
     } catch {
       toast.error('Invalid JSON input')
     }
-  }
-
-  const handleCopy = async () => {
-    if (!output()) {
-      return
-    }
-    await copyToClipboard(output())
-  }
-
-  const handleDownload = () => {
-    if (!output()) {
-      return
-    }
-    downloadFile({
-      content: output(),
-      filename: 'schema.json',
-      mimeType: 'application/json',
-    })
   }
 
   const handleClear = () => {
@@ -133,12 +116,16 @@ function JSONSchemaGenerator() {
             />
           </TextField>
           <div class="flex flex-wrap gap-2">
-            <Button variant="secondary" onClick={handleCopy} disabled={!output()}>
-              Copy
-            </Button>
-            <Button variant="secondary" onClick={handleDownload} disabled={!output()}>
-              Download
-            </Button>
+            <CopyButton
+              content={output()}
+              variant="secondary"
+            />
+            <DownloadButton
+              content={output()}
+              filename="schema.json"
+              mimeType="application/json"
+              variant="secondary"
+            />
           </div>
         </div>
       </div>
