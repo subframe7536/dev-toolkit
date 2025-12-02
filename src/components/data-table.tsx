@@ -73,7 +73,7 @@ export function DataTable(props: DataTableProps) {
       parsedValue = true
     } else if (value.toLowerCase() === 'false') {
       parsedValue = false
-    } else if (value.toLowerCase() === 'null' || value.trim() === '') { // Try to parse as null
+    } else if (value.toLowerCase() === 'null' || value === '') { // Try to parse as null
       parsedValue = null
     }
 
@@ -129,7 +129,7 @@ export function DataTable(props: DataTableProps) {
                 class={cls(
                   'cursor-text px-3 py-2 outline-none',
                   props.editable && 'hover:bg-accent/50',
-                  isFocused() && 'ring-2 ring-primary ring-inset',
+                  isFocused() && 'ring-2 ring-primary ring-inset select-none',
                 )}
                 tabIndex={0}
                 role="gridcell"
@@ -138,15 +138,18 @@ export function DataTable(props: DataTableProps) {
                 onFocus={() => setFocusedCell({ rowIndex, columnIndex })}
                 onBlur={() => setFocusedCell({ columnIndex: -1, rowIndex: -1 })}
               >
-                {value?.toString() ?? ''}
+                <Show when={value === null} fallback={value!.toString()}>
+                  <span class="text-muted-foreground font-italic">NULL</span>
+                </Show>
               </div>
             )}
           >
             <input
               type="text"
-              class="px-3 py-2 border-2 border-primary rounded w-full focus:outline-none"
+              class="px-3 py-2 border-2 border-primary rounded bg-input w-full focus:outline-none"
               value={editValue()}
               aria-label={`Editing ${col.name}`}
+              ref={r => setTimeout(() => r.focus(), 0)}
               onInput={e => setEditValue(e.currentTarget.value)}
               onKeyDown={(e) => {
                 if (e.key === 'Enter') {
