@@ -1,5 +1,5 @@
 // Core data type enum
-export type DataType = 'string' | 'integer' | 'decimal' | 'boolean' | 'date' | 'datetime'
+export type DataType = 'string' | 'integer' | 'decimal' | 'boolean'
 
 // Export format enum
 export type ExportFormat = 'sql-insert' | 'sql-update' | 'sql-create' | 'excel' | 'csv' | 'markdown'

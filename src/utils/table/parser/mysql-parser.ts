@@ -8,72 +8,7 @@ import type {
 
 import { generateId } from '#/utils/random'
 
-/**
- * Infers data type from a list of cell values.
- * Note: Date/datetime types are intentionally treated as 'string' per requirements.
- */
-export function inferDataType(values: CellValue[]): DataType {
-  // Filter out nulls and empty strings for type inference
-  const nonEmptyValues = values.filter(v =>
-    v !== null
-    && (typeof v !== 'string' || v.trim() !== ''),
-  )
-
-  // If all values are empty/null, default to string
-  if (nonEmptyValues.length === 0) {
-    return 'string'
-  }
-
-  // Check for boolean values
-  const allBoolean = nonEmptyValues.every((v) => {
-    if (typeof v !== 'string') {
-      return false
-    }
-    const lower = v.trim().toLowerCase()
-    return ['true', 'false', '1', '0'].includes(lower)
-  })
-  if (allBoolean) {
-    return 'boolean'
-  }
-
-  // Check for numeric values
-  let allInteger = true
-  let allDecimal = true
-
-  for (const v of nonEmptyValues) {
-    if (typeof v !== 'string') {
-      allInteger = false
-      allDecimal = false
-      break
-    }
-
-    const numStr = v.trim()
-    // Skip empty strings (already filtered but double-check)
-    if (numStr === '') {
-      continue
-    }
-
-    // Check integer pattern: optional sign followed by digits only
-    if (!/^-?\d+$/.test(numStr)) {
-      allInteger = false
-    }
-
-    // Check decimal pattern: optional sign, digits with optional decimal point
-    if (!/^-?(?:\d+(?:\.\d*)?|\.\d+)$/.test(numStr)) {
-      allDecimal = false
-    }
-  }
-
-  if (allInteger) {
-    return 'integer'
-  }
-  if (allDecimal) {
-    return 'decimal'
-  }
-
-  // All other cases (including dates) are treated as strings per requirements
-  return 'string'
-}
+import { inferDataType } from './type-inference'
 
 /**
  * Parses MySQL ASCII table output into structured data.

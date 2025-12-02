@@ -26,11 +26,6 @@ export function formatSQLValue(value: CellValue, dataType: DataType): string {
   // Handle different data types
   switch (dataType) {
     case 'string':
-    case 'date':
-    case 'datetime':
-      // String types need quotes and escaping
-      return `'${escapeSQLString(String(value))}'`
-
     case 'integer':
     case 'decimal':
       // Numeric types don't need quotes
@@ -57,10 +52,6 @@ export function getSQLType(dataType: DataType): string {
       return 'DECIMAL(10,2)'
     case 'boolean':
       return 'BOOLEAN'
-    case 'date':
-      return 'DATE'
-    case 'datetime':
-      return 'DATETIME'
     case 'string':
     default:
       return 'VARCHAR(255)'
