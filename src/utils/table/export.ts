@@ -1,5 +1,7 @@
 import type { CellValue, DataType, TableData } from './types'
 
+import { utils, write } from 'xlsx'
+
 /**
  * Escape SQL string values by doubling single quotes and handling special characters
  */
@@ -281,9 +283,6 @@ export async function exportToExcel(
   data: TableData,
   useSnakeCase: boolean = false,
 ): Promise<Blob> {
-  // Dynamically import xlsx library
-  const XLSX = await import('xlsx')
-
   // Get column names (use snake_case if requested)
   const columnNames = data.columns.map(col => useSnakeCase ? col.name : col.originalName)
 
@@ -303,7 +302,7 @@ export async function exportToExcel(
   }
 
   // Create worksheet from array of arrays
-  const worksheet = XLSX.utils.aoa_to_sheet(worksheetData)
+  const worksheet = utils.aoa_to_sheet(worksheetData)
 
   // Apply basic formatting to header row (bold)
   // Set column widths based on content
@@ -328,11 +327,11 @@ export async function exportToExcel(
   worksheet['!cols'] = columnWidths
 
   // Create workbook and add worksheet
-  const workbook = XLSX.utils.book_new()
-  XLSX.utils.book_append_sheet(workbook, worksheet, 'Sheet1')
+  const workbook = utils.book_new()
+  utils.book_append_sheet(workbook, worksheet, 'Sheet1')
 
   // Write workbook to binary string
-  const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' })
+  const excelBuffer = write(workbook, { bookType: 'xlsx', type: 'array' })
 
   // Create Blob from buffer
   return new Blob([excelBuffer], {

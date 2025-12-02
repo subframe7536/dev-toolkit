@@ -120,7 +120,6 @@ function DateTimeTool() {
     { label: 'yyyy-MM-dd HH:mm:ss', value: '' },
     { label: 'UTC String', value: '' },
     { label: 'Local String', value: '' },
-    { label: 'Formatted (with options)', value: '' },
   ])
 
   // Update output formats reactively
@@ -137,12 +136,6 @@ function DateTimeTool() {
       setOutputFormats(3, 'value', formatWithPattern(date, 'yyyy-MM-dd HH:mm:ss'))
       setOutputFormats(4, 'value', date.toUTCString())
       setOutputFormats(5, 'value', date.toLocaleString())
-      setOutputFormats(6, 'value', formatDateTime(date, {
-        locale: selectedLocale(),
-        dateStyle: dateStyle(),
-        timeStyle: timeStyle(),
-        timeZone: selectedTimeZone(),
-      }))
     })
   })
 

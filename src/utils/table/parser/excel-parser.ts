@@ -1,7 +1,8 @@
 import type { CellValue, ColumnDefinition, ParseResult, TableData, TableRow } from '../types'
+import type { WorkBook } from 'xlsx'
 
 import { generateId } from '#/utils/random'
-import * as XLSX from 'xlsx'
+import { read, utils } from 'xlsx'
 
 /**
  * Get list of sheet names from an Excel file
@@ -12,7 +13,7 @@ import * as XLSX from 'xlsx'
 export async function getExcelSheetNames(file: File): Promise<string[]> {
   try {
     const arrayBuffer = await file.arrayBuffer()
-    const workbook = XLSX.read(arrayBuffer, { type: 'array' })
+    const workbook = read(arrayBuffer, { type: 'array' })
     return workbook.SheetNames
   } catch (error) {
     throw new Error(`Failed to read Excel file: ${error instanceof Error ? error.message : 'Unknown error'}`)
@@ -56,9 +57,9 @@ export async function parseExcelFile(file: File, sheetIndex: number = 0): Promis
     const arrayBuffer = await file.arrayBuffer()
 
     // Parse workbook
-    let workbook: XLSX.WorkBook
+    let workbook: WorkBook
     try {
-      workbook = XLSX.read(arrayBuffer, { type: 'array' })
+      workbook = read(arrayBuffer, { type: 'array' })
     } catch (error) {
       return {
         success: false,
@@ -94,7 +95,7 @@ export async function parseExcelFile(file: File, sheetIndex: number = 0): Promis
 
     // Convert sheet to JSON array (array of arrays)
     // Using header: 1 to get raw array format without assuming first row is header
-    const rawData: unknown[][] = XLSX.utils.sheet_to_json(worksheet, {
+    const rawData: unknown[][] = utils.sheet_to_json(worksheet, {
       header: 1,
       defval: null, // Use null for empty cells
       raw: false, // Get formatted values as strings
