@@ -111,7 +111,6 @@ export const ExportDialog: Component<ExportDialogProps> = (props) => {
       }
 
       setExportOutput(output)
-      toast.success('Export generated successfully')
     } catch (error) {
       toast.error('Failed to export', {
         description: error instanceof Error ? error.message : 'Unknown error',

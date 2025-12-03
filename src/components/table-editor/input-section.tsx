@@ -63,7 +63,6 @@ export const InputSection: Component<InputSectionProps> = (props) => {
 
     if (input.trim().startsWith('+-')) {
       const result = parseMySQLOutput(input)
-      console.log(result)
       if (result.success && result.data) {
         props.onDataParsed(result.data)
         toast.success('MySQL output parsed successfully!')

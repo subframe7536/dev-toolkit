@@ -127,9 +127,9 @@ export function DataTable(props: DataTableProps) {
             fallback={(
               <div
                 class={cls(
-                  'cursor-text px-3 py-2 outline-none',
+                  'cursor-text px-3 py-2 outline-none h-full',
                   props.editable && 'hover:bg-accent/50',
-                  isFocused() && 'ring-2 ring-primary ring-inset select-none',
+                  isFocused() && 'ring-2 ring-primary ring-inset select-none rounded',
                 )}
                 tabIndex={0}
                 role="gridcell"
@@ -144,8 +144,7 @@ export function DataTable(props: DataTableProps) {
               </div>
             )}
           >
-            <input
-              type="text"
+            <textarea
               class="px-3 py-2 border-2 border-primary rounded bg-input w-full focus:outline-none"
               value={editValue()}
               aria-label={`Editing ${col.name}`}
