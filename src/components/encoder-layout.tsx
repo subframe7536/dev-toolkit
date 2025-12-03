@@ -86,7 +86,17 @@ export function EncoderLayout(rawProps: EncoderLayoutProps): JSX.Element {
               onInput={e => setInput(e.currentTarget.value)}
             />
           </TextField>
-          <div class="flex gap-2 items-center">
+          <div class="flex gap-2 items-center justify-between lg:justify-start">
+            {/* Mobile Swap Button */}
+            <Button
+              onClick={toggleMode}
+              size="icon"
+              variant="outline"
+              class="p-2 rounded-full bg-background block shadow-md transition-transform lg:hidden hover:shadow-lg active:scale-95 hover:scale-105"
+              title={`Switch to ${mode() === 'encode' ? 'decode' : 'encode'} mode`}
+            >
+              <Icon name="lucide:arrow-up-down" />
+            </Button>
             <Button
               variant="destructive"
               onClick={() => setInput('')}
@@ -104,17 +114,16 @@ export function EncoderLayout(rawProps: EncoderLayoutProps): JSX.Element {
             onClick={toggleMode}
             size="icon"
             variant="outline"
-            class="rounded-full bg-background size-10 shadow-md transition-transform hover:shadow-lg active:scale-95 hover:scale-105"
+            class="rounded-full bg-background shadow-md transition-transform hover:shadow-lg active:scale-95 hover:scale-105"
             title={`Switch to ${mode() === 'encode' ? 'decode' : 'encode'} mode`}
           >
             <Icon name="lucide:arrow-right-left" />
           </Button>
-
         </div>
 
         {/* Right Panel (Output) */}
-        <div class="space-y-4">
-          <TextField validationState={computation().error ? 'invalid' : 'valid'}>
+        <div class="flex flex-col gap-4 items-end lg:items-start">
+          <TextField validationState={computation().error ? 'invalid' : 'valid'} class="w-full">
             <TextFieldLabel class="!text-lg">
               {isEncode() ? props.outputLabel : props.inputLabel}
             </TextFieldLabel>
@@ -130,6 +139,7 @@ export function EncoderLayout(rawProps: EncoderLayoutProps): JSX.Element {
             />
           </TextField>
           <CopyButton
+            class="w-fit"
             content={computation().result}
             disabled={!computation().result}
             variant="secondary"
