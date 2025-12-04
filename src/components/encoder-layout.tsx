@@ -8,66 +8,93 @@ import {
   TextFieldLabel,
   TextFieldTextArea,
 } from '#/components/ui/text-field'
-import { createMemo, createSignal, mergeProps, Show } from 'solid-js'
+import { cls } from 'cls-variant'
+import { batch, createSignal, onCleanup } from 'solid-js'
+import { toast } from 'solid-sonner'
 
 export interface EncoderLayoutProps {
+  mode: string
   onEncode: (input: string) => string
   onDecode: (input: string) => string
-  inputLabel?: string
-  outputLabel?: string
-  inputPlaceholder?: string
-  outputPlaceholder?: string
 }
 
-export function EncoderLayout(rawProps: EncoderLayoutProps): JSX.Element {
-  // 1. Efficient Default Props
-  const props = mergeProps(
-    {
-      inputLabel: 'Input Text',
-      outputLabel: 'Output',
-      inputPlaceholder: 'Enter text to process...',
-      outputPlaceholder: 'Result will appear here...',
-    },
-    rawProps,
-  )
+export function EncoderLayout(props: EncoderLayoutProps): JSX.Element {
+  const [isEncode, setIsEncode] = createSignal(true)
+  const [inputText, setInputText] = createSignal('')
+  const [outputText, setOutputText] = createSignal('')
+  const [error, setError] = createSignal<string | null>(null)
 
-  const [input, setInput] = createSignal('')
-  const [mode, setMode] = createSignal<'encode' | 'decode'>('encode')
+  let errorToastTimer: ReturnType<typeof setTimeout> | null = null
 
-  const isEncode = () => mode() === 'encode'
+  onCleanup(() => {
+    if (errorToastTimer) {
+      clearTimeout(errorToastTimer)
+    }
+  })
 
-  // 2. Derived State (Replaces createEffect)
-  // Calculates output only when input or mode changes.
-  const computation = createMemo(() => {
-    const value = input()
+  // Debounced error toast
+  const showErrorToast = (message: string) => {
+    if (errorToastTimer) {
+      clearTimeout(errorToastTimer)
+    }
+    errorToastTimer = setTimeout(() => {
+      toast.error(message)
+      errorToastTimer = null
+    }, 500)
+  }
+
+  // Process input whenever it changes
+  const handleInput = (value: string) => {
+    setInputText(value)
+
     if (!value) {
-      return { result: '', error: null }
+      setOutputText('')
+      setError(null)
+      return
     }
 
     try {
       const result = isEncode()
         ? props.onEncode(value)
         : props.onDecode(value)
-      return { result, error: null }
+      setOutputText(result)
+      setError(null)
     } catch (err) {
-      return {
-        result: '',
-        error: err instanceof Error ? err.message : 'Invalid input',
-      }
+      const errorMsg = err instanceof Error ? err.message : 'Invalid input'
+      setOutputText('')
+      setError(errorMsg)
+      showErrorToast(errorMsg)
     }
-  })
-
-  // 3. Smart Swap Logic
-  const toggleMode = () => {
-    const current = computation()
-
-    // If we have a valid result, move it to input for a seamless workflow
-    if (current.result && !current.error) {
-      setInput(current.result)
-    }
-
-    setMode(prev => (prev === 'encode' ? 'decode' : 'encode'))
   }
+
+  // Toggle between encode/decode and swap input/output
+  const toggleMode = () => {
+    batch(() => {
+      setIsEncode(!isEncode())
+      // Swap input and output
+      const temp = inputText()
+      setInputText(outputText())
+      setOutputText(temp)
+      setError(null)
+    })
+  }
+
+  const clear = () => {
+    batch(() => {
+      setInputText('')
+      setOutputText('')
+      setError(null)
+    })
+  }
+
+  const inputLabel = () => isEncode() ? 'Plain Text' : props.mode
+  const outputLabel = () => isEncode() ? props.mode : 'Plain Text'
+  const inputPlaceholder = () => isEncode()
+    ? `Enter text to encode to ${props.mode}...`
+    : `Enter ${props.mode} to decode...`
+  const outputPlaceholder = () => isEncode()
+    ? `${props.mode} output will appear here...`
+    : 'Decoded text will appear here...'
 
   return (
     <div class="space-y-6 lg:space-y-0">
@@ -77,13 +104,13 @@ export function EncoderLayout(rawProps: EncoderLayoutProps): JSX.Element {
         <div class="space-y-4">
           <TextField>
             <TextFieldLabel class="!text-lg">
-              {isEncode() ? props.inputLabel : props.outputLabel}
+              {inputLabel()}
             </TextFieldLabel>
             <TextFieldTextArea
               class="text-sm font-mono h-64 resize-none"
-              placeholder={isEncode() ? props.inputPlaceholder : props.outputPlaceholder}
-              value={input()}
-              onInput={e => setInput(e.currentTarget.value)}
+              placeholder={inputPlaceholder()}
+              value={inputText()}
+              onInput={e => handleInput(e.currentTarget.value)}
             />
           </TextField>
           <div class="flex gap-2 items-center justify-between lg:justify-start">
@@ -93,14 +120,14 @@ export function EncoderLayout(rawProps: EncoderLayoutProps): JSX.Element {
               size="icon"
               variant="outline"
               class="p-2 rounded-full bg-background block shadow-md transition-transform lg:hidden hover:shadow-lg active:scale-95 hover:scale-105"
-              title={`Switch to ${mode() === 'encode' ? 'decode' : 'encode'} mode`}
+              title={`Switch to ${isEncode() ? 'decode' : 'encode'} mode`}
             >
               <Icon name="lucide:arrow-up-down" />
             </Button>
             <Button
               variant="destructive"
-              onClick={() => setInput('')}
-              disabled={!input()}
+              onClick={clear}
+              disabled={!inputText()}
             >
               <Icon name="lucide:trash-2" class="mr-2" />
               Clear
@@ -115,7 +142,7 @@ export function EncoderLayout(rawProps: EncoderLayoutProps): JSX.Element {
             size="icon"
             variant="outline"
             class="rounded-full bg-background shadow-md transition-transform hover:shadow-lg active:scale-95 hover:scale-105"
-            title={`Switch to ${mode() === 'encode' ? 'decode' : 'encode'} mode`}
+            title={`Switch to ${isEncode() ? 'decode' : 'encode'} mode`}
           >
             <Icon name="lucide:arrow-right-left" />
           </Button>
@@ -123,25 +150,24 @@ export function EncoderLayout(rawProps: EncoderLayoutProps): JSX.Element {
 
         {/* Right Panel (Output) */}
         <div class="flex flex-col gap-4 items-end lg:items-start">
-          <TextField validationState={computation().error ? 'invalid' : 'valid'} class="w-full">
+          <TextField validationState={error() ? 'invalid' : 'valid'} class="w-full">
             <TextFieldLabel class="!text-lg">
-              {isEncode() ? props.outputLabel : props.inputLabel}
+              {outputLabel()}
             </TextFieldLabel>
             <TextFieldTextArea
-              class="text-sm font-mono bg-muted/50 h-64 resize-none focus-visible:ring-0"
-              classList={{
-                'text-destructive': !!computation().error,
-                'text-muted-foreground': !computation().result && !computation().error,
-              }}
+              class={cls(
+                'text-sm font-mono bg-muted/50 h-64 resize-none focus-visible:ring-0',
+                error() ? 'text-destructive' : !outputText() && 'text-muted-foreground',
+              )}
               readOnly
-              placeholder={isEncode() ? props.outputPlaceholder : props.inputPlaceholder}
-              value={computation().error || computation().result}
+              placeholder={outputPlaceholder()}
+              value={error() || outputText()}
             />
           </TextField>
           <CopyButton
             class="w-fit"
-            content={computation().result}
-            disabled={!computation().result}
+            content={outputText()}
+            disabled={!outputText()}
             variant="secondary"
           />
         </div>

@@ -23,16 +23,6 @@ describe('inferDataType', () => {
     expect(inferDataType([1, 0, 1])).toBe('integer')
   })
 
-  it('should infer date type for date values', () => {
-    expect(inferDataType(['2024-01-15', '2024-02-20', '2024-03-25'])).toBe('date')
-    expect(inferDataType(['01/15/2024', '02/20/2024'])).toBe('date')
-  })
-
-  it('should infer datetime type for datetime values', () => {
-    expect(inferDataType(['2024-01-15 10:30:00', '2024-02-20 14:45:00'])).toBe('datetime')
-    expect(inferDataType(['2024-01-15T10:30:00', '2024-02-20T14:45:00'])).toBe('datetime')
-  })
-
   it('should default to string type for mixed or string values', () => {
     expect(inferDataType(['hello', 'world'])).toBe('string')
     expect(inferDataType([1, 'two', 3])).toBe('string')

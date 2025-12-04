@@ -1,7 +1,8 @@
-import type { FileFieldTriggerProps } from '@kobalte/core/file-field'
+import type { FileFieldTriggerProps, FileRejection } from '@kobalte/core/file-field'
 
 import { FileField } from '@kobalte/core/file-field'
 import { createMemo, Show } from 'solid-js'
+import { toast } from 'solid-sonner'
 
 import { Button } from './ui/button'
 import Icon from './ui/icon'
@@ -37,6 +38,14 @@ export function FileUpload(props: Props) {
     }
   }
 
+  const handleFileReject = (info: FileRejection[]) => {
+    for (const i of info) {
+      toast.error(`Failed to upload ${i.file.name}`, {
+        description: i.errors.join(', '),
+      })
+    }
+  }
+
   return (
     <FileField
       class="flex flex-col gap-2 relative"
@@ -44,9 +53,11 @@ export function FileUpload(props: Props) {
       multiple={props.multiple}
       maxFiles={200}
       onFileAccept={handleFileAccept}
+      onFileReject={handleFileReject}
     >
       <FileField.Dropzone
         class="text-center b-(2 border dashed) rounded-lg bg-input flex flex-col gap-4 h-60 transition-all items-center justify-center data-[dragging=true]:bg-muted"
+        onDrop={e => (e.target as HTMLDivElement).dataset.dragging = 'false'}
       >
         <Show when={props.icon}>
           <Icon name={props.icon!} class="size-12" />

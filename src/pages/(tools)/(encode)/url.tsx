@@ -1,6 +1,8 @@
 import { EncoderLayout } from '#/components/encoder-layout'
+import { Label } from '#/components/ui/label'
+import { Switch } from '#/components/ui/switch'
 import { createRoute } from 'solid-file-router'
-import { toast } from 'solid-sonner'
+import { createSignal } from 'solid-js'
 
 export default createRoute({
   info: {
@@ -14,31 +16,28 @@ export default createRoute({
 })
 
 function URLEncoder() {
-  const encodeToURL = (input: string) => {
-    try {
-      return encodeURIComponent(input)
-    } catch {
-      toast.error('Invalid input for encoding')
-      return ''
-    }
+  const [useComponent, setUseComponent] = createSignal(true)
+
+  const encode = (text: string) => {
+    return useComponent() ? encodeURIComponent(text) : encodeURI(text)
   }
 
-  const decodeFromURL = (input: string) => {
-    try {
-      return decodeURIComponent(input)
-    } catch {
-      toast.error('Invalid URL-encoded string')
-      return ''
-    }
+  const decode = (text: string) => {
+    return useComponent() ? decodeURIComponent(text) : decodeURI(text)
   }
 
   return (
-    <EncoderLayout
-      onEncode={encodeToURL}
-      onDecode={decodeFromURL}
-      inputPlaceholder="Enter text to encode or URL-encoded text to decode..."
-      outputLabel="URL Output"
-      outputPlaceholder="Encoded or decoded text will appear here..."
-    />
+    <div class="flex flex-col gap-4">
+      <Switch
+        checked={useComponent()}
+        onChange={setUseComponent}
+        text="Regard as URL component"
+      />
+      <EncoderLayout
+        mode="URL"
+        onEncode={encode}
+        onDecode={decode}
+      />
+    </div>
   )
 }

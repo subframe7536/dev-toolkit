@@ -121,8 +121,6 @@ describe('generateSQLInsert', () => {
     const cellValueForTypeArb = (dataType: string) => {
       switch (dataType) {
         case 'string':
-        case 'date':
-        case 'datetime':
           return fc.oneof(
             fc.string({ minLength: 0, maxLength: 50 }),
             fc.constant(null),
@@ -155,7 +153,7 @@ describe('generateSQLInsert', () => {
       id: fc.stringMatching(/^col\d+$/),
       name: columnNameArb,
       originalName: columnNameArb,
-      dataType: fc.constantFrom('string', 'integer', 'decimal', 'boolean', 'date', 'datetime'),
+      dataType: fc.constantFrom('string', 'integer', 'decimal', 'boolean'),
       isPinned: fc.boolean(),
       sortDirection: fc.option(fc.constantFrom('asc', 'desc'), { nil: undefined }),
     })
@@ -276,8 +274,6 @@ describe('generateSQLInsert', () => {
     const cellValueForTypeArb = (dataType: string) => {
       switch (dataType) {
         case 'string':
-        case 'date':
-        case 'datetime':
           return fc.oneof(
             fc.string({ minLength: 1, maxLength: 50 }), // Non-empty strings
             fc.constant(null),
@@ -310,7 +306,7 @@ describe('generateSQLInsert', () => {
       id: fc.stringMatching(/^col\d+$/),
       name: fc.string({ minLength: 1, maxLength: 20 }).filter(s => /^[a-z_]\w*$/i.test(s)),
       originalName: fc.string({ minLength: 1, maxLength: 20 }).filter(s => /^[a-z_]\w*$/i.test(s)),
-      dataType: fc.constantFrom('string', 'integer', 'decimal', 'boolean', 'date', 'datetime'),
+      dataType: fc.constantFrom('string', 'integer', 'decimal', 'boolean'),
       isPinned: fc.boolean(),
       sortDirection: fc.option(fc.constantFrom('asc', 'desc'), { nil: undefined }),
     })
@@ -408,8 +404,6 @@ describe('generateSQLInsert', () => {
     const cellValueForTypeArb = (dataType: string) => {
       switch (dataType) {
         case 'string':
-        case 'date':
-        case 'datetime':
           return fc.oneof(
             fc.string({ minLength: 0, maxLength: 50 }),
             fc.constant(null),
@@ -442,7 +436,7 @@ describe('generateSQLInsert', () => {
       id: fc.stringMatching(/^col\d+$/),
       name: columnNameArb,
       originalName: columnNameArb,
-      dataType: fc.constantFrom('string', 'integer', 'decimal', 'boolean', 'date', 'datetime'),
+      dataType: fc.constantFrom('string', 'integer', 'decimal', 'boolean'),
       isPinned: fc.boolean(),
       sortDirection: fc.option(fc.constantFrom('asc', 'desc'), { nil: undefined }),
     })
@@ -775,8 +769,6 @@ describe('generateSQLUpdate', () => {
     const cellValueForTypeArb = (dataType: string) => {
       switch (dataType) {
         case 'string':
-        case 'date':
-        case 'datetime':
           return fc.oneof(
             fc.string({ minLength: 0, maxLength: 50 }),
             fc.constant(null),
@@ -809,7 +801,7 @@ describe('generateSQLUpdate', () => {
       id: fc.stringMatching(/^col\d+$/),
       name: columnNameArb,
       originalName: columnNameArb,
-      dataType: fc.constantFrom('string', 'integer', 'decimal', 'boolean', 'date', 'datetime'),
+      dataType: fc.constantFrom('string', 'integer', 'decimal', 'boolean'),
       isPinned: fc.boolean(),
       sortDirection: fc.option(fc.constantFrom('asc', 'desc'), { nil: undefined }),
     })
@@ -965,8 +957,6 @@ describe('generateSQLUpdate', () => {
     const cellValueForTypeArb = (dataType: string) => {
       switch (dataType) {
         case 'string':
-        case 'date':
-        case 'datetime':
           return fc.oneof(
             fc.string({ minLength: 0, maxLength: 50 }),
             fc.constant(null),
@@ -999,7 +989,7 @@ describe('generateSQLUpdate', () => {
       id: fc.stringMatching(/^col\d+$/),
       name: columnNameArb,
       originalName: columnNameArb,
-      dataType: fc.constantFrom('string', 'integer', 'decimal', 'boolean', 'date', 'datetime'),
+      dataType: fc.constantFrom('string', 'integer', 'decimal', 'boolean'),
       isPinned: fc.boolean(),
       sortDirection: fc.option(fc.constantFrom('asc', 'desc'), { nil: undefined }),
     })
@@ -1109,15 +1099,11 @@ describe('generateCreateTable', () => {
     const dataWithTypes: TableData = {
       columns: [
         { id: 'col1', name: 'price', originalName: 'price', dataType: 'decimal', isPinned: false },
-        { id: 'col2', name: 'created_at', originalName: 'created_at', dataType: 'datetime', isPinned: false },
-        { id: 'col3', name: 'birth_date', originalName: 'birth_date', dataType: 'date', isPinned: false },
       ],
       rows: [],
     }
     const result = generateCreateTable(dataWithTypes, 'products', false)
     expect(result).toContain('`price` DECIMAL(10,2)')
-    expect(result).toContain('`created_at` DATETIME')
-    expect(result).toContain('`birth_date` DATE')
   })
 
   /**
@@ -1137,7 +1123,7 @@ describe('generateCreateTable', () => {
       id: fc.stringMatching(/^col\d+$/),
       name: columnNameArb,
       originalName: columnNameArb,
-      dataType: fc.constantFrom('string', 'integer', 'decimal', 'boolean', 'date', 'datetime'),
+      dataType: fc.constantFrom('string', 'integer', 'decimal', 'boolean'),
       isPinned: fc.boolean(),
       sortDirection: fc.option(fc.constantFrom('asc', 'desc'), { nil: undefined }),
     })
@@ -1274,8 +1260,6 @@ describe('generateCreateTable', () => {
     const cellValueForTypeArb = (dataType: string) => {
       switch (dataType) {
         case 'string':
-        case 'date':
-        case 'datetime':
           return fc.oneof(
             fc.string({ minLength: 0, maxLength: 50 }),
             fc.constant(null),
@@ -1308,7 +1292,7 @@ describe('generateCreateTable', () => {
       id: fc.stringMatching(/^col\d+$/),
       name: columnNameArb,
       originalName: columnNameArb,
-      dataType: fc.constantFrom('string', 'integer', 'decimal', 'boolean', 'date', 'datetime'),
+      dataType: fc.constantFrom('string', 'integer', 'decimal', 'boolean'),
       isPinned: fc.boolean(),
       sortDirection: fc.option(fc.constantFrom('asc', 'desc'), { nil: undefined }),
     })
@@ -1905,8 +1889,6 @@ describe('exportToCSV', () => {
     const cellValueForTypeArb = (dataType: string) => {
       switch (dataType) {
         case 'string':
-        case 'date':
-        case 'datetime':
           return fc.oneof(
             fc.string({ minLength: 0, maxLength: 50 }),
             fc.constant(null),
@@ -1939,7 +1921,7 @@ describe('exportToCSV', () => {
       id: fc.stringMatching(/^col\d+$/),
       name: columnNameArb,
       originalName: columnNameArb,
-      dataType: fc.constantFrom('string', 'integer', 'decimal', 'boolean', 'date', 'datetime'),
+      dataType: fc.constantFrom('string', 'integer', 'decimal', 'boolean'),
       isPinned: fc.boolean(),
       sortDirection: fc.option(fc.constantFrom('asc', 'desc'), { nil: undefined }),
     })

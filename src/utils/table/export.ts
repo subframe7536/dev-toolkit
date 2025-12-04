@@ -28,7 +28,7 @@ export function formatSQLValue(value: CellValue, dataType: DataType): string {
   // Handle different data types
   switch (dataType) {
     case 'string':
-      return `'${value}'`
+      return `'${escapeSQLString(value as string)}'`
     case 'integer':
     case 'decimal':
       // Numeric types don't need quotes

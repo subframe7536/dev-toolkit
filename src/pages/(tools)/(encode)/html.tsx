@@ -1,6 +1,5 @@
 import { EncoderLayout } from '#/components/encoder-layout'
 import { createRoute } from 'solid-file-router'
-import { toast } from 'solid-sonner'
 
 export default createRoute({
   info: {
@@ -15,41 +14,28 @@ export default createRoute({
 
 function HTMLEncoder() {
   let div: HTMLDivElement
-  const ensureEl = () => {
+
+  const encodeToHTML = (input: string) => {
     if (!div) {
       div = document.createElement('div')
     }
-  }
-
-  const encodeToHTML = (input: string) => {
-    ensureEl()
-    try {
-      div.textContent = input
-      return div.innerHTML
-    } catch {
-      toast.error('Invalid input for encoding')
-      return ''
-    }
+    div.textContent = input
+    return div.innerHTML
   }
 
   const decodeFromHTML = (input: string) => {
-    ensureEl()
-    try {
-      div.innerHTML = input
-      return div.textContent
-    } catch {
-      toast.error('Invalid HTML entity string')
-      return ''
+    if (!div) {
+      div = document.createElement('div')
     }
+    div.innerHTML = input
+    return div.textContent || ''
   }
 
   return (
     <EncoderLayout
+      mode="HTML"
       onEncode={encodeToHTML}
       onDecode={decodeFromHTML}
-      inputPlaceholder="Enter text to encode or HTML entities to decode..."
-      outputLabel="HTML Output"
-      outputPlaceholder="Encoded or decoded text will appear here..."
     />
   )
 }

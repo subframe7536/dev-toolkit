@@ -1,5 +1,6 @@
 import type { JSX } from 'solid-js'
 
+import { downloadFile } from '#/utils/download'
 import { toast } from 'solid-sonner'
 
 import { Button } from './ui/button'
@@ -17,19 +18,7 @@ interface DownloadButtonProps {
 
 export function DownloadButton(props: DownloadButtonProps) {
   const handleDownload = () => {
-    const blob = props.content instanceof Blob
-      ? props.content
-      : new Blob([props.content], { type: props.mimeType ?? 'text/plain' })
-
-    const url = URL.createObjectURL(blob)
-    const a = document.createElement('a')
-    a.href = url
-    a.download = props.filename
-    document.body.appendChild(a)
-    a.click()
-    document.body.removeChild(a)
-    URL.revokeObjectURL(url)
-
+    downloadFile(props.content, props.filename, props.mimeType ?? 'text/plain')
     toast.success('Downloaded successfully')
   }
 
