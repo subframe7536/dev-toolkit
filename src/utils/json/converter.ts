@@ -4,7 +4,6 @@
  */
 
 import * as yaml from 'js-yaml'
-import Papa from 'papaparse'
 
 export interface ConversionError {
   message: string
@@ -18,33 +17,20 @@ export interface ConversionResult {
 }
 
 /**
- * Convert JSON to CSV format
+ * Convert JSON to JavaScript object literal
  * @param input - JSON string to convert
- * @returns ConversionResult with CSV output or error
+ * @returns ConversionResult with JS object output or error
  */
-export function jsonToCSV(input: string): ConversionResult {
+export function jsonToJSObject(input: string): ConversionResult {
   try {
     const parsed = JSON.parse(input)
 
-    // Handle array of objects
-    if (Array.isArray(parsed) && parsed.length > 0) {
-      const csv = Papa.unparse(parsed)
-      return { success: true, output: csv }
-    }
+    // Use a custom stringify that produces valid JS object syntax
+    const jsObject = JSON.stringify(parsed, null, 2)
+      .replace(/"([^"]+)":/g, '$1:') // Remove quotes from keys
+      .replace(/: "([^"]*)"([,\n])/g, ': \'$1\'$2') // Use single quotes for strings
 
-    // Handle single object - convert to array with one item
-    if (typeof parsed === 'object' && parsed !== null && !Array.isArray(parsed)) {
-      const csv = Papa.unparse([parsed])
-      return { success: true, output: csv }
-    }
-
-    return {
-      success: false,
-      error: {
-        message: 'Invalid data format',
-        details: 'JSON must be an object or array of objects to convert to CSV',
-      },
-    }
+    return { success: true, output: jsObject }
   } catch (error) {
     return {
       success: false,
@@ -57,40 +43,196 @@ export function jsonToCSV(input: string): ConversionResult {
 }
 
 /**
- * Convert CSV to JSON format
- * @param input - CSV string to convert
- * @param hasHeaders - Whether the CSV has headers (auto-detected if not specified)
+ * Convert JavaScript object literal to JSON
+ * @param input - JS object string to convert
  * @returns ConversionResult with JSON output or error
  */
-export function csvToJSON(input: string, hasHeaders?: boolean): ConversionResult {
+export function jsObjectToJSON(input: string): ConversionResult {
   try {
-    const parseResult = Papa.parse(input, {
-      header: hasHeaders !== false, // Default to true unless explicitly false
-      skipEmptyLines: true,
-      dynamicTyping: true, // Automatically convert numbers and booleans
-    })
-
-    if (parseResult.errors.length > 0) {
-      return {
-        success: false,
-        error: {
-          message: 'CSV parsing error',
-          details: parseResult.errors.map(e => e.message).join(', '),
-        },
-      }
-    }
-
-    const json = JSON.stringify(parseResult.data, null, 2)
+    // Wrap in parentheses and evaluate to parse JS object
+    // eslint-disable-next-line no-new-func
+    const parsed = new Function(`return (${input})`)()
+    const json = JSON.stringify(parsed, null, 2)
     return { success: true, output: json }
   } catch (error) {
     return {
       success: false,
       error: {
-        message: 'CSV conversion failed',
-        details: error instanceof Error ? error.message : 'Unknown error',
+        message: 'Invalid JavaScript object',
+        details: error instanceof Error ? error.message : 'Unknown parsing error',
       },
     }
   }
+}
+
+/**
+ * Convert JSON to TypeScript interface definition
+ * @param input - JSON string to convert
+ * @returns ConversionResult with TS interface output or error
+ */
+export function jsonToTSInterface(input: string): ConversionResult {
+  try {
+    const parsed = JSON.parse(input)
+    const interfaceDef = generateTSInterface(parsed, 'Root')
+    return { success: true, output: interfaceDef }
+  } catch (error) {
+    return {
+      success: false,
+      error: {
+        message: 'Invalid JSON',
+        details: error instanceof Error ? error.message : 'Unknown parsing error',
+      },
+    }
+  }
+}
+
+/**
+ * Convert JSON to Java class definition
+ * @param input - JSON string to convert
+ * @returns ConversionResult with Java class output or error
+ */
+export function jsonToJavaClass(input: string): ConversionResult {
+  try {
+    const parsed = JSON.parse(input)
+    const classDef = generateJavaClass(parsed, 'Root')
+    return { success: true, output: classDef }
+  } catch (error) {
+    return {
+      success: false,
+      error: {
+        message: 'Invalid JSON',
+        details: error instanceof Error ? error.message : 'Unknown parsing error',
+      },
+    }
+  }
+}
+
+/**
+ * Generate TypeScript interface from object
+ */
+function generateTSInterface(obj: any, name: string, indent = 0): string {
+  const indentStr = '  '.repeat(indent)
+
+  if (typeof obj !== 'object' || obj === null) {
+    return `${indentStr}export type ${name} = ${getTSType(obj)}\n`
+  }
+
+  if (Array.isArray(obj)) {
+    if (obj.length === 0) {
+      return `${indentStr}export type ${name} = any[]\n`
+    }
+    const itemType = getTSType(obj[0])
+    return `${indentStr}export type ${name} = ${itemType}[]\n`
+  }
+
+  let result = `${indentStr}export interface ${name} {\n`
+
+  for (const [key, value] of Object.entries(obj)) {
+    const type = getTSType(value)
+    result += `${indentStr}  ${key}: ${type}\n`
+  }
+
+  result += `${indentStr}}\n`
+  return result
+}
+
+/**
+ * Get TypeScript type for a value
+ */
+function getTSType(value: any): string {
+  if (value === null) {
+    return 'null'
+  }
+  if (Array.isArray(value)) {
+    if (value.length === 0) {
+      return 'any[]'
+    }
+    return `${getTSType(value[0])}[]`
+  }
+
+  const type = typeof value
+  if (type === 'object') {
+    return 'object'
+  }
+  if (type === 'string') {
+    return 'string'
+  }
+  if (type === 'number') {
+    return 'number'
+  }
+  if (type === 'boolean') {
+    return 'boolean'
+  }
+  return 'any'
+}
+
+/**
+ * Generate Java class from object
+ */
+function generateJavaClass(obj: any, name: string, indent = 0): string {
+  const indentStr = '  '.repeat(indent)
+
+  if (typeof obj !== 'object' || obj === null || Array.isArray(obj)) {
+    return `${indentStr}// Cannot generate class for non-object type\n`
+  }
+
+  let result = `${indentStr}public class ${name} {\n`
+
+  for (const [key, value] of Object.entries(obj)) {
+    const javaType = getJavaType(value)
+    const fieldName = key.replace(/[^a-z0-9]/gi, '_')
+    result += `${indentStr}  private ${javaType} ${fieldName};\n`
+  }
+
+  result += '\n'
+
+  // Generate getters and setters
+  for (const [key, value] of Object.entries(obj)) {
+    const javaType = getJavaType(value)
+    const fieldName = key.replace(/[^a-z0-9]/gi, '_')
+    const capitalizedName = fieldName.charAt(0).toUpperCase() + fieldName.slice(1)
+
+    result += `${indentStr}  public ${javaType} get${capitalizedName}() {\n`
+    result += `${indentStr}    return ${fieldName};\n`
+    result += `${indentStr}  }\n\n`
+
+    result += `${indentStr}  public void set${capitalizedName}(${javaType} ${fieldName}) {\n`
+    result += `${indentStr}    this.${fieldName} = ${fieldName};\n`
+    result += `${indentStr}  }\n\n`
+  }
+
+  result += `${indentStr}}\n`
+  return result
+}
+
+/**
+ * Get Java type for a value
+ */
+function getJavaType(value: any): string {
+  if (value === null) {
+    return 'Object'
+  }
+  if (Array.isArray(value)) {
+    if (value.length === 0) {
+      return 'List<Object>'
+    }
+    return `List<${getJavaType(value[0])}>`
+  }
+
+  const type = typeof value
+  if (type === 'object') {
+    return 'Object'
+  }
+  if (type === 'string') {
+    return 'String'
+  }
+  if (type === 'number') {
+    return Number.isInteger(value) ? 'Integer' : 'Double'
+  }
+  if (type === 'boolean') {
+    return 'Boolean'
+  }
+  return 'Object'
 }
 
 /**
@@ -235,7 +377,7 @@ export function queryParamsToJSON(input: string): ConversionResult {
  * @param input - Text to analyze
  * @returns Detected format or 'unknown'
  */
-export function detectFormat(input: string): 'json' | 'csv' | 'yaml' | 'query' | 'unknown' {
+export function detectFormat(input: string): 'json' | 'yaml' | 'query' | 'jsobject' | 'unknown' {
   const trimmed = input.trim()
 
   if (!trimmed) {
@@ -249,18 +391,20 @@ export function detectFormat(input: string): 'json' | 'csv' | 'yaml' | 'query' |
       JSON.parse(trimmed)
       return 'json'
     } catch {
-      // Not valid JSON
+      // Might be JS object
+      try {
+        // eslint-disable-next-line no-new-func
+        new Function(`return (${trimmed})`)()
+        return 'jsobject'
+      } catch {
+        // Not valid
+      }
     }
   }
 
   // Check for query parameters
   if (trimmed.includes('=') && (trimmed.includes('&') || !trimmed.includes('\n'))) {
     return 'query'
-  }
-
-  // Check for CSV (simple heuristic)
-  if (trimmed.includes(',') && trimmed.includes('\n')) {
-    return 'csv'
   }
 
   // Check for YAML (simple heuristic)

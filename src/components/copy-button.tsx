@@ -1,5 +1,3 @@
-import type { JSX } from 'solid-js'
-
 import { useCopy } from '@solid-hooks/core/web'
 import { cls } from 'cls-variant'
 import { createMemo, Show } from 'solid-js'

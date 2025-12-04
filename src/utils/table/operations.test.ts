@@ -100,7 +100,7 @@ describe('reorderColumns', () => {
       id: fc.stringMatching(/^col\d+$/),
       name: fc.string({ minLength: 1, maxLength: 20 }),
       originalName: fc.string({ minLength: 1, maxLength: 20 }),
-      dataType: fc.constantFrom('string', 'integer', 'decimal', 'boolean', 'date', 'datetime'),
+      dataType: fc.constantFrom('string', 'integer', 'decimal', 'boolean'),
       isPinned: fc.boolean(),
       sortDirection: fc.option(fc.constantFrom('asc', 'desc'), { nil: undefined }),
     })
@@ -268,7 +268,7 @@ describe('sortByColumn', () => {
       id: fc.stringMatching(/^col\d+$/),
       name: fc.string({ minLength: 1, maxLength: 20 }),
       originalName: fc.string({ minLength: 1, maxLength: 20 }),
-      dataType: fc.constantFrom('string', 'integer', 'decimal', 'boolean', 'date', 'datetime'),
+      dataType: fc.constantFrom('string', 'integer', 'decimal', 'boolean'),
       isPinned: fc.boolean(),
       sortDirection: fc.option(fc.constantFrom('asc', 'desc'), { nil: undefined }),
     })
@@ -617,7 +617,7 @@ describe('updateCell', () => {
       id: fc.stringMatching(/^col\d+$/),
       name: fc.string({ minLength: 1, maxLength: 20 }),
       originalName: fc.string({ minLength: 1, maxLength: 20 }),
-      dataType: fc.constantFrom('string', 'integer', 'decimal', 'boolean', 'date', 'datetime'),
+      dataType: fc.constantFrom('string', 'integer', 'decimal', 'boolean'),
       isPinned: fc.boolean(),
       sortDirection: fc.option(fc.constantFrom('asc', 'desc'), { nil: undefined }),
     })

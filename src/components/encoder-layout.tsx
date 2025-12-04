@@ -16,6 +16,12 @@ export interface EncoderLayoutProps {
   mode: string
   onEncode: (input: string) => string
   onDecode: (input: string) => string
+  inputLabel?: () => string | JSX.Element
+  outputLabel?: () => string | JSX.Element
+  inputPlaceholder?: () => string
+  outputPlaceholder?: () => string
+  modeToggleLabel?: () => string
+  customControls?: JSX.Element
 }
 
 export function EncoderLayout(props: EncoderLayoutProps): JSX.Element {
@@ -87,14 +93,15 @@ export function EncoderLayout(props: EncoderLayoutProps): JSX.Element {
     })
   }
 
-  const inputLabel = () => isEncode() ? 'Plain Text' : props.mode
-  const outputLabel = () => isEncode() ? props.mode : 'Plain Text'
-  const inputPlaceholder = () => isEncode()
+  const inputLabel = () => props.inputLabel?.() ?? (isEncode() ? 'Plain Text' : props.mode)
+  const outputLabel = () => props.outputLabel?.() ?? (isEncode() ? props.mode : 'Plain Text')
+  const inputPlaceholder = () => props.inputPlaceholder?.() ?? (isEncode()
     ? `Enter text to encode to ${props.mode}...`
-    : `Enter ${props.mode} to decode...`
-  const outputPlaceholder = () => isEncode()
+    : `Enter ${props.mode} to decode...`)
+  const outputPlaceholder = () => props.outputPlaceholder?.() ?? (isEncode()
     ? `${props.mode} output will appear here...`
-    : 'Decoded text will appear here...'
+    : 'Decoded text will appear here...')
+  const modeToggleLabel = () => props.modeToggleLabel?.() ?? `Switch to ${isEncode() ? 'decode' : 'encode'} mode`
 
   return (
     <div class="space-y-6 lg:space-y-0">
@@ -103,9 +110,13 @@ export function EncoderLayout(props: EncoderLayoutProps): JSX.Element {
         {/* Left Panel (Input) */}
         <div class="space-y-4">
           <TextField>
-            <TextFieldLabel class="!text-lg">
-              {inputLabel()}
-            </TextFieldLabel>
+            {typeof inputLabel() === 'string'
+              ? (
+                  <TextFieldLabel class="!text-lg">
+                    {inputLabel()}
+                  </TextFieldLabel>
+                )
+              : inputLabel()}
             <TextFieldTextArea
               class="text-sm font-mono h-64 resize-none"
               placeholder={inputPlaceholder()}
@@ -120,10 +131,11 @@ export function EncoderLayout(props: EncoderLayoutProps): JSX.Element {
               size="icon"
               variant="outline"
               class="p-2 rounded-full bg-background block shadow-md transition-transform lg:hidden hover:shadow-lg active:scale-95 hover:scale-105"
-              title={`Switch to ${isEncode() ? 'decode' : 'encode'} mode`}
+              title={modeToggleLabel()}
             >
               <Icon name="lucide:arrow-up-down" />
             </Button>
+            {props.customControls}
             <Button
               variant="destructive"
               onClick={clear}
@@ -142,7 +154,7 @@ export function EncoderLayout(props: EncoderLayoutProps): JSX.Element {
             size="icon"
             variant="outline"
             class="rounded-full bg-background shadow-md transition-transform hover:shadow-lg active:scale-95 hover:scale-105"
-            title={`Switch to ${isEncode() ? 'decode' : 'encode'} mode`}
+            title={modeToggleLabel()}
           >
             <Icon name="lucide:arrow-right-left" />
           </Button>
@@ -151,9 +163,13 @@ export function EncoderLayout(props: EncoderLayoutProps): JSX.Element {
         {/* Right Panel (Output) */}
         <div class="flex flex-col gap-4 items-end lg:items-start">
           <TextField validationState={error() ? 'invalid' : 'valid'} class="w-full">
-            <TextFieldLabel class="!text-lg">
-              {outputLabel()}
-            </TextFieldLabel>
+            {typeof outputLabel() === 'string'
+              ? (
+                  <TextFieldLabel class="!text-lg">
+                    {outputLabel()}
+                  </TextFieldLabel>
+                )
+              : outputLabel()}
             <TextFieldTextArea
               class={cls(
                 'text-sm font-mono bg-muted/50 h-64 resize-none focus-visible:ring-0',

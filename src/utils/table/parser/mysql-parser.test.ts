@@ -1,6 +1,7 @@
 import type { TableData } from '../types'
 
 import { describe, expect, it } from 'bun:test'
+
 import * as fc from 'fast-check'
 
 import { parseMySQLOutput } from './mysql-parser'
