@@ -1,5 +1,6 @@
 import { CopyButton } from '#/components/copy-button'
 import { Button } from '#/components/ui/button'
+import { Icon } from '#/components/ui/icon'
 import {
   TextField,
   TextFieldInput,
