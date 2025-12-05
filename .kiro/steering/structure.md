@@ -1,0 +1,80 @@
+# Project Structure
+
+## Directory Organization
+
+```
+src/
+  pages/              # File-based routes (auto-generates routing)
+    _app.tsx          # Root layout
+    index.tsx         # Homepage (auto-generates from route metadata)
+    404.tsx           # Not found page
+    (tools)/          # Tools section (route group)
+      _layout.tsx     # Shared layout for all tools
+      (utilities)/    # Utility tools category
+      (encode)/       # Encoding/decoding tools category
+      (json)/         # JSON tools category
+  
+  components/         # Reusable components
+    ui/               # UI component library (Kobalte-based, ShadCN like)
+    [feature].tsx     # Feature-specific components
+  
+  utils/              # Pure utility functions (business logic)
+    [feature]/        # Feature-specific utilities
+      *.test.ts       # Unit tests for utilities
+```
+
+## Architecture Patterns
+
+### Separation of Concerns
+
+- **Pages**: Thin UI wrappers managing state and user interactions
+- **Utils**: Pure, testable computation logic separated from UI
+- **Components**: Reusable UI elements
+
+### Route Metadata Pattern
+
+Every tool page MUST define metadata in `createRoute()`:
+
+```tsx
+export default createRoute({
+  info: { title: string },                // Optional: @solidjs/router's `RouteDefinition['info']` for metadata
+  matchFilters: {...}                     // Optional: @solidjs/router's `RouteDefinition['matchFilters']` for custom route matching
+  preload: async (params) => data,        // Optional: @solidjs/router's `RouteDefinition['preload']` for data fetching
+  component: (props) => JSX.Element,      // Required: Route component
+  loadingComponent: () => JSX.Element,    // Optional: Loading state
+  errorComponent: (props) => JSX.Element, // Optional: Error boundary
+})
+```
+
+The homepage and sidebar auto-generate content by reading `fileRoutes` via `src/utils/routes.ts`.
+
+### Type-Safe Navigation
+
+```tsx
+import { useNavigate } from '@solidjs/router'
+import { generatePath } from 'solid-file-router'
+
+// TypeScript validates paths and parameters
+const path = generatePath('/blog/:id', { $id: '123' })
+navigate(path)
+```
+
+### Naming Conventions
+
+- File name: kebab-case
+- Test files: `*.test.ts` alongside the file being tested
+- Global constant: UPPER_SNAKE_CASE
+- Variable: camelCase
+- Function Component and Class: PascalCase
+
+### Import Patterns
+
+- Use `#/` alias for imports: `import { foo } from '#/utils/bar'`
+- Virtual routes: `import { fileRoutes, Root } from 'virtual:routes'`
+
+## Key Directories
+
+- `.kiro/` - Kiro IDE configuration and steering rules
+- `public/` - Static assets (icons, PWA assets)
+- `dist/` - Production build output
+- `dev-dist/` - Development build output
