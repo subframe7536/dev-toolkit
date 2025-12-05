@@ -148,7 +148,7 @@ function JSONFormatter() {
             value={targetCase()}
             onChange={setTargetCase}
             options={caseOptions.map(o => o.value)}
-            placeholder="Select case style..."
+            disallowEmptySelection
             itemComponent={props => (
               <SelectItem item={props.item}>
                 {caseOptions.find(o => o.value === props.item.rawValue)?.label}

@@ -203,7 +203,7 @@ function DateTimeTool() {
                         value={selectedLocale()}
                         onChange={setSelectedLocale}
                         options={locales}
-                        placeholder="Select locale..."
+                        disallowEmptySelection
                         itemComponent={props => (
                           <SelectItem item={props.item}>
                             {props.item.rawValue}
@@ -224,7 +224,7 @@ function DateTimeTool() {
                         value={selectedTimeZone()}
                         onChange={setSelectedTimeZone}
                         options={commonTimeZones}
-                        placeholder="Select timezone..."
+                        disallowEmptySelection
                         itemComponent={props => (
                           <SelectItem item={props.item}>
                             {props.item.rawValue}
@@ -245,7 +245,7 @@ function DateTimeTool() {
                         value={dateStyle()}
                         onChange={setDateStyle}
                         options={[...styles]}
-                        placeholder="Select date style..."
+                        disallowEmptySelection
                         itemComponent={props => (
                           <SelectItem item={props.item}>
                             {props.item.rawValue}
@@ -266,7 +266,7 @@ function DateTimeTool() {
                         value={timeStyle()}
                         onChange={setTimeStyle}
                         options={[...styles]}
-                        placeholder="Select time style..."
+                        disallowEmptySelection
                         itemComponent={props => (
                           <SelectItem item={props.item}>
                             {props.item.rawValue}

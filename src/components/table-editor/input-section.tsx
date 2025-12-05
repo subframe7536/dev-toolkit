@@ -4,10 +4,11 @@ import type { Component } from 'solid-js'
 import { FileUpload } from '#/components/file-upload'
 import { Button } from '#/components/ui/button'
 import Icon from '#/components/ui/icon'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '#/components/ui/select'
 import { Tabs, TabsContent, TabsIndicator, TabsList, TabsTrigger } from '#/components/ui/tabs'
 import { TextField, TextFieldTextArea } from '#/components/ui/text-field'
 import { getExcelSheetNames, parseCSVFile, parseCSVText, parseExcelFile, parseMySQLOutput } from '#/utils/table/parser'
-import { createSignal, For, Show } from 'solid-js'
+import { createSignal, Show } from 'solid-js'
 import { toast } from 'solid-sonner'
 
 const MYSQL_EXAMPLE = `+----+----------+-------+
@@ -244,15 +245,18 @@ export const InputSection: Component<InputSectionProps> = (props) => {
             <Show when={sheetNames().length > 1}>
               <div class="flex flex-col gap-2">
                 <label class="text-sm font-medium">Select Sheet</label>
-                <select
-                  class="text-sm px-3 border border-border rounded-md bg-input flex h-8 w-full ring-offset-background items-center focus:effect-fv disabled:effect-dis"
+                <Select<string>
                   value={selectedSheet()}
-                  onChange={e => setSelectedSheet(e.currentTarget.value)}
+                  onChange={setSelectedSheet}
+                  options={sheetNames()}
+                  placeholder="Select a sheet"
+                  itemComponent={props => <SelectItem item={props.item}>{props.item.rawValue}</SelectItem>}
                 >
-                  <For each={sheetNames()}>
-                    {sheet => <option value={sheet}>{sheet}</option>}
-                  </For>
-                </select>
+                  <SelectTrigger>
+                    <SelectValue<string>>{state => state.selectedOption()}</SelectValue>
+                  </SelectTrigger>
+                  <SelectContent />
+                </Select>
               </div>
             </Show>
 

@@ -170,7 +170,7 @@ function JSONConverter() {
               value={mode()}
               onChange={setMode}
               options={conversionModes.map(({ value }) => value)}
-              placeholder="Select convert format..."
+              disallowEmptySelection
               class="w-60"
               itemComponent={props => (
                 <SelectItem item={props.item}>

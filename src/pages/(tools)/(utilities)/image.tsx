@@ -191,7 +191,7 @@ function ImageConverter() {
                   value={targetFormat()}
                   onChange={setTargetFormat}
                   options={FORMAT_OPTIONS.map(o => o.value)}
-                  placeholder="Select format"
+                  disallowEmptySelection
                   itemComponent={props => (
                     <SelectItem item={props.item}>
                       {FORMAT_OPTIONS.find(o => o.value === props.item.rawValue)?.label}

@@ -180,7 +180,7 @@ export const ExportDialog: Component<ExportDialogProps> = (props) => {
                 value={exportFormat()}
                 onChange={setExportFormat}
                 options={exportOptions.map(o => o.value)}
-                placeholder="Select format..."
+                disallowEmptySelection
                 itemComponent={p => (
                   <SelectItem item={p.item}>
                     {exportOptions.find(o => o.value === p.item.rawValue)?.label}
