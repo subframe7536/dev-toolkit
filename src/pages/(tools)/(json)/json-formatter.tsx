@@ -4,6 +4,7 @@ import type { CaseStyle, ConversionError } from '#/utils/json/key-converter'
 import { CopyButton } from '#/components/copy-button'
 import { DownloadButton } from '#/components/download-button'
 import { Button } from '#/components/ui/button'
+import { Icon } from '#/components/ui/icon'
 import {
   Select,
   SelectContent,
@@ -17,10 +18,10 @@ import {
   TextFieldLabel,
   TextFieldTextArea,
 } from '#/components/ui/text-field'
-import { formatJSON, minifyJSON, repairJSON, sortKeys } from '#/utils/json/formatter'
+import { formatJSON, repairJSON, sortKeys } from '#/utils/json/formatter'
 import { convertKeys } from '#/utils/json/key-converter'
 import { createRoute } from 'solid-file-router'
-import { createSignal, Show } from 'solid-js'
+import { createEffect, createSignal, on, Show } from 'solid-js'
 import { toast } from 'solid-sonner'
 
 export default createRoute({
@@ -35,7 +36,7 @@ export default createRoute({
 })
 
 const caseOptions: Array<{ value: CaseStyle, label: string }> = [
-  { value: 'As is', label: 'As is' },
+  { value: 'As is', label: 'Keep Current Case' },
   { value: 'camelCase', label: 'camelCase' },
   { value: 'snake_case', label: 'snake_case' },
   { value: 'kebab-case', label: 'kebab-case' },
@@ -49,6 +50,7 @@ function JSONFormatter() {
   const [input, setInput] = createSignal('')
   const [output, setOutput] = createSignal('')
   const [autoRepair, setAutoRepair] = createSignal(true)
+  const [shouldSortKeys, setShouldSortKeys] = createSignal(false)
   const [targetCase, setTargetCase] = createSignal<CaseStyle>('As is')
   const [isFullscreen, setIsFullscreen] = createSignal(false)
 
@@ -68,12 +70,29 @@ function JSONFormatter() {
     return inputValue
   }
 
-  const handleFormat = () => {
+  const processJSON = () => {
+    const inputValue = input().trim()
+    if (!inputValue) {
+      setOutput('')
+      return
+    }
+
     try {
-      const repairedInput = tryRepairIfEnabled(input())
-      const formatted = formatJSON(repairedInput)
+      const repairedInput = tryRepairIfEnabled(inputValue)
+
+      // Apply key case conversion if needed
+      if (targetCase() !== 'As is') {
+        const result = convertKeys(repairedInput, targetCase(), false)
+        if (result.success && result.output) {
+          const formatted = shouldSortKeys() ? sortKeys(result.output) : formatJSON(result.output)
+          setOutput(formatted)
+          return
+        }
+      }
+
+      // Apply sort keys if enabled
+      const formatted = shouldSortKeys() ? sortKeys(repairedInput) : formatJSON(repairedInput)
       setOutput(formatted)
-      toast.success('JSON formatted successfully')
     } catch (err) {
       const error = err as JSONError
       const message = error.line && error.column
@@ -84,52 +103,10 @@ function JSONFormatter() {
     }
   }
 
-  const handleMinify = () => {
-    try {
-      const repairedInput = tryRepairIfEnabled(input())
-      const minified = minifyJSON(repairedInput)
-      setOutput(minified)
-      toast.success('JSON minified successfully')
-    } catch (err) {
-      const error = err as JSONError
-      const message = error.line && error.column
-        ? `${error.message} (Line ${error.line}, Column ${error.column})`
-        : error.message
-      toast.error('Invalid JSON', { description: message })
-      setOutput('')
-    }
-  }
-
-  const handleSortKeys = () => {
-    try {
-      const repairedInput = tryRepairIfEnabled(input())
-      const sorted = sortKeys(repairedInput)
-      setOutput(sorted)
-      toast.success('Keys sorted successfully')
-    } catch (err) {
-      const error = err as JSONError
-      const message = error.line && error.column
-        ? `${error.message} (Line ${error.line}, Column ${error.column})`
-        : error.message
-      toast.error('Invalid JSON', { description: message })
-      setOutput('')
-    }
-  }
-
-  const handleConvertKeys = () => {
-    const result = convertKeys(input(), targetCase(), autoRepair())
-
-    if (result.success && result.output) {
-      setOutput(result.output)
-      toast.success(`Keys converted to ${targetCase()}`)
-    } else if (result.error) {
-      const error = result.error as ConversionError
-      toast.error(error.message, {
-        description: error.details,
-      })
-      setOutput('')
-    }
-  }
+  // Auto-format on input change
+  createEffect(on([input, shouldSortKeys, targetCase, autoRepair], () => {
+    processJSON()
+  }))
 
   const handleClear = () => {
     setInput('')
@@ -138,36 +115,33 @@ function JSONFormatter() {
 
   return (
     <div class="space-y-6">
-      <div class="flex flex-wrap gap-3 items-end">
-        <div class="flex h-10 items-center">
-          <Switch checked={autoRepair()} onChange={setAutoRepair} text="Auto-repair JSON" />
-        </div>
-        <div class="space-y-2">
-          <label class="text-sm font-medium">Key Case Style</label>
-          <Select
-            value={targetCase()}
-            onChange={setTargetCase}
-            options={caseOptions.map(o => o.value)}
-            disallowEmptySelection
-            itemComponent={props => (
-              <SelectItem item={props.item}>
-                {caseOptions.find(o => o.value === props.item.rawValue)?.label}
-              </SelectItem>
-            )}
-          >
-            <SelectTrigger class="w-48">
-              <SelectValue<CaseStyle>>
-                {state => caseOptions.find(o => o.value === state.selectedOption())?.label}
-              </SelectValue>
-            </SelectTrigger>
-            <SelectContent />
-          </Select>
-        </div>
+      <div class="flex flex-wrap gap-8 items-center">
+        <Switch checked={autoRepair()} onChange={setAutoRepair} text="Auto-repair JSON" />
+        <Switch checked={shouldSortKeys()} onChange={setShouldSortKeys} text="Sort Keys" />
+        <Select
+          value={targetCase()}
+          onChange={setTargetCase}
+          options={caseOptions.map(o => o.value)}
+          disallowEmptySelection
+          class="w-50"
+          itemComponent={props => (
+            <SelectItem item={props.item}>
+              {caseOptions.find(o => o.value === props.item.rawValue)?.label}
+            </SelectItem>
+          )}
+        >
+          <SelectTrigger>
+            <SelectValue<CaseStyle>>
+              {state => caseOptions.find(o => o.value === state.selectedOption())?.label}
+            </SelectValue>
+          </SelectTrigger>
+          <SelectContent />
+        </Select>
       </div>
 
       <div class="gap-6 grid lg:grid-cols-2">
-        <div class="flex flex-col gap-3">
-          <TextField class="flex-1">
+        <div class="space-y-4">
+          <TextField>
             <TextFieldLabel>Input JSON</TextFieldLabel>
             <TextFieldTextArea
               class="text-sm font-mono h-96 resize-none"
@@ -176,47 +150,28 @@ function JSONFormatter() {
               onInput={e => setInput(e.currentTarget.value)}
             />
           </TextField>
-          <div class="flex flex-wrap gap-2">
-            <Button
-              onClick={handleFormat}
-              disabled={!input()}
-            >
-              Format
-            </Button>
-            <Button
-              variant="secondary"
-              onClick={handleMinify}
-              disabled={!input()}
-            >
-              Minify
-            </Button>
-            <Button
-              variant="secondary"
-              onClick={handleSortKeys}
-              disabled={!input()}
-            >
-              Sort Keys
-            </Button>
-            <Button
-              variant="secondary"
-              onClick={handleConvertKeys}
-              disabled={!input()}
-            >
-              Convert Keys
-            </Button>
-            <Button
-              variant="secondary"
-              onClick={handleClear}
-              disabled={!input() && !output()}
-            >
-              Clear
-            </Button>
-          </div>
+          <Button
+            variant="destructive"
+            onClick={handleClear}
+            disabled={!input() && !output()}
+          >
+            <Icon name="lucide:trash-2" class="mr-2 size-4" />
+            Clear
+          </Button>
         </div>
 
-        <div class="flex flex-col gap-3">
-          <TextField class="flex-1">
+        <div class="space-y-4">
+          <TextField class="flex-1 relative">
             <TextFieldLabel>Output</TextFieldLabel>
+            <Button
+              variant="secondary"
+              size="icon"
+              class="right-2 top-9 absolute"
+              onClick={() => setIsFullscreen(true)}
+              disabled={!output()}
+            >
+              <Icon name="lucide:maximize-2" />
+            </Button>
             <TextFieldTextArea
               class="text-sm font-mono bg-muted/50 h-96 resize-none"
               readOnly
@@ -224,24 +179,19 @@ function JSONFormatter() {
               value={output()}
             />
           </TextField>
-          <div class="flex flex-wrap gap-2">
+          <div class="flex gap-2">
             <CopyButton
               content={output()}
               variant="secondary"
+              disabled={!output()}
             />
             <DownloadButton
               content={output()}
               filename="formatted.json"
               mimeType="application/json"
               variant="secondary"
-            />
-            <Button
-              variant="secondary"
-              onClick={() => setIsFullscreen(true)}
               disabled={!output()}
-            >
-              Fullscreen
-            </Button>
+            />
           </div>
         </div>
       </div>
@@ -249,8 +199,8 @@ function JSONFormatter() {
         <div class="p-4 bg-background/95 flex flex-col gap-4 inset-0 fixed z-50 overflow-hidden">
           <div class="flex items-center justify-between">
             <h2 class="text-lg font-semibold">Formatted JSON (Fullscreen)</h2>
-            <Button variant="secondary" size="sm" onClick={() => setIsFullscreen(false)}>
-              Close
+            <Button variant="ghost" size="sm" onClick={() => setIsFullscreen(false)}>
+              <Icon name="lucide:x" />
             </Button>
           </div>
           <TextField class="flex-1">

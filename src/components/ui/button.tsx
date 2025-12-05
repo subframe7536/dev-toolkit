@@ -24,7 +24,7 @@ export const buttonVariants = clsvDefault(
         sm: 'h-8 rounded-md px-3 text-xs',
         md: 'h-8 rounded-md px-4 text-xs md:text-sm',
         lg: 'h-12 rounded-md px-8 text-lg',
-        icon: 'size-9',
+        icon: 'size-8',
       },
     },
   ),
