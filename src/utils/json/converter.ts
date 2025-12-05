@@ -6,6 +6,8 @@
 import * as yaml from 'js-yaml'
 import Papa from 'papaparse'
 
+import { repairJSON } from './formatter'
+
 export interface ConversionError {
   message: string
   details?: string
@@ -274,4 +276,288 @@ export function detectFormat(input: string): 'json' | 'csv' | 'yaml' | 'query' |
   }
 
   return 'unknown'
+}
+
+/**
+ * Convert JSON to JavaScript object literal
+ * @param input - JSON string to convert
+ * @param useRepair - Whether to attempt repairing malformed JSON
+ * @returns ConversionResult with JS object output or error
+ */
+export function jsonToJSObject(input: string, useRepair: boolean = false): ConversionResult {
+  try {
+    let jsonStr = input
+    if (useRepair) {
+      try {
+        jsonStr = repairJSON(input)
+      } catch {
+        // If repair fails, try with original input
+      }
+    }
+
+    const parsed = JSON.parse(jsonStr)
+
+    // Format as JS object with proper indentation
+    const formatted = formatAsJSObject(parsed, 0)
+    return { success: true, output: formatted }
+  } catch (error) {
+    return {
+      success: false,
+      error: {
+        message: 'JSON to JS Object conversion failed',
+        details: error instanceof Error ? error.message : 'Unknown error',
+      },
+    }
+  }
+}
+
+/**
+ * Convert JSON to TypeScript type definition
+ * @param input - JSON string to convert
+ * @param useRepair - Whether to attempt repairing malformed JSON
+ * @returns ConversionResult with TS definition output or error
+ */
+export function jsonToTSDefinition(input: string, useRepair: boolean = false): ConversionResult {
+  try {
+    let jsonStr = input
+    if (useRepair) {
+      try {
+        jsonStr = repairJSON(input)
+      } catch {
+        // If repair fails, try with original input
+      }
+    }
+
+    const parsed = JSON.parse(jsonStr)
+    const typeDef = generateTSType(parsed, 'Root')
+    return { success: true, output: typeDef }
+  } catch (error) {
+    return {
+      success: false,
+      error: {
+        message: 'JSON to TS Definition conversion failed',
+        details: error instanceof Error ? error.message : 'Unknown error',
+      },
+    }
+  }
+}
+
+/**
+ * Convert JSON to Java class
+ * @param input - JSON string to convert
+ * @param useRepair - Whether to attempt repairing malformed JSON
+ * @returns ConversionResult with Java class output or error
+ */
+export function jsonToJavaClass(input: string, useRepair: boolean = false): ConversionResult {
+  try {
+    let jsonStr = input
+    if (useRepair) {
+      try {
+        jsonStr = repairJSON(input)
+      } catch {
+        // If repair fails, try with original input
+      }
+    }
+
+    const parsed = JSON.parse(jsonStr)
+    const javaClass = generateJavaClass(parsed, 'Root')
+    return { success: true, output: javaClass }
+  } catch (error) {
+    return {
+      success: false,
+      error: {
+        message: 'JSON to Java Class conversion failed',
+        details: error instanceof Error ? error.message : 'Unknown error',
+      },
+    }
+  }
+}
+
+/**
+ * Format value as JavaScript object literal
+ */
+function formatAsJSObject(value: any, indent: number): string {
+  const indentStr = '  '.repeat(indent)
+  const nextIndentStr = '  '.repeat(indent + 1)
+
+  if (value === null) {
+    return 'null'
+  }
+
+  if (value === undefined) {
+    return 'undefined'
+  }
+
+  if (typeof value === 'string') {
+    return `'${value.replace(/'/g, '\\\'')}'`
+  }
+
+  if (typeof value === 'number' || typeof value === 'boolean') {
+    return String(value)
+  }
+
+  if (Array.isArray(value)) {
+    if (value.length === 0) {
+      return '[]'
+    }
+    const items = value.map(item => `${nextIndentStr}${formatAsJSObject(item, indent + 1)}`)
+    return `[\n${items.join(',\n')}\n${indentStr}]`
+  }
+
+  if (typeof value === 'object') {
+    const keys = Object.keys(value)
+    if (keys.length === 0) {
+      return '{}'
+    }
+    const props = keys.map((key) => {
+      const validKey = /^[a-z_$][\w$]*$/i.test(key)
+      const keyStr = validKey ? key : `'${key}'`
+      return `${nextIndentStr}${keyStr}: ${formatAsJSObject(value[key], indent + 1)}`
+    })
+    return `{\n${props.join(',\n')}\n${indentStr}}`
+  }
+
+  return String(value)
+}
+
+/**
+ * Generate TypeScript type definition from JSON value
+ */
+function generateTSType(value: any, typeName: string, indent: number = 0): string {
+  const indentStr = '  '.repeat(indent)
+  const nextIndentStr = '  '.repeat(indent + 1)
+
+  if (value === null) {
+    return `${indentStr}type ${typeName} = null`
+  }
+
+  if (Array.isArray(value)) {
+    if (value.length === 0) {
+      return `${indentStr}type ${typeName} = any[]`
+    }
+    const itemType = inferTSType(value[0])
+    return `${indentStr}type ${typeName} = ${itemType}[]`
+  }
+
+  if (typeof value === 'object') {
+    const keys = Object.keys(value)
+    if (keys.length === 0) {
+      return `${indentStr}type ${typeName} = Record<string, never>`
+    }
+    const props = keys.map((key) => {
+      const propType = inferTSType(value[key])
+      return `${nextIndentStr}${key}: ${propType}`
+    })
+    return `${indentStr}type ${typeName} = {\n${props.join('\n')}\n${indentStr}}`
+  }
+
+  return `${indentStr}type ${typeName} = ${inferTSType(value)}`
+}
+
+/**
+ * Infer TypeScript type from value
+ */
+function inferTSType(value: any): string {
+  if (value === null) {
+    return 'null'
+  }
+
+  if (Array.isArray(value)) {
+    if (value.length === 0) {
+      return 'any[]'
+    }
+    const itemType = inferTSType(value[0])
+    return `${itemType}[]`
+  }
+
+  if (typeof value === 'object') {
+    const keys = Object.keys(value)
+    if (keys.length === 0) {
+      return 'Record<string, never>'
+    }
+    const props = keys.map((key) => {
+      const propType = inferTSType(value[key])
+      return `  ${key}: ${propType}`
+    })
+    return `{\n${props.join('\n')}\n}`
+  }
+
+  if (typeof value === 'string') {
+    return 'string'
+  }
+
+  if (typeof value === 'number') {
+    return 'number'
+  }
+
+  if (typeof value === 'boolean') {
+    return 'boolean'
+  }
+
+  return 'any'
+}
+
+/**
+ * Generate Java class from JSON value
+ */
+function generateJavaClass(value: any, className: string): string {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) {
+    return '// JSON must be an object to generate a Java class'
+  }
+
+  const keys = Object.keys(value)
+  if (keys.length === 0) {
+    return `public class ${className} {\n}`
+  }
+
+  const fields: string[] = []
+  const getters: string[] = []
+  const setters: string[] = []
+
+  for (const key of keys) {
+    const javaType = inferJavaType(value[key])
+    const fieldName = key
+    const capitalizedKey = key.charAt(0).toUpperCase() + key.slice(1)
+
+    fields.push(`  private ${javaType} ${fieldName};`)
+    getters.push(`  public ${javaType} get${capitalizedKey}() {\n    return ${fieldName};\n  }`)
+    setters.push(`  public void set${capitalizedKey}(${javaType} ${fieldName}) {\n    this.${fieldName} = ${fieldName};\n  }`)
+  }
+
+  return `public class ${className} {\n${fields.join('\n')}\n\n${getters.join('\n\n')}\n\n${setters.join('\n\n')}\n}`
+}
+
+/**
+ * Infer Java type from value
+ */
+function inferJavaType(value: any): string {
+  if (value === null) {
+    return 'Object'
+  }
+
+  if (Array.isArray(value)) {
+    if (value.length === 0) {
+      return 'List<Object>'
+    }
+    const itemType = inferJavaType(value[0])
+    return `List<${itemType}>`
+  }
+
+  if (typeof value === 'object') {
+    return 'Object'
+  }
+
+  if (typeof value === 'string') {
+    return 'String'
+  }
+
+  if (typeof value === 'number') {
+    return Number.isInteger(value) ? 'int' : 'double'
+  }
+
+  if (typeof value === 'boolean') {
+    return 'boolean'
+  }
+
+  return 'Object'
 }

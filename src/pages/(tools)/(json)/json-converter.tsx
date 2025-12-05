@@ -3,6 +3,7 @@ import type { ConversionResult } from '#/utils/json/converter'
 import { CopyButton } from '#/components/copy-button'
 import { DownloadButton } from '#/components/download-button'
 import { Button } from '#/components/ui/button'
+import Icon from '#/components/ui/icon'
 import {
   Select,
   SelectContent,
@@ -10,83 +11,78 @@ import {
   SelectTrigger,
   SelectValue,
 } from '#/components/ui/select'
+import { Switch } from '#/components/ui/switch'
 import {
   TextField,
   TextFieldLabel,
   TextFieldTextArea,
 } from '#/components/ui/text-field'
 import {
-  csvToJSON,
-  detectFormat,
-  jsonToCSV,
+  jsonToJavaClass,
+  jsonToJSObject,
   jsonToQueryParams,
+  jsonToTSDefinition,
   jsonToYAML,
-  queryParamsToJSON,
-  yamlToJSON,
 } from '#/utils/json/converter'
 import { createRoute } from 'solid-file-router'
-import { createSignal } from 'solid-js'
+import { createEffect, createSignal } from 'solid-js'
 import { toast } from 'solid-sonner'
 
 export default createRoute({
   info: {
     title: 'JSON Converter',
-    description: 'Convert JSON to/from CSV, YAML, and query parameters',
+    description: 'Convert JSON to YAML, JS Object, TypeScript, Java, and query parameters',
     category: 'JSON',
     icon: 'lucide:repeat',
-    tags: ['json', 'csv', 'yaml', 'converter', 'transform'],
+    tags: ['json', 'yaml', 'typescript', 'java', 'javascript', 'converter', 'transform'],
   },
   component: JSONConverter,
 })
 
 type ConversionMode =
-  | 'json-to-csv'
-  | 'csv-to-json'
-  | 'json-to-yaml'
-  | 'yaml-to-json'
-  | 'json-to-query'
-  | 'query-to-json'
+  | 'yaml'
+  | 'js-object'
+  | 'ts-definition'
+  | 'java-class'
+  | 'query-params'
 
 function JSONConverter() {
   const [input, setInput] = createSignal('')
   const [output, setOutput] = createSignal('')
-  const [mode, setMode] = createSignal<ConversionMode>('json-to-csv')
+  const [mode, setMode] = createSignal<ConversionMode>('yaml')
+  const [useRepair, setUseRepair] = createSignal(false)
 
   const conversionModes = [
-    { value: 'json-to-csv', label: 'JSON → CSV' },
-    { value: 'csv-to-json', label: 'CSV → JSON' },
-    { value: 'json-to-yaml', label: 'JSON → YAML' },
-    { value: 'yaml-to-json', label: 'YAML → JSON' },
-    { value: 'json-to-query', label: 'JSON → Query Params' },
-    { value: 'query-to-json', label: 'Query Params → JSON' },
+    { value: 'yaml', label: 'YAML' },
+    { value: 'js-object', label: 'JS Object' },
+    { value: 'ts-definition', label: 'TypeScript Definition' },
+    { value: 'java-class', label: 'Java Class' },
+    { value: 'query-params', label: 'Query Parameters' },
   ] as const
 
-  const handleConvert = () => {
-    if (!input().trim()) {
-      toast.error('Please provide input to convert')
+  const convert = (inputValue: string, conversionMode: ConversionMode, repair: boolean) => {
+    if (!inputValue.trim()) {
+      setOutput('')
       return
     }
 
     let result: ConversionResult
 
-    switch (mode()) {
-      case 'json-to-csv':
-        result = jsonToCSV(input())
+    switch (conversionMode) {
+      case 'yaml':
+        result = jsonToYAML(inputValue)
         break
-      case 'csv-to-json':
-        result = csvToJSON(input())
+      case 'js-object':
+        result = jsonToJSObject(inputValue, repair)
         break
-      case 'json-to-yaml':
-        result = jsonToYAML(input())
+      case 'ts-definition':
+        result = jsonToTSDefinition(inputValue, repair)
         break
-      case 'yaml-to-json':
-        result = yamlToJSON(input())
+      case 'java-class':
+        result = jsonToJavaClass(inputValue, repair)
         break
-      case 'json-to-query':
-        result = jsonToQueryParams(input())
-        break
-      case 'query-to-json':
-        result = queryParamsToJSON(input())
+      case 'query-params':
+        result = jsonToQueryParams(inputValue)
         break
       default:
         result = { success: false, error: { message: 'Unknown conversion mode' } }
@@ -94,7 +90,6 @@ function JSONConverter() {
 
     if (result.success && result.output) {
       setOutput(result.output)
-      toast.success('Conversion completed successfully')
     } else {
       const error = result.error!
       toast.error('Conversion failed', {
@@ -104,35 +99,31 @@ function JSONConverter() {
     }
   }
 
-  const handleAutoDetect = () => {
-    if (!input().trim()) {
-      return
+  // Auto-convert on input or mode change
+  createEffect(() => {
+    convert(input(), mode(), useRepair())
+  })
+
+  const getFileExtension = () => {
+    const modeToExtension: Record<ConversionMode, string> = {
+      'yaml': 'yaml',
+      'js-object': 'js',
+      'ts-definition': 'ts',
+      'java-class': 'java',
+      'query-params': 'txt',
     }
+    return modeToExtension[mode()]
+  }
 
-    const detected = detectFormat(input())
-
-    switch (detected) {
-      case 'json':
-        setMode('json-to-csv')
-        break
-      case 'csv':
-        setMode('csv-to-json')
-        break
-      case 'yaml':
-        setMode('yaml-to-json')
-        break
-      case 'query':
-        setMode('query-to-json')
-        break
-      default:
-        toast.error('Could not detect input format', {
-          description: 'Please select conversion mode manually',
-          duration: 99900,
-        })
-        return
+  const getMimeType = () => {
+    const modeToMimeType: Record<ConversionMode, string> = {
+      'yaml': 'text/yaml',
+      'js-object': 'text/javascript',
+      'ts-definition': 'text/typescript',
+      'java-class': 'text/x-java',
+      'query-params': 'text/plain',
     }
-
-    toast.success(`Detected ${detected.toUpperCase()} format`)
+    return modeToMimeType[mode()]
   }
 
   const handleClear = () => {
@@ -140,146 +131,78 @@ function JSONConverter() {
     setOutput('')
   }
 
-  const getFileExtension = () => {
-    const modeToExtension = {
-      'json-to-csv': 'csv',
-      'csv-to-json': 'json',
-      'json-to-yaml': 'yaml',
-      'yaml-to-json': 'json',
-      'json-to-query': 'txt',
-      'query-to-json': 'json',
-    }
-    return modeToExtension[mode()]
-  }
-
-  const getMimeType = () => {
-    const modeToMimeType = {
-      'json-to-csv': 'text/csv',
-      'csv-to-json': 'application/json',
-      'json-to-yaml': 'text/yaml',
-      'yaml-to-json': 'application/json',
-      'json-to-query': 'text/plain',
-      'query-to-json': 'application/json',
-    }
-    return modeToMimeType[mode()]
-  }
-
-  const getInputPlaceholder = () => {
-    switch (mode()) {
-      case 'json-to-csv':
-      case 'json-to-yaml':
-      case 'json-to-query':
-        return 'Paste your JSON here...'
-      case 'csv-to-json':
-        return 'Paste your CSV here...'
-      case 'yaml-to-json':
-        return 'Paste your YAML here...'
-      case 'query-to-json':
-        return 'Paste your query parameters here (e.g., name=John&age=30)...'
-      default:
-        return 'Paste your data here...'
-    }
-  }
-
-  const getOutputLabel = () => {
-    switch (mode()) {
-      case 'json-to-csv':
-        return 'CSV Output'
-      case 'csv-to-json':
-      case 'yaml-to-json':
-      case 'query-to-json':
-        return 'JSON Output'
-      case 'json-to-yaml':
-        return 'YAML Output'
-      case 'json-to-query':
-        return 'Query Parameters Output'
-      default:
-        return 'Output'
-    }
-  }
-
   return (
     <div class="space-y-6">
-      <div class="flex flex-wrap gap-3 items-end">
-        <div class="space-y-2">
-          <label class="text-sm font-medium">Conversion Mode</label>
-          <Select
-            value={mode()}
-            onChange={setMode}
-            options={conversionModes.map(({ value }) => value)}
-            placeholder="Select conversion mode..."
-            class="w-54"
-            itemComponent={props => (
-              <SelectItem item={props.item}>
-                {conversionModes.find(m => m.value === props.item.rawValue)?.label}
-              </SelectItem>
-            )}
-          >
-            <SelectTrigger class="w-48">
-              <SelectValue<ConversionMode>>
-                {state => conversionModes.find(m => m.value === state.selectedOption())?.label}
-              </SelectValue>
-            </SelectTrigger>
-            <SelectContent />
-          </Select>
-        </div>
-
-        <Button
-          variant="secondary"
-          onClick={handleAutoDetect}
-          disabled={!input().trim()}
-        >
-          Auto-Detect Format
-        </Button>
+      <div class="flex flex-wrap gap-4 items-center">
+        <Switch
+          checked={useRepair()}
+          onChange={setUseRepair}
+          text="Auto-repair JSON"
+        />
       </div>
 
       <div class="gap-6 grid lg:grid-cols-2">
-        <div class="flex flex-col gap-3">
-          <TextField class="flex-1">
-            <TextFieldLabel>Input</TextFieldLabel>
+        <div class="flex flex-col gap-4">
+          <TextField class="mt-3 flex-1">
+            <TextFieldLabel>JSON Input</TextFieldLabel>
             <TextFieldTextArea
-              class="text-sm font-mono h-96 resize-none"
-              placeholder={getInputPlaceholder()}
+              class="text-sm font-mono mt-2 h-96 resize-none"
+              placeholder="Paste your JSON here..."
               value={input()}
               onInput={e => setInput(e.currentTarget.value)}
             />
           </TextField>
-          <div class="flex flex-wrap gap-2">
+          <div>
             <Button
-              onClick={handleConvert}
-              disabled={!input().trim()}
-            >
-              Convert
-            </Button>
-            <Button
-              variant="secondary"
+              variant="destructive"
               onClick={handleClear}
-              disabled={!input() && !output()}
+              disabled={!input()}
             >
+              <Icon name="lucide:trash-2" class="mr-2" />
               Clear
             </Button>
           </div>
         </div>
 
-        <div class="flex flex-col gap-3">
+        <div class="flex flex-col gap-4">
           <TextField class="flex-1">
-            <TextFieldLabel>{getOutputLabel()}</TextFieldLabel>
+            <Select
+              value={mode()}
+              onChange={setMode}
+              options={conversionModes.map(({ value }) => value)}
+              placeholder="Select convert format..."
+              class="w-60"
+              itemComponent={props => (
+                <SelectItem item={props.item}>
+                  {conversionModes.find(m => m.value === props.item.rawValue)?.label}
+                </SelectItem>
+              )}
+            >
+              <SelectTrigger class="w-full">
+                <SelectValue<ConversionMode>>
+                  {state => conversionModes.find(m => m.value === state.selectedOption())?.label}
+                </SelectValue>
+              </SelectTrigger>
+              <SelectContent />
+            </Select>
             <TextFieldTextArea
-              class="text-sm font-mono bg-muted/50 h-96 resize-none"
+              class="text-sm font-mono mt-2 bg-muted/50 h-96 resize-none"
               readOnly
               placeholder="Converted output will appear here..."
               value={output()}
             />
           </TextField>
-          <div class="flex flex-wrap gap-2">
+          <div class="flex flex-wrap gap-4">
             <CopyButton
               content={output()}
               variant="secondary"
+              disabled={!output()}
             />
             <DownloadButton
               content={output()}
               filename={`converted.${getFileExtension()}`}
               mimeType={getMimeType()}
+              disabled={!output()}
               variant="secondary"
             />
           </div>

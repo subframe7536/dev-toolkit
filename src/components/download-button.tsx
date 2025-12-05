@@ -12,6 +12,7 @@ interface DownloadButtonProps {
   mimeType?: string
   variant?: 'default' | 'outline' | 'ghost' | 'secondary'
   size?: 'sm' | 'default' | 'lg'
+  disabled?: boolean
   class?: string
   children?: JSX.Element
 }
@@ -27,6 +28,7 @@ export function DownloadButton(props: DownloadButtonProps) {
       variant={props.variant ?? 'outline'}
       size={props.size}
       class={props.class}
+      disabled={props.disabled}
       onClick={handleDownload}
     >
       {props.children ?? (

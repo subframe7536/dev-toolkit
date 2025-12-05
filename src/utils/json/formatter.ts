@@ -169,7 +169,7 @@ export function isValidJSON(input: string): boolean {
  * Repair malformed JSON string using jsonrepair
  * @param input - JSON string to repair
  * @returns Repaired JSON string
- * @throws JSONError if repair fails
+ * @throws JSONError if repair fails or input cannot be parsed
  */
 export function repairJSON(input: string): string {
   try {

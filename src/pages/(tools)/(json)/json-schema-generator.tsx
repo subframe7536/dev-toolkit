@@ -1,6 +1,7 @@
 import { CopyButton } from '#/components/copy-button'
 import { DownloadButton } from '#/components/download-button'
 import { Button } from '#/components/ui/button'
+import Icon from '#/components/ui/icon'
 import { Switch } from '#/components/ui/switch'
 import {
   TextField,
@@ -55,8 +56,8 @@ function JSONSchemaGenerator() {
   }
 
   return (
-    <div class="space-y-4">
-      <div class="flex flex-wrap gap-4 items-center">
+    <div class="space-y-6">
+      <div class="flex flex-wrap gap-6 items-center">
         <TextField class="flex-1 min-w-60">
           <TextFieldLabel>Schema Title (optional)</TextFieldLabel>
           <TextFieldInput
@@ -92,14 +93,19 @@ function JSONSchemaGenerator() {
               class="text-sm font-mono h-96"
               placeholder='{"name": "John", "age": 30}'
               value={input()}
-              onInput={e => setInput(e.currentTarget.value)}
+              onInput={(e) => {
+                setInput(e.currentTarget.value)
+                handleGenerate()
+              }}
             />
           </TextField>
           <div class="flex flex-wrap gap-2">
-            <Button onClick={handleGenerate} disabled={!input()}>
-              Generate Schema
-            </Button>
-            <Button variant="secondary" onClick={handleClear} disabled={!input() && !output()}>
+            <Button
+              variant="destructive"
+              onClick={handleClear}
+              disabled={!input() && !output()}
+            >
+              <Icon name="lucide:trash-2" class="mr-2" />
               Clear
             </Button>
           </div>
@@ -118,10 +124,12 @@ function JSONSchemaGenerator() {
           <div class="flex flex-wrap gap-2">
             <CopyButton
               content={output()}
+              disabled={!output()}
               variant="secondary"
             />
             <DownloadButton
               content={output()}
+              disabled={!output()}
               filename="schema.json"
               mimeType="application/json"
               variant="secondary"
