@@ -10,6 +10,7 @@ declare module 'solid-file-router' {
     '/base64': never
     '/color': never
     '/datetime': never
+    '/hash': never
     '/hex': never
     '/html': never
     '/image': never

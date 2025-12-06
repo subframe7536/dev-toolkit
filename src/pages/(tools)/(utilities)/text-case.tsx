@@ -67,7 +67,7 @@ function TextCase() {
         <For each={CASE_STYLES}>
           {(style) => {
             const converted = createMemo(
-              () => input() ? convertTextCase(input(), style.value) : '',
+              () => input() ? convertTextCase(input(), style.value) : '...',
             )
 
             return (
@@ -83,7 +83,7 @@ function TextCase() {
                     <CopyButton
                       class="right-6 top-7 absolute"
                       content={converted()}
-                      disabled={!converted()}
+                      disabled={converted() !== '...'}
                       text={false}
                       size="sm"
                     />

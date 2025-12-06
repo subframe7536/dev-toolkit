@@ -30,6 +30,7 @@
         "jsonrepair": "^3.13.1",
         "solid-file-router": "^0.1.5",
         "solid-sonner": "^0.2.8",
+        "spark-md5": "^3.0.2",
         "typescript": "~5.9.3",
         "unocss": "^66.5.9",
         "unocss-preset-animations": "^1.3.0",
@@ -1320,6 +1321,8 @@
     "source-map-support": ["source-map-support@0.5.21", "https://registry.npmmirror.com/source-map-support/-/source-map-support-0.5.21.tgz", { "dependencies": { "buffer-from": "^1.0.0", "source-map": "^0.6.0" } }, "sha512-uBHU3L3czsIyYXKX88fdrGovxdSCoTGDRZ6SYXtSRxLZUzHg5P/66Ht6uoUlHu9EZod+inXhKo3qQgwXUT/y1w=="],
 
     "sourcemap-codec": ["sourcemap-codec@1.4.8", "https://registry.npmmirror.com/sourcemap-codec/-/sourcemap-codec-1.4.8.tgz", {}, "sha512-9NykojV5Uih4lgo5So5dtw+f0JgJX30KCNI8gwhz2J9A15wD0Ml6tjHKwf6fTSa6fAdVBdZeNOs9eJ71qCk8vA=="],
+
+    "spark-md5": ["spark-md5@3.0.2", "https://registry.npmmirror.com/spark-md5/-/spark-md5-3.0.2.tgz", {}, "sha512-wcFzz9cDfbuqe0FZzfi2or1sgyIrsDwmPwfZC4hiNidPdPINjeUwNfv5kldczoEAcjl9Y1L3SM7Uz2PUEQzxQw=="],
 
     "spdx-exceptions": ["spdx-exceptions@2.5.0", "https://registry.npmmirror.com/spdx-exceptions/-/spdx-exceptions-2.5.0.tgz", {}, "sha512-PiU42r+xO4UbUS1buo3LPJkjlO7430Xn5SVAhdpzzsPHsjbYVflnnFdATgabnLude+Cqu25p6N+g2lw/PFsa4w=="],
 
