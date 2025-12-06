@@ -149,147 +149,143 @@ function DateTimeTool() {
       {/* Two Column Layout for Wide Screens */}
       <div class="gap-6 grid lg:grid-cols-2">
         {/* Left Column */}
-        <div class="space-y-6">
+        <div class="space-y-10">
           {/* Real-time Clock + Custom Date Input + Format Options */}
-          <Card
-            title="DateTime Formatter"
-            content={(
-              <div class="space-y-4">
-                {/* Real-time Display */}
-                <div class="p-4 text-center border rounded-lg bg-muted/50">
-                  <div class="text-3xl font-bold font-mono mb-2">
-                    {formattedTime()}
-                  </div>
-                  <div class="text-sm text-muted-foreground">
-                    {selectedTimeZone()}
-                    {' '}
-                    •
-                    {' '}
-                    {selectedLocale()}
-                  </div>
-                </div>
+          <div class="space-y-4">
+            {/* Real-time Display */}
+            <div class="p-4 text-center border rounded-lg bg-muted/50">
+              <div class="text-3xl font-bold font-mono mb-2">
+                {formattedTime()}
+              </div>
+              <div class="text-sm text-muted-foreground">
+                {selectedTimeZone()}
+                {' '}
+                •
+                {' '}
+                {selectedLocale()}
+              </div>
+            </div>
 
-                {/* Custom Date Input */}
-                <div class="space-y-2">
-                  <label class="text-sm font-medium">Custom Date Input</label>
-                  <div class="flex gap-2 items-start">
-                    <TextField class="flex-1">
-                      <TextFieldInput
-                        value={customInput()}
-                        onInput={e => setCustomInput(e.currentTarget.value)}
-                        placeholder="ISO, Unix timestamp, yyyy-MM-dd HH:mm:ss..."
-                      />
-                    </TextField>
-                    <Button onClick={handleParseCustomDate} class="shrink-0">
-                      {customDate() ? 'Reset' : 'Parse'}
-                    </Button>
-                  </div>
-                  {customDate() && (
-                    <div class="text-sm text-muted-foreground">
-                      Using:
-                      {' '}
-                      {toISOString(customDate()!)}
-                    </div>
-                  )}
+            {/* Custom Date Input */}
+            <div class="space-y-2">
+              <div class="flex gap-2 items-end">
+                <TextField class="flex-1">
+                  <TextFieldLabel>Custom Date Input</TextFieldLabel>
+                  <TextFieldInput
+                    value={customInput()}
+                    onInput={e => setCustomInput(e.currentTarget.value)}
+                    placeholder="ISO, Unix timestamp, yyyy-MM-dd HH:mm:ss..."
+                  />
+                </TextField>
+                <Button onClick={handleParseCustomDate} class="shrink-0">
+                  {customDate() ? 'Reset' : 'Parse'}
+                </Button>
+              </div>
+              <Show when={customDate()}>
+                <div class="text-sm text-muted-foreground">
+                  Using:
+                  {' '}
+                  {toISOString(customDate()!)}
                 </div>
+              </Show>
+            </div>
 
-                {/* Format Options */}
-                <div class="space-y-3">
-                  <label class="text-sm font-medium">Format Options</label>
-                  <div class="gap-3 grid grid-cols-2">
-                    <div>
-                      <label class="text-xs text-muted-foreground mb-1.5 block">Locale</label>
-                      <Select<string>
-                        value={selectedLocale()}
-                        onChange={setSelectedLocale}
-                        options={locales}
-                        disallowEmptySelection
-                        itemComponent={props => (
-                          <SelectItem item={props.item}>
-                            {props.item.rawValue}
-                          </SelectItem>
-                        )}
-                      >
-                        <SelectTrigger>
-                          <SelectValue<string>>
-                            {state => state.selectedOption()}
-                          </SelectValue>
-                        </SelectTrigger>
-                        <SelectContent />
-                      </Select>
-                    </div>
-                    <div>
-                      <label class="text-xs text-muted-foreground mb-1.5 block">Time Zone</label>
-                      <Select<string>
-                        value={selectedTimeZone()}
-                        onChange={setSelectedTimeZone}
-                        options={commonTimeZones}
-                        disallowEmptySelection
-                        itemComponent={props => (
-                          <SelectItem item={props.item}>
-                            {props.item.rawValue}
-                          </SelectItem>
-                        )}
-                      >
-                        <SelectTrigger>
-                          <SelectValue<string>>
-                            {state => state.selectedOption()}
-                          </SelectValue>
-                        </SelectTrigger>
-                        <SelectContent />
-                      </Select>
-                    </div>
-                    <div>
-                      <label class="text-xs text-muted-foreground mb-1.5 block">Date Style</label>
-                      <Select<string>
-                        value={dateStyle()}
-                        onChange={setDateStyle}
-                        options={[...styles]}
-                        disallowEmptySelection
-                        itemComponent={props => (
-                          <SelectItem item={props.item}>
-                            {props.item.rawValue}
-                          </SelectItem>
-                        )}
-                      >
-                        <SelectTrigger>
-                          <SelectValue<'full' | 'long' | 'medium' | 'short'>>
-                            {state => state.selectedOption()}
-                          </SelectValue>
-                        </SelectTrigger>
-                        <SelectContent />
-                      </Select>
-                    </div>
-                    <div>
-                      <label class="text-xs text-muted-foreground mb-1.5 block">Time Style</label>
-                      <Select<string>
-                        value={timeStyle()}
-                        onChange={setTimeStyle}
-                        options={[...styles]}
-                        disallowEmptySelection
-                        itemComponent={props => (
-                          <SelectItem item={props.item}>
-                            {props.item.rawValue}
-                          </SelectItem>
-                        )}
-                      >
-                        <SelectTrigger>
-                          <SelectValue<'full' | 'long' | 'medium' | 'short'>>
-                            {state => state.selectedOption()}
-                          </SelectValue>
-                        </SelectTrigger>
-                        <SelectContent />
-                      </Select>
-                    </div>
-                  </div>
+            {/* Format Options */}
+            <div class="space-y-2">
+              <div class="font-medium">Format Options</div>
+              <div class="gap-4 grid grid-cols-2">
+                <div>
+                  <label class="text-xs text-muted-foreground mb-1.5 block">Locale</label>
+                  <Select<string>
+                    value={selectedLocale()}
+                    onChange={setSelectedLocale}
+                    options={locales}
+                    disallowEmptySelection
+                    itemComponent={props => (
+                      <SelectItem item={props.item}>
+                        {props.item.rawValue}
+                      </SelectItem>
+                    )}
+                  >
+                    <SelectTrigger>
+                      <SelectValue<string>>
+                        {state => state.selectedOption()}
+                      </SelectValue>
+                    </SelectTrigger>
+                    <SelectContent />
+                  </Select>
+                </div>
+                <div>
+                  <label class="text-xs text-muted-foreground mb-1.5 block">Time Zone</label>
+                  <Select<string>
+                    value={selectedTimeZone()}
+                    onChange={setSelectedTimeZone}
+                    options={commonTimeZones}
+                    disallowEmptySelection
+                    itemComponent={props => (
+                      <SelectItem item={props.item}>
+                        {props.item.rawValue}
+                      </SelectItem>
+                    )}
+                  >
+                    <SelectTrigger>
+                      <SelectValue<string>>
+                        {state => state.selectedOption()}
+                      </SelectValue>
+                    </SelectTrigger>
+                    <SelectContent />
+                  </Select>
+                </div>
+                <div>
+                  <label class="text-xs text-muted-foreground mb-1.5 block">Date Style</label>
+                  <Select<string>
+                    value={dateStyle()}
+                    onChange={setDateStyle}
+                    options={[...styles]}
+                    disallowEmptySelection
+                    itemComponent={props => (
+                      <SelectItem item={props.item}>
+                        {props.item.rawValue}
+                      </SelectItem>
+                    )}
+                  >
+                    <SelectTrigger>
+                      <SelectValue<'full' | 'long' | 'medium' | 'short'>>
+                        {state => state.selectedOption()}
+                      </SelectValue>
+                    </SelectTrigger>
+                    <SelectContent />
+                  </Select>
+                </div>
+                <div>
+                  <label class="text-xs text-muted-foreground mb-1.5 block">Time Style</label>
+                  <Select<string>
+                    value={timeStyle()}
+                    onChange={setTimeStyle}
+                    options={[...styles]}
+                    disallowEmptySelection
+                    itemComponent={props => (
+                      <SelectItem item={props.item}>
+                        {props.item.rawValue}
+                      </SelectItem>
+                    )}
+                  >
+                    <SelectTrigger>
+                      <SelectValue<'full' | 'long' | 'medium' | 'short'>>
+                        {state => state.selectedOption()}
+                      </SelectValue>
+                    </SelectTrigger>
+                    <SelectContent />
+                  </Select>
                 </div>
               </div>
-            )}
-          />
+            </div>
+          </div>
 
           {/* DateTime Manipulation */}
           <Card
             title="DateTime Manipulation"
+            description="Units: y=years, M=months, d=days, h=hours, m=minutes, s=seconds"
             icon="lucide:calculator"
             content={(
               <div class="space-y-2">
@@ -300,9 +296,6 @@ function DateTimeTool() {
                     placeholder="e.g., +1h -30m +2d"
                   />
                 </TextField>
-                <div class="text-xs text-muted-foreground">
-                  Units: y=years, M=months, d=days, h=hours, m=minutes, s=seconds
-                </div>
                 <Show when={manipulatedTime()}>
                   <div class="p-3 border rounded-lg bg-muted/50">
                     <div class="flex items-center justify-between">
@@ -325,73 +318,71 @@ function DateTimeTool() {
         </div>
 
         {/* Right Column */}
-        <div class="space-y-6">
-          {/* Custom Format + Output Formats */}
-          <Card
-            title="Format Outputs"
-            icon="lucide:list"
-            content={(
-              <div class="space-y-4">
-                {/* Custom Format */}
-                <div class="space-y-2">
-                  <TextField>
-                    <TextFieldLabel>Custom Format Pattern</TextFieldLabel>
-                    <TextFieldInput
-                      value={customFormat()}
-                      onInput={e => setCustomFormat(e.currentTarget.value)}
-                      placeholder="e.g., yyyy/MM/dd or dd-MM-yyyy HH:mm"
-                    />
-                  </TextField>
-                  <div class="text-xs text-muted-foreground space-y-1">
-                    <div>Tokens: yyyy (year), MM (month), dd (day)</div>
-                    <div>HH/hh (hours), mm (minutes), ss (seconds), SSS (ms)</div>
+        {/* Custom Format + Output Formats */}
+        <Card
+          title="Format Outputs"
+          icon="lucide:list"
+          content={(
+            <div class="space-y-4">
+              {/* Custom Format */}
+              <div class="space-y-2">
+                <TextField>
+                  <TextFieldLabel>Custom Format Pattern</TextFieldLabel>
+                  <TextFieldInput
+                    value={customFormat()}
+                    onInput={e => setCustomFormat(e.currentTarget.value)}
+                    placeholder="e.g., yyyy/MM/dd or dd-MM-yyyy HH:mm"
+                  />
+                </TextField>
+                <div class="text-xs text-muted-foreground space-y-1">
+                  <div>Tokens: yyyy (year), MM (month), dd (day)</div>
+                  <div>HH/hh (hours), mm (minutes), ss (seconds), SSS (ms)</div>
+                </div>
+                <Show when={customFormat().trim()}>
+                  <div class="p-3 border rounded-lg bg-muted/50">
+                    <div class="flex items-center justify-between">
+                      <div class="flex-1 min-w-0">
+                        <div class="text-xs text-muted-foreground mb-1">Preview:</div>
+                        <div class="text-sm font-mono font-semibold truncate">
+                          {formatWithPattern(customDate() || currentTime(), customFormat())}
+                        </div>
+                      </div>
+                      <CopyButton
+                        content={formatWithPattern(customDate() || currentTime(), customFormat())}
+                        size="sm"
+                        variant="ghost"
+                        text={false}
+                      />
+                    </div>
                   </div>
-                  <Show when={customFormat().trim()}>
-                    <div class="p-3 border rounded-lg bg-muted/50">
-                      <div class="flex items-center justify-between">
+                </Show>
+              </div>
+
+              {/* Common Formats */}
+              <div class="space-y-2">
+                <div class="text-sm font-medium">Common Formats</div>
+                <div class="space-y-2">
+                  <Index each={outputFormats}>
+                    {format => (
+                      <div class="p-3 border rounded-lg bg-muted/30 flex gap-2 items-center justify-between">
                         <div class="flex-1 min-w-0">
-                          <div class="text-xs text-muted-foreground mb-1">Preview:</div>
-                          <div class="text-sm font-mono font-semibold truncate">
-                            {formatWithPattern(customDate() || currentTime(), customFormat())}
-                          </div>
+                          <div class="text-xs text-muted-foreground">{format().label}</div>
+                          <div class="text-sm font-mono truncate">{format().value}</div>
                         </div>
                         <CopyButton
-                          content={formatWithPattern(customDate() || currentTime(), customFormat())}
+                          content={format().value}
                           size="sm"
                           variant="ghost"
                           text={false}
                         />
                       </div>
-                    </div>
-                  </Show>
-                </div>
-
-                {/* Common Formats */}
-                <div class="space-y-2">
-                  <div class="text-sm font-medium">Common Formats</div>
-                  <div class="space-y-2">
-                    <Index each={outputFormats}>
-                      {format => (
-                        <div class="p-3 border rounded-lg bg-muted/30 flex gap-2 items-center justify-between">
-                          <div class="flex-1 min-w-0">
-                            <div class="text-xs text-muted-foreground">{format().label}</div>
-                            <div class="text-sm font-mono truncate">{format().value}</div>
-                          </div>
-                          <CopyButton
-                            content={format().value}
-                            size="sm"
-                            variant="ghost"
-                            text={false}
-                          />
-                        </div>
-                      )}
-                    </Index>
-                  </div>
+                    )}
+                  </Index>
                 </div>
               </div>
-            )}
-          />
-        </div>
+            </div>
+          )}
+        />
       </div>
     </div>
   )

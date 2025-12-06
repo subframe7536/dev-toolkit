@@ -1,6 +1,8 @@
 import type { JSX } from 'solid-js'
 
 import { downloadFile } from '#/utils/download'
+import { cls } from 'cls-variant'
+import { createMemo, Show } from 'solid-js'
 import { toast } from 'solid-sonner'
 
 import { Button } from './ui/button'
@@ -14,7 +16,7 @@ interface DownloadButtonProps {
   size?: 'sm' | 'default' | 'lg'
   disabled?: boolean
   class?: string
-  children?: JSX.Element
+  text?: boolean | string
 }
 
 export function DownloadButton(props: DownloadButtonProps) {
@@ -23,6 +25,8 @@ export function DownloadButton(props: DownloadButtonProps) {
     toast.success('Downloaded successfully')
   }
 
+  const text = createMemo(() => props.text ?? true)
+  const icon = <Icon name="lucide:download" class={cls(text() && 'mr-2')} />
   return (
     <Button
       variant={props.variant ?? 'outline'}
@@ -31,12 +35,12 @@ export function DownloadButton(props: DownloadButtonProps) {
       disabled={props.disabled}
       onClick={handleDownload}
     >
-      {props.children ?? (
+      <Show when={text()}>
         <>
-          <Icon name="lucide:download" class="mr-2 h-4 w-4" />
+          {icon}
           Download
         </>
-      )}
+      </Show>
     </Button>
   )
 }

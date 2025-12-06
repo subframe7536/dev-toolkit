@@ -14,7 +14,7 @@ interface CopyButtonProps {
   size?: 'sm' | 'default' | 'lg'
   disabled?: boolean
   class?: string
-  text?: boolean | string
+  text?: boolean
 }
 
 export function CopyButton(props: CopyButtonProps) {
@@ -41,7 +41,7 @@ export function CopyButton(props: CopyButtonProps) {
       <Show when={text()} fallback={icon}>
         <>
           {icon}
-          {isCopied() ? 'Copied!' : (text() ? 'Copy' : props.text)}
+          {isCopied() ? 'Copied!' : 'Copy'}
         </>
       </Show>
     </Button>

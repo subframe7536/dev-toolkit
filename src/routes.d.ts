@@ -18,6 +18,7 @@ declare module 'solid-file-router' {
     '/json-schema-generator': never
     '/sql-param-fill': never
     '/table-editor': never
+    '/text-case': never
     '/unicode': never
     '/url': never
     '/uuid': never

@@ -223,7 +223,7 @@ export const InputSection: Component<InputSectionProps> = (props) => {
                 onClick={() => setTextInput('')}
                 disabled={!textInput().trim()}
               >
-                <Icon name="lucide:x" class="mr-2" />
+                <Icon name="lucide:trash-2" class="mr-2" />
                 Clear
               </Button>
             </div>
@@ -270,12 +270,12 @@ export const InputSection: Component<InputSectionProps> = (props) => {
                   when={!isParsing()}
                   fallback={(
                     <>
-                      <Icon name="lucide:loader-2" class="mr-2 size-4 animate-spin" />
+                      <Icon name="lucide:loader-2" class="mr-2 animate-spin" />
                       Parsing...
                     </>
                   )}
                 >
-                  <Icon name="lucide:play" class="mr-2 size-4" />
+                  <Icon name="lucide:play" class="mr-2" />
                   Parse
                 </Show>
               </Button>
@@ -284,7 +284,7 @@ export const InputSection: Component<InputSectionProps> = (props) => {
                 onClick={() => handleFileSelect(undefined)}
                 disabled={!uploadedFile()}
               >
-                <Icon name="lucide:x" class="mr-2 size-4" />
+                <Icon name="lucide:trash-2" class="mr-2" />
                 Clear
               </Button>
             </div>

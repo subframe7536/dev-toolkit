@@ -81,7 +81,7 @@ function TextFieldTextArea<T extends ValidComponent = 'textarea'>(props: Polymor
 
 const labelVariants = clsvDefault(
   clsv(
-    'text-sm font-500 peer-disabled:effect-dis c-note',
+    'font-500 peer-disabled:effect-dis c-note',
     {
       variant: {
         label: 'data-[invalid]:c-red',

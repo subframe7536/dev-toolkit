@@ -27,38 +27,36 @@ function ToolsLayout(props: ParentProps) {
 
   return (
     <>
-      <Show when={currentTool.title}>
-        <div class="space-y-2">
-          <div class="flex gap-3 items-end">
-            <div class="border border-border rounded-lg bg-muted/50 size-8">
-              <Icon
-                name={currentTool.icon}
-                class="text-foreground m-1.5"
-              />
-            </div>
-            <h1 class="text-3xl text-foreground leading-none font-bold">{currentTool.title}</h1>
+      <div class="mx-a max-w-400 space-y-2">
+        <div class="flex gap-3 items-end">
+          <div class="border border-border rounded-lg bg-muted/50 size-8">
+            <Icon
+              name={currentTool.icon}
+              class="text-foreground m-1.5"
+            />
           </div>
-          <p class="text-muted-foreground mt-2">
-            {currentTool.description}
-          </p>
-          <div class="flex flex-wrap gap-2 items-center">
-            <span class="text-xs text-muted-foreground font-medium px-2 py-0.5 border border-border rounded-md bg-muted/30">
-              {currentTool.category}
-            </span>
-            <Show when={currentTool.tags.length > 0}>
-              <For each={currentTool.tags}>
-                {tag => (
-                  <span class="text-xs text-muted-foreground px-2 py-0.5 border border-border/50 rounded-md bg-muted/20">
-                    {tag}
-                  </span>
-                )}
-              </For>
-            </Show>
-          </div>
+          <h1 class="text-3xl text-foreground leading-none font-bold">{currentTool.title}</h1>
         </div>
-      </Show>
-      <div class="mt-8">
-        {props.children}
+        <p class="text-muted-foreground mt-2">
+          {currentTool.description}
+        </p>
+        <div class="flex flex-wrap gap-2 items-center">
+          <span class="text-xs text-muted-foreground font-medium px-2 py-0.5 border border-border rounded-md bg-muted/30">
+            {currentTool.category}
+          </span>
+          <Show when={currentTool.tags?.length > 0}>
+            <For each={currentTool.tags}>
+              {tag => (
+                <span class="text-xs text-muted-foreground px-2 py-0.5 border border-border/50 rounded-md bg-muted/20">
+                  {tag}
+                </span>
+              )}
+            </For>
+          </Show>
+        </div>
+        <div class="mt-8">
+          {props.children}
+        </div>
       </div>
     </>
   )
