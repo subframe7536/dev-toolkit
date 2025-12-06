@@ -18,6 +18,7 @@ import {
   SidebarTrigger,
 } from '#/components/ui/sidebar'
 import { Toaster } from '#/components/ui/sonner'
+import { usePWA } from '#/utils/pwa'
 import { getCategories } from '#/utils/routes'
 import { useColorMode } from '@solid-hooks/core/web'
 import { A } from '@solidjs/router'
@@ -45,6 +46,7 @@ function Catch(props: { error: Error, reset: () => void }) {
 function App(props: RouteSectionProps) {
   const [mode, setMode] = useColorMode()
   const { categories, count } = getCategories()
+  usePWA()
 
   return (
     <SidebarProvider>
