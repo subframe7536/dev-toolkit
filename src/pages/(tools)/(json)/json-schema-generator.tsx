@@ -57,6 +57,14 @@ function JSONSchemaGenerator() {
 
   return (
     <div class="space-y-6">
+      <div class="flex flex-wrap gap-6">
+        <Switch checked={required()} onChange={setRequired} text="Mark fields as required" />
+        <Switch
+          checked={additionalProperties()}
+          onChange={setAdditionalProperties}
+          text="Allow additional properties"
+        />
+      </div>
       <div class="flex flex-wrap gap-6 items-center">
         <TextField class="flex-1 min-w-60">
           <TextFieldLabel>Schema Title (optional)</TextFieldLabel>
@@ -74,15 +82,6 @@ function JSONSchemaGenerator() {
             placeholder="Description of the schema"
           />
         </TextField>
-      </div>
-
-      <div class="flex flex-wrap gap-6">
-        <Switch checked={required()} onChange={setRequired} text="Mark fields as required" />
-        <Switch
-          checked={additionalProperties()}
-          onChange={setAdditionalProperties}
-          text="Allow additional properties"
-        />
       </div>
 
       <div class="gap-6 grid lg:grid-cols-2">

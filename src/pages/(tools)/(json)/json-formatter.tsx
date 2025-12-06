@@ -20,6 +20,7 @@ import {
 } from '#/components/ui/text-field'
 import { formatJSON, repairJSON, sortKeys } from '#/utils/json/formatter'
 import { convertKeys } from '#/utils/json/key-converter'
+import { cls } from 'cls-variant'
 import { createRoute } from 'solid-file-router'
 import { createEffect, createSignal, on, Show } from 'solid-js'
 import { toast } from 'solid-sonner'
@@ -36,7 +37,7 @@ export default createRoute({
 })
 
 const caseOptions: Array<{ value: CaseStyle, label: string }> = [
-  { value: 'As is', label: 'Keep Current Case' },
+  { value: 'As is', label: 'Keep Current Key Case' },
   { value: 'camelCase', label: 'camelCase' },
   { value: 'snake_case', label: 'snake_case' },
   { value: 'kebab-case', label: 'kebab-case' },
@@ -116,7 +117,7 @@ function JSONFormatter() {
   return (
     <div class="space-y-6">
       <div class="flex flex-wrap gap-8 items-center">
-        <Switch checked={autoRepair()} onChange={setAutoRepair} text="Auto-repair JSON" />
+        <Switch checked={autoRepair()} onChange={setAutoRepair} text="Auto repair JSON string" />
         <Switch checked={shouldSortKeys()} onChange={setShouldSortKeys} text="Sort Keys" />
         <Select
           value={targetCase()}
@@ -166,9 +167,8 @@ function JSONFormatter() {
             <Button
               variant="secondary"
               size="icon"
-              class="right-2 top-9 absolute"
+              class={cls('right-2 top-9 absolute', !output() && 'hidden')}
               onClick={() => setIsFullscreen(true)}
-              disabled={!output()}
             >
               <Icon name="lucide:maximize-2" />
             </Button>
@@ -199,9 +199,9 @@ function JSONFormatter() {
         <div class="p-4 bg-background/95 flex flex-col gap-4 inset-0 fixed z-50 overflow-hidden">
           <div class="flex items-center justify-between">
             <h2 class="text-lg font-semibold">Formatted JSON (Fullscreen)</h2>
-            <Button variant="ghost" size="sm" onClick={() => setIsFullscreen(false)}>
+            <button class="py-1 rounded size-7 hover:bg-primary/90" onClick={() => setIsFullscreen(false)}>
               <Icon name="lucide:x" />
-            </Button>
+            </button>
           </div>
           <TextField class="flex-1">
             <TextFieldLabel>Output</TextFieldLabel>
