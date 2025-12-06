@@ -18,8 +18,9 @@ import {
   TextFieldTextArea,
 } from '#/components/ui/text-field'
 import { generateHash } from '#/utils/hash'
+import { cls } from 'cls-variant'
 import { createRoute } from 'solid-file-router'
-import { createSignal, For, Show } from 'solid-js'
+import { createMemo, createSignal, For, Show } from 'solid-js'
 import { toast } from 'solid-sonner'
 
 const ALGORITHMS: HashAlgorithm[] = ['MD5', 'SHA-1', 'SHA-256', 'SHA-384', 'SHA-512']
@@ -46,6 +47,7 @@ function HashGenerator() {
   const [file, setFile] = createSignal<File | undefined>(undefined)
   const [results, setResults] = createSignal<HashResult[]>([])
   const [isGenerating, setIsGenerating] = createSignal(false)
+  const [verifyHash, setVerifyHash] = createSignal('')
 
   const handleGenerate = async () => {
     const mode = inputMode()
@@ -77,7 +79,16 @@ function HashGenerator() {
     setTextInput('')
     setFile(undefined)
     setResults([])
+    setVerifyHash('')
     toast.info('Cleared all data')
+  }
+
+  const isHashMatch = (hash: string) => {
+    const verify = verifyHash().trim().toLowerCase()
+    if (!verify) {
+      return undefined
+    }
+    return hash.toLowerCase() === verify
   }
 
   const handleInputModeChange = (value: string) => {
@@ -158,25 +169,55 @@ function HashGenerator() {
         <Card
           title="Generated Hashes"
           content={(
-            <div class="flex flex-col gap-3">
-              <For each={results()}>
-                {result => (
-                  <div class="p-2 border rounded-lg bg-muted/30 flex gap-2 items-center">
-                    <div class="flex-1">
-                      <div class="text-xs text-muted-foreground font-medium mb-0.5 select-none uppercase">
-                        {result.algorithm}
+            <div class="flex flex-col gap-4">
+              <TextField>
+                <TextFieldLabel>Verify Hash (Optional)</TextFieldLabel>
+                <TextFieldTextArea
+                  value={verifyHash()}
+                  onInput={e => setVerifyHash((e.target as HTMLTextAreaElement).value)}
+                  placeholder="Paste a hash to verify against generated hashes..."
+                  rows={2}
+                  class="text-sm font-mono resize-y"
+                />
+              </TextField>
+
+              <div class="flex flex-col gap-3">
+                <For each={results()}>
+                  {(result) => {
+                    const match = createMemo(() => isHashMatch(result.hash))
+                    return (
+                      <div
+                        class={cls(
+                          'p-2 border rounded-lg flex gap-2 items-center',
+                          match() === true
+                            ? 'bg-green-500/10 border-green-500/50'
+                            : match() === false
+                              ? 'bg-red-500/5 border-red-500/20'
+                              : 'bg-muted/30',
+                        )}
+                      >
+                        <div class="flex-1">
+                          <div class="mb-0.5 flex gap-1 items-center">
+                            <div class="text-sm text-muted-foreground font-medium select-none uppercase">
+                              {result.algorithm}
+                            </div>
+                            <Show when={match()}>
+                              <Icon name="lucide:check" class="text-sm text-green-600" />
+                            </Show>
+                          </div>
+                          <code class="text-sm font-mono break-all">{result.hash}</code>
+                        </div>
+                        <CopyButton
+                          content={result.hash}
+                          variant="ghost"
+                          size="sm"
+                          text={false}
+                        />
                       </div>
-                      <code class="text-sm font-mono break-all">{result.hash}</code>
-                    </div>
-                    <CopyButton
-                      content={result.hash}
-                      variant="ghost"
-                      size="sm"
-                      text={false}
-                    />
-                  </div>
-                )}
-              </For>
+                    )
+                  }}
+                </For>
+              </div>
             </div>
           )}
         />
