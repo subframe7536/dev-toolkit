@@ -2,7 +2,7 @@
  * SQL parameter filling utilities
  */
 
-const TYPE_STR = ['String', 'Integer', 'Long', 'Timestamp']
+const TYPE_STR = ['String', 'Integer', 'Long', 'Timestamp', 'LocalDate', 'LocalDateTime']
 
 interface Param {
   value: string
@@ -92,6 +92,8 @@ export function fillSqlParams(sql: string, params: string): string {
 
       switch (param.type) {
         case TYPE_STR[0]: // String
+        case TYPE_STR[4]: // LocalDate
+        case TYPE_STR[5]: // LocalDateTime
           tempParamStr = `'${param.value}'`
           break
         case TYPE_STR[1]: // Integer

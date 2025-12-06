@@ -67,10 +67,10 @@ function UUIDGenerator() {
   })
 
   return (
-    <div class="flex flex-col gap-6">
-      <div class="flex flex-col gap-4 lg:(flex-row items-end)">
-        <div class="flex-1 max-w-120">
-          <div class="font-medium mb-2">Quick Select</div>
+    <div class="gap-6 grid grid-cols-1 lg:grid-cols-[auto_1fr]">
+      <div class="flex flex-col gap-6 lg:w-80">
+        <div>
+          <div class="text-lg font-semibold mb-4">Quick Select</div>
           <Tabs value={selectedTab()} onChange={handleTabChange}>
             <TabsList>
               <For each={PRESET_COUNTS}>
@@ -83,38 +83,46 @@ function UUIDGenerator() {
           </Tabs>
         </div>
 
-        <div class="flex flex-wrap gap-4 items-end">
-          <TextField class="w-full sm:w-24">
-            <TextFieldLabel>Custom</TextFieldLabel>
-            <TextFieldInput
-              type="number"
-              min="1"
-              max="100"
-              value={count().toString()}
-              onInput={e => handleCustomInput((e.target as HTMLInputElement).value)}
-              class="text-center h-9"
-            />
-          </TextField>
+        <TextField>
+          <TextFieldLabel>Custom Count</TextFieldLabel>
+          <TextFieldInput
+            type="number"
+            min="1"
+            max="100"
+            value={count().toString()}
+            onInput={e => handleCustomInput((e.target as HTMLInputElement).value)}
+            class="text-center h-9"
+          />
+        </TextField>
 
-          <div class="flex gap-2">
-            <Button onClick={generateUUIDs} class="flex-1 sm:flex-initial">
-              <Icon name="lucide:refresh-cw" class="mr-2 size-4" />
-              Generate
-            </Button>
-            <Button
-              onClick={handleClear}
-              variant="destructive"
-              disabled={uuids().length > 0}
-              class="flex-1 sm:flex-initial"
-            >
-              <Icon name="lucide:trash-2" class="mr-2 size-4" />
-              Clear
-            </Button>
-          </div>
+        <div class="flex gap-2">
+          <Button class="flex-1" onClick={generateUUIDs}>
+            <Icon name="lucide:refresh-cw" class="mr-2 size-4" />
+            Generate
+          </Button>
+          <Button
+            class="flex-1"
+            onClick={handleClear}
+            variant="destructive"
+            disabled={uuids().length === 0}
+          >
+            <Icon name="lucide:trash-2" class="mr-2 size-4" />
+            Clear
+          </Button>
         </div>
       </div>
 
-      <Show when={uuids().length > 0}>
+      <Show
+        when={uuids().length > 0}
+        fallback={(
+          <div class="text-muted-foreground p-12 text-center border rounded-lg border-dashed flex items-center justify-center">
+            <div>
+              <Icon name="lucide:fingerprint" class="mx-auto mb-4 opacity-50 size-12" />
+              <p>Click "Generate" to create UUIDs</p>
+            </div>
+          </div>
+        )}
+      >
         <div class="flex flex-col gap-4">
           <div class="flex items-center justify-between">
             <h3 class="text-lg text-foreground font-semibold">
@@ -132,7 +140,7 @@ function UUIDGenerator() {
             <For each={uuids()}>
               {uuid => (
                 <div class="text-sm font-mono p-3 border rounded-md bg-muted/50 flex gap-2 items-center">
-                  <span class="flex-1">{uuid}</span>
+                  <span class="flex-1 truncate">{uuid}</span>
                   <CopyButton
                     content={uuid}
                     variant="ghost"

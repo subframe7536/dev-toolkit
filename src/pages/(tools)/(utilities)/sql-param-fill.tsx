@@ -1,8 +1,10 @@
+import { CopyButton } from '#/components/copy-button'
 import { Button } from '#/components/ui/button'
+import { Icon } from '#/components/ui/icon'
 import { TextField, TextFieldLabel, TextFieldTextArea } from '#/components/ui/text-field'
 import { fillSqlParams, splitSqlAndParams } from '#/utils/sql'
 import { createRoute } from 'solid-file-router'
-import { createEffect, createSignal } from 'solid-js'
+import { createEffect, createSignal, Show } from 'solid-js'
 
 export default createRoute({
   info: {
@@ -23,7 +25,14 @@ function SqlParamFill() {
 
   const loadSample = () => {
     setSqlInput('SELECT * FROM users WHERE id = ? AND name = ? AND created_at > ?')
-    setParamsInput('1001(Integer), John Doe(String), 2024-01-01 00:00:00(Timestamp)')
+    setParamsInput('1001(Integer), John Doe(String), 2024-01-01T00:00(LocalDateTime)')
+  }
+
+  const handleClear = () => {
+    setSqlInput('')
+    setParamsInput('')
+    setOutput('')
+    setError('')
   }
 
   // Auto-split MyBatis logs
@@ -66,14 +75,13 @@ function SqlParamFill() {
   })
 
   return (
-    <div class="flex flex-col gap-4 h-full">
-      <div class="flex justify-end">
-        <Button onClick={loadSample} variant="outline" size="sm">
-          Load Sample
-        </Button>
-      </div>
+    <div class="flex flex-col gap-4 h-full relative">
 
-      <div class="flex-1 gap-4 grid grid-cols-1 md:grid-cols-2">
+      <Button onClick={loadSample} variant="outline" size="sm" class="right-0 top--2 absolute">
+        Load Sample
+      </Button>
+
+      <div class="flex-1 gap-4 grid grid-cols-1 lg:gap-6 lg:grid-cols-2">
         <TextField>
           <TextFieldLabel>SQL Template</TextFieldLabel>
           <TextFieldTextArea
@@ -95,18 +103,31 @@ function SqlParamFill() {
         </TextField>
       </div>
 
-      <TextField>
-        <TextFieldLabel>Output</TextFieldLabel>
-        <TextFieldTextArea
-          value={error() || output()}
-          readOnly
-          placeholder="SELECT * FROM T WHERE id=1 AND name='zhangshan'"
-          class="font-mono h-48 resize-none"
-          classList={{ 'text-red-500': !!error() }}
-        />
-      </TextField>
+      <div class="relative">
+        <TextField>
+          <TextFieldLabel>Output</TextFieldLabel>
+          <TextFieldTextArea
+            value={error() || output()}
+            readOnly
+            placeholder="SELECT * FROM T WHERE id=1 AND name='zhangshan'"
+            class="font-mono h-48 resize-none"
+            classList={{ 'text-red-500': !!error() }}
+          />
+        </TextField>
+        <div class="mt-4 flex gap-4 justify-end">
+          <CopyButton
+            content={output()}
+            disabled={!output() || !error()}
+            variant="secondary"
+          />
+          <Button onClick={handleClear} disabled={!sqlInput() && !paramsInput()} variant="destructive">
+            <Icon name="lucide:trash-2" class="mr-2" />
+            Clear
+          </Button>
+        </div>
+      </div>
 
-      <div class="c-note text-sm space-y-3">
+      <div class="text-muted-foreground p-4 rounded-lg bg-muted space-y-3">
         <div>
           <strong>How to use:</strong>
           <ul class="mt-1 list-disc list-inside space-y-0.5">
