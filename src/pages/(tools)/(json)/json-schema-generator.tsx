@@ -1,7 +1,6 @@
+import { ClearButton } from '#/components/clear-button'
 import { CopyButton } from '#/components/copy-button'
 import { DownloadButton } from '#/components/download-button'
-import { Button } from '#/components/ui/button'
-import Icon from '#/components/ui/icon'
 import { Switch } from '#/components/ui/switch'
 import {
   TextField,
@@ -99,14 +98,10 @@ function JSONSchemaGenerator() {
             />
           </TextField>
           <div class="flex flex-wrap gap-2">
-            <Button
-              variant="destructive"
-              onClick={handleClear}
+            <ClearButton
+              onClear={handleClear}
               disabled={!input() && !output()}
-            >
-              <Icon name="lucide:trash-2" class="mr-2" />
-              Clear
-            </Button>
+            />
           </div>
         </div>
 

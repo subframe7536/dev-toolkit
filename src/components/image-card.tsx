@@ -5,6 +5,8 @@ import { Icon } from '#/components/ui/icon'
 import { TextField, TextFieldInput } from '#/components/ui/text-field'
 import { createEffect, on, Show } from 'solid-js'
 
+import { ClearButton } from './clear-button'
+
 export interface ImageFileData {
   id: string
   file: File
@@ -101,15 +103,11 @@ export const ImageCard: Component<ImageCardProps> = (props) => {
         </TextField>
       </div>
 
-      <Button
+      <ClearButton
         size="sm"
-        variant="secondary"
-        onClick={() => props.onRemove(props.image.id)}
+        onClear={() => props.onRemove(props.image.id)}
         class="mt-2 w-full"
-      >
-        <Icon name="lucide:trash-2" class="mr-1" />
-        Remove
-      </Button>
+      />
     </div>
   )
 }

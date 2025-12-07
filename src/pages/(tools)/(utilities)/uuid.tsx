@@ -1,3 +1,4 @@
+import { ClearButton } from '#/components/clear-button'
 import { CopyButton } from '#/components/copy-button'
 import { Button } from '#/components/ui/button'
 import { Icon } from '#/components/ui/icon'
@@ -100,15 +101,11 @@ function UUIDGenerator() {
             <Icon name="lucide:refresh-cw" class="mr-2 size-4" />
             Generate
           </Button>
-          <Button
+          <ClearButton
             class="flex-1"
-            onClick={handleClear}
-            variant="destructive"
+            onClear={handleClear}
             disabled={uuids().length === 0}
-          >
-            <Icon name="lucide:trash-2" class="mr-2 size-4" />
-            Clear
-          </Button>
+          />
         </div>
       </div>
 

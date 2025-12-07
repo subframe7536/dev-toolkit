@@ -34,10 +34,8 @@ export function DownloadButton(props: DownloadButtonProps) {
       onClick={handleDownload}
     >
       <Show when={text()}>
-        <>
-          {icon}
-          Download
-        </>
+        {icon}
+        {text() === true ? 'Download' : text()}
       </Show>
     </Button>
   )

@@ -1,6 +1,6 @@
+import { ClearButton } from '#/components/clear-button'
 import { CopyButton } from '#/components/copy-button'
 import { Button } from '#/components/ui/button'
-import { Icon } from '#/components/ui/icon'
 import { TextField, TextFieldLabel, TextFieldTextArea } from '#/components/ui/text-field'
 import { fillSqlParams, splitSqlAndParams } from '#/utils/sql'
 import { createRoute } from 'solid-file-router'
@@ -120,10 +120,10 @@ function SqlParamFill() {
             disabled={!output() || !error()}
             variant="secondary"
           />
-          <Button onClick={handleClear} disabled={!sqlInput() && !paramsInput()} variant="destructive">
-            <Icon name="lucide:trash-2" class="mr-2" />
-            Clear
-          </Button>
+          <ClearButton
+            onClear={handleClear}
+            disabled={!sqlInput() && !paramsInput()}
+          />
         </div>
       </div>
 

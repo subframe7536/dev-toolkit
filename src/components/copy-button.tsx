@@ -37,10 +37,8 @@ export function CopyButton(props: CopyButtonProps) {
       onClick={handleCopy}
     >
       <Show when={text()} fallback={icon}>
-        <>
-          {icon}
-          {isCopied() ? 'Copied!' : (text() === true ? 'Copy' : props.text)}
-        </>
+        {icon}
+        {isCopied() ? 'Copied!' : (text() === true ? 'Copy' : props.text)}
       </Show>
     </Button>
   )

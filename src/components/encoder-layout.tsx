@@ -141,7 +141,7 @@ export function EncoderLayout(props: EncoderLayoutProps): JSX.Element {
             onClick={toggleMode}
             size="icon"
             variant="outline"
-            class="rounded-full bg-background shadow-md transition-transform hover:shadow-lg active:scale-95 hover:scale-105"
+            class="rounded-full bg-background shadow-md"
             title={`Switch to ${isEncode() ? 'decode' : 'encode'} mode`}
           >
             <Icon name="lucide:arrow-right-left" />

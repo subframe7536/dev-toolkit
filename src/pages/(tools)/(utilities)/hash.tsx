@@ -1,6 +1,7 @@
 import type { HashAlgorithm } from '#/utils/hash'
 
 import { Card } from '#/components/card'
+import { ClearButton } from '#/components/clear-button'
 import { CopyButton } from '#/components/copy-button'
 import { FileUpload } from '#/components/file-upload'
 import { Button } from '#/components/ui/button'
@@ -143,15 +144,11 @@ function HashGenerator() {
             <Icon name="lucide:refresh-cw" class="mr-2 size-4" />
             {isGenerating() ? 'Generating...' : 'Generate'}
           </Button>
-          <Button
+          <ClearButton
             class="flex-1"
-            onClick={handleClear}
-            variant="destructive"
+            onClear={handleClear}
             disabled={results().length === 0 && !textInput() && !file()}
-          >
-            <Icon name="lucide:trash-2" class="mr-2 size-4" />
-            Clear
-          </Button>
+          />
         </div>
       </div>
 

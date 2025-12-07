@@ -1,9 +1,8 @@
 import type { ConversionResult } from '#/utils/json/converter'
 
+import { ClearButton } from '#/components/clear-button'
 import { CopyButton } from '#/components/copy-button'
 import { DownloadButton } from '#/components/download-button'
-import { Button } from '#/components/ui/button'
-import Icon from '#/components/ui/icon'
 import {
   Select,
   SelectContent,
@@ -153,14 +152,10 @@ function JSONConverter() {
             />
           </TextField>
           <div>
-            <Button
-              variant="destructive"
-              onClick={handleClear}
+            <ClearButton
+              onClear={handleClear}
               disabled={!input()}
-            >
-              <Icon name="lucide:trash-2" class="mr-2" />
-              Clear
-            </Button>
+            />
           </div>
         </div>
 

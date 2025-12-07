@@ -1,9 +1,8 @@
 import type { TextCaseStyle } from '#/utils/text-case'
 
 import { Card } from '#/components/card'
+import { ClearButton } from '#/components/clear-button'
 import { CopyButton } from '#/components/copy-button'
-import { Button } from '#/components/ui/button'
-import { Icon } from '#/components/ui/icon'
 import { TextField, TextFieldLabel, TextFieldTextArea } from '#/components/ui/text-field'
 import { convertTextCase } from '#/utils/text-case'
 import { createRoute } from 'solid-file-router'
@@ -52,15 +51,12 @@ function TextCase() {
             placeholder="Enter text to convert..."
           />
         </TextField>
-        <Button
-          variant="destructive"
-          onClick={handleClear}
+        <ClearButton
+          onClear={handleClear}
           disabled={!input()}
-          class="right-0 top--4 absolute"
-        >
-          <Icon name="lucide:trash-2" class="mr-2 size-4" />
-          Clear
-        </Button>
+          size="sm"
+          class="right-0 top--2 absolute"
+        />
       </div>
 
       <div class="gap-4 grid grid-cols-1 2xl:grid-cols-4 lg:grid-cols-2 xl:grid-cols-3">
@@ -85,6 +81,7 @@ function TextCase() {
                       content={converted()}
                       disabled={converted() !== '...'}
                       text={false}
+                      variant="ghost"
                       size="sm"
                     />
                   </>
