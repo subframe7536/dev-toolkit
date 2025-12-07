@@ -1,7 +1,7 @@
 {
   "name": "dev-toolkit",
   "type": "module",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "",
   "scripts": {
     "dev": "bun --bun vite",
@@ -10,7 +10,8 @@
     "serve": "bun --bun vite preview",
     "lint": "bun --bun eslint",
     "format": "bun --bun eslint --fix --cache",
-    "test": "bun test"
+    "test": "bun test",
+    "release": "bun run format && bun run test && bun run build && bumpp --all"
   },
   "dependencies": {
     "@tanstack/solid-table": "^8.21.3",

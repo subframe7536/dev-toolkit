@@ -1,8 +1,6 @@
 import { CopyButton } from '#/components/copy-button'
 import { DownloadButton } from '#/components/download-button'
 import { FileUpload } from '#/components/file-upload'
-import { Button } from '#/components/ui/button'
-import { Icon } from '#/components/ui/icon'
 import { Switch } from '#/components/ui/switch'
 import { createMemo, createSignal, Show } from 'solid-js'
 import { toast } from 'solid-sonner'

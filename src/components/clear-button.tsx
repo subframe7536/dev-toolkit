@@ -1,5 +1,3 @@
-import type { JSX } from 'solid-js'
-
 import { Show } from 'solid-js'
 
 import { Button } from './ui/button'
