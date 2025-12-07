@@ -69,7 +69,7 @@ export const TableActions: Component<TableActionsProps> = (props) => {
         <ExportDialog {...props.tableData} />
 
         <Button variant="secondary" onClick={props.onReset}>
-          <Icon name="lucide:rotate-ccw" class="mr-2 size-4" />
+          <Icon name="lucide:rotate-ccw" class="mr-2" />
           Reset
         </Button>
 
