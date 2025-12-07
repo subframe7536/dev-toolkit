@@ -1,13 +1,17 @@
 import unocss from '@unocss/vite'
 import { fileRouter } from 'solid-file-router/plugin'
 import { defineConfig } from 'vite'
+import { meta } from 'vite-plugin-meta-tags'
 import { VitePWA as pwa } from 'vite-plugin-pwa'
 import solid from 'vite-plugin-solid'
 import tsconfig from 'vite-tsconfig-paths'
 
-// export const base = '/dev-toolkit'
-export const base = ''
+// const base = '/dev-toolkit'
+const base = ''
 
+const title = 'Dev Toolkit'
+const description = 'Tools for developers, just in browser'
+const url = 'https://tool.subf.dev'
 export default defineConfig({
   base,
   plugins: [
@@ -23,7 +27,14 @@ export default defineConfig({
         icon: '`lucide:${string}`',
         tags: 'string[]',
       },
-    }) as any,
+    }),
+    meta({
+      title,
+      description,
+      color: '#0000',
+      url,
+      img: `${url}/og-image.svg`,
+    }),
     pwa({
       registerType: 'autoUpdate',
       devOptions: {
@@ -31,9 +42,9 @@ export default defineConfig({
         type: 'module',
       },
       manifest: {
-        name: 'Dev Toolkit',
-        short_name: 'DevTools',
-        description: 'Tools for developers',
+        name: title,
+        short_name: title.replaceAll(' ', ''),
+        description,
         start_url: `${base}/`,
         display: 'standalone',
         background_color: '#0000',

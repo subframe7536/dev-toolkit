@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630">
+  <rect width="1200" height="630" fill="#f8f7f4" />
+  <text x="600" y="280" font-family="system-ui, Arial, sans-serif" font-size="72" font-weight="bold" text-anchor="middle"
+    fill="#1a1f2e">Dev Toolkit</text>
+  <text x="600" y="350" font-family="system-ui, Arial, sans-serif" font-size="42" text-anchor="middle" fill="#7c9082">Tools for
+    developers, just in browser</text>
+  <text x="600" y="420" font-family="system-ui, Arial, sans-serif" font-size="24" text-anchor="middle" fill="#6b7280">JSON, SQL,
+    image, encoding &amp; more</text>
+</svg>

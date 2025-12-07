@@ -4,12 +4,24 @@ import type { ParentProps } from 'solid-js'
 import Icon from '#/components/ui/icon'
 import { useCurrentMatches } from '@solidjs/router'
 import { createRoute } from 'solid-file-router'
-import { createEffect, For, Show } from 'solid-js'
+import { createEffect, createRenderEffect, For, Show } from 'solid-js'
 import { createStore } from 'solid-js/store'
 
 export default createRoute({
   component: ToolsLayout,
 })
+
+function updateMetaTag(selector: string, attribute: string, content: string) {
+  let meta = document.querySelector(selector)
+  if (!meta) {
+    meta = document.createElement('meta')
+    if (attribute === 'name' || attribute === 'property') {
+      meta.setAttribute(attribute, selector.match(/\[.*?="(.*?)"\]/)?.[1] || '')
+    }
+    document.head.appendChild(meta)
+  }
+  meta.setAttribute('content', content)
+}
 
 function ToolsLayout(props: ParentProps) {
   const matches = useCurrentMatches()
@@ -23,6 +35,19 @@ function ToolsLayout(props: ParentProps) {
     } else {
       setCurrentTool({})
     }
+  })
+
+  // Update meta tags when tool changes
+  createRenderEffect(() => {
+    if (!currentTool.title) {
+      return
+    }
+
+    const title = `${currentTool.title} - Dev Toolkit`
+    // Update document title
+    document.title = title
+    updateMetaTag('meta[name="description"]', 'name', currentTool.description || '')
+    updateMetaTag('meta[name="keywords"]', 'name', currentTool.tags?.join(', ') || '')
   })
 
   return (

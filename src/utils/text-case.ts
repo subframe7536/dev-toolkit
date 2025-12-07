@@ -105,17 +105,5 @@ function splitIntoWords(str: string): string[] {
     .replace(/([a-z])([A-Z])/g, '$1 $2') // Add space before capital letters in camelCase
     .replace(/([A-Z]+)([A-Z][a-z])/g, '$1 $2') // Handle acronyms like "XMLParser" -> "XML Parser"
 
-  // Use Intl.Segmenter for proper word boundary detection
-  const segmenter = new Intl.Segmenter('en', { granularity: 'word' })
-  const segments = segmenter.segment(normalized)
-
-  const words: string[] = []
-  for (const segment of segments) {
-    // Only include word segments (not spaces or punctuation)
-    if (segment.isWordLike) {
-      words.push(segment.segment)
-    }
-  }
-
-  return words
+  return normalized.split(/\s+/).filter(Boolean)
 }

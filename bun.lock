@@ -38,6 +38,7 @@
         "unocss-preset-animations": "^1.3.0",
         "unocss-preset-completion": "^0.3.0",
         "vite": "^7.2.4",
+        "vite-plugin-meta-tags": "^0.1.4",
         "vite-plugin-pwa": "^1.2.0",
         "vite-plugin-solid": "^2.11.10",
         "vite-tsconfig-paths": "^5.1.4",
@@ -1479,6 +1480,8 @@
     "validate-html-nesting": ["validate-html-nesting@1.2.3", "https://registry.npmmirror.com/validate-html-nesting/-/validate-html-nesting-1.2.3.tgz", {}, "sha512-kdkWdCl6eCeLlRShJKbjVOU2kFKxMF8Ghu50n+crEoyx+VKm3FxAxF9z4DCy6+bbTOqNW0+jcIYRnjoIRzigRw=="],
 
     "vite": ["vite@7.2.4", "https://registry.npmmirror.com/vite/-/vite-7.2.4.tgz", { "dependencies": { "esbuild": "^0.25.0", "fdir": "^6.5.0", "picomatch": "^4.0.3", "postcss": "^8.5.6", "rollup": "^4.43.0", "tinyglobby": "^0.2.15" }, "optionalDependencies": { "fsevents": "~2.3.3" }, "peerDependencies": { "@types/node": "^20.19.0 || >=22.12.0", "jiti": ">=1.21.0", "less": "^4.0.0", "lightningcss": "^1.21.0", "sass": "^1.70.0", "sass-embedded": "^1.70.0", "stylus": ">=0.54.8", "sugarss": "^5.0.0", "terser": "^5.16.0", "tsx": "^4.8.1", "yaml": "^2.4.2" }, "optionalPeers": ["@types/node", "jiti", "less", "lightningcss", "sass", "sass-embedded", "stylus", "sugarss", "terser", "tsx", "yaml"], "bin": { "vite": "bin/vite.js" } }, "sha512-NL8jTlbo0Tn4dUEXEsUg8KeyG/Lkmc4Fnzb8JXN/Ykm9G4HNImjtABMJgkQoVjOBN/j2WAwDTRytdqJbZsah7w=="],
+
+    "vite-plugin-meta-tags": ["vite-plugin-meta-tags@0.1.4", "https://registry.npmmirror.com/vite-plugin-meta-tags/-/vite-plugin-meta-tags-0.1.4.tgz", { "peerDependencies": { "vite": ">=4.0.0" } }, "sha512-nC0XnldfLyZXynxElAP5mWEWJeYJk0RB6tFiWjdb9ktbjaqy35SP1b5htRRdjG83eOx8lQ+6Fvmt+Lbrrj5GJQ=="],
 
     "vite-plugin-pwa": ["vite-plugin-pwa@1.2.0", "https://registry.npmmirror.com/vite-plugin-pwa/-/vite-plugin-pwa-1.2.0.tgz", { "dependencies": { "debug": "^4.3.6", "pretty-bytes": "^6.1.1", "tinyglobby": "^0.2.10", "workbox-build": "^7.4.0", "workbox-window": "^7.4.0" }, "peerDependencies": { "@vite-pwa/assets-generator": "^1.0.0", "vite": "^3.1.0 || ^4.0.0 || ^5.0.0 || ^6.0.0 || ^7.0.0" }, "optionalPeers": ["@vite-pwa/assets-generator"] }, "sha512-a2xld+SJshT9Lgcv8Ji4+srFJL4k/1bVbd1x06JIkvecpQkwkvCncD1+gSzcdm3s+owWLpMJerG3aN5jupJEVw=="],
 
