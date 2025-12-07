@@ -12,6 +12,8 @@ import { cls } from 'cls-variant'
 import { batch, createSignal, onCleanup } from 'solid-js'
 import { toast } from 'solid-sonner'
 
+import { ClearButton } from './clear-button'
+
 export interface EncoderLayoutProps {
   mode: string
   onEncode: (input: string) => string
@@ -124,14 +126,10 @@ export function EncoderLayout(props: EncoderLayoutProps): JSX.Element {
             >
               <Icon name="lucide:arrow-up-down" />
             </Button>
-            <Button
-              variant="destructive"
-              onClick={clear}
+            <ClearButton
+              onClear={clear}
               disabled={!inputText()}
-            >
-              <Icon name="lucide:trash-2" class="mr-2" />
-              Clear
-            </Button>
+            />
           </div>
         </div>
 

@@ -7,6 +7,8 @@ import { Switch } from '#/components/ui/switch'
 import { createMemo, createSignal, Show } from 'solid-js'
 import { toast } from 'solid-sonner'
 
+import { ClearButton } from './clear-button'
+
 interface FileEncoderProps {
   mode: string
   onEncode: (data: File) => string | Promise<string>
@@ -62,14 +64,10 @@ export function FileEncoder(props: FileEncoderProps) {
         <Show when={file()}>
           <div class="p-4 border rounded-lg bg-input/50 flex flex-wrap gap-4 w-fit items-center">
             <span>{file()?.name}</span>
-            <Button
-              variant="destructive"
-              onClick={clearFile}
+            <ClearButton
+              onClear={clearFile}
               disabled={!file() && !output()}
-            >
-              <Icon name="lucide:trash-2" class="mr-2" />
-              Clear
-            </Button>
+            />
           </div>
         </Show>
       </div>

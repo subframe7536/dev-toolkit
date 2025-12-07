@@ -28,7 +28,7 @@ function SelectTrigger<T extends ValidComponent = 'button'>(props: PolymorphicPr
       {...others}
     >
       {local.children}
-      <Icon name="lucide:chevrons-up-down" />
+      <Icon name="lucide:chevron-down" />
     </SelectPrimitive.Trigger>
   )
 }

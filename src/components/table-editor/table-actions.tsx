@@ -5,6 +5,7 @@ import { Button } from '#/components/ui/button'
 import Icon from '#/components/ui/icon'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '#/components/ui/select'
 
+import { ClearButton } from '../clear-button'
 import { ExportDialog } from './export-dialog'
 
 interface TableActionsProps {
@@ -72,10 +73,7 @@ export const TableActions: Component<TableActionsProps> = (props) => {
           Reset
         </Button>
 
-        <Button variant="destructive" onClick={props.onClear}>
-          <Icon name="lucide:trash-2" class="mr-2 size-4" />
-          Clear
-        </Button>
+        <ClearButton onClear={props.onClear} />
       </div>
     </div>
   )

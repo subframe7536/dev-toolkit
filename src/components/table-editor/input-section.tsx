@@ -11,6 +11,8 @@ import { getExcelSheetNames, parseCSVFile, parseCSVText, parseExcelFile, parseMy
 import { createSignal, Show } from 'solid-js'
 import { toast } from 'solid-sonner'
 
+import { ClearButton } from '../clear-button'
+
 const MYSQL_EXAMPLE = `+----+----------+-------+
 | id | name     | age   |
 +----+----------+-------+
@@ -218,14 +220,10 @@ export const InputSection: Component<InputSectionProps> = (props) => {
                 <Icon name="lucide:table" class="mr-2" />
                 CSV Example
               </Button>
-              <Button
-                variant="destructive"
-                onClick={() => setTextInput('')}
+              <ClearButton
+                onClear={() => setTextInput('')}
                 disabled={!textInput().trim()}
-              >
-                <Icon name="lucide:trash-2" class="mr-2" />
-                Clear
-              </Button>
+              />
             </div>
           </div>
         </TabsContent>
@@ -270,7 +268,7 @@ export const InputSection: Component<InputSectionProps> = (props) => {
                   when={!isParsing()}
                   fallback={(
                     <>
-                      <Icon name="lucide:loader-2" class="mr-2 animate-spin" />
+                      <Icon name="lucide:loader" class="mr-2 animate-spin" />
                       Parsing...
                     </>
                   )}
@@ -279,14 +277,10 @@ export const InputSection: Component<InputSectionProps> = (props) => {
                   Parse
                 </Show>
               </Button>
-              <Button
-                variant="outline"
-                onClick={() => handleFileSelect(undefined)}
+              <ClearButton
+                onClear={() => handleFileSelect(undefined)}
                 disabled={!uploadedFile()}
-              >
-                <Icon name="lucide:trash-2" class="mr-2" />
-                Clear
-              </Button>
+              />
             </div>
           </div>
         </TabsContent>
