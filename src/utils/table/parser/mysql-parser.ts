@@ -1,7 +1,6 @@
 import type {
   CellValue,
   ColumnDefinition,
-  DataType,
   ParseResult,
   TableRow,
 } from '../types'

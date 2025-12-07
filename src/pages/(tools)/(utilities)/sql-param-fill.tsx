@@ -4,7 +4,7 @@ import { Icon } from '#/components/ui/icon'
 import { TextField, TextFieldLabel, TextFieldTextArea } from '#/components/ui/text-field'
 import { fillSqlParams, splitSqlAndParams } from '#/utils/sql'
 import { createRoute } from 'solid-file-router'
-import { createEffect, createSignal, Show } from 'solid-js'
+import { createEffect, createSignal } from 'solid-js'
 
 export default createRoute({
   info: {

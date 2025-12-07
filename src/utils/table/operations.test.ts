@@ -1,6 +1,7 @@
 import type { CellValue, TableData } from './types'
 
 import { describe, expect, test } from 'bun:test'
+
 import * as fc from 'fast-check'
 
 import {

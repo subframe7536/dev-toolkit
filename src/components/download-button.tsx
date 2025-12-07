@@ -1,5 +1,3 @@
-import type { JSX } from 'solid-js'
-
 import { downloadFile } from '#/utils/download'
 import { cls } from 'cls-variant'
 import { createMemo, Show } from 'solid-js'

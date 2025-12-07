@@ -1,5 +1,4 @@
 import { EncoderLayout } from '#/components/encoder-layout'
-import { Label } from '#/components/ui/label'
 import { Switch } from '#/components/ui/switch'
 import { createRoute } from 'solid-file-router'
 import { createSignal } from 'solid-js'

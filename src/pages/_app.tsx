@@ -1,11 +1,11 @@
 import type { RouteSectionProps } from '@solidjs/router'
 
+import { ThemeToggle } from '#/components/theme-toggle'
 import { Button } from '#/components/ui/button'
 import Icon from '#/components/ui/icon'
 import {
   Sidebar,
   SidebarContent,
-  SidebarFooter,
   SidebarGroup,
   SidebarGroupContent,
   SidebarGroupLabel,
@@ -20,7 +20,6 @@ import {
 import { Toaster } from '#/components/ui/sonner'
 import { usePWA } from '#/utils/pwa'
 import { getCategories } from '#/utils/routes'
-import { useColorMode } from '@solid-hooks/core/web'
 import { A } from '@solidjs/router'
 import { createRoute } from 'solid-file-router'
 import { For } from 'solid-js'
@@ -44,7 +43,6 @@ function Catch(props: { error: Error, reset: () => void }) {
 }
 
 function App(props: RouteSectionProps) {
-  const [mode, setMode] = useColorMode()
   const { categories, count } = getCategories()
   usePWA()
 
@@ -91,22 +89,10 @@ function App(props: RouteSectionProps) {
             )}
           </For>
         </SidebarContent>
-        <SidebarFooter>
-          <div class="text-xs text-sidebar-foreground/70 px-2 py-1">
-            <div class="flex items-center justify-between">
-              <span>Theme: {mode()}</span>
-              <button
-                onClick={() => setMode(m => m === 'auto' ? 'light' : m === 'light' ? 'dark' : 'auto')}
-                class="px-2 py-1 rounded hover:bg-sidebar-accent"
-              >
-                Toggle
-              </button>
-            </div>
-          </div>
-        </SidebarFooter>
       </Sidebar>
       <SidebarInset>
         <SidebarTrigger class="left-2 top-2 absolute" />
+        <ThemeToggle class="w-28 right-2 top-2 absolute z-50" />
         <div class="p-12 md:p-24">
           {props.children}
         </div>

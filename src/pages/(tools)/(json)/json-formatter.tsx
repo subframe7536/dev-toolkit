@@ -1,5 +1,5 @@
 import type { JSONError } from '#/utils/json/formatter'
-import type { CaseStyle, ConversionError } from '#/utils/json/key-converter'
+import type { CaseStyle } from '#/utils/json/key-converter'
 
 import { CopyButton } from '#/components/copy-button'
 import { DownloadButton } from '#/components/download-button'

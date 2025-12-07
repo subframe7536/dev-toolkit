@@ -7,7 +7,7 @@ import { Icon } from '#/components/ui/icon'
 import { TextField, TextFieldLabel, TextFieldTextArea } from '#/components/ui/text-field'
 import { convertTextCase } from '#/utils/text-case'
 import { createRoute } from 'solid-file-router'
-import { createMemo, createSignal, For, Show } from 'solid-js'
+import { createMemo, createSignal, For } from 'solid-js'
 
 const CASE_STYLES: Array<{ value: TextCaseStyle, label: string, example: string }> = [
   { value: 'camelCase', label: 'camelCase', example: 'helloWorld' },
