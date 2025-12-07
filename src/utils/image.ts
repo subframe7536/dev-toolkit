@@ -5,6 +5,7 @@ export interface ConversionOptions {
   maintainAspectRatio?: boolean
   svgBackgroundColor?: string // Background color for SVG conversion
   svgColor?: string // Fill color for SVG elements
+  svgStrokeColor?: string // Stroke color for SVG elements
 }
 
 export type ImageFormat = 'png' | 'jpg' | 'webp' | 'svg'
@@ -48,8 +49,8 @@ async function convertFromSVG(
   let svgText = await file.text()
 
   // Apply color modifications if specified
-  if (options.svgColor) {
-    svgText = applySVGColor(svgText, options.svgColor)
+  if (options.svgColor || options.svgStrokeColor) {
+    svgText = applySVGColor(svgText, options.svgColor, options.svgStrokeColor)
   }
 
   const img = await loadSVGImage(svgText)
@@ -254,19 +255,31 @@ export function getFileExtension(format: ImageFormat): string {
 /**
  * Apply color to SVG elements
  */
-function applySVGColor(svgText: string, color: string): string {
-  // Parse SVG and add fill attribute to paths and shapes
-  const parser = new DOMParser()
-  const doc = parser.parseFromString(svgText, 'image/svg+xml')
-  const svg = doc.documentElement
+function applySVGColor(svgText: string, fillColor?: string, strokeColor?: string): string {
+  // Parse SVG using template element
+  const template = document.createElement('template')
+  template.innerHTML = svgText
+  const svg = template.content.querySelector('svg')
 
-  // Apply color to all fillable elements
-  const fillableElements = svg.querySelectorAll('path, circle, rect, ellipse, polygon, polyline')
-  fillableElements.forEach((el) => {
-    if (!el.getAttribute('fill') || el.getAttribute('fill') === 'currentColor') {
-      el.setAttribute('fill', color)
+  if (!svg) {
+    return svgText
+  }
+
+  const elements = svg.querySelectorAll('path, circle, rect, ellipse, polygon, polyline, line')
+
+  elements.forEach((el) => {
+    if (fillColor) {
+      if (!el.getAttribute('fill') || el.getAttribute('fill') === 'currentColor') {
+        el.setAttribute('fill', fillColor)
+      }
+    }
+
+    if (strokeColor) {
+      if (!el.getAttribute('stroke') || el.getAttribute('stroke') === 'currentColor') {
+        el.setAttribute('stroke', strokeColor)
+      }
     }
   })
 
-  return new XMLSerializer().serializeToString(svg)
+  return svg.outerHTML
 }

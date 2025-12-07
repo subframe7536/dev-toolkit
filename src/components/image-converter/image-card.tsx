@@ -5,7 +5,7 @@ import { Icon } from '#/components/ui/icon'
 import { TextField, TextFieldInput } from '#/components/ui/text-field'
 import { createEffect, on, Show } from 'solid-js'
 
-import { ClearButton } from './clear-button'
+import { ClearButton } from '../clear-button'
 
 export interface ImageFileData {
   id: string
@@ -103,11 +103,29 @@ export const ImageCard: Component<ImageCardProps> = (props) => {
         </TextField>
       </div>
 
-      <ClearButton
-        size="sm"
-        onClear={() => props.onRemove(props.image.id)}
-        class="mt-2 w-full"
-      />
+      <div class="mt-2 flex gap-2">
+        <Button
+          size="sm"
+          onClick={() => {
+            if (props.image.origin) {
+              props.onUpdate(props.image.id, {
+                targetWidth: props.image.origin.width,
+                targetHeight: props.image.origin.height,
+              })
+            }
+          }}
+          disabled={!props.image.origin}
+          class="flex-1"
+        >
+          <Icon name="lucide:rotate-ccw" class="mr-2" />
+          Reset
+        </Button>
+        <ClearButton
+          size="sm"
+          onClear={() => props.onRemove(props.image.id)}
+          class="flex-1"
+        />
+      </div>
     </div>
   )
 }

@@ -1,20 +1,17 @@
-import type { ImageFileData } from '#/components/image-card'
+import type { ImageFileData } from '#/components/image-converter/image-card'
 import type { ImageFormat } from '#/utils/image'
 
 import { Card } from '#/components/card'
 import { FileUpload } from '#/components/file-upload'
-import { ImageCard } from '#/components/image-card'
+import { ImageCard } from '#/components/image-converter/image-card'
+import { OutputSettings } from '#/components/image-converter/output-settings'
+import { SvgOptions } from '#/components/image-converter/svg-options'
 import { Button } from '#/components/ui/button'
 import { Icon } from '#/components/ui/icon'
-import { Label } from '#/components/ui/label'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '#/components/ui/select'
-import { Slider } from '#/components/ui/slider'
-import { Switch } from '#/components/ui/switch'
-import { TextField, TextFieldInput } from '#/components/ui/text-field'
 import { downloadFile } from '#/utils/download'
 import { convertImage, getFileExtension } from '#/utils/image'
 import { createRoute } from 'solid-file-router'
-import { createSignal, For, onCleanup, Show } from 'solid-js'
+import { createEffect, createSignal, For, onCleanup, Show } from 'solid-js'
 import { createStore } from 'solid-js/store'
 import { toast } from 'solid-sonner'
 
@@ -29,20 +26,16 @@ export default createRoute({
   component: ImageConverter,
 })
 
-const FORMAT_OPTIONS: { value: ImageFormat, label: string }[] = [
-  { value: 'png', label: 'PNG' },
-  { value: 'jpg', label: 'JPEG' },
-  { value: 'webp', label: 'WebP' },
-]
-
 function ImageConverter() {
   const [files, setFiles] = createSignal<File[]>([])
   const [images, setImages] = createStore<ImageFileData[]>([])
   const [targetFormat, setTargetFormat] = createSignal<ImageFormat>('jpg')
   const [quality, setQuality] = createSignal(80)
-  const [svgBackgroundColor, setSvgBackgroundColor] = createSignal('#ffffff')
+  const [svgBackgroundColor, setSvgBackgroundColor] = createSignal('')
   const [svgColor, setSvgColor] = createSignal('')
+  const [svgStrokeColor, setSvgStrokeColor] = createSignal('')
   const [converting, setConverting] = createSignal(false)
+  const [svgPreviewUrl, setSvgPreviewUrl] = createSignal<string>()
   const [ratio, setRatio] = createSignal(true)
   const [globalWidth, setGlobalWidth] = createSignal<number>()
   const [globalHeight, setGlobalHeight] = createSignal<number>()
@@ -74,23 +67,52 @@ function ImageConverter() {
     setImages(prev => [...prev, ...newImages])
   }
 
-  const removeImage = (id: string) => {
-    const img = images.find(i => i.id === id)
-    if (img) {
-      URL.revokeObjectURL(img.previewUrl)
-      setImages(prev => prev.filter(i => i.id !== id))
-      setFiles(prev => prev.filter(f => f !== img.file))
-    }
-  }
-
   const handleFilesChange = (newFiles: File[]) => {
     setFiles(newFiles)
     addFiles(newFiles)
   }
 
+  // Generate SVG preview when SVG options change
+  createEffect(() => {
+    const svgImage = images.find(img => img.file.type.includes('svg'))
+    if (!svgImage) {
+      setSvgPreviewUrl(undefined)
+      return
+    }
+
+    const generatePreview = async () => {
+      try {
+        const result = await convertImage(svgImage.file, targetFormat(), {
+          quality: quality() / 100,
+          width: 200,
+          height: 200,
+          maintainAspectRatio: true,
+          svgBackgroundColor: svgBackgroundColor() || undefined,
+          svgColor: svgColor() || undefined,
+          svgStrokeColor: svgStrokeColor() || undefined,
+        })
+
+        const oldUrl = svgPreviewUrl()
+        if (oldUrl) {
+          URL.revokeObjectURL(oldUrl)
+        }
+
+        setSvgPreviewUrl(result.dataUrl)
+      } catch (error) {
+        console.error('Failed to generate SVG preview:', error)
+      }
+    }
+
+    generatePreview()
+  })
+
   // Cleanup preview URLs on unmount
   onCleanup(() => {
     images.forEach(img => URL.revokeObjectURL(img.previewUrl))
+    const previewUrl = svgPreviewUrl()
+    if (previewUrl) {
+      URL.revokeObjectURL(previewUrl)
+    }
   })
 
   const handleConvertAll = async () => {
@@ -113,8 +135,9 @@ function ImageConverter() {
           width,
           height,
           maintainAspectRatio: ratio(),
-          svgBackgroundColor: isSvg ? svgBackgroundColor() : undefined,
+          svgBackgroundColor: isSvg && svgBackgroundColor() ? svgBackgroundColor() : undefined,
           svgColor: isSvg && svgColor() ? svgColor() : undefined,
+          svgStrokeColor: isSvg && svgStrokeColor() ? svgStrokeColor() : undefined,
         })
 
         const filename = img.file.name.replace(/\.[^.]+$/, `.${getFileExtension(targetFormat())}`)
@@ -131,11 +154,6 @@ function ImageConverter() {
     }
   }
 
-  const showQualitySlider = () => {
-    const format = targetFormat()
-    return format === 'jpg' || format === 'webp'
-  }
-
   const hasSvgFiles = () => images.some(img => img.file.type.includes('svg'))
 
   const updateImage = (id: string, updates: Partial<ImageFileData>) => {
@@ -143,11 +161,90 @@ function ImageConverter() {
   }
 
   const handleRemoveImage = (id: string) => {
-    removeImage(id)
+    const img = images.find(i => i.id === id)
+    if (img) {
+      URL.revokeObjectURL(img.previewUrl)
+      setImages(prev => prev.filter(i => i.id !== id))
+      setFiles(prev => prev.filter(f => f !== img.file))
+    }
+  }
+
+  const handleGlobalWidthChange = (width?: number) => {
+    setGlobalWidth(width)
+
+    if (!width) {
+      setGlobalHeight(undefined)
+      images.forEach((img) => {
+        updateImage(img.id, { targetWidth: undefined, targetHeight: undefined })
+      })
+      return
+    }
+
+    // Calculate average aspect ratio from all images with origin data
+    if (ratio() && images.length > 0) {
+      const imagesWithOrigin = images.filter(img => img.origin)
+      if (imagesWithOrigin.length > 0) {
+        const avgAspectRatio = imagesWithOrigin.reduce((sum, img) => {
+          return sum + (img.origin!.width / img.origin!.height)
+        }, 0) / imagesWithOrigin.length
+        setGlobalHeight(Math.round(width / avgAspectRatio))
+      }
+    }
+
+    // Update all images
+    images.forEach((img) => {
+      if (img.origin) {
+        const updates: Partial<ImageFileData> = { targetWidth: width }
+
+        if (ratio()) {
+          const aspectRatio = img.origin.width / img.origin.height
+          updates.targetHeight = Math.round(width / aspectRatio)
+        }
+
+        updateImage(img.id, updates)
+      }
+    })
+  }
+
+  const handleGlobalHeightChange = (height?: number) => {
+    setGlobalHeight(height)
+
+    if (!height) {
+      setGlobalWidth(undefined)
+      images.forEach((img) => {
+        updateImage(img.id, { targetWidth: undefined, targetHeight: undefined })
+      })
+      return
+    }
+
+    // Calculate average aspect ratio from all images with origin data
+    if (ratio() && images.length > 0) {
+      const imagesWithOrigin = images.filter(img => img.origin)
+      if (imagesWithOrigin.length > 0) {
+        const avgAspectRatio = imagesWithOrigin.reduce((sum, img) => {
+          return sum + (img.origin!.width / img.origin!.height)
+        }, 0) / imagesWithOrigin.length
+        setGlobalWidth(Math.round(height * avgAspectRatio))
+      }
+    }
+
+    // Update all images
+    images.forEach((img) => {
+      if (img.origin) {
+        const updates: Partial<ImageFileData> = { targetHeight: height }
+
+        if (ratio()) {
+          const aspectRatio = img.origin.width / img.origin.height
+          updates.targetWidth = Math.round(height * aspectRatio)
+        }
+
+        updateImage(img.id, updates)
+      }
+    })
   }
 
   return (
-    <div class="gap-6 grid grid-cols-1 xl:grid-cols-[1fr_400px]">
+    <div class="gap-6 grid grid-cols-1 xl:grid-cols-[1fr_450px]">
       {/* Left side - Images */}
       <Card
         title="Upload Images"
@@ -184,78 +281,18 @@ function ImageConverter() {
         <Card
           title="Output Settings"
           content={(
-            <div class="flex flex-col gap-6">
-              <div>
-                <Label>Output Format</Label>
-                <Select
-                  value={targetFormat()}
-                  onChange={setTargetFormat}
-                  options={FORMAT_OPTIONS.map(o => o.value)}
-                  disallowEmptySelection
-                  itemComponent={props => (
-                    <SelectItem item={props.item}>
-                      {FORMAT_OPTIONS.find(o => o.value === props.item.rawValue)?.label}
-                    </SelectItem>
-                  )}
-                >
-                  <SelectTrigger class="w-full">
-                    <SelectValue<ImageFormat>>
-                      {state => FORMAT_OPTIONS.find(o => o.value === state.selectedOption())?.label}
-                    </SelectValue>
-                  </SelectTrigger>
-                  <SelectContent />
-                </Select>
-              </div>
-
-              <Show when={showQualitySlider()}>
-                <Slider
-                  value={[quality()]}
-                  onChange={value => setQuality(value[0])}
-                  minValue={1}
-                  maxValue={100}
-                  step={1}
-                  label={`${targetFormat().toUpperCase()} Quality: ${quality()}`}
-                />
-              </Show>
-              <Switch
-                checked={ratio()}
-                onChange={setRatio}
-                text="Keep aspect ratio"
-              />
-
-              <div>
-                <Label class="mb-2 block">Global Dimensions</Label>
-                <p class="text-xs text-muted-foreground mb-3">
-                  Apply to all images without individual settings
-                </p>
-                <div class="flex gap-2">
-                  <TextField
-                    class="flex-1"
-                    value={globalWidth() ? `${globalWidth()}` : ''}
-                    onChange={(val) => {
-                      setGlobalWidth(val ? Number.parseInt(val) : undefined)
-                    }}
-                  >
-                    <TextFieldInput
-                      type="number"
-                      placeholder="Width"
-                    />
-                  </TextField>
-                  <TextField
-                    class="flex-1"
-                    value={globalHeight() ? `${globalHeight()}` : ''}
-                    onChange={(val) => {
-                      setGlobalHeight(val ? Number.parseInt(val) : undefined)
-                    }}
-                  >
-                    <TextFieldInput
-                      type="number"
-                      placeholder="Height"
-                    />
-                  </TextField>
-                </div>
-              </div>
-            </div>
+            <OutputSettings
+              targetFormat={targetFormat()}
+              onFormatChange={setTargetFormat}
+              quality={quality()}
+              onQualityChange={setQuality}
+              ratio={ratio()}
+              onRatioChange={setRatio}
+              globalWidth={globalWidth()}
+              onGlobalWidthChange={handleGlobalWidthChange}
+              globalHeight={globalHeight()}
+              onGlobalHeightChange={handleGlobalHeightChange}
+            />
           )}
         />
 
@@ -263,49 +300,20 @@ function ImageConverter() {
           <Card
             title="SVG Options"
             content={(
-              <div class="space-y-4">
-                <div>
-                  <Label>Background Color</Label>
-                  <div class="flex gap-2">
-                    <input
-                      type="color"
-                      value={svgBackgroundColor()}
-                      onInput={e => setSvgBackgroundColor(e.currentTarget.value)}
-                      class="border rounded h-10 w-14 cursor-pointer"
-                    />
-                    <TextField
-                      value={svgBackgroundColor()}
-                      onChange={setSvgBackgroundColor}
-                    >
-                      <TextFieldInput
-                        type="text"
-                        placeholder="#ffffff"
-                      />
-                    </TextField>
-                  </div>
-                </div>
-
-                <div>
-                  <Label>SVG Fill Color (optional)</Label>
-                  <div class="flex gap-2">
-                    <input
-                      type="color"
-                      value={svgColor() || '#000000'}
-                      onInput={e => setSvgColor(e.currentTarget.value)}
-                      class="border rounded h-10 w-14 cursor-pointer"
-                    />
-                    <TextField
-                      value={svgColor()}
-                      onChange={setSvgColor}
-                    >
-                      <TextFieldInput
-                        type="text"
-                        placeholder="Leave empty for original"
-                      />
-                    </TextField>
-                  </div>
-                </div>
-              </div>
+              <SvgOptions
+                previewUrl={svgPreviewUrl()}
+                backgroundColor={svgBackgroundColor()}
+                onBackgroundColorChange={setSvgBackgroundColor}
+                fillColor={svgColor()}
+                onFillColorChange={setSvgColor}
+                strokeColor={svgStrokeColor()}
+                onStrokeColorChange={setSvgStrokeColor}
+                onReset={() => {
+                  setSvgBackgroundColor('')
+                  setSvgColor('')
+                  setSvgStrokeColor('')
+                }}
+              />
             )}
           />
         </Show>
