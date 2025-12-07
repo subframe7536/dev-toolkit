@@ -5,8 +5,8 @@ import { VitePWA as pwa } from 'vite-plugin-pwa'
 import solid from 'vite-plugin-solid'
 import tsconfig from 'vite-tsconfig-paths'
 
-// const base = '/dev-toolkit'
-const base = ''
+// export const base = '/dev-toolkit'
+export const base = ''
 
 export default defineConfig({
   base,

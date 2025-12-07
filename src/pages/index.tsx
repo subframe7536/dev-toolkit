@@ -2,7 +2,7 @@ import { Card } from '#/components/card'
 import { getCategories } from '#/utils/routes'
 import { A } from '@solidjs/router'
 import { createRoute } from 'solid-file-router'
-import { For } from 'solid-js'
+import { For, Show } from 'solid-js'
 
 export default createRoute({
   component: Index,
@@ -38,8 +38,20 @@ function Index() {
                         title={tool.info.title}
                         icon={tool.info.icon}
                         description={tool.info.description}
-                        tags={tool.info.tags}
                         class="h-full cursor-pointer transition-all hover:shadow-md"
+                        content={(
+                          <Show when={tool.info.tags?.length}>
+                            <div class="flex flex-wrap gap-1.5">
+                              <For each={tool.info.tags}>
+                                {tag => (
+                                  <span class="text-xs text-muted-foreground px-1.5 py-0.5 border border-border/50 rounded bg-muted/20">
+                                    {tag}
+                                  </span>
+                                )}
+                              </For>
+                            </div>
+                          </Show>
+                        )}
                       />
                     </A>
                   )}
