@@ -31,7 +31,7 @@ export default defineConfig({
     meta({
       title,
       description,
-      color: '#0000',
+      color: '#00000000',
       url,
       img: `${url}/og-image.svg`,
     }),
@@ -47,8 +47,8 @@ export default defineConfig({
         description,
         start_url: `${base}/`,
         display: 'standalone',
-        background_color: '#0000',
-        theme_color: '#0000',
+        background_color: '#00000000',
+        theme_color: '#00000000',
         icons: [
           {
             src: `${base}/pwa-192x192.png`,
