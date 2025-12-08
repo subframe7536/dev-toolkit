@@ -19,7 +19,7 @@ import {
   TextFieldLabel,
   TextFieldTextArea,
 } from '#/components/ui/text-field'
-import { formatJSON, repairJSON, sortKeys } from '#/utils/json/formatter'
+import { formatJSON, formatJSONWithNested, repairJSON, sortKeys } from '#/utils/json/formatter'
 import { convertKeys } from '#/utils/json/key-converter'
 import { cls } from 'cls-variant'
 import { createRoute } from 'solid-file-router'
@@ -53,6 +53,7 @@ function JSONFormatter() {
   const [output, setOutput] = createSignal('')
   const [autoRepair, setAutoRepair] = createSignal(true)
   const [shouldSortKeys, setShouldSortKeys] = createSignal(false)
+  const [parseNested, setParseNested] = createSignal(false)
   const [targetCase, setTargetCase] = createSignal<CaseStyle>('As is')
   const [isFullscreen, setIsFullscreen] = createSignal(false)
 
@@ -86,10 +87,19 @@ function JSONFormatter() {
       if (targetCase() !== 'As is') {
         const result = convertKeys(repairedInput, targetCase(), false)
         if (result.success && result.output) {
-          const formatted = shouldSortKeys() ? sortKeys(result.output) : formatJSON(result.output)
+          const formatted = parseNested()
+            ? formatJSONWithNested(result.output, { sortKeys: shouldSortKeys() })
+            : shouldSortKeys() ? sortKeys(result.output) : formatJSON(result.output)
           setOutput(formatted)
           return
         }
+      }
+
+      // Apply nested parsing if enabled
+      if (parseNested()) {
+        const formatted = formatJSONWithNested(repairedInput, { sortKeys: shouldSortKeys() })
+        setOutput(formatted)
+        return
       }
 
       // Apply sort keys if enabled
@@ -106,7 +116,7 @@ function JSONFormatter() {
   }
 
   // Auto-format on input change
-  createEffect(on([input, shouldSortKeys, targetCase, autoRepair], () => {
+  createEffect(on([input, shouldSortKeys, parseNested, targetCase, autoRepair], () => {
     processJSON()
   }))
 
@@ -120,6 +130,7 @@ function JSONFormatter() {
       <div class="flex flex-wrap gap-8 items-center">
         <Switch checked={autoRepair()} onChange={setAutoRepair} text="Auto repair JSON string" />
         <Switch checked={shouldSortKeys()} onChange={setShouldSortKeys} text="Sort Keys" />
+        <Switch checked={parseNested()} onChange={setParseNested} text="Parse Nested JSON" />
         <Select
           value={targetCase()}
           onChange={setTargetCase}

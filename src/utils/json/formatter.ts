@@ -188,3 +188,59 @@ export function repairJSON(input: string): string {
     throw parseJSONError(error, input)
   }
 }
+
+/**
+ * Recursively parse nested serialized JSON strings
+ * @param obj - Object to process
+ * @returns Object with all nested JSON strings parsed
+ */
+function parseNestedJSON(obj: any): any {
+  if (obj === null || typeof obj !== 'object') {
+    return obj
+  }
+
+  if (Array.isArray(obj)) {
+    return obj.map(parseNestedJSON)
+  }
+
+  const result: Record<string, any> = {}
+  for (const [key, value] of Object.entries(obj)) {
+    if (typeof value === 'string' && value.trim().length > 0) {
+      // Try to parse string as JSON
+      try {
+        const parsed = JSON.parse(value)
+        // Recursively parse nested JSON
+        result[key] = parseNestedJSON(parsed)
+      } catch {
+        // Not a JSON string, keep original value
+        result[key] = value
+      }
+    } else {
+      result[key] = parseNestedJSON(value)
+    }
+  }
+
+  return result
+}
+
+/**
+ * Format JSON with nested serialized JSON strings parsed
+ * @param input - JSON string to format
+ * @param options - Formatting options
+ * @returns Formatted JSON string with nested JSON parsed
+ * @throws JSONError with line/column information for invalid JSON
+ */
+export function formatJSONWithNested(input: string, options: FormatOptions = {}): string {
+  const { indent = 2, sortKeys = false } = options
+
+  try {
+    const parsed = JSON.parse(input)
+    const withNestedParsed = parseNestedJSON(parsed)
+    const formatted = sortKeys
+      ? JSON.stringify(sortObjectKeys(withNestedParsed), null, indent)
+      : JSON.stringify(withNestedParsed, null, indent)
+    return formatted
+  } catch (error) {
+    throw parseJSONError(error, input)
+  }
+}
