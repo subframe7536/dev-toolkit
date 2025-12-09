@@ -205,7 +205,10 @@ function parseNestedJSON(obj: any): any {
 
   const result: Record<string, any> = {}
   for (const [key, value] of Object.entries(obj)) {
-    if (typeof value === 'string' && value.trim().length > 0) {
+    if (typeof value === 'string'
+      && value.trim().length > 0
+      && ((value.startsWith('[') && value.endsWith(']')) || (value.startsWith('{') && value.endsWith('}')))
+    ) {
       // Try to parse string as JSON
       try {
         const parsed = JSON.parse(value)
