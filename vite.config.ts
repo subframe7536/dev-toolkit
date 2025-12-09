@@ -36,10 +36,13 @@ export default defineConfig({
       img: `${url}/og-image.svg`,
     }),
     pwa({
-      registerType: 'autoUpdate',
+      registerType: 'prompt',
       devOptions: {
         enabled: false,
         type: 'module',
+      },
+      workbox: {
+        cleanupOutdatedCaches: true,
       },
       manifest: {
         name: title,
