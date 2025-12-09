@@ -1,7 +1,7 @@
 import { EncoderLayout } from '#/components/encoder-layout'
 import { FileEncoder } from '#/components/file-encoder'
 import { Tabs, TabsContent, TabsIndicator, TabsList, TabsTrigger } from '#/components/ui/tabs'
-import { fileToBase64 } from '#/utils/base64'
+import { decodeText, encodeText, fileToBase64 } from '#/utils/base64'
 import { createRoute } from 'solid-file-router'
 
 export default createRoute({
@@ -27,8 +27,8 @@ function Base64Encoder() {
       <TabsContent value="text">
         <EncoderLayout
           mode="Base64"
-          onEncode={btoa}
-          onDecode={atob}
+          onEncode={encodeText}
+          onDecode={decodeText}
         />
       </TabsContent>
 
