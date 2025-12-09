@@ -48,7 +48,7 @@ bun add <package>    # Add dependency
 
 ## Build Configuration
 
-- Base path: `/dev-toolkit` (configured in vite.config.ts)
+- Base path: `/` (configured in vite.config.ts)
 - PWA enabled with auto-update service worker
 - Import alias: `#/` maps to `./src/`
 

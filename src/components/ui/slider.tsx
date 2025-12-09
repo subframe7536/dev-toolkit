@@ -9,17 +9,18 @@ import { Label } from './label'
 
 type SliderRootProps<T extends ValidComponent = 'div'> = SliderPrimitive.SliderRootProps<T> & {
   class?: string
+  loose?: boolean
   label: string
 }
 
 function Slider<T extends ValidComponent = 'div'>(props: PolymorphicProps<T, SliderRootProps<T>>) {
-  const [local, others] = splitProps(props as SliderRootProps, ['class', 'label'])
+  const [local, others] = splitProps(props as SliderRootProps, ['class', 'label', 'loose'])
   return (
     <SliderPrimitive.Root
       class={cls('relative flex gap-3 w-full touch-none select-none flex-col items-center', local.class)}
       {...others}
     >
-      <div class="flex w-full justify-between">
+      <div class={cls('flex w-full justify-between', local.loose && 'mb-2')}>
         <SliderPrimitive.Label as={Label}>{local.label}</SliderPrimitive.Label>
         <SliderPrimitive.ValueLabel as={Label} />
       </div>

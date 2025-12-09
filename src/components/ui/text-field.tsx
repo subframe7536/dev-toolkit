@@ -81,12 +81,11 @@ function TextFieldTextArea<T extends ValidComponent = 'textarea'>(props: Polymor
 
 const labelVariants = clsvDefault(
   clsv(
-    'font-500 peer-disabled:effect-dis c-note',
+    'font-500 peer-disabled:effect-dis text-muted-foreground data-[invalid]:text-red',
     {
       variant: {
-        label: 'data-[invalid]:c-red',
-        description: 'font-normal text-muted-foreground',
-        error: 'text-(xs note)',
+        label: '',
+        description: 'font-normal text-sm',
       },
     },
   ),
@@ -127,7 +126,7 @@ function TextFieldErrorMessage<T extends ValidComponent = 'div'>(props: Polymorp
   const [local, others] = splitProps(props as TextFieldErrorMessageProps, ['class'])
   return (
     <TextFieldPrimitive.ErrorMessage
-      class={cls(labelVariants({ variant: 'error' }), local.class)}
+      class={cls(labelVariants(), local.class)}
       {...others}
     />
   )

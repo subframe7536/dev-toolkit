@@ -13,6 +13,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '#/components/ui/select'
+import { Slider } from '#/components/ui/slider'
 import { Switch } from '#/components/ui/switch'
 import {
   TextField,
@@ -55,6 +56,7 @@ function JSONFormatter() {
   const [shouldSortKeys, setShouldSortKeys] = createSignal(false)
   const [parseNested, setParseNested] = createSignal(false)
   const [targetCase, setTargetCase] = createSignal<CaseStyle>('As is')
+  const [indent, setIndent] = createSignal(2)
   const [isFullscreen, setIsFullscreen] = createSignal(false)
 
   const tryRepairIfEnabled = (inputValue: string): string => {
@@ -83,13 +85,15 @@ function JSONFormatter() {
     try {
       const repairedInput = tryRepairIfEnabled(inputValue)
 
+      const indentSize = indent()
+
       // Apply key case conversion if needed
       if (targetCase() !== 'As is') {
         const result = convertKeys(repairedInput, targetCase(), false)
         if (result.success && result.output) {
           const formatted = parseNested()
-            ? formatJSONWithNested(result.output, { sortKeys: shouldSortKeys() })
-            : shouldSortKeys() ? sortKeys(result.output) : formatJSON(result.output)
+            ? formatJSONWithNested(result.output, { sortKeys: shouldSortKeys(), indent: indentSize })
+            : shouldSortKeys() ? sortKeys(result.output, indentSize) : formatJSON(result.output, { indent: indentSize })
           setOutput(formatted)
           return
         }
@@ -97,13 +101,13 @@ function JSONFormatter() {
 
       // Apply nested parsing if enabled
       if (parseNested()) {
-        const formatted = formatJSONWithNested(repairedInput, { sortKeys: shouldSortKeys() })
+        const formatted = formatJSONWithNested(repairedInput, { sortKeys: shouldSortKeys(), indent: indentSize })
         setOutput(formatted)
         return
       }
 
       // Apply sort keys if enabled
-      const formatted = shouldSortKeys() ? sortKeys(repairedInput) : formatJSON(repairedInput)
+      const formatted = shouldSortKeys() ? sortKeys(repairedInput, indentSize) : formatJSON(repairedInput, { indent: indentSize })
       setOutput(formatted)
     } catch (err) {
       const error = err as JSONError
@@ -116,7 +120,7 @@ function JSONFormatter() {
   }
 
   // Auto-format on input change
-  createEffect(on([input, shouldSortKeys, parseNested, targetCase, autoRepair], () => {
+  createEffect(on([input, shouldSortKeys, parseNested, targetCase, autoRepair, indent], () => {
     processJSON()
   }))
 
@@ -127,29 +131,48 @@ function JSONFormatter() {
 
   return (
     <div class="space-y-6">
-      <div class="flex flex-wrap gap-8 items-center">
-        <Switch checked={autoRepair()} onChange={setAutoRepair} text="Auto repair JSON string" />
-        <Switch checked={shouldSortKeys()} onChange={setShouldSortKeys} text="Sort Keys" />
-        <Switch checked={parseNested()} onChange={setParseNested} text="Parse Nested JSON" />
-        <Select
-          value={targetCase()}
-          onChange={setTargetCase}
-          options={caseOptions.map(o => o.value)}
-          disallowEmptySelection
-          class="w-50"
-          itemComponent={props => (
-            <SelectItem item={props.item}>
-              {caseOptions.find(o => o.value === props.item.rawValue)?.label}
-            </SelectItem>
-          )}
-        >
-          <SelectTrigger>
-            <SelectValue<CaseStyle>>
-              {state => caseOptions.find(o => o.value === state.selectedOption())?.label}
-            </SelectValue>
-          </SelectTrigger>
-          <SelectContent />
-        </Select>
+      <div class="flex flex-wrap gap-8">
+        <div class="space-y-4">
+          <div class="text-sm font-medium">Options</div>
+          <div class="flex flex-wrap gap-4">
+            <Switch checked={autoRepair()} onChange={setAutoRepair} text="Auto repair JSON string" />
+            <Switch checked={shouldSortKeys()} onChange={setShouldSortKeys} text="Sort Keys" />
+            <Switch checked={parseNested()} onChange={setParseNested} text="Parse Nested JSON" />
+          </div>
+        </div>
+        <div class="space-y-4">
+          <div class="text-sm font-medium">Key Case</div>
+          <Select
+            value={targetCase()}
+            onChange={setTargetCase}
+            options={caseOptions.map(o => o.value)}
+            disallowEmptySelection
+            class="w-50"
+            itemComponent={props => (
+              <SelectItem item={props.item}>
+                {caseOptions.find(o => o.value === props.item.rawValue)?.label}
+              </SelectItem>
+            )}
+          >
+            <SelectTrigger>
+              <SelectValue<CaseStyle>>
+                {state => caseOptions.find(o => o.value === state.selectedOption())?.label}
+              </SelectValue>
+            </SelectTrigger>
+            <SelectContent />
+          </Select>
+        </div>
+        <div class="max-w-120 min-w-80">
+          <Slider
+            value={[indent()]}
+            onChange={value => setIndent(value[0])}
+            minValue={2}
+            maxValue={8}
+            step={2}
+            loose
+            label="Indent Size"
+          />
+        </div>
       </div>
 
       <div class="gap-6 grid lg:grid-cols-2">
