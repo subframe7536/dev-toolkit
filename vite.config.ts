@@ -31,9 +31,8 @@ export default defineConfig({
     meta({
       title,
       description,
-      color: '#00000000',
       url,
-      img: `${url}/og-image.svg`,
+      img: `${url}/og-image.jpg`,
     }),
     pwa({
       registerType: 'prompt',
