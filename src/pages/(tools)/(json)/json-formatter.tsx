@@ -39,7 +39,7 @@ export default createRoute({
 })
 
 const caseOptions: Array<{ value: CaseStyle, label: string }> = [
-  { value: 'As is', label: 'Keep Current Key Case' },
+  { value: 'As is', label: 'Keep Current' },
   { value: 'camelCase', label: 'camelCase' },
   { value: 'snake_case', label: 'snake_case' },
   { value: 'kebab-case', label: 'kebab-case' },

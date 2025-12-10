@@ -7,15 +7,15 @@ import { Button } from './ui/button'
 export function ThemeToggle(props: { class?: string }) {
   const [mode, setMode] = useColorMode()
 
-  const themeConfig = createMemo(() => {
+  const themeIcon = createMemo(() => {
     const current = mode()
     switch (current) {
       case 'light':
-        return { icon: 'lucide:sun', label: 'Light' }
+        return 'lucide:sun'
       case 'dark':
-        return { icon: 'lucide:moon', label: 'Dark' }
+        return 'lucide:moon'
       default:
-        return { icon: 'lucide:monitor', label: 'System' }
+        return 'lucide:monitor'
     }
   })
 
@@ -27,11 +27,11 @@ export function ThemeToggle(props: { class?: string }) {
     <Button
       onClick={handleToggle}
       variant="ghost"
+      size="icon"
       aria-label="Toggle theme"
       class={props.class}
     >
-      <Icon name={themeConfig().icon as any} class="mr-2" />
-      <span class="text-sm font-medium">{themeConfig().label}</span>
+      <Icon name={themeIcon() as any} />
     </Button>
   )
 }
