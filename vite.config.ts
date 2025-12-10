@@ -35,7 +35,7 @@ export default defineConfig({
       img: `${url}/og-image.jpg`,
     }),
     pwa({
-      registerType: 'prompt',
+      registerType: 'autoUpdate',
       devOptions: {
         enabled: false,
         type: 'module',

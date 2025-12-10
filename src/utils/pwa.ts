@@ -1,9 +1,6 @@
-// src/hooks/usePwaInstall.ts
-import { watch } from '@solid-hooks/core'
 import { useEventListener } from '@solid-hooks/core/web'
 import { createSignal } from 'solid-js'
 import { toast } from 'solid-sonner'
-import { useRegisterSW } from 'virtual:pwa-register/solid'
 
 // Type definition for the non-standard event
 interface BeforeInstallPromptEvent extends Event {
@@ -51,24 +48,5 @@ export function usePWA() {
       onDismiss: () => setDeferredPrompt(null),
       onAutoClose: () => setDeferredPrompt(null),
     })
-  })
-
-  const {
-    needRefresh: [needRefresh, setNeedRefresh],
-    updateServiceWorker,
-  } = useRegisterSW()
-
-  watch(needRefresh, (refresh) => {
-    if (refresh) {
-      toast('New content available', {
-        description: 'Click reload to update the app.',
-        duration: Infinity, // Keep open until clicked
-        action: {
-          label: 'Reload',
-          onClick: () => updateServiceWorker(true),
-        },
-        onDismiss: () => setNeedRefresh(false), // Allow user to close
-      })
-    }
   })
 }
