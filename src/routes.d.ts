@@ -23,6 +23,7 @@ declare module 'solid-file-router' {
     '/unicode': never
     '/url': never
     '/uuid': never
+    "/404": never
   }
   interface FileRouteInfo {
     title: string
@@ -31,4 +32,30 @@ declare module 'solid-file-router' {
     icon: `lucide:${string}`
     tags: string[]
   }
+}
+
+declare module '@solidjs/router' {
+  import type { AnchorProps } from '@solidjs/router'
+
+  type Paths =
+    |'/'
+    |'/base64'
+    |'/color'
+    |'/datetime'
+    |'/hash'
+    |'/hex'
+    |'/html'
+    |'/image'
+    |'/json-converter'
+    |'/json-formatter'
+    |'/json-schema-generator'
+    |'/sql-param-fill'
+    |'/table-editor'
+    |'/text-case'
+    |'/unicode'
+    |'/url'
+    |'/uuid'
+    |"/404"
+
+  export declare function A(props: Omit<AnchorProps, 'href'> & { href: Paths }): JSX.Element
 }

@@ -1,10 +1,10 @@
 import type { RouteDefinition } from '@solidjs/router'
-import type { FileRouteInfo } from 'solid-file-router'
+import type { FileRouteInfo, FileRoutePath } from 'solid-file-router'
 
 import { fileRoutes } from 'virtual:routes'
 
 export interface ToolRoute {
-  path: string
+  path: keyof FileRoutePath & string
   info: FileRouteInfo
 }
 
@@ -29,7 +29,7 @@ function flattenRoutes(routes: RouteDefinition | RouteDefinition[], parentPath =
     // If this route has tool info, add it to results
     if (route.info?.title && route.info?.category) {
       result.push({
-        path: currentPath || '/',
+        path: currentPath as any,
         info: {
           title: route.info.title,
           description: route.info.description || '',

@@ -20,7 +20,7 @@ import {
 import { Toaster } from '#/components/ui/sonner'
 import { usePWA } from '#/utils/pwa'
 import { getCategories } from '#/utils/routes'
-import { A } from '@solidjs/router'
+import { A, useBeforeLeave } from '@solidjs/router'
 import { createRoute } from 'solid-file-router'
 import { For } from 'solid-js'
 
@@ -45,6 +45,16 @@ function Catch(props: { error: Error, reset: () => void }) {
 function App(props: RouteSectionProps) {
   const { categories, count } = getCategories()
   usePWA()
+
+  useBeforeLeave((e) => {
+    if (document.startViewTransition) {
+      e.preventDefault()
+
+      document.startViewTransition(() => {
+        e.retry(true)
+      })
+    }
+  })
 
   return (
     <SidebarProvider>

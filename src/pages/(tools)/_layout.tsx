@@ -9,6 +9,12 @@ import { createStore } from 'solid-js/store'
 
 export default createRoute({
   component: ToolsLayout,
+  loadingComponent: () => (
+    <div class="py-12 flex flex-row items-center justify-center">
+      <Icon name="lucide:loader-circle" class="mr-2 animate-spin" />
+      loading...
+    </div>
+  ),
 })
 
 function updateMetaTag(selector: string, attribute: string, content: string) {

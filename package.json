@@ -39,7 +39,7 @@
     "eslint-plugin-solid": "^0.14.5",
     "fast-check": "^4.3.0",
     "jsonrepair": "^3.13.1",
-    "solid-file-router": "^0.1.5",
+    "solid-file-router": "0.1.6",
     "solid-sonner": "^0.2.8",
     "spark-md5": "^3.0.2",
     "typescript": "~5.9.3",
