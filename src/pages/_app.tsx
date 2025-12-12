@@ -102,17 +102,18 @@ function App(props: RouteSectionProps) {
       </Sidebar>
       <SidebarInset>
         <SidebarTrigger class="left-2 top-2 absolute" />
-        <ThemeToggle class="right-2 top-2 absolute z-50" />
-        <Button
-          class="right-12 top-2 absolute z-50"
-          variant="ghost"
-          size="icon"
-          as="a"
-          href="https://github.com/subframe7536/dev-toolkit"
-          target="_blank"
-        >
-          <Icon name="lucide:github" />
-        </Button>
+        <div class="flex flex-row-reverse right-2 top-2 absolute z-50">
+          <ThemeToggle class="w-24" />
+          <Button
+            variant="ghost"
+            as="a"
+            href="https://github.com/subframe7536/dev-toolkit"
+            target="_blank"
+          >
+            <Icon name="lucide:github" title="GitHub Link" class="mr-2" />
+            GitHub
+          </Button>
+        </div>
         <div class="p-12 md:p-24">
           {props.children}
         </div>

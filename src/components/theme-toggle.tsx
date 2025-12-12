@@ -27,11 +27,11 @@ export function ThemeToggle(props: { class?: string }) {
     <Button
       onClick={handleToggle}
       variant="ghost"
-      size="icon"
       aria-label="Toggle theme"
       class={props.class}
     >
-      <Icon name={themeIcon() as any} />
+      <Icon name={themeIcon() as any} title={mode()} class="mr-2" />
+      {mode()}
     </Button>
   )
 }
