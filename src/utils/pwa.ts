@@ -1,6 +1,7 @@
 import { useEventListener } from '@solid-hooks/core/web'
-import { createSignal } from 'solid-js'
+import { createEffect, createSignal } from 'solid-js'
 import { toast } from 'solid-sonner'
+import { useRegisterSW } from 'virtual:pwa-register/solid'
 
 // Type definition for the non-standard event
 interface BeforeInstallPromptEvent extends Event {
@@ -8,26 +9,8 @@ interface BeforeInstallPromptEvent extends Event {
   userChoice: Promise<{ outcome: 'accepted' | 'dismissed', platform: string }>
 }
 
-export function usePWA() {
+export function registPWA() {
   const [deferredPrompt, setDeferredPrompt] = createSignal<BeforeInstallPromptEvent | null>(null)
-
-  const handleInstallClick = async () => {
-    const promptEvent = deferredPrompt()
-    if (!promptEvent) {
-      return
-    }
-
-    // Show the native install prompt
-    await promptEvent.prompt()
-
-    // Wait for the user to respond to the prompt
-    const { outcome } = await promptEvent.userChoice
-
-    console.log(`User response to install prompt: ${outcome}`)
-
-    // We've used the prompt, so clear it
-    setDeferredPrompt(null)
-  }
 
   useEventListener(window, 'beforeinstallprompt', (e) => {
     // 1. Prevent the mini-infobar from appearing on mobile
@@ -40,13 +23,52 @@ export function usePWA() {
     toast('Install App', {
       description: 'Install this application on your device for a better experience.',
       duration: 10000, // Show for 10 seconds
-      closeButton: true,
       action: {
         label: 'Install',
-        onClick: handleInstallClick,
+        onClick: async () => {
+          const promptEvent = deferredPrompt()
+          if (!promptEvent) {
+            return
+          }
+
+          // Show the native install prompt
+          await promptEvent.prompt()
+
+          // Wait for the user to respond to the prompt
+          const { outcome } = await promptEvent.userChoice
+
+          console.log(`User response to install prompt: ${outcome}`)
+
+          // We've used the prompt, so clear it
+          setDeferredPrompt(null)
+        },
+      },
+      cancel: {
+        label: 'Cancel',
       },
       onDismiss: () => setDeferredPrompt(null),
       onAutoClose: () => setDeferredPrompt(null),
     })
   })
+
+  const { needRefresh: [needRefresh, setNeedRefresh], updateServiceWorker } = useRegisterSW()
+
+  createEffect(() => {
+    if (needRefresh()) {
+      toast('New Version Available', {
+        description: 'Click "Refresh" button to apply the update',
+        duration: 10000, // Show for 10 seconds
+        action: {
+          label: 'Refresh',
+          onClick: () => updateServiceWorker(true),
+        },
+        cancel: {
+          label: 'Cancel',
+          onClick: () => setNeedRefresh(false),
+        },
+      })
+    }
+  })
+
+  return null
 }

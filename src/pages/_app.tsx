@@ -18,7 +18,7 @@ import {
   SidebarTrigger,
 } from '#/components/ui/sidebar'
 import { Toaster } from '#/components/ui/sonner'
-import { usePWA } from '#/utils/pwa'
+import { registPWA } from '#/utils/pwa'
 import { getCategories } from '#/utils/routes'
 import { A, useBeforeLeave } from '@solidjs/router'
 import { createRoute } from 'solid-file-router'
@@ -44,7 +44,7 @@ function Catch(props: { error: Error, reset: () => void }) {
 
 function App(props: RouteSectionProps) {
   const { categories, count } = getCategories()
-  usePWA()
+  registPWA()
 
   useBeforeLeave((e) => {
     if (document.startViewTransition) {
@@ -101,8 +101,8 @@ function App(props: RouteSectionProps) {
         </SidebarContent>
       </Sidebar>
       <SidebarInset>
-        <SidebarTrigger class="left-2 top-2 absolute" />
-        <div class="flex flex-row-reverse right-2 top-2 absolute z-50">
+        <SidebarTrigger class="left-2 top-2 sticky z-50" />
+        <div class="flex flex-row-reverse right-2 top-2 fixed z-50">
           <ThemeToggle class="w-24" />
           <Button
             variant="ghost"
