@@ -69,7 +69,7 @@ function TableEditor() {
             onClear={handleClear}
           />
           <div
-            class="border rounded-lg overflow-x-scroll"
+            class="border rounded-lg max-w-400 overflow-x-scroll"
             style={{
               width: !isMobile() && open() ? 'calc(100vw - 12rem - var(--sidebar-width))' : 'calc(100vw - 12rem)',
             }}

@@ -87,7 +87,7 @@ function SqlParamFill() {
           <TextFieldTextArea
             value={sqlInput()}
             onInput={e => setSqlInput(e.currentTarget.value)}
-            placeholder="SELECT * FROM T WHERE id = ? AND name = ?"
+            placeholder={`All Mybatis logs\n\nor\n\nSELECT * FROM T WHERE id = ? AND name = ?`}
             class="font-mono h-48 resize-none"
           />
         </TextField>

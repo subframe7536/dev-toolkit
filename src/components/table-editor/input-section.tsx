@@ -211,17 +211,17 @@ export const InputSection: Component<InputSectionProps> = (props) => {
             </p>
             <TextField>
               <TextFieldTextArea
-                class="text-sm font-mono h-100 resize-none"
+                class="text-sm font-mono h-120 resize-none"
                 placeholder={PLACEHOLDER}
                 value={textInput()}
                 onInput={e => setTextInput(e.currentTarget.value)}
               />
             </TextField>
-            <div class="flex gap-2">
+            <div class="flex flex-wrap gap-2">
               <Button
                 onClick={handleParseText}
                 disabled={!textInput().trim()}
-                class="flex-1"
+                class="flex-1 min-w-48"
               >
                 <Icon name="lucide:play" class="mr-2" />
                 Parse

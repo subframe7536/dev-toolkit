@@ -56,7 +56,7 @@ export function FileUpload(props: Props) {
       onFileReject={handleFileReject}
     >
       <FileField.Dropzone
-        class="text-center b-(2 border dashed) rounded-lg bg-input flex flex-col gap-4 h-60 transition-all items-center justify-center data-[dragging=true]:bg-muted"
+        class="text-center b-(2 border dashed) rounded-lg bg-input flex flex-col gap-4 h-120 transition-all items-center justify-center data-[dragging=true]:bg-muted"
         onDrop={e => (e.target as HTMLDivElement).dataset.dragging = 'false'}
       >
         <Show when={props.icon}>

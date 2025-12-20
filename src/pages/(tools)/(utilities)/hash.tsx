@@ -37,7 +37,7 @@ export default createRoute({
     description: 'Generate hash strings using various algorithms',
     category: 'Utilities',
     icon: 'lucide:hash',
-    tags: ['hash', 'sha', 'checksum', 'digest'],
+    tags: ['hash', 'sha', 'md5', 'checksum', 'digest'],
   },
   component: HashGenerator,
 })
@@ -98,7 +98,7 @@ function HashGenerator() {
 
   return (
     <div class="gap-6 grid grid-cols-1 lg:grid-cols-[auto_1fr]">
-      <div class="flex flex-col gap-6 lg:w-96">
+      <div class="flex flex-col gap-3 lg:w-96">
         <Tabs value={inputMode()} onChange={handleInputModeChange}>
           <TabsList>
             <TabsTrigger value="text">Text Input</TabsTrigger>
@@ -108,13 +108,12 @@ function HashGenerator() {
 
           <TabsContent value="text">
             <TextField class="mt-4">
-              <TextFieldLabel>Text to Hash</TextFieldLabel>
               <TextFieldTextArea
                 value={textInput()}
                 onInput={e => setTextInput((e.target as HTMLTextAreaElement).value)}
                 placeholder="Enter text to generate hash..."
                 rows={10}
-                class="text-sm font-mono resize-y"
+                class="text-sm font-mono h-120 resize-y"
               />
             </TextField>
           </TabsContent>
@@ -135,7 +134,7 @@ function HashGenerator() {
           </TabsContent>
         </Tabs>
 
-        <div class="flex gap-6">
+        <div class="flex gap-3">
           <Button
             class="flex-1"
             onClick={handleGenerate}
