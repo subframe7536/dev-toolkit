@@ -102,7 +102,7 @@ function App(props: RouteSectionProps) {
       </Sidebar>
       <SidebarInset>
         <SidebarTrigger class="left-2 top-2 sticky z-50" />
-        <div class="flex flex-row-reverse right-2 top-2 fixed z-50">
+        <div class="flex flex-row-reverse right-2 top-2 absolute">
           <ThemeToggle class="w-24" />
           <Button
             variant="ghost"
@@ -114,7 +114,7 @@ function App(props: RouteSectionProps) {
             GitHub
           </Button>
         </div>
-        <div class="p-12 md:p-24">
+        <div class="p-12 md:(p-24 pt-12)">
           {props.children}
         </div>
         <Toaster />

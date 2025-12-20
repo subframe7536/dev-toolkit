@@ -109,7 +109,7 @@ export function EncoderLayout(props: EncoderLayoutProps): JSX.Element {
               {inputLabel()}
             </TextFieldLabel>
             <TextFieldTextArea
-              class="text-sm font-mono h-100 resize-none"
+              class="text-sm font-mono h-80 resize-none md:h-100"
               placeholder={inputPlaceholder()}
               value={inputText()}
               onInput={e => handleInput(e.currentTarget.value)}
@@ -154,7 +154,7 @@ export function EncoderLayout(props: EncoderLayoutProps): JSX.Element {
             </TextFieldLabel>
             <TextFieldTextArea
               class={cls(
-                'text-sm font-mono bg-muted/50 h-100 resize-none focus-visible:ring-0',
+                'text-sm font-mono bg-muted/50 h-80 md:h-100 resize-none focus-visible:ring-0',
                 error() ? 'text-destructive' : !outputText() && 'text-muted-foreground',
               )}
               readOnly

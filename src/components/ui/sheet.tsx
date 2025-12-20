@@ -54,7 +54,7 @@ function SheetOverlay<T extends ValidComponent = 'div'>(props: PolymorphicProps<
 
 const sheetVariants = clsvDefault(
   clsv(
-    'fixed z-50 gap-4 bg-background p-6 shadow-lg transition ease-in-out data-[closed]:(duration-300 animate-out) data-[expanded]:(duration-500 animate-in)',
+    'fixed z-50 gap-4 bg-background p-4 shadow-lg transition ease-in-out data-[closed]:(duration-300 animate-out) data-[expanded]:(duration-500 animate-in)',
     {
       position: {
         top: 'inset-x-0 top-0 border-b data-[closed]:slide-out-to-top data-[expanded]:slide-in-from-top',
