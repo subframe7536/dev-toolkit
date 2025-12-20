@@ -7,7 +7,7 @@ import Icon from '#/components/ui/icon'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '#/components/ui/select'
 import { Tabs, TabsContent, TabsIndicator, TabsList, TabsTrigger } from '#/components/ui/tabs'
 import { TextField, TextFieldTextArea } from '#/components/ui/text-field'
-import { getExcelSheetNames, parseCSVFile, parseCSVText, parseExcelFile, parseMySQLOutput } from '#/utils/table/parser'
+import { detectTSVFormat, getExcelSheetNames, parseCSVFile, parseCSVText, parseExcelFile, parseMySQLOutput, parseTSVText } from '#/utils/table/parser'
 import { createSignal, Show } from 'solid-js'
 import { toast } from 'solid-sonner'
 
@@ -24,13 +24,19 @@ const CSV_EXAMPLE = `id,name,age
 1,Alice,30
 2,Bob,25`
 
+const EXCEL_EXAMPLE = 'id\tname\tage\n1\tAlice\t30\n2\tBob\t25'
+
 const PLACEHOLDER = `Example (MySQL Cli Output):
 
 ${MYSQL_EXAMPLE}
 
-Example (MySQL Cli Output):
+Example (CSV):
 
-${CSV_EXAMPLE}`
+${CSV_EXAMPLE}
+
+Example (Excel Copy/Paste):
+
+${EXCEL_EXAMPLE}`
 
 interface InputSectionProps {
   onDataParsed: (data: TableData) => void
@@ -56,7 +62,7 @@ export const InputSection: Component<InputSectionProps> = (props) => {
     return 'csv'
   }
 
-  // Handle text input parsing (auto-detects MySQL vs CSV)
+  // Handle text input parsing (auto-detects MySQL vs CSV vs TSV)
   const handleParseText = () => {
     const input = textInput().trim()
     if (!input) {
@@ -64,7 +70,9 @@ export const InputSection: Component<InputSectionProps> = (props) => {
       return
     }
 
+    // Auto-detect format based on content
     if (input.trim().startsWith('+-')) {
+      // MySQL CLI output format
       const result = parseMySQLOutput(input)
       if (result.success && result.data) {
         props.onDataParsed(result.data)
@@ -74,7 +82,19 @@ export const InputSection: Component<InputSectionProps> = (props) => {
           description: result.error.details,
         })
       }
+    } else if (detectTSVFormat(input)) {
+      // Tab-separated values (Excel copy/paste)
+      const result = parseTSVText(input, true)
+      if (result.success && result.data) {
+        props.onDataParsed(result.data)
+        toast.success('Excel table data parsed successfully!')
+      } else if (result.error) {
+        toast.error(result.error.message, {
+          description: result.error.details,
+        })
+      }
     } else {
+      // Default to CSV format
       const result = parseCSVText(input, true)
       if (result.success && result.data) {
         props.onDataParsed(result.data)
@@ -187,7 +207,7 @@ export const InputSection: Component<InputSectionProps> = (props) => {
         <TabsContent value="text">
           <div class="mt-4 flex flex-col gap-3">
             <p class="text-sm text-muted-foreground">
-              Paste MySQL CLI output (starts with +-) or CSV text here. Type will be auto-detected.
+              Paste MySQL CLI output (starts with +-), CSV text, or Excel table data here. Format will be auto-detected.
             </p>
             <TextField>
               <TextFieldTextArea
@@ -219,6 +239,13 @@ export const InputSection: Component<InputSectionProps> = (props) => {
               >
                 <Icon name="lucide:table" class="mr-2" />
                 CSV Example
+              </Button>
+              <Button
+                variant="secondary"
+                onClick={() => setTextInput(EXCEL_EXAMPLE)}
+              >
+                <Icon name="lucide:file-spreadsheet" class="mr-2" />
+                Excel Example
               </Button>
               <ClearButton
                 onClear={() => setTextInput('')}

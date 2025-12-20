@@ -6,32 +6,37 @@ import Papa from 'papaparse'
 import { inferDataType } from './type-inference'
 
 /**
- * Parse CSV text into normalized table data
+ * Parse delimited text (CSV/TSV) into normalized table data
  *
- * Supports CSV format according to RFC 4180
- * Automatically detects headers and handles quoted values
- *
- * @param input - CSV text string
- * @param hasHeaders - Whether the CSV has headers (default: true, auto-detected)
+ * @param input - Text string with delimited values
+ * @param hasHeaders - Whether the text has headers (default: true, auto-detected)
+ * @param delimiter - Delimiter character (default: comma for CSV)
+ * @param formatName - Format name for error messages (e.g., 'CSV', 'TSV')
  * @returns ParseResult with success status and data or error
  */
-export function parseCSVText(input: string, hasHeaders: boolean = true): ParseResult {
+function parseDelimitedText(
+  input: string,
+  hasHeaders: boolean = true,
+  delimiter?: string,
+  formatName: string = 'CSV',
+): ParseResult {
   // Validate input
   if (!input || input.trim().length === 0) {
     return {
       success: false,
       error: {
-        message: 'Please paste CSV text.',
+        message: `Please paste ${formatName} text.`,
       },
     }
   }
 
   try {
-    // Parse CSV using Papa Parse
+    // Parse using Papa Parse
     const parseResult = Papa.parse<string[]>(input, {
       header: false, // Always parse as array of arrays for consistency
       skipEmptyLines: true,
       dynamicTyping: false, // Keep as strings, we'll infer types later
+      delimiter, // Use specified delimiter
       transformHeader: undefined, // Not used when header: false
     })
 
@@ -41,7 +46,7 @@ export function parseCSVText(input: string, hasHeaders: boolean = true): ParseRe
       return {
         success: false,
         error: {
-          message: 'CSV parsing error',
+          message: `${formatName} parsing error`,
           details: errorMessages,
         },
       }
@@ -49,12 +54,12 @@ export function parseCSVText(input: string, hasHeaders: boolean = true): ParseRe
 
     const rawData = parseResult.data
 
-    // Check if CSV is empty
+    // Check if data is empty
     if (rawData.length === 0) {
       return {
         success: false,
         error: {
-          message: 'CSV file is empty.',
+          message: `${formatName} data is empty.`,
         },
       }
     }
@@ -74,7 +79,7 @@ export function parseCSVText(input: string, hasHeaders: boolean = true): ParseRe
         return {
           success: false,
           error: {
-            message: 'CSV has no column headers.',
+            message: `${formatName} has no column headers.`,
           },
         }
       }
@@ -93,7 +98,7 @@ export function parseCSVText(input: string, hasHeaders: boolean = true): ParseRe
         return {
           success: false,
           error: {
-            message: 'CSV has no data.',
+            message: `${formatName} has no data.`,
           },
         }
       }
@@ -106,7 +111,7 @@ export function parseCSVText(input: string, hasHeaders: boolean = true): ParseRe
       return {
         success: false,
         error: {
-          message: 'CSV has no columns.',
+          message: `${formatName} has no columns.`,
         },
       }
     }
@@ -168,7 +173,7 @@ export function parseCSVText(input: string, hasHeaders: boolean = true): ParseRe
       return {
         success: false,
         error: {
-          message: 'CSV contains only headers with no data rows.',
+          message: `${formatName} contains only headers with no data rows.`,
         },
       }
     }
@@ -192,11 +197,72 @@ export function parseCSVText(input: string, hasHeaders: boolean = true): ParseRe
     return {
       success: false,
       error: {
-        message: 'Failed to parse CSV text.',
+        message: `Failed to parse ${formatName} text.`,
         details: error instanceof Error ? error.message : 'Unknown error',
       },
     }
   }
+}
+
+/**
+ * Parse TSV (Tab-Separated Values) text into normalized table data
+ *
+ * This handles data copied from Excel or other spreadsheet applications
+ * which typically use tab characters as delimiters
+ *
+ * @param input - TSV text string (tab-separated)
+ * @param hasHeaders - Whether the TSV has headers (default: true, auto-detected)
+ * @returns ParseResult with success status and data or error
+ */
+export function parseTSVText(input: string, hasHeaders: boolean = true): ParseResult {
+  return parseDelimitedText(input, hasHeaders, '\t', 'TSV')
+}
+
+/**
+ * Detect if input text is likely TSV (tab-separated) format
+ *
+ * @param input - Text to analyze
+ * @returns true if input appears to be TSV format
+ */
+export function detectTSVFormat(input: string): boolean {
+  if (!input || input.trim().length === 0) {
+    return false
+  }
+
+  const lines = input.trim().split('\n')
+  if (lines.length < 2) {
+    return false
+  }
+
+  // Check if most lines contain tabs
+  let tabLines = 0
+  let commaLines = 0
+
+  for (const line of lines.slice(0, Math.min(5, lines.length))) {
+    if (line.includes('\t')) {
+      tabLines++
+    }
+    if (line.includes(',')) {
+      commaLines++
+    }
+  }
+
+  // If more lines have tabs than commas, likely TSV
+  return tabLines > commaLines && tabLines > 0
+}
+
+/**
+ * Parse CSV text into normalized table data
+ *
+ * Supports CSV format according to RFC 4180
+ * Automatically detects headers and handles quoted values
+ *
+ * @param input - CSV text string
+ * @param hasHeaders - Whether the CSV has headers (default: true, auto-detected)
+ * @returns ParseResult with success status and data or error
+ */
+export function parseCSVText(input: string, hasHeaders: boolean = true): ParseResult {
+  return parseDelimitedText(input, hasHeaders, undefined, 'CSV')
 }
 
 /**
