@@ -33,6 +33,7 @@ const exportOptions: Array<{ value: ExportFormat, label: string }> = [
 ]
 
 interface ExportDialogProps extends TableData {
+  hasHeaders: boolean
 }
 
 export const ExportDialog: Component<ExportDialogProps> = (props) => {
@@ -90,7 +91,7 @@ export const ExportDialog: Component<ExportDialogProps> = (props) => {
           output = generateCreateTable(props, name, useSnakeCase())
           break
         case 'excel': {
-          const blob = await exportToExcel(props, useSnakeCase())
+          const blob = await exportToExcel(props, useSnakeCase(), props.hasHeaders)
           const url = URL.createObjectURL(blob)
           const a = document.createElement('a')
           a.href = url
@@ -103,10 +104,10 @@ export const ExportDialog: Component<ExportDialogProps> = (props) => {
           return
         }
         case 'csv':
-          output = exportToCSV(props, useSnakeCase())
+          output = exportToCSV(props, useSnakeCase(), props.hasHeaders)
           break
         case 'markdown':
-          output = exportToMarkdown(props, useSnakeCase())
+          output = exportToMarkdown(props, useSnakeCase(), props.hasHeaders)
           break
       }
 
@@ -262,10 +263,7 @@ export const ExportDialog: Component<ExportDialogProps> = (props) => {
                     mimeType={getExportMimeType()}
                     size="sm"
                     variant="outline"
-                  >
-                    <Icon name="lucide:download" class="mr-2 size-4" />
-                    Download
-                  </DownloadButton>
+                  />
                 </div>
               </div>
               <TextField class="flex-1">

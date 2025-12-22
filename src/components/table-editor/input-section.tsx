@@ -5,6 +5,7 @@ import { FileUpload } from '#/components/file-upload'
 import { Button } from '#/components/ui/button'
 import Icon from '#/components/ui/icon'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '#/components/ui/select'
+import { Switch } from '#/components/ui/switch'
 import { Tabs, TabsContent, TabsIndicator, TabsList, TabsTrigger } from '#/components/ui/tabs'
 import { TextField, TextFieldTextArea } from '#/components/ui/text-field'
 import { detectTSVFormat, getExcelSheetNames, parseCSVFile, parseCSVText, parseExcelFile, parseMySQLOutput, parseTSVText } from '#/utils/table/parser'
@@ -39,7 +40,7 @@ Example (Excel Copy/Paste):
 ${EXCEL_EXAMPLE}`
 
 interface InputSectionProps {
-  onDataParsed: (data: TableData) => void
+  onDataParsed: (data: TableData, hasHeaders: boolean) => void
 }
 
 export const InputSection: Component<InputSectionProps> = (props) => {
@@ -49,6 +50,7 @@ export const InputSection: Component<InputSectionProps> = (props) => {
   const [sheetNames, setSheetNames] = createSignal<string[]>([])
   const [selectedSheet, setSelectedSheet] = createSignal<string>('')
   const [isParsing, setIsParsing] = createSignal(false)
+  const [hasHeaders, setHasHeaders] = createSignal(true)
 
   // Auto-detect file type based on extension or mime type
   const detectFileType = (file: File): 'excel' | 'csv' => {
@@ -75,7 +77,7 @@ export const InputSection: Component<InputSectionProps> = (props) => {
       // MySQL CLI output format
       const result = parseMySQLOutput(input)
       if (result.success && result.data) {
-        props.onDataParsed(result.data)
+        props.onDataParsed(result.data, true) // MySQL always has headers
         toast.success('MySQL output parsed successfully!')
       } else if (result.error) {
         toast.error(result.error.message, {
@@ -84,9 +86,9 @@ export const InputSection: Component<InputSectionProps> = (props) => {
       }
     } else if (detectTSVFormat(input)) {
       // Tab-separated values (Excel copy/paste)
-      const result = parseTSVText(input, true)
+      const result = parseTSVText(input, hasHeaders())
       if (result.success && result.data) {
-        props.onDataParsed(result.data)
+        props.onDataParsed(result.data, hasHeaders())
         toast.success('Excel table data parsed successfully!')
       } else if (result.error) {
         toast.error(result.error.message, {
@@ -95,9 +97,9 @@ export const InputSection: Component<InputSectionProps> = (props) => {
       }
     } else {
       // Default to CSV format
-      const result = parseCSVText(input, true)
+      const result = parseCSVText(input, hasHeaders())
       if (result.success && result.data) {
-        props.onDataParsed(result.data)
+        props.onDataParsed(result.data, hasHeaders())
         toast.success('CSV text parsed successfully!')
       } else if (result.error) {
         toast.error(result.error.message, {
@@ -153,10 +155,10 @@ export const InputSection: Component<InputSectionProps> = (props) => {
 
       if (fileType === 'excel') {
         const sheetIndex = sheetNames().indexOf(selectedSheet())
-        const result = await parseExcelFile(file, sheetIndex >= 0 ? sheetIndex : 0)
+        const result = await parseExcelFile(file, sheetIndex >= 0 ? sheetIndex : 0, hasHeaders())
 
         if (result.success && result.data) {
-          props.onDataParsed(result.data)
+          props.onDataParsed(result.data, hasHeaders())
           toast.success('Excel file parsed successfully!')
         } else if (result.error) {
           toast.error(result.error.message, {
@@ -164,10 +166,10 @@ export const InputSection: Component<InputSectionProps> = (props) => {
           })
         }
       } else {
-        const result = await parseCSVFile(file, true)
+        const result = await parseCSVFile(file, hasHeaders())
 
         if (result.success && result.data) {
-          props.onDataParsed(result.data)
+          props.onDataParsed(result.data, hasHeaders())
           toast.success('CSV file parsed successfully!')
         } else if (result.error) {
           toast.error(result.error.message, {
@@ -217,7 +219,7 @@ export const InputSection: Component<InputSectionProps> = (props) => {
                 onInput={e => setTextInput(e.currentTarget.value)}
               />
             </TextField>
-            <div class="flex flex-wrap gap-2">
+            <div class="flex flex-wrap gap-2 items-center">
               <Button
                 onClick={handleParseText}
                 disabled={!textInput().trim()}
@@ -251,6 +253,13 @@ export const InputSection: Component<InputSectionProps> = (props) => {
                 onClear={() => setTextInput('')}
                 disabled={!textInput().trim()}
               />
+              <div class="ml-2 pl-2 border-l">
+                <Switch
+                  text="First row is header"
+                  checked={hasHeaders()}
+                  onChange={setHasHeaders}
+                />
+              </div>
             </div>
           </div>
         </TabsContent>
@@ -285,7 +294,7 @@ export const InputSection: Component<InputSectionProps> = (props) => {
               </div>
             </Show>
 
-            <div class="flex gap-2">
+            <div class="flex gap-2 items-center">
               <Button
                 onClick={handleParseFile}
                 disabled={!uploadedFile() || isParsing()}
@@ -308,6 +317,13 @@ export const InputSection: Component<InputSectionProps> = (props) => {
                 onClear={() => handleFileSelect(undefined)}
                 disabled={!uploadedFile()}
               />
+              <div class="ml-2 pl-2 border-l">
+                <Switch
+                  text="First row is header"
+                  checked={hasHeaders()}
+                  onChange={setHasHeaders}
+                />
+              </div>
             </div>
           </div>
         </TabsContent>

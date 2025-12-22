@@ -28,9 +28,14 @@ export async function getExcelSheetNames(file: File): Promise<string[]> {
  *
  * @param file - Excel file to parse
  * @param sheetIndex - Index of sheet to parse (default: 0 for first sheet)
+ * @param hasHeaders - Whether the first row is a header (default: true)
  * @returns Promise resolving to ParseResult with success status and data or error
  */
-export async function parseExcelFile(file: File, sheetIndex: number = 0): Promise<ParseResult> {
+export async function parseExcelFile(
+  file: File,
+  sheetIndex: number = 0,
+  hasHeaders: boolean = true,
+): Promise<ParseResult> {
   // Validate file
   if (!file) {
     return {
@@ -111,24 +116,35 @@ export async function parseExcelFile(file: File, sheetIndex: number = 0): Promis
       }
     }
 
-    // First row is the header
-    const headerRow = rawData[0]
+    let columnNames: string[] = []
+    let dataStartIndex = 0
 
-    if (!headerRow || headerRow.length === 0) {
-      return {
-        success: false,
-        error: {
-          message: 'Sheet has no columns.',
-        },
+    if (hasHeaders) {
+      // First row is the header
+      const headerRow = rawData[0]
+
+      if (!headerRow || headerRow.length === 0) {
+        return {
+          success: false,
+          error: {
+            message: 'Sheet has no columns.',
+          },
+        }
       }
-    }
 
-    // Extract column names from header row
-    const columnNames: string[] = headerRow.map((cell, index) => {
-      // Convert cell to string, use default column name if empty
-      const cellValue = cell === null || cell === undefined ? '' : String(cell).trim()
-      return cellValue || `Column ${index + 1}`
-    })
+      // Extract column names from header row
+      columnNames = headerRow.map((cell, index) => {
+        // Convert cell to string, use default column name if empty
+        const cellValue = cell === null || cell === undefined ? '' : String(cell).trim()
+        return cellValue || `Column ${index + 1}`
+      })
+      dataStartIndex = 1
+    } else {
+      // No headers - generate column names based on max row length
+      const maxCols = rawData.reduce((max, row) => Math.max(max, row ? row.length : 0), 0)
+      columnNames = Array.from({ length: maxCols }, (_, i) => `Column ${i + 1}`)
+      dataStartIndex = 0
+    }
 
     // Create column definitions
     const columns: ColumnDefinition[] = columnNames.map(name => ({
@@ -139,10 +155,10 @@ export async function parseExcelFile(file: File, sheetIndex: number = 0): Promis
       isPinned: false,
     }))
 
-    // Extract data rows (skip header row)
+    // Extract data rows (skip header row if present)
     const rows: TableRow[] = []
 
-    for (let i = 1; i < rawData.length; i++) {
+    for (let i = dataStartIndex; i < rawData.length; i++) {
       const rowData = rawData[i]
 
       // Skip completely empty rows

@@ -4,6 +4,7 @@ import type { Component } from 'solid-js'
 import { Button } from '#/components/ui/button'
 import Icon from '#/components/ui/icon'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '#/components/ui/select'
+import { Switch } from '#/components/ui/switch'
 
 import { ClearButton } from '../clear-button'
 import { ExportDialog } from './export-dialog'
@@ -14,6 +15,8 @@ interface TableActionsProps {
   onColumnVisibilityChange: (visibility: Record<string, boolean>) => void
   onReset: () => void
   onClear: () => void
+  hasHeaders: boolean
+  onToggleHeaders: (hasHeaders: boolean) => void
 }
 
 export const TableActions: Component<TableActionsProps> = (props) => {
@@ -35,38 +38,49 @@ export const TableActions: Component<TableActionsProps> = (props) => {
 
   return (
     <div class="flex gap-2 items-center justify-between">
-      <Select<string>
-        multiple
-        value={visibleColumnIds()}
-        onChange={handleColumnVisibilityChange}
-        options={props.tableData.columns.map(col => col.id)}
-        placeholder="Select columns..."
-        class="w-48"
-        itemComponent={p => (
-          <SelectItem item={p.item}>
-            {props.tableData.columns.find(col => col.id === p.item.rawValue)?.name}
-          </SelectItem>
-        )}
-      >
-        <SelectTrigger>
-          <SelectValue<string>>
-            {() => {
-              const selected = visibleColumnIds()
-              if (selected.length === 0) {
-                return 'No columns'
-              }
-              if (selected.length === props.tableData.columns.length) {
-                return 'All columns'
-              }
-              return `${selected.length} column${selected.length > 1 ? 's' : ''}`
-            }}
-          </SelectValue>
-        </SelectTrigger>
-        <SelectContent />
-      </Select>
+      <div class="flex gap-4 items-center">
+        <Select<string>
+          multiple
+          value={visibleColumnIds()}
+          onChange={handleColumnVisibilityChange}
+          options={props.tableData.columns.map(col => col.id)}
+          placeholder="Select columns..."
+          class="w-48"
+          itemComponent={p => (
+            <SelectItem item={p.item}>
+              {props.tableData.columns.find(col => col.id === p.item.rawValue)?.name}
+            </SelectItem>
+          )}
+        >
+          <SelectTrigger>
+            <SelectValue<string>>
+              {() => {
+                const selected = visibleColumnIds()
+                if (selected.length === 0) {
+                  return 'No columns'
+                }
+                if (selected.length === props.tableData.columns.length) {
+                  return 'All columns'
+                }
+                return `${selected.length} column${selected.length > 1 ? 's' : ''}`
+              }}
+            </SelectValue>
+          </SelectTrigger>
+          <SelectContent />
+        </Select>
+
+        <Switch
+          text="First row is header"
+          checked={props.hasHeaders}
+          onChange={props.onToggleHeaders}
+        />
+      </div>
 
       <div class="flex gap-2">
-        <ExportDialog {...props.tableData} />
+        <ExportDialog
+          {...props.tableData}
+          hasHeaders={props.hasHeaders}
+        />
 
         <Button variant="secondary" onClick={props.onReset}>
           <Icon name="lucide:rotate-ccw" class="mr-2" />

@@ -205,6 +205,7 @@ export function escapeCSVValue(value: CellValue): string {
 export function exportToCSV(
   data: TableData,
   useSnakeCase: boolean = false,
+  includeHeaders: boolean = true,
 ): string {
   if (data.columns.length === 0) {
     return ''
@@ -214,7 +215,7 @@ export function exportToCSV(
   const columnNames = data.columns.map(col => useSnakeCase ? col.name : col.originalName)
 
   // Build header row
-  const headerRow = columnNames.map(escapeCSVValue).join(',')
+  const headerRow = includeHeaders ? columnNames.map(escapeCSVValue).join(',') : ''
 
   // Build data rows
   const dataRows = data.rows.map((row) => {
@@ -223,7 +224,7 @@ export function exportToCSV(
   })
 
   // Combine header and data rows
-  return [headerRow, ...dataRows].join('\n')
+  return includeHeaders ? [headerRow, ...dataRows].join('\n') : dataRows.join('\n')
 }
 
 /**
@@ -252,6 +253,7 @@ export function escapeMarkdownValue(value: CellValue): string {
 export function exportToMarkdown(
   data: TableData,
   useSnakeCase: boolean = false,
+  includeHeaders: boolean = true,
 ): string {
   if (data.columns.length === 0) {
     return ''
@@ -261,10 +263,10 @@ export function exportToMarkdown(
   const columnNames = data.columns.map(col => useSnakeCase ? col.name : col.originalName)
 
   // Build header row
-  const headerRow = `| ${columnNames.map(escapeMarkdownValue).join(' | ')} |`
+  const headerRow = includeHeaders ? `| ${columnNames.map(escapeMarkdownValue).join(' | ')} |` : ''
 
   // Build separator row (alignment indicators - left-aligned by default)
-  const separatorRow = `| ${columnNames.map(() => '---').join(' | ')} |`
+  const separatorRow = includeHeaders ? `| ${columnNames.map(() => '---').join(' | ')} |` : ''
 
   // Build data rows
   const dataRows = data.rows.map((row) => {
@@ -273,7 +275,10 @@ export function exportToMarkdown(
   })
 
   // Combine all rows
-  return [headerRow, separatorRow, ...dataRows].join('\n')
+  if (includeHeaders) {
+    return [headerRow, separatorRow, ...dataRows].join('\n')
+  }
+  return dataRows.join('\n')
 }
 
 /**
@@ -283,13 +288,14 @@ export function exportToMarkdown(
 export async function exportToExcel(
   data: TableData,
   useSnakeCase: boolean = false,
+  includeHeaders: boolean = true,
 ): Promise<Blob> {
   // Get column names (use snake_case if requested)
   const columnNames = data.columns.map(col => useSnakeCase ? col.name : col.originalName)
 
   // Build worksheet data as array of arrays
   // First row is the header
-  const worksheetData: any[][] = [columnNames]
+  const worksheetData: any[][] = includeHeaders ? [columnNames] : []
 
   // Add data rows
   for (const row of data.rows) {
