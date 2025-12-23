@@ -6,13 +6,13 @@ import { TableActions } from '#/components/table-editor/table-actions'
 import { useSidebar } from '#/components/ui/sidebar'
 import { createRoute } from 'solid-file-router'
 import { batch, createSignal, Show } from 'solid-js'
-import { createStore } from 'solid-js/store'
+import { createStore, produce } from 'solid-js/store'
 import { toast } from 'solid-sonner'
 
 export default createRoute({
   info: {
     title: 'Table Editor',
-    description: 'Parse, edit, and export tabular data from MySQL output or Excel files',
+    description: 'Parse, edit, and export tabular data from MySQL output, CSV or Excel files',
     category: 'Utilities',
     icon: 'lucide:table',
     tags: ['table', 'editor', 'mysql', 'excel', 'csv', 'sql', 'markdown'],
@@ -41,11 +41,6 @@ function TableEditor() {
 
   // Handle toggling "First row is header"
   const handleToggleHeaders = (checked: boolean) => {
-    // If state isn't changing, do nothing
-    if (checked === hasHeaders()) {
-      return
-    }
-
     batch(() => {
       setHasHeaders(checked)
 
@@ -56,49 +51,34 @@ function TableEditor() {
           return
         }
 
-        const firstRow = tableData.rows[0]
-        const remainingRows = tableData.rows.slice(1)
-
-        // Update columns with names from the first row
-        const newColumns = tableData.columns.map((col) => {
-          const cellValue = firstRow.cells[col.id]
-          const newName = cellValue ? String(cellValue) : col.name
-          return {
-            ...col,
-            name: newName,
-            originalName: newName,
+        setTableData(produce((tb) => {
+          if (!tb.rows) {
+            return
           }
-        })
-
-        setTableData({
-          columns: newColumns,
-          rows: remainingRows,
-        })
+          tb.rows = tb.rows.slice(1)
+          const firstRow = tableData.rows[0]
+          for (const col of tb.columns || []) {
+            const cellValue = firstRow.cells[col.id]
+            col.name = col.originalName = cellValue ? String(cellValue) : col.name
+          }
+        }))
       } else {
         // Switching from "Has Header" to "No Header"
         // Demote header to first row
         const newRowId = crypto.randomUUID()
         const newRowCells: Record<string, any> = {}
 
-        const newColumns = tableData.columns.map((col, index) => {
-          newRowCells[col.id] = col.name
-          const genericName = `Column ${index + 1}`
-          return {
-            ...col,
-            name: genericName,
-            originalName: genericName,
+        setTableData(produce((tb) => {
+          if (!tb.columns) {
+            return
           }
-        })
-
-        const newRow = {
-          id: newRowId,
-          cells: newRowCells,
-        }
-
-        setTableData({
-          columns: newColumns,
-          rows: [newRow, ...tableData.rows],
-        })
+          for (let i = 0; i < tb.columns.length; i++) {
+            const col = tb.columns[i]
+            newRowCells[col.id] = col.name
+            col.name = col.originalName = `Column ${i + 1}`
+          }
+          tb.rows?.splice(0, 0, { id: newRowId, cells: newRowCells })
+        }))
       }
     })
   }

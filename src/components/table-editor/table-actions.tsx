@@ -80,6 +80,7 @@ export const TableActions: Component<TableActionsProps> = (props) => {
         <ExportDialog
           {...props.tableData}
           hasHeaders={props.hasHeaders}
+          columnVisibility={props.columnVisibility}
         />
 
         <Button variant="secondary" onClick={props.onReset}>
