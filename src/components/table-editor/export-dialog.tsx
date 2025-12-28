@@ -1,5 +1,4 @@
 import type { TableData } from '#/utils/table/types'
-import type { Component } from 'solid-js'
 
 import { CopyButton } from '#/components/copy-button'
 import { DownloadButton } from '#/components/download-button'
@@ -34,9 +33,10 @@ const exportOptions: Array<{ value: ExportFormat, label: string }> = [
 
 interface ExportDialogProps extends TableData {
   hasHeaders: boolean
+  columnVisibility: Record<string, boolean>
 }
 
-export const ExportDialog: Component<ExportDialogProps> = (props) => {
+export function ExportDialog(props: ExportDialogProps) {
   // Local state for export functionality
   const [tableName, setTableName] = createSignal('my_table')
   const [useSnakeCase, setUseSnakeCase] = createSignal(true)
@@ -47,9 +47,25 @@ export const ExportDialog: Component<ExportDialogProps> = (props) => {
 
   // Export handler
   const handleExport = async () => {
-    if (props.columns.length === 0) {
-      toast.error('No data to export')
+    // Filter visible columns and create filtered table data
+    const visibleColumns = props.columns.filter(col =>
+      props.columnVisibility[col.id] ?? true,
+    )
+
+    if (visibleColumns.length === 0) {
+      toast.error('No visible columns to export')
       return
+    }
+
+    // Create filtered table data with only visible columns
+    const filteredData: TableData = {
+      columns: visibleColumns,
+      rows: props.rows.map(row => ({
+        ...row,
+        cells: Object.fromEntries(
+          visibleColumns.map(col => [col.id, row.cells[col.id]]),
+        ),
+      })),
     }
 
     const name = tableName().trim()
@@ -82,16 +98,16 @@ export const ExportDialog: Component<ExportDialogProps> = (props) => {
 
       switch (format) {
         case 'sql-insert':
-          output = generateSQLInsert(props, name, useSnakeCase())
+          output = generateSQLInsert(filteredData, name, useSnakeCase())
           break
         case 'sql-update':
-          output = generateSQLUpdate(props, name, keyColumns(), useSnakeCase())
+          output = generateSQLUpdate(filteredData, name, keyColumns(), useSnakeCase())
           break
         case 'create-table':
-          output = generateCreateTable(props, name, useSnakeCase())
+          output = generateCreateTable(filteredData, name, useSnakeCase())
           break
         case 'excel': {
-          const blob = await exportToExcel(props, useSnakeCase(), props.hasHeaders)
+          const blob = await exportToExcel(filteredData, useSnakeCase(), props.hasHeaders)
           const url = URL.createObjectURL(blob)
           const a = document.createElement('a')
           a.href = url
@@ -104,10 +120,10 @@ export const ExportDialog: Component<ExportDialogProps> = (props) => {
           return
         }
         case 'csv':
-          output = exportToCSV(props, useSnakeCase(), props.hasHeaders)
+          output = exportToCSV(filteredData, useSnakeCase(), props.hasHeaders)
           break
         case 'markdown':
-          output = exportToMarkdown(props, useSnakeCase(), props.hasHeaders)
+          output = exportToMarkdown(filteredData, useSnakeCase(), props.hasHeaders)
           break
       }
 
@@ -209,7 +225,7 @@ export const ExportDialog: Component<ExportDialogProps> = (props) => {
           <Show when={exportFormat() === 'sql-update'}>
             <label class="text-sm font-medium">Key Columns (for UPDATE)</label>
             <div class="p-2 border rounded-md bg-input flex flex-row flex-wrap gap-3">
-              <For each={props.columns}>
+              <For each={props.columns.filter(col => props.columnVisibility[col.id] ?? true)}>
                 {col => (
                   <Checkbox
                     class="flex gap-2 items-center"
