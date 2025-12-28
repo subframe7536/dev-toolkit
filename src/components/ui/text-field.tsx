@@ -71,7 +71,7 @@ function TextFieldTextArea<T extends ValidComponent = 'textarea'>(props: Polymor
   return (
     <TextFieldPrimitive.TextArea
       class={cls(
-        'flex min-h-80px w-full rounded-md b-(1 border) bg-input px-3 py-2 text-sm ring-offset-background placeholder:(c-muted-foreground select-none) focus-visible:effect-fv disabled:effect-dis',
+        'flex min-h-80px w-full rounded-md b-(1 border) bg-input px-3 py-2 text-sm ring-offset-background placeholder:(c-foreground/30 select-none) focus-visible:effect-fv disabled:effect-dis',
         local.class,
       )}
       {...others}

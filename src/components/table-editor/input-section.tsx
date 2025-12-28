@@ -40,17 +40,17 @@ Example (Excel Copy/Paste):
 ${EXCEL_EXAMPLE}`
 
 interface InputSectionProps {
-  onDataParsed: (data: TableData, hasHeaders: boolean) => void
+  onDataParsed: (data: TableData) => void
 }
 
 export const InputSection: Component<InputSectionProps> = (props) => {
   // Local state for input management
   const [textInput, setTextInput] = createSignal('')
+  const [replaceLineWrap, setReplaceLineWrap] = createSignal(true)
   const [uploadedFile, setUploadedFile] = createSignal<File | undefined>(undefined)
   const [sheetNames, setSheetNames] = createSignal<string[]>([])
   const [selectedSheet, setSelectedSheet] = createSignal<string>('')
   const [isParsing, setIsParsing] = createSignal(false)
-  const [hasHeaders, setHasHeaders] = createSignal(true)
 
   // Auto-detect file type based on extension or mime type
   const detectFileType = (file: File): 'excel' | 'csv' => {
@@ -62,6 +62,11 @@ export const InputSection: Component<InputSectionProps> = (props) => {
       return 'excel'
     }
     return 'csv'
+  }
+
+  const handleReplaceLineWrap = (replace: boolean) => {
+    setReplaceLineWrap(replace)
+    setTextInput(t => replace ? t.replace(/(?:\\r)?\\n/g, '\n') : t.replace(/\r?\n/g, '\\n'))
   }
 
   // Handle text input parsing (auto-detects MySQL vs CSV vs TSV)
@@ -77,7 +82,7 @@ export const InputSection: Component<InputSectionProps> = (props) => {
       // MySQL CLI output format
       const result = parseMySQLOutput(input)
       if (result.success && result.data) {
-        props.onDataParsed(result.data, true) // MySQL always has headers
+        props.onDataParsed(result.data)
         toast.success('MySQL output parsed successfully!')
       } else if (result.error) {
         toast.error(result.error.message, {
@@ -86,9 +91,9 @@ export const InputSection: Component<InputSectionProps> = (props) => {
       }
     } else if (detectTSVFormat(input)) {
       // Tab-separated values (Excel copy/paste)
-      const result = parseTSVText(input, hasHeaders())
+      const result = parseTSVText(input)
       if (result.success && result.data) {
-        props.onDataParsed(result.data, hasHeaders())
+        props.onDataParsed(result.data)
         toast.success('Excel table data parsed successfully!')
       } else if (result.error) {
         toast.error(result.error.message, {
@@ -97,9 +102,9 @@ export const InputSection: Component<InputSectionProps> = (props) => {
       }
     } else {
       // Default to CSV format
-      const result = parseCSVText(input, hasHeaders())
+      const result = parseCSVText(input)
       if (result.success && result.data) {
-        props.onDataParsed(result.data, hasHeaders())
+        props.onDataParsed(result.data)
         toast.success('CSV text parsed successfully!')
       } else if (result.error) {
         toast.error(result.error.message, {
@@ -155,10 +160,10 @@ export const InputSection: Component<InputSectionProps> = (props) => {
 
       if (fileType === 'excel') {
         const sheetIndex = sheetNames().indexOf(selectedSheet())
-        const result = await parseExcelFile(file, sheetIndex >= 0 ? sheetIndex : 0, hasHeaders())
+        const result = await parseExcelFile(file, sheetIndex >= 0 ? sheetIndex : 0)
 
         if (result.success && result.data) {
-          props.onDataParsed(result.data, hasHeaders())
+          props.onDataParsed(result.data)
           toast.success('Excel file parsed successfully!')
         } else if (result.error) {
           toast.error(result.error.message, {
@@ -166,10 +171,10 @@ export const InputSection: Component<InputSectionProps> = (props) => {
           })
         }
       } else {
-        const result = await parseCSVFile(file, hasHeaders())
+        const result = await parseCSVFile(file)
 
         if (result.success && result.data) {
-          props.onDataParsed(result.data, hasHeaders())
+          props.onDataParsed(result.data)
           toast.success('CSV file parsed successfully!')
         } else if (result.error) {
           toast.error(result.error.message, {
@@ -208,15 +213,21 @@ export const InputSection: Component<InputSectionProps> = (props) => {
 
         <TabsContent value="text">
           <div class="mt-4 flex flex-col gap-3">
-            <p class="text-sm text-muted-foreground">
-              Paste MySQL CLI output (starts with +-), CSV text, or Excel table data here. Format will be auto-detected.
-            </p>
-            <TextField>
+            <div class="flex gap-4 justify-between">
+              <p class="text-sm text-muted-foreground">
+                Paste MySQL CLI output (starts with +-), CSV text, or Excel table data here.
+              </p>
+              <Switch
+                class="whitespace-nowrap"
+                text="Replace \n"
+                checked={replaceLineWrap()}
+                onChange={handleReplaceLineWrap}
+              />
+            </div>
+            <TextField value={textInput()} onChange={setTextInput}>
               <TextFieldTextArea
-                class="text-sm font-mono h-120 resize-none"
+                class="text-sm font-mono h-120 resize-none whitespace-nowrap overflow-x-scroll placeholder:whitespace-pre-wrap"
                 placeholder={PLACEHOLDER}
-                value={textInput()}
-                onInput={e => setTextInput(e.currentTarget.value)}
               />
             </TextField>
             <div class="flex flex-wrap gap-2 items-center">
@@ -230,21 +241,30 @@ export const InputSection: Component<InputSectionProps> = (props) => {
               </Button>
               <Button
                 variant="secondary"
-                onClick={() => setTextInput(MYSQL_EXAMPLE)}
+                onClick={() => {
+                  setTextInput(MYSQL_EXAMPLE)
+                  setReplaceLineWrap(true)
+                }}
               >
                 <Icon name="lucide:database" class="mr-2" />
                 MySQL Example
               </Button>
               <Button
                 variant="secondary"
-                onClick={() => setTextInput(CSV_EXAMPLE)}
+                onClick={() => {
+                  setTextInput(CSV_EXAMPLE)
+                  setReplaceLineWrap(true)
+                }}
               >
                 <Icon name="lucide:table" class="mr-2" />
                 CSV Example
               </Button>
               <Button
                 variant="secondary"
-                onClick={() => setTextInput(EXCEL_EXAMPLE)}
+                onClick={() => {
+                  setTextInput(EXCEL_EXAMPLE)
+                  setReplaceLineWrap(true)
+                }}
               >
                 <Icon name="lucide:file-spreadsheet" class="mr-2" />
                 Excel Example
@@ -253,13 +273,6 @@ export const InputSection: Component<InputSectionProps> = (props) => {
                 onClear={() => setTextInput('')}
                 disabled={!textInput().trim()}
               />
-              <div class="ml-2 pl-2 border-l">
-                <Switch
-                  text="First row is header"
-                  checked={hasHeaders()}
-                  onChange={setHasHeaders}
-                />
-              </div>
             </div>
           </div>
         </TabsContent>
@@ -317,13 +330,6 @@ export const InputSection: Component<InputSectionProps> = (props) => {
                 onClear={() => handleFileSelect(undefined)}
                 disabled={!uploadedFile()}
               />
-              <div class="ml-2 pl-2 border-l">
-                <Switch
-                  text="First row is header"
-                  checked={hasHeaders()}
-                  onChange={setHasHeaders}
-                />
-              </div>
             </div>
           </div>
         </TabsContent>

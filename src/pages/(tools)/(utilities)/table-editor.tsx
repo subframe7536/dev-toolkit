@@ -31,14 +31,6 @@ function TableEditor() {
   const [columnVisibility, setColumnVisibility] = createSignal<Record<string, boolean>>({})
   const [hasHeaders, setHasHeaders] = createSignal(true)
 
-  // Handle data parsed from input
-  const handleDataParsed = (data: TableData, headersFn: boolean = true) => {
-    batch(() => {
-      setTableData(data)
-      setHasHeaders(headersFn)
-    })
-  }
-
   // Handle toggling "First row is header"
   const handleToggleHeaders = (checked: boolean) => {
     // If state isn't changing, do nothing
@@ -152,7 +144,7 @@ function TableEditor() {
         </div>
       )}
     >
-      <InputSection onDataParsed={handleDataParsed} />
+      <InputSection onDataParsed={setTableData} />
     </Show>
   )
 }
