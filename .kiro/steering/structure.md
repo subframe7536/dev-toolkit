@@ -16,11 +16,45 @@ src/
   
   components/         # Reusable components
     ui/               # UI component library (Kobalte-based, ShadCN like)
-    [feature].tsx     # Feature-specific components
+    [feature]/        # Feature-specific component folders
+      index.ts        # Re-exports all components for the feature
+      *.tsx           # Individual component files
+    [shared].tsx      # Shared components (card, copy-button, etc.)
+  
+  contexts/           # SolidJS contexts for global state management
+    [feature]-context.tsx  # Feature-specific context providers
   
   utils/              # Pure utility functions (business logic)
     [feature]/        # Feature-specific utilities
       *.test.ts       # Unit tests for utilities
+```
+
+### Feature Component Organization
+
+Complex features should organize components in dedicated folders:
+
+```
+components/
+  regex-tester/       # Regex tester feature components
+    index.ts          # Re-exports: DetailsPanel, ExplanationPanel, etc.
+    details-panel.tsx
+    explanation-panel.tsx
+    help-panel.tsx
+    pattern-input.tsx
+    pattern-library.tsx
+    testing-panel.tsx
+  table-editor/       # Table editor feature components
+    index.ts
+    export-dialog.tsx
+    input-section.tsx
+    table-actions.tsx
+  image-converter/    # Image converter feature components
+    ...
+```
+
+Import pattern for feature components:
+```tsx
+import { DetailsPanel, PatternInput } from '#/components/regex-tester'
 ```
 
 ## Architecture Patterns
@@ -28,6 +62,7 @@ src/
 ### Separation of Concerns
 
 - **Pages**: Thin UI wrappers managing state and user interactions
+- **Contexts**: Global state management using SolidJS contexts and stores
 - **Utils**: Pure, testable computation logic separated from UI
 - **Components**: Reusable UI elements
 

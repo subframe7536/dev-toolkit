@@ -17,6 +17,7 @@ declare module 'solid-file-router' {
     '/json-converter': never
     '/json-formatter': never
     '/json-schema-generator': never
+    '/regex-tester': never
     '/sql-param-fill': never
     '/table-editor': never
     '/text-case': never
@@ -49,6 +50,7 @@ declare module '@solidjs/router' {
     |'/json-converter'
     |'/json-formatter'
     |'/json-schema-generator'
+    |'/regex-tester'
     |'/sql-param-fill'
     |'/table-editor'
     |'/text-case'

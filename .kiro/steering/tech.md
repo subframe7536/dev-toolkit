@@ -1,5 +1,9 @@
 # Tech Stack
 
+# RULES FOR AGENT
+
+- Fix lint error using `bun run format`
+
 ## Core Technologies
 
 - **Framework**: SolidJS 1.9.10
@@ -19,7 +23,7 @@
 
 - **Table Processing**: @tanstack/solid-table, papaparse, xlsx
 - **Data Parsing**: js-yaml, jsonrepair
-- **Testing**: Bun's built-in test runner
+- **Testing**: vitest
 
 ## Common Commands
 
@@ -32,8 +36,8 @@ bun run preview      # Preview production build
 # Code Quality
 bun run lint         # Lint code
 bun run format       # Format code with ESLint --fix
-bun test             # Run all tests
-bun test <file>      # Run specific test file
+bun run test --run   # Run all tests
+bun run test <file>  # Run specific test file
 
 # Package Management
 bun add <package>    # Add dependency
