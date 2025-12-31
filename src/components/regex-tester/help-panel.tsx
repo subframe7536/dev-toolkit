@@ -1,4 +1,3 @@
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '#/components/ui/accordion'
 import { For } from 'solid-js'
 
 import Icon from '../ui/icon'
@@ -139,36 +138,33 @@ function SyntaxItemRow(props: { item: SyntaxItem }) {
 
 export function HelpPanel() {
   return (
-    <div class="p-4 border border-border rounded-lg bg-card">
-      <h3 class="text-md text-foreground font-medium mb-3 flex gap-2 items-center">
+    <div class="p-4">
+      <h3 class="text-md text-foreground font-medium mb-4 flex gap-2 items-center">
         <Icon name="lucide:book-open" class="size-4" />
         Regex Syntax Reference
       </h3>
 
-      <Accordion multiple collapsible class="space-y-1">
+      <div class="space-y-6">
         <For each={SYNTAX_REFERENCE}>
           {category => (
-            <AccordionItem value={category.id} class="border border-border rounded-md overflow-hidden">
-              <AccordionTrigger class="text-sm px-3 py-2 hover:bg-muted/50">
-                <span class="flex gap-2 items-center">
-                  <Icon name={category.icon} class="text-muted-foreground size-4" />
-                  {category.title}
-                  <span class="text-xs text-muted-foreground">({category.items.length})</span>
-                </span>
-              </AccordionTrigger>
-              <AccordionContent class="px-3 pb-2">
-                <div class="pt-1">
-                  <For each={category.items}>
-                    {item => <SyntaxItemRow item={item} />}
-                  </For>
-                </div>
-              </AccordionContent>
-            </AccordionItem>
+            <div class="space-y-3">
+              <h4 class="text-sm text-foreground font-semibold flex gap-2 items-center">
+                <Icon name={category.icon} class="text-muted-foreground size-4" />
+                {category.title}
+                <span class="text-xs text-muted-foreground font-normal">({category.items.length})</span>
+              </h4>
+
+              <div class="space-y-2">
+                <For each={category.items}>
+                  {item => <SyntaxItemRow item={item} />}
+                </For>
+              </div>
+            </div>
           )}
         </For>
-      </Accordion>
+      </div>
 
-      <div class="text-xs text-muted-foreground mt-4 p-3 border border-border rounded-md bg-muted/20">
+      <div class="text-xs text-muted-foreground mt-6 p-3 border border-border rounded-md bg-muted/20">
         <div class="font-medium mb-1 flex gap-1 items-center">
           <Icon name="lucide:lightbulb" class="size-3" />
           Tips

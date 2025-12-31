@@ -1,8 +1,9 @@
 import type { HighlighterCore } from 'shiki'
 
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '#/components/ui/select'
 import { TextField, TextFieldLabel, TextFieldTextArea } from '#/components/ui/text-field'
 import { useRegexContext } from '#/contexts/regex-context'
-import { createMemo, createResource, createUniqueId, For, Show, Suspense } from 'solid-js'
+import { createEffect, createMemo, createResource, createUniqueId, For, onMount, Show, Suspense } from 'solid-js'
 
 import Icon from '../ui/icon'
 
@@ -18,7 +19,7 @@ const FLAG_OPTIONS = [
 async function loadHighlighter(): Promise<HighlighterCore> {
   const { createHighlighter } = await import('shiki')
   return createHighlighter({
-    themes: ['github-light'],
+    themes: ['github-dark'],
     langs: ['regexp'],
   })
 }
@@ -31,7 +32,7 @@ function HighlightedPattern(props: { pattern: string, highlighter: HighlighterCo
     try {
       return props.highlighter.codeToHtml(props.pattern, {
         lang: 'regexp',
-        theme: 'github-light',
+        theme: 'github-dark',
       })
     } catch {
       return undefined
@@ -40,8 +41,12 @@ function HighlightedPattern(props: { pattern: string, highlighter: HighlighterCo
 
   return (
     <Show when={html()}>
-      {/* eslint-disable-next-line solid/no-innerhtml */}
-      <div innerHTML={html()} class="[&_pre]:(m-0 p-0 bg-transparent!) [&_code]:(bg-transparent!)" aria-hidden="true" />
+      <div
+        // eslint-disable-next-line solid/no-innerhtml
+        innerHTML={html()}
+        class="[&_pre]:(m-0! p-0! bg-transparent! whitespace-pre-wrap! overflow-visible!) [&_code]:(bg-transparent! whitespace-pre-wrap! break-words!)"
+        aria-hidden="true"
+      />
     </Show>
   )
 }
@@ -53,7 +58,50 @@ export function PatternInput() {
 
   const [highlighter] = createResource(loadHighlighter)
   const errorId = createUniqueId()
-  const flagsGroupId = createUniqueId()
+
+  // Get selected flags as array for multi-select
+  const selectedFlags = createMemo(() => {
+    return FLAG_OPTIONS.filter(option => store.flags[option.key]).map(option => option.flag)
+  })
+
+  // Handle flag selection change
+  const handleFlagsChange = (flags: string[]) => {
+    // Create new flags object based on selected flags
+    const newFlags = FLAG_OPTIONS.reduce((acc, option) => {
+      acc[option.key] = flags.includes(option.flag)
+      return acc
+    }, {} as Record<string, boolean>)
+
+    actions.setFlags(newFlags)
+  }
+
+  // Calculate execution time and match status
+  const executionTime = createMemo(() => {
+    if (store.performanceResult) {
+      const ms = store.performanceResult.executionTime
+      if (ms < 1) {
+        return `${(ms * 1000).toFixed(0)}μs`
+      }
+      if (ms < 1000) {
+        return `${ms.toFixed(2)}ms`
+      }
+      return `${(ms / 1000).toFixed(2)}s`
+    }
+    return null
+  })
+
+  const matchStatus = createMemo(() => {
+    if (!store.pattern || !store.testText) {
+      return null
+    }
+    if (!store.isValid) {
+      return 'invalid pattern'
+    }
+    if (store.matches.length === 0) {
+      return 'no match'
+    }
+    return `${store.matches.length} match${store.matches.length !== 1 ? 'es' : ''}`
+  })
 
   const handleScroll = () => {
     if (textareaRef && highlightRef) {
@@ -61,6 +109,45 @@ export function PatternInput() {
       highlightRef.scrollLeft = textareaRef.scrollLeft
     }
   }
+
+  // // Fix highlight layer overflow and sync height
+  // const fixHighlightOverflow = () => {
+  //   if (highlightRef) {
+  //     // Remove overflow restrictions
+  //     highlightRef.style.overflow = 'visible'
+  //     highlightRef.style.height = 'auto'
+  //     highlightRef.style.minHeight = '100%'
+  //     highlightRef.style.maxHeight = 'none'
+
+  //     // Ensure pre and code elements wrap properly
+  //     const preElement = highlightRef.querySelector('pre')
+  //     const codeElement = highlightRef.querySelector('code')
+
+  //     if (preElement) {
+  //       preElement.style.whiteSpace = 'pre-wrap'
+  //       preElement.style.wordBreak = 'break-word'
+  //       preElement.style.overflow = 'visible'
+  //     }
+
+  //     if (codeElement) {
+  //       codeElement.style.whiteSpace = 'pre-wrap'
+  //       codeElement.style.wordBreak = 'break-word'
+  //     }
+  //   }
+  // }
+
+  // // Apply fixes when component mounts and when highlighter loads
+  // onMount(() => {
+  //   fixHighlightOverflow()
+  // })
+
+  // // Re-apply fixes when highlighter content changes
+  // createEffect(() => {
+  //   if (highlighter() && store.pattern) {
+  //     // Use setTimeout to ensure DOM is updated
+  //     queueMicrotask(fixHighlightOverflow)
+  //   }
+  // })
 
   // Keyboard shortcut handler for common actions
   const handleKeyDown = (e: KeyboardEvent) => {
@@ -74,13 +161,32 @@ export function PatternInput() {
 
   return (
     <TextField class="space-y-4">
-      <TextFieldLabel id="pattern-label">Regular Expression Pattern</TextFieldLabel>
+      {/* Header with title and status */}
+      <div class="flex items-center justify-between">
+        <TextFieldLabel id="pattern-label" class="text-sm text-muted-foreground tracking-wide font-medium uppercase">
+          Regular Expression
+        </TextFieldLabel>
+        <div class="text-xs text-muted-foreground flex gap-2 items-center">
+          <Show when={matchStatus()}>
+            <span class={matchStatus()?.includes('no match') || matchStatus()?.includes('invalid')
+              ? 'text-amber-600 dark:text-amber-400'
+              : 'text-green-600 dark:text-green-400'}
+            >
+              {matchStatus()}
+            </span>
+          </Show>
+          <Show when={executionTime()}>
+            <span>({executionTime()})</span>
+          </Show>
+        </div>
+      </div>
+
       <div class="flex gap-2">
         <div class="flex-1 relative">
           {/* Syntax highlighting overlay - hidden from screen readers */}
           <div
             ref={highlightRef}
-            class="text-sm leading-relaxed font-mono p-(2 3) border border-transparent rounded-md pointer-events-none whitespace-pre-wrap break-words inset-0 absolute z-1 overflow-hidden"
+            class="text-sm leading-relaxed font-mono p-3 b-(1 transparent) rounded-md pointer-events-none whitespace-pre-wrap break-words inset-0 absolute z-10 h-auto! max-h-none! min-h-full! overflow-visible!"
             aria-hidden="true"
           >
             <Suspense>
@@ -94,11 +200,11 @@ export function PatternInput() {
           <TextFieldTextArea
             ref={textareaRef}
             placeholder="Enter your regex pattern here..."
-            class="font-mono resize-none relative z-10 !min-h-8"
+            class="font-mono resize-none relative z-1 !min-h-8"
             style={{
-              'background': highlighter() && store.pattern ? 'transparent' : undefined,
-              'color': highlighter() && store.pattern ? 'transparent' : undefined,
-              'caret-color': 'var(--foreground)',
+              'color': '#fff',
+              'caret-color': 'var(--colors-foreground)',
+              'overflow': 'auto',
             }}
             value={store.pattern}
             onInput={e => actions.setPattern(e.currentTarget.value)}
@@ -133,30 +239,49 @@ export function PatternInput() {
           </Show>
         </div>
 
-        {/* Flags panel */}
-        <fieldset class="w-24" aria-labelledby={flagsGroupId}>
-          <legend id={flagsGroupId} class="text-xs font-medium mb-2">Flags</legend>
-          <div class="space-y-1" role="group">
-            <For each={FLAG_OPTIONS}>
-              {({ flag, label, key, description }) => (
-                <label
-                  class="text-xs p-1 rounded flex gap-1 cursor-pointer items-center hover:bg-muted/50 focus-within:(ring-2 ring-ring ring-offset-1)"
-                  title={description}
-                >
-                  <input
-                    type="checkbox"
-                    class="size-3 focus:(outline-none)"
-                    checked={store.flags[key]}
-                    onChange={e => actions.setFlags({ [key]: e.currentTarget.checked })}
-                    aria-label={`${label} flag (${flag}): ${description}`}
-                  />
-                  <code class="text-xs font-mono font-semibold" aria-hidden="true">{flag}</code>
-                  <span class="text-xs truncate">{label}</span>
-                </label>
-              )}
-            </For>
-          </div>
-        </fieldset>
+        {/* Flags multi-select */}
+        <div class="w-24">
+          <label class="text-xs font-medium mb-2 block">Flags</label>
+          <Select<string>
+            multiple
+            value={selectedFlags()}
+            onChange={handleFlagsChange}
+            options={FLAG_OPTIONS.map(option => option.flag)}
+            placeholder="Select flags"
+            itemComponent={props => (
+              <SelectItem item={props.item}>
+                <div class="flex gap-2 items-center">
+                  <code class="text-xs font-mono font-semibold">{props.item.rawValue}</code>
+                  <span class="text-xs">
+                    {FLAG_OPTIONS.find(opt => opt.flag === props.item.rawValue)?.label}
+                  </span>
+                </div>
+              </SelectItem>
+            )}
+          >
+            <SelectTrigger noIcon class="text-xs h-8 w-full">
+              <SelectValue<string[]>>
+                {state => (
+                  <div class="flex flex-wrap gap-1">
+                    <Show
+                      when={state.selectedOptions().length > 0}
+                      fallback={<span class="text-muted-foreground">No flags</span>}
+                    >
+                      <For each={state.selectedOptions()}>
+                        {flag => (
+                          <span class="text-xs text-primary font-mono px-1 rounded bg-primary/10">
+                            {flag}
+                          </span>
+                        )}
+                      </For>
+                    </Show>
+                  </div>
+                )}
+              </SelectValue>
+            </SelectTrigger>
+            <SelectContent />
+          </Select>
+        </div>
       </div>
     </TextField>
   )

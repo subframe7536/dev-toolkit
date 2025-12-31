@@ -215,19 +215,22 @@ export function TestingPanel() {
   return (
     <div class="space-y-2">
       <div class="flex items-center justify-between">
-        <label id="test-text-label" class="text-sm font-medium">Test Text</label>
-        <Show when={hasInput()}>
-          <div class="text-xs text-muted-foreground" aria-live="polite">
-            <Show
-              when={hasMatches()}
-              fallback={<span class="text-amber-600 dark:text-amber-400">No matches</span>}
-            >
-              <span class="text-green-600 dark:text-green-400">
-                {store.matches.length} match{store.matches.length !== 1 ? 'es' : ''}
-              </span>
-            </Show>
-          </div>
-        </Show>
+        <label id="test-text-label" class="text-sm text-muted-foreground tracking-wide font-medium uppercase">Test String</label>
+        <div class="text-xs text-muted-foreground">
+          {/* Match count only - execution time moved to pattern header */}
+          <Show when={hasInput()}>
+            <div aria-live="polite">
+              <Show
+                when={hasMatches()}
+                fallback={<span class="text-amber-600 dark:text-amber-400">No matches</span>}
+              >
+                <span class="text-green-600 dark:text-green-400">
+                  {store.matches.length} match{store.matches.length !== 1 ? 'es' : ''}
+                </span>
+              </Show>
+            </div>
+          </Show>
+        </div>
       </div>
 
       <div class="relative">

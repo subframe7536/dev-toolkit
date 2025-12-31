@@ -29,7 +29,7 @@ export function ReplacementPanel() {
   }
 
   return (
-    <div class="p-4 border rounded-lg bg-card" role="region" aria-labelledby="replacement-heading">
+    <div class="p-4" role="region" aria-labelledby="replacement-heading">
       <div class="mb-3 flex items-center justify-between">
         <h3 id="replacement-heading" class="text-sm font-medium flex gap-2 items-center">
           <span class="i-lucide-replace size-4" aria-hidden="true" />

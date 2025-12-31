@@ -3,7 +3,7 @@ import type { JSX, ValidComponent } from 'solid-js'
 
 import * as SelectPrimitive from '@kobalte/core/select'
 import { cls, clsv, clsvDefault } from 'cls-variant'
-import { splitProps } from 'solid-js'
+import { Show, splitProps } from 'solid-js'
 
 import Icon from './icon'
 
@@ -13,12 +13,13 @@ const SelectHiddenSelect = SelectPrimitive.HiddenSelect
 
 type SelectTriggerProps<T extends ValidComponent = 'button'> =
   SelectPrimitive.SelectTriggerProps<T> & {
+    noIcon?: boolean
     class?: string | undefined
     children?: JSX.Element
   }
 
 function SelectTrigger<T extends ValidComponent = 'button'>(props: PolymorphicProps<T, SelectTriggerProps<T>>) {
-  const [local, others] = splitProps(props as SelectTriggerProps, ['class', 'children'])
+  const [local, others] = splitProps(props as SelectTriggerProps, ['noIcon', 'class', 'children'])
   return (
     <SelectPrimitive.Trigger
       class={cls(
@@ -28,7 +29,9 @@ function SelectTrigger<T extends ValidComponent = 'button'>(props: PolymorphicPr
       {...others}
     >
       {local.children}
-      <Icon name="lucide:chevron-down" />
+      <Show when={!props.noIcon}>
+        <Icon name="lucide:chevron-down" />
+      </Show>
     </SelectPrimitive.Trigger>
   )
 }

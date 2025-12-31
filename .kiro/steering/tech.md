@@ -3,6 +3,7 @@
 # RULES FOR AGENT
 
 - Fix lint error using `bun run format`
+- Try to use ChromeDevTools MCP first
 
 ## Core Technologies
 

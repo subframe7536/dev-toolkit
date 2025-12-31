@@ -26,7 +26,7 @@ export function ValidationPanel() {
   }
 
   return (
-    <div class="p-4 border rounded-lg bg-card" role="region" aria-labelledby="validation-heading">
+    <div class="p-4" role="region" aria-labelledby="validation-heading">
       <div class="mb-3 flex items-center justify-between">
         <h3 id="validation-heading" class="text-sm font-medium flex gap-2 items-center">
           <span class="i-lucide-check-circle size-4" aria-hidden="true" />

@@ -136,7 +136,7 @@ export function PerformancePanel() {
   })
 
   return (
-    <div class="p-4 border rounded-lg bg-card">
+    <div class="p-4">
       <div class="mb-3 flex items-center justify-between">
         <div class="flex gap-2 items-center">
           <span class="i-lucide-gauge size-5" />

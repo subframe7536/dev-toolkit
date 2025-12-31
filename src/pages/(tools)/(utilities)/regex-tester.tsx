@@ -4,15 +4,16 @@ import {
   ExplanationPanel,
   ExportDialog,
   HelpPanel,
-  PatternInput,
   PatternLibrarySheet,
   PerformancePanel,
+  RegexInputPanel,
   ReplacementPanel,
-  TestingPanel,
   ValidationPanel,
 } from '#/components/regex-tester'
 import { Button } from '#/components/ui/button'
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '#/components/ui/dialog'
 import Icon from '#/components/ui/icon'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '#/components/ui/tabs'
 import { RegexProvider, useRegexContext } from '#/contexts'
 import { createRoute } from 'solid-file-router'
 import { createSignal, ErrorBoundary, Suspense } from 'solid-js'
@@ -97,19 +98,49 @@ function RegexTester() {
     <>
       {/* Main content area - responsive layout */}
       <div class="gap-6 grid grid-cols-1 xl:grid-cols-2">
-        {/* Left column - Pattern input and testing */}
+        {/* Left column - Combined input panel */}
         <div class="space-y-4">
-          <div class="p-4 border rounded-lg bg-card">
-            <div class="space-y-4">
-              {/* Regular Expression Pattern with Flags */}
-              <ErrorBoundary fallback={(err, reset) => <ErrorFallback error={err} reset={reset} />}>
-                <PatternInput />
-              </ErrorBoundary>
+          <div class="p-4 border rounded-lg bg-background">
+            <RegexInputPanel />
 
-              {/* Test Text with Match Highlighting */}
-              <ErrorBoundary fallback={(err, reset) => <ErrorFallback error={err} reset={reset} />}>
-                <TestingPanel />
-              </ErrorBoundary>
+            {/* Action buttons section */}
+            <div class="mt-6 flex flex-wrap gap-3">
+              <Button variant="default" onClick={() => actions.toggleExportDialog(true)}>
+                <Icon name="lucide:download" class="mr-2 size-4" />
+                Export Code
+              </Button>
+              <PatternLibrarySheet />
+              <Button
+                variant="secondary"
+                onClick={() => {
+                  actions.setPattern('')
+                  actions.setTestText('')
+                }}
+              >
+                <Icon name="lucide:trash-2" class="mr-2 size-4" />
+                Clear All
+              </Button>
+              <Button
+                variant={showDebugPanel() ? 'default' : 'secondary'}
+                onClick={() => setShowDebugPanel(!showDebugPanel())}
+              >
+                <Icon name={showDebugPanel() ? 'lucide:bug-off' : 'lucide:bug'} class="mr-2 size-4" />
+                {showDebugPanel() ? 'Hide Debug' : 'Debug Mode'}
+              </Button>
+
+              {/* Reference Dialog */}
+              <Dialog>
+                <DialogTrigger as={Button} variant="outline">
+                  <Icon name="lucide:book-open" class="mr-2 size-4" />
+                  Reference
+                </DialogTrigger>
+                <DialogContent class="max-h-[60vh] max-w-4xl overflow-y-auto">
+                  <DialogHeader>
+                    <DialogTitle>Regex Syntax Reference</DialogTitle>
+                  </DialogHeader>
+                  <HelpPanel />
+                </DialogContent>
+              </Dialog>
             </div>
           </div>
         </div>
@@ -117,76 +148,43 @@ function RegexTester() {
         {/* Right column - Results and details */}
         <div class="space-y-4">
           {/* Match Details Panel */}
-          <ErrorBoundary fallback={(err, reset) => <ErrorFallback error={err} reset={reset} />}>
-            <DetailsPanel />
-          </ErrorBoundary>
-
-          {/* Validation Panel */}
-          <ErrorBoundary fallback={(err, reset) => <ErrorFallback error={err} reset={reset} />}>
-            <ValidationPanel />
-          </ErrorBoundary>
-
-          {/* Replacement Panel */}
-          <ErrorBoundary fallback={(err, reset) => <ErrorFallback error={err} reset={reset} />}>
-            <ReplacementPanel />
-          </ErrorBoundary>
+          <DetailsPanel />
 
           {/* Debug Panel - shown when debug mode is active */}
-          {showDebugPanel() && (
-            <ErrorBoundary fallback={(err, reset) => <ErrorFallback error={err} reset={reset} />}>
-              <DebugPanel />
-            </ErrorBoundary>
-          )}
+          {showDebugPanel() && <DebugPanel />}
 
-          {/* Performance Analysis Panel */}
-          <ErrorBoundary fallback={(err, reset) => <ErrorFallback error={err} reset={reset} />}>
-            <PerformancePanel />
-          </ErrorBoundary>
+          {/* Tabbed Panels */}
+          <div class="border rounded-lg bg-background">
+            <Tabs defaultValue="replacement" class="w-full">
+              <TabsList class="grid grid-cols-4 w-full">
+                <TabsTrigger value="replacement">Replace</TabsTrigger>
+                <TabsTrigger value="validation">Validate</TabsTrigger>
+                <TabsTrigger value="explanation">Explain</TabsTrigger>
+                <TabsTrigger value="performance">Performance</TabsTrigger>
+              </TabsList>
 
-          {/* Pattern Explanation Panel */}
-          <ErrorBoundary fallback={(err, reset) => <ErrorFallback error={err} reset={reset} />}>
-            <ExplanationPanel />
-          </ErrorBoundary>
+              <TabsContent value="replacement" class="mt-0 p-0">
+                <ReplacementPanel />
+              </TabsContent>
 
-          {/* Help Panel with Syntax Reference */}
-          <ErrorBoundary fallback={(err, reset) => <ErrorFallback error={err} reset={reset} />}>
-            <HelpPanel />
-          </ErrorBoundary>
-        </div>
-      </div>
+              <TabsContent value="validation" class="mt-0 p-0">
+                <ValidationPanel />
+              </TabsContent>
 
-      {/* Action buttons section */}
-      <div class="p-4 border border-border rounded-lg bg-muted/20">
-        <div class="flex flex-wrap gap-3">
-          <Button variant="default" onClick={() => actions.toggleExportDialog(true)}>
-            <Icon name="lucide:download" class="mr-2 size-4" />
-            Export Code
-          </Button>
-          <PatternLibrarySheet />
-          <Button
-            variant="secondary"
-            onClick={() => {
-              actions.setPattern('')
-              actions.setTestText('')
-            }}
-          >
-            <Icon name="lucide:trash-2" class="mr-2 size-4" />
-            Clear All
-          </Button>
-          <Button
-            variant={showDebugPanel() ? 'default' : 'secondary'}
-            onClick={() => setShowDebugPanel(!showDebugPanel())}
-          >
-            <Icon name={showDebugPanel() ? 'lucide:bug-off' : 'lucide:bug'} class="mr-2 size-4" />
-            {showDebugPanel() ? 'Hide Debug' : 'Debug Mode'}
-          </Button>
+              <TabsContent value="explanation" class="mt-0 p-0">
+                <ExplanationPanel />
+              </TabsContent>
+
+              <TabsContent value="performance" class="mt-0 p-0">
+                <PerformancePanel />
+              </TabsContent>
+            </Tabs>
+          </div>
         </div>
       </div>
 
       {/* Export Dialog */}
-      <ErrorBoundary fallback={(err, reset) => <ErrorFallback error={err} reset={reset} />}>
-        <ExportDialog />
-      </ErrorBoundary>
+      <ExportDialog />
     </>
   )
 }

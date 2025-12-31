@@ -114,9 +114,9 @@ export function ExplanationPanel() {
   })
 
   return (
-    <div class="space-y-4">
+    <div class="p-4 space-y-4">
       {/* Overall description */}
-      <div class="p-4 border border-border rounded-lg bg-card">
+      <div>
         <h3 class="text-md text-foreground font-medium mb-3 flex gap-2 items-center">
           <Icon name="lucide:info" class="size-4" />
           Pattern Explanation
@@ -137,7 +137,7 @@ export function ExplanationPanel() {
 
       {/* Element breakdown */}
       <Show when={hasElements()}>
-        <div class="p-4 border border-border rounded-lg bg-card">
+        <div>
           <h3 class="text-md text-foreground font-medium mb-3 flex gap-2 items-center">
             <Icon name="lucide:list" class="size-4" />
             Element Breakdown

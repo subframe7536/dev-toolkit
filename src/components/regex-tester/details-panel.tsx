@@ -24,7 +24,7 @@ interface MatchDetailRowProps {
 function MatchDetailRow(props: MatchDetailRowProps) {
   return (
     <div
-      class={`p-3 border rounded-md cursor-pointer transition-colors ${
+      class={`p-3 border rounded-md cursor-pointer transition-colors focus-visible:outline-none ${
         props.isSelected
           ? 'border-primary bg-primary/10 ring-2 ring-primary/30'
           : 'border-border bg-muted/20 hover:bg-muted/40'
@@ -151,93 +151,79 @@ export function DetailsPanel() {
   }
 
   return (
-    <div class="space-y-4">
-      {/* Summary section */}
-      <div class="p-4 border border-border rounded-lg bg-card" role="region" aria-labelledby="summary-heading">
-        <h3 id="summary-heading" class="text-md text-foreground font-medium mb-3">Match Summary</h3>
-        <Show
-          when={hasMatches()}
-          fallback={(
-            <div class="text-sm text-muted-foreground p-4 border border-border rounded-md border-dashed bg-muted/20">
-              {hasInput()
-                ? 'No matches found'
-                : 'Match results will appear here when you enter a pattern and test text.'}
-            </div>
-          )}
-        >
-          <div class="gap-3 grid grid-cols-3" role="group" aria-label="Match statistics">
-            <div class="p-3 text-center border border-border rounded-md bg-muted/20">
-              <div class="text-2xl text-primary font-bold" aria-label={`${stats()?.matchCount} matches`}>{stats()?.matchCount}</div>
-              <div class="text-xs text-muted-foreground">Matches</div>
-            </div>
-            <div class="p-3 text-center border border-border rounded-md bg-muted/20">
-              <div class="text-2xl text-primary font-bold" aria-label={`${stats()?.groupCount} groups`}>{stats()?.groupCount}</div>
-              <div class="text-xs text-muted-foreground">Groups</div>
-            </div>
-            <div class="p-3 text-center border border-border rounded-md bg-muted/20">
-              <div class="text-2xl text-primary font-bold" aria-label={`${stats()?.totalLength} characters matched`}>{stats()?.totalLength}</div>
-              <div class="text-xs text-muted-foreground">Chars Matched</div>
-            </div>
-          </div>
+    <div class="p-4 border border-border rounded-lg bg-background" role="region" aria-labelledby="matches-heading">
+      <div class="mb-4 flex items-center justify-between">
+        <h3 id="matches-heading" class="text-md text-foreground font-medium">Matches</h3>
+        <Show when={hasMatches() && store.selectedMatchIndex !== null}>
+          <button
+            class="text-xs text-muted-foreground transition-colors hover:text-foreground focus:(outline-none underline)"
+            onClick={() => actions.setSelectedMatchIndex(null)}
+            aria-label="Clear match selection"
+          >
+            Clear selection
+          </button>
         </Show>
       </div>
 
-      {/* Match details section */}
-      <div class="p-4 border border-border rounded-lg bg-card" role="region" aria-labelledby="details-heading">
-        <div class="mb-3 flex items-center justify-between">
-          <h3 id="details-heading" class="text-md text-foreground font-medium">Match Details</h3>
-          <Show when={hasMatches() && store.selectedMatchIndex !== null}>
-            <button
-              class="text-xs text-muted-foreground transition-colors hover:text-foreground focus:(outline-none underline)"
-              onClick={() => actions.setSelectedMatchIndex(null)}
-              aria-label="Clear match selection"
-            >
-              Clear selection
-            </button>
-          </Show>
+      <Show
+        when={hasMatches()}
+        fallback={(
+          <div class="text-sm text-muted-foreground p-4 border border-border rounded-md border-dashed bg-muted/20">
+            {hasInput()
+              ? 'No matches found'
+              : 'Match results will appear here when you enter a pattern and test text.'}
+          </div>
+        )}
+      >
+        {/* Summary statistics */}
+        <div class="mb-4 gap-3 grid grid-cols-3" role="group" aria-label="Match statistics">
+          <div class="p-3 text-center border border-border rounded-md bg-muted/20">
+            <div class="text-2xl text-primary font-bold" aria-label={`${stats()?.matchCount} matches`}>{stats()?.matchCount}</div>
+            <div class="text-xs text-muted-foreground">Matches</div>
+          </div>
+          <div class="p-3 text-center border border-border rounded-md bg-muted/20">
+            <div class="text-2xl text-primary font-bold" aria-label={`${stats()?.groupCount} groups`}>{stats()?.groupCount}</div>
+            <div class="text-xs text-muted-foreground">Groups</div>
+          </div>
+          <div class="p-3 text-center border border-border rounded-md bg-muted/20">
+            <div class="text-2xl text-primary font-bold" aria-label={`${stats()?.totalLength} characters matched`}>{stats()?.totalLength}</div>
+            <div class="text-xs text-muted-foreground">Chars Matched</div>
+          </div>
         </div>
 
-        <Show
-          when={hasMatches()}
-          fallback={(
-            <div class="text-sm text-muted-foreground p-4 border border-border rounded-md border-dashed bg-muted/20">
-              Detailed information about matches and capture groups will be displayed here.
-            </div>
-          )}
+        {/* Match details list */}
+        <div
+          class="max-h-96 overflow-y-auto space-y-2"
+          role="listbox"
+          aria-label="Match list"
+          aria-activedescendant={store.selectedMatchIndex !== null ? `match-${store.selectedMatchIndex}` : undefined}
+          tabIndex={0}
+          onKeyDown={handleKeyDown}
         >
-          <div
-            class="max-h-96 overflow-y-auto space-y-2"
-            role="listbox"
-            aria-label="Match list"
-            aria-activedescendant={store.selectedMatchIndex !== null ? `match-${store.selectedMatchIndex}` : undefined}
-            tabIndex={0}
-            onKeyDown={handleKeyDown}
-          >
-            <For each={store.matches}>
-              {match => (
-                <div id={`match-${match.index}`} role="option" aria-selected={store.selectedMatchIndex === match.index}>
-                  <MatchDetailRow
-                    match={match}
-                    isSelected={store.selectedMatchIndex === match.index}
-                    onSelect={() => actions.setSelectedMatchIndex(match.index)}
-                  />
-                </div>
-              )}
-            </For>
-          </div>
-          <div class="text-xs text-muted-foreground mt-2">
-            Use ↑/↓ arrow keys to navigate matches, Escape to clear selection
-          </div>
-        </Show>
-      </div>
+          <For each={store.matches}>
+            {match => (
+              <div id={`match-${match.index}`} role="option" aria-selected={store.selectedMatchIndex === match.index}>
+                <MatchDetailRow
+                  match={match}
+                  isSelected={store.selectedMatchIndex === match.index}
+                  onSelect={() => actions.setSelectedMatchIndex(match.index)}
+                />
+              </div>
+            )}
+          </For>
+        </div>
+        <div class="text-xs text-muted-foreground mt-2">
+          Use ↑/↓ arrow keys to navigate matches, Escape to clear selection
+        </div>
+      </Show>
 
       {/* Selected match expanded view */}
       <Show when={selectedMatch()}>
         {match => (
-          <div class="p-4 border border-primary/50 rounded-lg bg-primary/5" role="region" aria-label={`Selected match ${match().index + 1} details`}>
-            <h3 class="text-md text-foreground font-medium mb-3">
+          <div class="mt-4 p-4 border border-primary/50 rounded-lg bg-primary/5" role="region" aria-label={`Selected match ${match().index + 1} details`}>
+            <h4 class="text-sm text-foreground font-medium mb-3">
               Selected: Match {match().index + 1}
-            </h3>
+            </h4>
             <div class="space-y-3">
               <div>
                 <div class="text-xs text-muted-foreground mb-1">Full Match Text</div>
