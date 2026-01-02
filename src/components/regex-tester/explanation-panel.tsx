@@ -1,7 +1,6 @@
 import type { RegexElementType } from '#/utils/regex/explanation-engine'
 import type { RegexElement } from '#/utils/regex/types'
 
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '#/components/ui/accordion'
 import Icon from '#/components/ui/icon'
 import { useRegexContext } from '#/contexts/regex-context'
 import { explainPattern } from '#/utils/regex/explanation-engine'

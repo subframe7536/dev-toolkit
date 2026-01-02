@@ -112,7 +112,7 @@ interface PatternLibraryDialogProps {
  * Pattern Library Dialog - Modal for browsing and selecting regex patterns
  * Requirements: 6.1, 6.2, 6.3, 6.4
  */
-export function PatternLibrarySheet(props: PatternLibraryDialogProps) {
+export function PatternLibraryDialog(props: PatternLibraryDialogProps) {
   const { actions } = useRegexContext()
   const [isOpen, setIsOpen] = createSignal(false)
 

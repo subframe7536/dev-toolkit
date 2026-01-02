@@ -3,8 +3,9 @@ import { DetailsPanel } from '#/components/regex-tester/details-panel'
 import { ExplanationPanel } from '#/components/regex-tester/explanation-panel'
 import { ExportDialog } from '#/components/regex-tester/export-dialog'
 import { HelpPanel } from '#/components/regex-tester/help-panel'
-import { PatternLibrarySheet } from '#/components/regex-tester/pattern-library'
+import { PatternLibraryDialog } from '#/components/regex-tester/pattern-library'
 import { RegexInputPanel } from '#/components/regex-tester/regex-input-panel'
+import { ReplacementPanel } from '#/components/regex-tester/replacement-panel'
 import { Button } from '#/components/ui/button'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '#/components/ui/dialog'
 import Icon from '#/components/ui/icon'
@@ -103,7 +104,7 @@ function RegexTester() {
                 <Icon name="lucide:download" class="mr-2 size-4" />
                 Export Code
               </Button>
-              <PatternLibrarySheet />
+              <PatternLibraryDialog />
               <Button
                 variant="secondary"
                 onClick={() => {
@@ -138,6 +139,7 @@ function RegexTester() {
             <Tabs defaultValue="matches">
               <TabsList class="m-4 mb-0 p-1">
                 <TabsTrigger value="matches">Matches</TabsTrigger>
+                <TabsTrigger value="replace">Replace</TabsTrigger>
                 <TabsTrigger value="explanation">Explain</TabsTrigger>
                 <TabsTrigger value="debug">Debug</TabsTrigger>
                 <TabsIndicator />
@@ -145,6 +147,10 @@ function RegexTester() {
 
               <TabsContent value="matches">
                 <DetailsPanel />
+              </TabsContent>
+
+              <TabsContent value="replace">
+                <ReplacementPanel />
               </TabsContent>
 
               <TabsContent value="explanation">

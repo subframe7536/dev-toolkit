@@ -1,9 +1,8 @@
-import type { MatchResult, ParseError, PerformanceResult, RegexFlags, ReplacementResult, TextValidationResult, ValidationMode } from '#/utils/regex/types'
+import type { MatchResult, ParseError, RegexFlags, ReplacementResult, TextValidationResult, ValidationMode } from '#/utils/regex/types'
 import type { ParentProps } from 'solid-js'
 
 import { findMatches, flagsToString, replaceMatches, validatePattern, validateText } from '#/utils/regex/match-engine'
-import { findMatchesWithPerformance } from '#/utils/regex/performance-analyzer'
-import { createContext, untrack, useContext } from 'solid-js'
+import { batch, createContext, untrack, useContext } from 'solid-js'
 import { createStore } from 'solid-js/store'
 
 export interface RegexStore {
@@ -16,9 +15,8 @@ export interface RegexStore {
   selectedMatchIndex: number | null
   showExportDialog: boolean
   selectedExportLanguage: 'javascript' | 'python' | 'java'
-  // Performance monitoring state
-  performanceEnabled: boolean
-  performanceResult?: PerformanceResult
+  // Execution time in milliseconds
+  executionTime: number
   // Validation state
   validationMode: ValidationMode
   validationResult?: TextValidationResult
@@ -38,7 +36,6 @@ export interface RegexContextValue {
     toggleExportDialog: (show: boolean) => void
     setExportLanguage: (language: 'javascript' | 'python' | 'java') => void
     exportCode: () => string
-    togglePerformanceMode: (enabled: boolean) => void
     // Validation actions
     setValidationMode: (mode: ValidationMode) => void
     // Replacement actions
@@ -76,8 +73,7 @@ export function RegexProvider(props: ParentProps) {
     selectedMatchIndex: null,
     showExportDialog: false,
     selectedExportLanguage: 'javascript',
-    performanceEnabled: false,
-    performanceResult: undefined,
+    executionTime: 0,
     // Validation state
     validationMode: 'contains',
     validationResult: undefined,
@@ -87,19 +83,14 @@ export function RegexProvider(props: ParentProps) {
     showReplacementPreview: false,
   })
 
-  // Helper function to update matches based on current pattern and flags
+  // Helper function to update matches with timing
   const updateMatches = (pattern: string, flags: RegexFlags, text: string) => {
-    const performanceEnabled = untrack(() => store.performanceEnabled)
+    const startTime = performance.now()
+    const matches = findMatches(pattern, flags, text)
+    const executionTime = performance.now() - startTime
 
-    if (performanceEnabled) {
-      const { matches, performance } = findMatchesWithPerformance(pattern, flags, text)
-      setStore('matches', matches)
-      setStore('performanceResult', performance)
-    } else {
-      const matches = findMatches(pattern, flags, text)
-      setStore('matches', matches)
-      setStore('performanceResult', undefined)
-    }
+    setStore('matches', matches)
+    setStore('executionTime', executionTime)
   }
 
   // Helper function to update validation result
@@ -122,16 +113,23 @@ export function RegexProvider(props: ParentProps) {
     setStore('replacementResult', result)
   }
 
+  const reset = () => {
+    batch(() => {
+      setStore('isValid', true)
+      setStore('parseError', undefined)
+      setStore('matches', [])
+      setStore('executionTime', 0)
+      setStore('validationResult', undefined)
+      setStore('replacementResult', undefined)
+    })
+  }
+
   const actions = {
     setPattern: (pattern: string) => {
       setStore('pattern', pattern)
 
-      if (pattern === '') {
-        setStore('isValid', true)
-        setStore('parseError', undefined)
-        setStore('matches', [])
-        setStore('validationResult', undefined)
-        setStore('replacementResult', undefined)
+      if (!pattern) {
+        reset()
         return
       }
 
@@ -154,12 +152,7 @@ export function RegexProvider(props: ParentProps) {
           }
         })
       } else {
-        setStore('isValid', false)
-        setStore('parseError', validation.error)
-        setStore('matches', [])
-        setStore('selectedMatchIndex', null)
-        setStore('validationResult', undefined)
-        setStore('replacementResult', undefined)
+        reset()
       }
     },
 
@@ -185,12 +178,7 @@ export function RegexProvider(props: ParentProps) {
               }
             }
           } else {
-            setStore('isValid', false)
-            setStore('parseError', validation.error)
-            setStore('matches', [])
-            setStore('selectedMatchIndex', null)
-            setStore('validationResult', undefined)
-            setStore('replacementResult', undefined)
+            reset()
           }
         }
       })
@@ -210,6 +198,7 @@ export function RegexProvider(props: ParentProps) {
           }
         } else {
           setStore('matches', [])
+          setStore('executionTime', 0)
           setStore('validationResult', undefined)
           setStore('replacementResult', undefined)
         }
@@ -295,19 +284,6 @@ export function RegexProvider(props: ParentProps) {
       }
     },
 
-    togglePerformanceMode: (enabled: boolean) => {
-      setStore('performanceEnabled', enabled)
-
-      // Re-run matching with performance analysis if enabled
-      untrack(() => {
-        if (store.pattern && store.isValid && store.testText) {
-          updateMatches(store.pattern, store.flags, store.testText)
-        } else {
-          setStore('performanceResult', undefined)
-        }
-      })
-    },
-
     // Validation actions
     setValidationMode: (mode: ValidationMode) => {
       setStore('validationMode', mode)
@@ -329,19 +305,6 @@ export function RegexProvider(props: ParentProps) {
       untrack(() => {
         if (store.pattern && store.isValid && store.testText) {
           updateReplacement(store.pattern, store.flags, store.testText, replacement)
-        }
-      })
-    },
-
-    toggleReplacementPreview: (show: boolean) => {
-      setStore('showReplacementPreview', show)
-
-      // Calculate replacement result when enabling preview
-      untrack(() => {
-        if (show && store.pattern && store.isValid && store.testText) {
-          updateReplacement(store.pattern, store.flags, store.testText, store.replacementPattern)
-        } else if (!show) {
-          setStore('replacementResult', undefined)
         }
       })
     },
