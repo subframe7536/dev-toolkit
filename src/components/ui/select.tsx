@@ -50,7 +50,7 @@ function SelectContent<T extends ValidComponent = 'div'>(props: PolymorphicProps
         )}
         {...others}
       >
-        <SelectPrimitive.Listbox class="m-0 p-1" />
+        <SelectPrimitive.Listbox class="m-0 p-1 focus-visible:outline-none" />
       </SelectPrimitive.Content>
     </SelectPrimitive.Portal>
   )

@@ -55,7 +55,7 @@ function TextFieldInput<T extends ValidComponent = 'input'>(rawProps: Polymorphi
     <TextFieldPrimitive.Input
       type={local.type}
       class={cls(
-        'flex h-8 w-full rounded-md b-(1 border) bg-input px-3 py-2 text-sm ring-offset-background file:(border-0 bg-transparent text-sm font-medium) placeholder:(c-muted-foreground select-none) focus-visible:effect-fv disabled:effect-dis data-[invalid]:b-red',
+        'flex h-8 w-full rounded-md b-(1 border) bg-input px-3 py-2 text-sm ring-offset-background file:(border-0 bg-transparent text-sm font-medium) placeholder:(c-foreground/30 select-none) focus-visible:effect-fv disabled:effect-dis data-[invalid]:b-red',
         local.class,
       )}
       {...others}

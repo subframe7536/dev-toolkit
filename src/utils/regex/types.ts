@@ -52,48 +52,6 @@ export interface ReplacementResult {
   replacementCount: number
 }
 
-export interface RegexStore {
-  pattern: string
-  flags: RegexFlags
-  testText: string
-  isValid: boolean
-  parseError?: ParseError
-  matches: MatchResult[]
-  selectedMatchIndex: number | null
-  showExportDialog: boolean
-  selectedExportLanguage: 'javascript' | 'python' | 'java'
-  // Performance monitoring state
-  performanceEnabled: boolean
-  performanceResult?: PerformanceResult
-  // Validation state
-  validationMode: ValidationMode
-  validationResult?: TextValidationResult
-  // Replacement state
-  replacementPattern: string
-  replacementResult?: ReplacementResult
-  showReplacementPreview: boolean
-}
-
-export interface RegexContextValue {
-  store: RegexStore
-  actions: {
-    setPattern: (pattern: string) => void
-    setFlags: (flags: Partial<RegexFlags>) => void
-    setTestText: (text: string) => void
-    setSelectedMatchIndex: (index: number | null) => void
-    toggleExportDialog: (show: boolean) => void
-    setExportLanguage: (language: 'javascript' | 'python' | 'java') => void
-    exportCode: () => string
-    togglePerformanceMode: (enabled: boolean) => void
-    // Validation actions
-    setValidationMode: (mode: ValidationMode) => void
-    // Replacement actions
-    setReplacementPattern: (pattern: string) => void
-    toggleReplacementPreview: (show: boolean) => void
-    applyReplacement: () => string
-  }
-}
-
 // Component prop interfaces
 export interface TestingPanelProps {
   pattern: string

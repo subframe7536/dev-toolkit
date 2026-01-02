@@ -1,22 +1,17 @@
-import {
-  DebugPanel,
-  DetailsPanel,
-  ExplanationPanel,
-  ExportDialog,
-  HelpPanel,
-  PatternLibrarySheet,
-  PerformancePanel,
-  RegexInputPanel,
-  ReplacementPanel,
-  ValidationPanel,
-} from '#/components/regex-tester'
+import { DebugPanel } from '#/components/regex-tester/debug-panel'
+import { DetailsPanel } from '#/components/regex-tester/details-panel'
+import { ExplanationPanel } from '#/components/regex-tester/explanation-panel'
+import { ExportDialog } from '#/components/regex-tester/export-dialog'
+import { HelpPanel } from '#/components/regex-tester/help-panel'
+import { PatternLibrarySheet } from '#/components/regex-tester/pattern-library'
+import { RegexInputPanel } from '#/components/regex-tester/regex-input-panel'
 import { Button } from '#/components/ui/button'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '#/components/ui/dialog'
 import Icon from '#/components/ui/icon'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '#/components/ui/tabs'
+import { Tabs, TabsContent, TabsIndicator, TabsList, TabsTrigger } from '#/components/ui/tabs'
 import { RegexProvider, useRegexContext } from '#/contexts'
 import { createRoute } from 'solid-file-router'
-import { createSignal, ErrorBoundary, Suspense } from 'solid-js'
+import { ErrorBoundary, Suspense } from 'solid-js'
 
 // Error fallback component for graceful error handling
 function ErrorFallback(props: { error: Error, reset: () => void }) {
@@ -92,15 +87,14 @@ function RegexTesterSkeleton() {
 
 function RegexTester() {
   const { actions } = useRegexContext()
-  const [showDebugPanel, setShowDebugPanel] = createSignal(false)
-
   return (
-    <>
+    <div class="space-y-6">
       {/* Main content area - responsive layout */}
       <div class="gap-6 grid grid-cols-1 xl:grid-cols-2">
-        {/* Left column - Combined input panel */}
-        <div class="space-y-4">
-          <div class="p-4 border rounded-lg bg-background">
+        {/* Left column - Input with integrated replacement */}
+        <div class="space-y-6">
+          {/* Regex Input Panel with integrated Find & Replace */}
+          <div class="text-card-foreground p-6 border rounded-lg bg-card shadow-sm">
             <RegexInputPanel />
 
             {/* Action buttons section */}
@@ -120,14 +114,6 @@ function RegexTester() {
                 <Icon name="lucide:trash-2" class="mr-2 size-4" />
                 Clear All
               </Button>
-              <Button
-                variant={showDebugPanel() ? 'default' : 'secondary'}
-                onClick={() => setShowDebugPanel(!showDebugPanel())}
-              >
-                <Icon name={showDebugPanel() ? 'lucide:bug-off' : 'lucide:bug'} class="mr-2 size-4" />
-                {showDebugPanel() ? 'Hide Debug' : 'Debug Mode'}
-              </Button>
-
               {/* Reference Dialog */}
               <Dialog>
                 <DialogTrigger as={Button} variant="outline">
@@ -145,38 +131,28 @@ function RegexTester() {
           </div>
         </div>
 
-        {/* Right column - Results and details */}
-        <div class="space-y-4">
-          {/* Match Details Panel */}
-          <DetailsPanel />
-
-          {/* Debug Panel - shown when debug mode is active */}
-          {showDebugPanel() && <DebugPanel />}
-
-          {/* Tabbed Panels */}
-          <div class="border rounded-lg bg-background">
-            <Tabs defaultValue="replacement" class="w-full">
-              <TabsList class="grid grid-cols-4 w-full">
-                <TabsTrigger value="replacement">Replace</TabsTrigger>
-                <TabsTrigger value="validation">Validate</TabsTrigger>
+        {/* Right column - Analysis and results */}
+        <div class="space-y-6">
+          {/* Explanation and Debug Panels */}
+          <div class="text-card-foreground border rounded-lg bg-card shadow-sm">
+            <Tabs defaultValue="matches">
+              <TabsList class="m-4 mb-0 p-1">
+                <TabsTrigger value="matches">Matches</TabsTrigger>
                 <TabsTrigger value="explanation">Explain</TabsTrigger>
-                <TabsTrigger value="performance">Performance</TabsTrigger>
+                <TabsTrigger value="debug">Debug</TabsTrigger>
+                <TabsIndicator />
               </TabsList>
 
-              <TabsContent value="replacement" class="mt-0 p-0">
-                <ReplacementPanel />
+              <TabsContent value="matches">
+                <DetailsPanel />
               </TabsContent>
 
-              <TabsContent value="validation" class="mt-0 p-0">
-                <ValidationPanel />
-              </TabsContent>
-
-              <TabsContent value="explanation" class="mt-0 p-0">
+              <TabsContent value="explanation">
                 <ExplanationPanel />
               </TabsContent>
 
-              <TabsContent value="performance" class="mt-0 p-0">
-                <PerformancePanel />
+              <TabsContent value="debug">
+                <DebugPanel />
               </TabsContent>
             </Tabs>
           </div>
@@ -185,6 +161,6 @@ function RegexTester() {
 
       {/* Export Dialog */}
       <ExportDialog />
-    </>
+    </div>
   )
 }

@@ -1,7 +1,6 @@
 import { CopyButton } from '#/components/copy-button'
 import { DownloadButton } from '#/components/download-button'
-import { Button } from '#/components/ui/button'
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '#/components/ui/dialog'
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '#/components/ui/dialog'
 import Icon from '#/components/ui/icon'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '#/components/ui/select'
 import { Switch } from '#/components/ui/switch'
@@ -139,7 +138,6 @@ export function ExportDialog() {
                   <CopyButton
                     content={exportOutput()}
                     size="sm"
-                    variant="outline"
                     aria-label="Copy generated code to clipboard"
                   />
                   <DownloadButton
@@ -147,7 +145,6 @@ export function ExportDialog() {
                     filename={getExportFilename()}
                     mimeType="text/plain"
                     size="sm"
-                    variant="outline"
                     aria-label={`Download as ${getExportFilename()}`}
                   />
                 </div>
@@ -164,12 +161,6 @@ export function ExportDialog() {
             </div>
           </Show>
         </div>
-
-        <DialogFooter>
-          <Button variant="outline" onClick={handleClose}>
-            Close
-          </Button>
-        </DialogFooter>
       </DialogContent>
     </Dialog>
   )

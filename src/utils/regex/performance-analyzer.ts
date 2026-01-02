@@ -284,37 +284,3 @@ function extractGroups(match: RegExpExecArray, text: string): MatchResult['group
 
   return groups
 }
-
-/**
- * Get optimization suggestions for a pattern
- */
-export function getOptimizationSuggestions(pattern: string): string[] {
-  const suggestions: string[] = []
-
-  // Check for .* at start
-  if (/^\.\*/.test(pattern)) {
-    suggestions.push('Avoid starting patterns with .* - it forces the engine to try every position')
-  }
-
-  // Check for greedy quantifiers that could be lazy
-  if (/\.\*[^?]/.test(pattern) || /\.\+[^?]/.test(pattern)) {
-    suggestions.push('Consider using non-greedy quantifiers (.*? or .+?) to reduce backtracking')
-  }
-
-  // Check for character class that could be more specific
-  if (/\.\*/.test(pattern) || /\.\+/.test(pattern)) {
-    suggestions.push('Replace . with more specific character classes like [a-z] or \\w when possible')
-  }
-
-  // Check for alternation that could be a character class
-  if (/\([a-z]\|[a-z]\|[a-z]/i.test(pattern)) {
-    suggestions.push('Consider using character classes [abc] instead of alternation (a|b|c)')
-  }
-
-  // Check for anchors
-  if (!/^\^/.test(pattern) && !/\$$/.test(pattern)) {
-    suggestions.push('Adding anchors (^ or $) can significantly improve performance when appropriate')
-  }
-
-  return suggestions
-}

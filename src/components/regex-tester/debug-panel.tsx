@@ -5,6 +5,8 @@ import { useRegexContext } from '#/contexts/regex-context'
 import { generateDebugSteps, getActionBgColor, getActionColor, getActionIcon } from '#/utils/regex/debug-engine'
 import { createEffect, createMemo, createSignal, For, on, onCleanup, Show } from 'solid-js'
 
+import Icon from '../ui/icon'
+
 // Highlight colors for pattern and text positions
 const PATTERN_HIGHLIGHT = 'bg-primary/30 ring-2 ring-primary'
 const TEXT_HIGHLIGHT = 'bg-amber-300/60 dark:bg-amber-600/40'
@@ -17,7 +19,6 @@ interface DebugControlsProps {
   onPlay: () => void
   onPause: () => void
   onReset: () => void
-  onSpeedChange: (speed: number) => void
 }
 
 function DebugControls(props: DebugControlsProps) {
@@ -84,23 +85,6 @@ function DebugControls(props: DebugControlsProps) {
         >
           <span class="i-lucide-step-forward size-4" aria-hidden="true" />
         </Button>
-      </div>
-
-      {/* Speed control */}
-      <div class="ml-2 flex gap-2 items-center">
-        <label for="debug-speed" class="text-xs text-muted-foreground">Speed:</label>
-        <select
-          id="debug-speed"
-          class="text-xs px-2 py-1 border rounded bg-background focus:(outline-none ring-2 ring-ring)"
-          value={props.session.playSpeed}
-          onChange={e => props.onSpeedChange(Number(e.currentTarget.value))}
-          aria-label="Playback speed"
-        >
-          <option value={1000}>0.5x</option>
-          <option value={500}>1x</option>
-          <option value={250}>2x</option>
-          <option value={100}>5x</option>
-        </select>
       </div>
 
       {/* Progress indicator */}
@@ -269,7 +253,7 @@ function StepList(props: StepListProps) {
             data-step-index={index()}
             class={`text-sm p-2 rounded cursor-pointer transition-colors ${
               index() === props.currentIndex
-                ? `${getActionBgColor(step.action)} ring-2 ring-primary/50`
+                ? getActionBgColor(step.action)
                 : 'hover:bg-muted/50'
             }`}
             onClick={() => props.onStepClick(index())}
@@ -284,7 +268,7 @@ function StepList(props: StepListProps) {
             tabIndex={index() === props.currentIndex ? 0 : -1}
           >
             <div class="flex gap-2 items-center">
-              <span class={`${getActionIcon(step.action)} size-4 ${getActionColor(step.action)}`} aria-hidden="true" />
+              <Icon name={getActionIcon(step.action)} class={getActionColor(step.action)} />
               <span class={`font-medium ${getActionColor(step.action)}`}>
                 {step.action.charAt(0).toUpperCase() + step.action.slice(1)}
               </span>
@@ -418,7 +402,7 @@ export function DebugPanel() {
         ...currentSession,
         currentStepIndex: currentSession.currentStepIndex + 1,
       })
-    }, session.playSpeed)
+    }, 1000)
   }
 
   const pause = () => {
@@ -429,24 +413,6 @@ export function DebugPanel() {
     const session = debugSession()
     if (session) {
       setDebugSession({ ...session, isPlaying: false })
-    }
-  }
-
-  const setSpeed = (speed: number) => {
-    const session = debugSession()
-    if (!session) {
-      return
-    }
-
-    const wasPlaying = session.isPlaying
-    if (wasPlaying) {
-      pause()
-    }
-
-    setDebugSession({ ...session, playSpeed: speed })
-
-    if (wasPlaying) {
-      play()
     }
   }
 
@@ -472,7 +438,7 @@ export function DebugPanel() {
   const canStartDebug = createMemo(() => store.pattern && store.testText && store.isValid)
 
   return (
-    <div class="p-4 border rounded-lg bg-card" role="region" aria-labelledby="debug-heading">
+    <div class="p-4" role="region" aria-labelledby="debug-heading">
       <div class="mb-3 flex items-center justify-between">
         <div class="flex gap-2 items-center">
           <span class="i-lucide-bug size-5" aria-hidden="true" />
@@ -525,7 +491,6 @@ export function DebugPanel() {
               onPlay={play}
               onPause={pause}
               onReset={reset}
-              onSpeedChange={setSpeed}
             />
 
             {/* Current step info */}
@@ -533,7 +498,7 @@ export function DebugPanel() {
               {step => (
                 <div class={`p-3 rounded-md ${getActionBgColor(step().action)}`} role="status" aria-live="polite">
                   <div class="mb-2 flex gap-2 items-center">
-                    <span class={`${getActionIcon(step().action)} size-5 ${getActionColor(step().action)}`} aria-hidden="true" />
+                    <Icon name={getActionIcon(step().action)} class={getActionColor(step().action)} />
                     <span class={`font-medium ${getActionColor(step().action)}`}>
                       {step().action.charAt(0).toUpperCase() + step().action.slice(1)}
                     </span>
@@ -552,7 +517,7 @@ export function DebugPanel() {
             <div>
               <div class="text-xs text-muted-foreground mb-1" id="pattern-viz-label">Pattern</div>
               <PatternVisualizer
-                pattern={store.pattern}
+                pattern={store.pattern || ' '}
                 currentPosition={currentStep()?.patternPosition ?? 0}
                 highlightLength={currentStep()?.patternElement.length ?? 1}
               />

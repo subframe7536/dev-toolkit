@@ -129,29 +129,8 @@ export function DetailsPanel() {
     }
   })
 
-  // Keyboard navigation for match list
-  const handleKeyDown = (e: KeyboardEvent) => {
-    if (!hasMatches()) {
-      return
-    }
-
-    if (e.key === 'ArrowDown') {
-      e.preventDefault()
-      const currentIndex = store.selectedMatchIndex ?? -1
-      const nextIndex = Math.min(currentIndex + 1, store.matches.length - 1)
-      actions.setSelectedMatchIndex(nextIndex)
-    } else if (e.key === 'ArrowUp') {
-      e.preventDefault()
-      const currentIndex = store.selectedMatchIndex ?? store.matches.length
-      const prevIndex = Math.max(currentIndex - 1, 0)
-      actions.setSelectedMatchIndex(prevIndex)
-    } else if (e.key === 'Escape') {
-      actions.setSelectedMatchIndex(null)
-    }
-  }
-
   return (
-    <div class="p-4 border border-border rounded-lg bg-background" role="region" aria-labelledby="matches-heading">
+    <div class="p-4" role="region" aria-labelledby="matches-heading">
       <div class="mb-4 flex items-center justify-between">
         <h3 id="matches-heading" class="text-md text-foreground font-medium">Matches</h3>
         <Show when={hasMatches() && store.selectedMatchIndex !== null}>
@@ -197,8 +176,6 @@ export function DetailsPanel() {
           role="listbox"
           aria-label="Match list"
           aria-activedescendant={store.selectedMatchIndex !== null ? `match-${store.selectedMatchIndex}` : undefined}
-          tabIndex={0}
-          onKeyDown={handleKeyDown}
         >
           <For each={store.matches}>
             {match => (
@@ -211,9 +188,6 @@ export function DetailsPanel() {
               </div>
             )}
           </For>
-        </div>
-        <div class="text-xs text-muted-foreground mt-2">
-          Use ↑/↓ arrow keys to navigate matches, Escape to clear selection
         </div>
       </Show>
 

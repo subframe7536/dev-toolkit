@@ -1,6 +1,5 @@
+import Icon from '#/components/ui/icon'
 import { For } from 'solid-js'
-
-import Icon from '../ui/icon'
 
 /**
  * Regex syntax reference data

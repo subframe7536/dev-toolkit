@@ -1,10 +1,51 @@
-import type { RegexContextValue, RegexFlags, RegexStore, ValidationMode } from '#/utils/regex/types'
+import type { MatchResult, ParseError, PerformanceResult, RegexFlags, ReplacementResult, TextValidationResult, ValidationMode } from '#/utils/regex/types'
 import type { ParentProps } from 'solid-js'
 
 import { findMatches, flagsToString, replaceMatches, validatePattern, validateText } from '#/utils/regex/match-engine'
 import { findMatchesWithPerformance } from '#/utils/regex/performance-analyzer'
 import { createContext, untrack, useContext } from 'solid-js'
 import { createStore } from 'solid-js/store'
+
+export interface RegexStore {
+  pattern: string
+  flags: RegexFlags
+  testText: string
+  isValid: boolean
+  parseError?: ParseError
+  matches: MatchResult[]
+  selectedMatchIndex: number | null
+  showExportDialog: boolean
+  selectedExportLanguage: 'javascript' | 'python' | 'java'
+  // Performance monitoring state
+  performanceEnabled: boolean
+  performanceResult?: PerformanceResult
+  // Validation state
+  validationMode: ValidationMode
+  validationResult?: TextValidationResult
+  // Replacement state
+  replacementPattern: string
+  replacementResult?: ReplacementResult
+  showReplacementPreview: boolean
+}
+
+export interface RegexContextValue {
+  store: RegexStore
+  actions: {
+    setPattern: (pattern: string) => void
+    setFlags: (flags: Partial<RegexFlags>) => void
+    setTestText: (text: string) => void
+    setSelectedMatchIndex: (index: number | null) => void
+    toggleExportDialog: (show: boolean) => void
+    setExportLanguage: (language: 'javascript' | 'python' | 'java') => void
+    exportCode: () => string
+    togglePerformanceMode: (enabled: boolean) => void
+    // Validation actions
+    setValidationMode: (mode: ValidationMode) => void
+    // Replacement actions
+    setReplacementPattern: (pattern: string) => void
+    applyReplacement: () => string
+  }
+}
 
 // Create context for regex state management
 const RegexContext = createContext<RegexContextValue>()
@@ -22,8 +63,8 @@ export function RegexProvider(props: ParentProps) {
   const [store, setStore] = createStore<RegexStore>({
     pattern: '',
     flags: {
-      global: false,
-      ignoreCase: false,
+      global: true,
+      ignoreCase: true,
       multiline: false,
       dotAll: false,
       unicode: false,
@@ -282,10 +323,11 @@ export function RegexProvider(props: ParentProps) {
     // Replacement actions
     setReplacementPattern: (replacement: string) => {
       setStore('replacementPattern', replacement)
+      setStore('showReplacementPreview', true)
 
       // Update replacement result if preview is enabled
       untrack(() => {
-        if (store.showReplacementPreview && store.pattern && store.isValid && store.testText) {
+        if (store.pattern && store.isValid && store.testText) {
           updateReplacement(store.pattern, store.flags, store.testText, replacement)
         }
       })

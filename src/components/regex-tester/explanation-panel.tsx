@@ -2,11 +2,10 @@ import type { RegexElementType } from '#/utils/regex/explanation-engine'
 import type { RegexElement } from '#/utils/regex/types'
 
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '#/components/ui/accordion'
+import Icon from '#/components/ui/icon'
 import { useRegexContext } from '#/contexts/regex-context'
 import { explainPattern } from '#/utils/regex/explanation-engine'
 import { createMemo, For, Show } from 'solid-js'
-
-import Icon from '../ui/icon'
 
 /**
  * Color mapping for different element types
@@ -96,23 +95,6 @@ export function ExplanationPanel() {
   const hasPattern = createMemo(() => store.pattern.length > 0)
   const hasElements = createMemo(() => explanation().elements.length > 0)
 
-  // Group elements by type for organized display
-  const groupedElements = createMemo(() => {
-    const groups = new Map<string, RegexElement[]>()
-
-    for (const element of explanation().elements) {
-      const existing = groups.get(element.type) || []
-      existing.push(element)
-      groups.set(element.type, existing)
-    }
-
-    return Array.from(groups.entries()).map(([type, elements]) => ({
-      type: type as RegexElementType,
-      label: ELEMENT_TYPE_LABELS[type as RegexElementType] || type,
-      elements,
-    }))
-  })
-
   return (
     <div class="p-4 space-y-4">
       {/* Overall description */}
@@ -154,50 +136,6 @@ export function ExplanationPanel() {
               </For>
             </div>
           </div>
-
-          {/* Grouped by type */}
-          <Show when={groupedElements().length > 1}>
-            <Accordion multiple={false} collapsible class="mt-4">
-              <AccordionItem value="grouped">
-                <AccordionTrigger class="text-sm">
-                  <span class="flex gap-2 items-center">
-                    <Icon name="lucide:layers" class="size-4" />
-                    View by Element Type
-                  </span>
-                </AccordionTrigger>
-                <AccordionContent>
-                  <div class="pt-2 space-y-3">
-                    <For each={groupedElements()}>
-                      {group => (
-                        <div>
-                          <div class="text-xs text-muted-foreground font-medium mb-1.5 flex gap-1 items-center">
-                            <Icon name={ELEMENT_TYPE_ICONS[group.type]} class="size-3" />
-                            {group.label}
-                            {' '}
-                            (
-                            {group.elements.length}
-                            )
-                          </div>
-                          <div class="flex flex-wrap gap-1">
-                            <For each={group.elements}>
-                              {element => (
-                                <code
-                                  class={`text-xs font-mono px-1.5 py-0.5 rounded ${ELEMENT_TYPE_COLORS[group.type]}`}
-                                  title={element.description}
-                                >
-                                  {element.value}
-                                </code>
-                              )}
-                            </For>
-                          </div>
-                        </div>
-                      )}
-                    </For>
-                  </div>
-                </AccordionContent>
-              </AccordionItem>
-            </Accordion>
-          </Show>
         </div>
       </Show>
     </div>

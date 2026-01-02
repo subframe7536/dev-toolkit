@@ -1,11 +1,12 @@
 import type { MatchResult } from '#/utils/regex/types'
 import type { HighlighterCore } from 'shiki'
 
+import { Button } from '#/components/ui/button'
+import Icon from '#/components/ui/icon'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '#/components/ui/select'
+import { TextField, TextFieldInput, TextFieldLabel } from '#/components/ui/text-field'
 import { useRegexContext } from '#/contexts/regex-context'
-import { createEffect, createMemo, createResource, createUniqueId, For, Show, Suspense } from 'solid-js'
-
-import Icon from '../ui/icon'
+import { createMemo, createResource, createUniqueId, For, Show, Suspense } from 'solid-js'
 
 const FLAG_OPTIONS = [
   { flag: 'g', label: 'Global', key: 'global', description: 'Find all matches instead of stopping after the first match' },
@@ -44,7 +45,7 @@ interface HighlightSegment {
 async function loadHighlighter(): Promise<HighlighterCore> {
   const { createHighlighter } = await import('shiki')
   return createHighlighter({
-    themes: ['github-dark'],
+    themes: ['github-light'],
     langs: ['regexp'],
   })
 }
@@ -57,7 +58,7 @@ function HighlightedPattern(props: { pattern: string, highlighter: HighlighterCo
     try {
       return props.highlighter.codeToHtml(props.pattern, {
         lang: 'regexp',
-        theme: 'github-dark',
+        theme: 'github-light',
       })
     } catch {
       return undefined
@@ -184,10 +185,10 @@ function getSegmentClass(segment: HighlightSegment, selectedMatchIndex: number |
 
 export function RegexInputPanel() {
   const { store, actions } = useRegexContext()
-  let patternTextareaRef: HTMLTextAreaElement | undefined
-  let patternHighlightRef: HTMLDivElement | undefined
-  let testTextareaRef: HTMLTextAreaElement | undefined
-  let testHighlightRef: HTMLDivElement | undefined
+  let patternTextareaRef!: HTMLTextAreaElement
+  let patternHighlightRef!: HTMLDivElement
+  let testTextareaRef!: HTMLTextAreaElement
+  let testHighlightRef!: HTMLDivElement
 
   const [highlighter] = createResource(loadHighlighter)
   const errorId = createUniqueId()
@@ -223,19 +224,6 @@ export function RegexInputPanel() {
     return null
   })
 
-  const _matchStatus = createMemo(() => {
-    if (!store.pattern || !store.testText) {
-      return null
-    }
-    if (!store.isValid) {
-      return 'invalid pattern'
-    }
-    if (store.matches.length === 0) {
-      return 'no match'
-    }
-    return `${store.matches.length} match${store.matches.length !== 1 ? 'es' : ''}`
-  })
-
   // Build highlight segments reactively
   const segments = createMemo(() =>
     buildHighlightSegments(store.testText, store.matches),
@@ -244,6 +232,21 @@ export function RegexInputPanel() {
   // Check if there are any matches
   const hasMatches = createMemo(() => store.matches.length > 0)
   const hasInput = createMemo(() => store.pattern && store.testText)
+
+  // Replacement functionality
+  const replacementResult = createMemo(() => store.replacementResult)
+
+  const handleCopyResult = async () => {
+    const result = replacementResult()
+    if (result) {
+      await navigator.clipboard.writeText(result.result)
+    }
+  }
+
+  const handleApplyToTestText = () => {
+    const result = actions.applyReplacement()
+    actions.setTestText(result)
+  }
 
   const handlePatternScroll = () => {
     if (patternTextareaRef && patternHighlightRef) {
@@ -290,37 +293,6 @@ export function RegexInputPanel() {
     }
   }
 
-  // Keyboard shortcut handler for common actions
-  const handlePatternKeyDown = (e: KeyboardEvent) => {
-    // Ctrl/Cmd + Enter to focus test text area
-    if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
-      e.preventDefault()
-      testTextareaRef?.focus()
-    }
-  }
-
-  // Keyboard navigation for matches
-  const handleTestKeyDown = (e: KeyboardEvent) => {
-    if (!hasMatches()) {
-      return
-    }
-
-    // Arrow keys to navigate between matches when focused on test text
-    if (e.key === 'ArrowDown' && e.altKey) {
-      e.preventDefault()
-      const currentIndex = store.selectedMatchIndex ?? -1
-      const nextIndex = Math.min(currentIndex + 1, store.matches.length - 1)
-      actions.setSelectedMatchIndex(nextIndex)
-    } else if (e.key === 'ArrowUp' && e.altKey) {
-      e.preventDefault()
-      const currentIndex = store.selectedMatchIndex ?? store.matches.length
-      const prevIndex = Math.max(currentIndex - 1, 0)
-      actions.setSelectedMatchIndex(prevIndex)
-    } else if (e.key === 'Escape') {
-      actions.setSelectedMatchIndex(null)
-    }
-  }
-
   // Status message for screen readers
   const statusMessage = createMemo(() => {
     if (!hasInput()) {
@@ -335,24 +307,6 @@ export function RegexInputPanel() {
     return `${store.matches.length} match${store.matches.length !== 1 ? 'es' : ''} found`
   })
 
-  // Sync highlight layer height with textarea on mount and pattern changes
-  createEffect(() => {
-    // Watch pattern changes to trigger sync
-    void store.pattern
-
-    // Sync heights after DOM update
-    setTimeout(() => {
-      if (patternTextareaRef && patternHighlightRef) {
-        // Auto-resize textarea to fit content
-        patternTextareaRef.style.height = 'auto'
-        patternTextareaRef.style.height = `${Math.max(40, patternTextareaRef.scrollHeight)}px`
-
-        // Sync highlight layer height
-        patternHighlightRef.style.height = `${patternTextareaRef.offsetHeight}px`
-      }
-    }, 0)
-  })
-
   return (
     <div class="space-y-6">
       {/* Header with title only */}
@@ -365,7 +319,7 @@ export function RegexInputPanel() {
       {/* Pattern Input Section - Inline regex format */}
       <div class="relative">
         {/* Container with border and rounded corners */}
-        <div class="border border-input rounded-md bg-background transition-all focus-within:(ring-2 ring-ring)">
+        <div class="border rounded-md bg-input transition-all focus-within:(ring-2 ring-ring)">
           <div class="flex items-start">
             {/* Opening slash */}
             <div class="text-lg text-muted-foreground font-mono px-3 py-2 flex-shrink-0 select-none">/</div>
@@ -376,7 +330,7 @@ export function RegexInputPanel() {
               <textarea
                 ref={patternTextareaRef}
                 placeholder="pattern"
-                class="text-sm leading-relaxed font-mono py-2 pr-0 border-none bg-transparent min-h-10 w-full resize-none relative z-20 placeholder:text-muted-foreground/60 focus:outline-none"
+                class="text-sm leading-relaxed font-mono py-2 pr-0 border-none min-h-10 w-full resize-none relative z-20 placeholder:text-muted-foreground/60 focus:outline-none"
                 style={{
                   'color': store.pattern ? 'transparent' : undefined,
                   'caret-color': 'var(--colors-foreground)',
@@ -384,7 +338,6 @@ export function RegexInputPanel() {
                 value={store.pattern}
                 onInput={handlePatternInput}
                 onScroll={handlePatternScroll}
-                onKeyDown={handlePatternKeyDown}
                 aria-label="Regular expression pattern"
                 aria-describedby={store.parseError ? errorId : undefined}
                 aria-invalid={!store.isValid}
@@ -393,7 +346,7 @@ export function RegexInputPanel() {
               {/* Syntax highlighting overlay - positioned to match textarea exactly */}
               <div
                 ref={patternHighlightRef}
-                class="text-sm leading-relaxed font-mono py-2 pr-0 pointer-events-none whitespace-pre-wrap break-words inset-0 absolute z-10 overflow-hidden"
+                class="overflow-wrap-break-word text-sm leading-relaxed font-mono py-2 pr-0 pointer-events-none whitespace-pre-wrap inset-0 absolute z-10 overflow-hidden"
                 aria-hidden="true"
               >
                 <Suspense>
@@ -404,50 +357,56 @@ export function RegexInputPanel() {
               </div>
             </div>
 
-            {/* Closing slash */}
-            <div class="text-lg text-muted-foreground font-mono px-1 py-2 flex-shrink-0 select-none">/</div>
-
-            {/* Flags selector - inline with fixed width */}
-            <div class="px-2 flex-shrink-0 w-16">
-              <Select<string>
-                multiple
-                value={selectedFlags()}
-                onChange={handleFlagsChange}
-                options={FLAG_OPTIONS.map(option => option.flag)}
-                placeholder=""
-                itemComponent={props => (
-                  <SelectItem item={props.item}>
-                    <div class="flex gap-2 items-center">
-                      <code class="text-xs font-mono font-semibold">{props.item.rawValue}</code>
-                      <span class="text-xs">
-                        {FLAG_OPTIONS.find(opt => opt.flag === props.item.rawValue)?.label}
-                      </span>
-                    </div>
-                  </SelectItem>
-                )}
-              >
-                <SelectTrigger class="text-xs p-0 border-none bg-transparent h-8 w-full shadow-none [&>svg]:hidden">
-                  <SelectValue<string[]>>
-                    {state => (
-                      <div class="flex flex-wrap gap-0.5">
-                        <Show
-                          when={state.selectedOptions().length > 0}
-                          fallback={<span class="text-xs text-muted-foreground/60 font-mono">flags</span>}
-                        >
-                          <For each={state.selectedOptions()}>
-                            {flag => (
-                              <span class="text-xs text-primary font-medium font-mono">
-                                {flag}
-                              </span>
-                            )}
-                          </For>
-                        </Show>
+            {/* Closing slash and flags selector - merged */}
+            <div class="flex flex-shrink-0 items-center">
+              <div class="text-lg text-muted-foreground font-mono px-1 py-2 select-none">/</div>
+              <div class="min-w-12">
+                <Select<string>
+                  multiple
+                  value={selectedFlags()}
+                  onChange={handleFlagsChange}
+                  options={FLAG_OPTIONS.map(option => option.flag)}
+                  placeholder=""
+                  class="!bg-transparent"
+                  itemComponent={props => (
+                    <SelectItem item={props.item}>
+                      <div class="py-1 flex flex-col gap-1">
+                        <div class="flex gap-2 items-center">
+                          <code class="text-sm text-primary font-mono font-semibold">{props.item.rawValue}</code>
+                          <span class="text-sm font-medium">
+                            {FLAG_OPTIONS.find(opt => opt.flag === props.item.rawValue)?.label}
+                          </span>
+                        </div>
+                        <div class="text-xs text-muted-foreground leading-relaxed">
+                          {FLAG_OPTIONS.find(opt => opt.flag === props.item.rawValue)?.description}
+                        </div>
                       </div>
-                    )}
-                  </SelectValue>
-                </SelectTrigger>
-                <SelectContent />
-              </Select>
+                    </SelectItem>
+                  )}
+                >
+                  <SelectTrigger noIcon class="text-xs p-1 border-none bg-transparent h-8 min-w-12 shadow-none transition-colors hover:bg-muted/50">
+                    <SelectValue<string[]>>
+                      {state => (
+                        <div class="flex flex-wrap gap-0.5">
+                          <Show
+                            when={state.selectedOptions().length > 0}
+                            fallback={<span class="text-xs text-muted-foreground/60 font-mono">flags</span>}
+                          >
+                            <For each={state.selectedOptions()}>
+                              {flag => (
+                                <span class="text-xs text-primary font-medium font-mono">
+                                  {flag}
+                                </span>
+                              )}
+                            </For>
+                          </Show>
+                        </div>
+                      )}
+                    </SelectValue>
+                  </SelectTrigger>
+                  <SelectContent class="min-w-80" />
+                </Select>
+              </div>
             </div>
           </div>
         </div>
@@ -499,7 +458,7 @@ export function RegexInputPanel() {
           </div>
         </div>
 
-        <div class="relative">
+        <div class="bg-input relative">
           {/* Highlight overlay - hidden from screen readers */}
           <div
             ref={testHighlightRef}
@@ -526,7 +485,7 @@ export function RegexInputPanel() {
           <textarea
             ref={testTextareaRef}
             placeholder="Enter text to test your regex against..."
-            class="text-sm leading-relaxed font-mono p-(2 3) border border-input rounded-md h-64 w-full resize-y relative z-10 focus:(outline-none ring-2 ring-ring)"
+            class="text-sm leading-relaxed font-mono p-(2 3) border rounded-md h-64 w-full resize-y relative z-10 focus:(outline-none ring-2 ring-ring)"
             style={{
               'background': store.testText ? 'transparent' : undefined,
               'color': store.testText ? 'transparent' : undefined,
@@ -535,7 +494,6 @@ export function RegexInputPanel() {
             value={store.testText}
             onInput={e => actions.setTestText(e.currentTarget.value)}
             onScroll={handleTestScroll}
-            onKeyDown={handleTestKeyDown}
             aria-label="Test text input"
             aria-labelledby="test-text-label"
             aria-describedby="test-text-hint"
@@ -550,8 +508,8 @@ export function RegexInputPanel() {
         {/* Hint for clickable matches */}
         <Show when={hasMatches()}>
           <div id="test-text-hint" class="text-xs text-muted-foreground">
-            <span class="i-lucide-mouse-pointer-click mr-1 size-3 inline-block" aria-hidden="true" />
-            Click on highlighted matches to view details. Use Alt+↑/↓ to navigate matches.
+            <Icon name="lucide:mouse-pointer-click" class="mr-1 size-3 inline-block" aria-hidden="true" />
+            Click on highlighted matches to view details.
           </div>
         </Show>
 
@@ -563,6 +521,107 @@ export function RegexInputPanel() {
           >
             <span class="i-lucide-info size-4" aria-hidden="true" />
             <span>No matches found. Try adjusting your pattern or test text.</span>
+          </div>
+        </Show>
+      </div>
+
+      {/* Replacement Section */}
+      <div class="pt-6 border-t border-border space-y-4">
+        <div class="flex items-center justify-between">
+          <h3 class="text-sm text-muted-foreground tracking-wide font-medium uppercase">
+            Find & Replace
+          </h3>
+        </div>
+
+        {/* Replacement Pattern Input */}
+        <TextField value={store.replacementPattern} onChange={t => actions.setReplacementPattern(t)}>
+          <TextFieldLabel>Replacement Pattern</TextFieldLabel>
+          <TextFieldInput placeholder="Enter replacement (e.g., $1-$2 or $<name>)" />
+        </TextField>
+
+        {/* Replacement Syntax Help */}
+        <div class="text-xs text-muted-foreground space-y-1">
+          <div class="font-medium mb-1">Replacement syntax:</div>
+          <div class="gap-x-4 gap-y-1 grid grid-cols-2">
+            <span><code class="px-1 rounded bg-muted">$1, $2</code> - Capture groups</span>
+            <span><code class="px-1 rounded bg-muted">&amp;</code> - Full match</span>
+            <span><code class="px-1 rounded bg-muted">&lt;name&gt;</code> - Named group</span>
+            <span><code class="px-1 rounded bg-muted">$$</code> - Literal $</span>
+          </div>
+        </div>
+
+        {/* Replacement Result Preview */}
+        <Show when={hasInput() && store.showReplacementPreview}>
+          <Show
+            when={hasMatches()}
+            fallback={(
+              <div
+                class="text-sm text-amber-600 p-3 border border-amber-200 rounded-md bg-amber-50 dark:text-amber-400 dark:border-amber-800 dark:bg-amber-950/30"
+                role="status"
+              >
+                <Icon name="lucide:info" class="mr-2 size-4 inline-block" aria-hidden="true" />
+                No matches to replace
+              </div>
+            )}
+          >
+            <div class="space-y-3">
+              {/* Stats */}
+              <Show when={replacementResult()}>
+                {result => (
+                  <div class="text-xs text-muted-foreground flex gap-2 items-center" aria-live="polite">
+                    <Icon name="lucide:repeat" class="size-3" aria-hidden="true" />
+                    {result().replacementCount}
+                    {' '}
+                    replacement
+                    {result().replacementCount !== 1 ? 's' : ''}
+                    {store.flags.global ? ' (global)' : ' (first match only)'}
+                  </div>
+                )}
+              </Show>
+
+              {/* Preview Output */}
+              <div class="space-y-2">
+                <label class="text-xs text-muted-foreground">Result Preview</label>
+                <div class="relative">
+                  <pre
+                    class="text-sm font-mono p-3 border rounded-md bg-muted/50 max-h-48 whitespace-pre-wrap break-words overflow-auto"
+                    tabIndex={0}
+                  >
+                    {replacementResult()?.result || store.testText}
+                  </pre>
+                </div>
+              </div>
+
+              {/* Action Buttons */}
+              <div class="flex gap-2">
+                <Button
+                  variant="secondary"
+                  size="sm"
+                  onClick={handleCopyResult}
+                  disabled={!replacementResult()}
+                  aria-label="Copy replacement result to clipboard"
+                >
+                  <Icon name="lucide:copy" class="mr-1 size-4" aria-hidden="true" />
+                  Copy Result
+                </Button>
+                <Button
+                  variant="default"
+                  size="sm"
+                  onClick={handleApplyToTestText}
+                  disabled={!replacementResult() || replacementResult()?.replacementCount === 0}
+                  aria-label="Apply replacement to test text"
+                >
+                  <Icon name="lucide:check" class="mr-1 size-4" aria-hidden="true" />
+                  Apply to Test Text
+                </Button>
+              </div>
+            </div>
+          </Show>
+        </Show>
+
+        <Show when={!hasInput() || !store.replacementPattern}>
+          <div class="text-sm text-muted-foreground py-4 text-center">
+            Enter a pattern and test text to see replacements
           </div>
         </Show>
       </div>

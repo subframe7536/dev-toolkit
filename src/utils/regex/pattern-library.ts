@@ -1,10 +1,9 @@
 import type { PatternCategory, PatternDefinition, RegexFlags } from './types'
 
-// Default flags for most patterns
 const DEFAULT_FLAGS: RegexFlags = {
-  global: false,
+  global: true,
   ignoreCase: false,
-  multiline: false,
+  multiline: true,
   dotAll: false,
   unicode: false,
   sticky: false,
@@ -23,7 +22,7 @@ export const PATTERN_LIBRARY: PatternCategory[] = [
         id: 'email',
         name: 'Email Address',
         pattern: '^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$',
-        flags: { ...DEFAULT_FLAGS, ignoreCase: true },
+        flags: DEFAULT_FLAGS,
         description: 'Validates standard email address format with domain extension',
         examples: [
           { input: 'user@example.com', shouldMatch: true, description: 'Standard email' },
@@ -36,7 +35,7 @@ export const PATTERN_LIBRARY: PatternCategory[] = [
         id: 'url',
         name: 'URL',
         pattern: 'https?:\\/\\/(?:www\\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\\.[a-zA-Z0-9()]{1,6}\\b(?:[-a-zA-Z0-9()@:%_+.~#?&/=]*)',
-        flags: { ...DEFAULT_FLAGS, ignoreCase: true },
+        flags: DEFAULT_FLAGS,
         description: 'Matches HTTP and HTTPS URLs with optional www prefix',
         examples: [
           { input: 'https://example.com', shouldMatch: true, description: 'Simple HTTPS URL' },
@@ -149,7 +148,7 @@ export const PATTERN_LIBRARY: PatternCategory[] = [
         id: 'uuid',
         name: 'UUID v4',
         pattern: '^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$',
-        flags: { ...DEFAULT_FLAGS, ignoreCase: true },
+        flags: DEFAULT_FLAGS,
         description: 'Matches UUID version 4 format',
         examples: [
           { input: '550e8400-e29b-41d4-a716-446655440000', shouldMatch: true, description: 'Valid UUID v4' },
@@ -240,7 +239,7 @@ export const PATTERN_LIBRARY: PatternCategory[] = [
         id: 'html-tag',
         name: 'HTML Tag',
         pattern: '<([a-z][a-z0-9]*)\\b[^>]*>.*?<\\/\\1>',
-        flags: { ...DEFAULT_FLAGS, ignoreCase: true, dotAll: true },
+        flags: DEFAULT_FLAGS,
         description: 'Matches paired HTML tags with content',
         examples: [
           { input: '<div>content</div>', shouldMatch: true, description: 'Simple div' },
