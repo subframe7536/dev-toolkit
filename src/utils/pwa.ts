@@ -35,9 +35,7 @@ export function registPWA() {
           await promptEvent.prompt()
 
           // Wait for the user to respond to the prompt
-          const { outcome } = await promptEvent.userChoice
-
-          console.log(`User response to install prompt: ${outcome}`)
+          await promptEvent.userChoice
 
           // We've used the prompt, so clear it
           setDeferredPrompt(null)
