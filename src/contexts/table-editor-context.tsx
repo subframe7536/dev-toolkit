@@ -1,6 +1,5 @@
 import type { CellValue, ColumnDefinition, TableData } from '#/utils/table/types'
 import type { ParentProps } from 'solid-js'
-import type { SetStoreFunction } from 'solid-js/store'
 
 import { batch, createContext, createSignal, useContext } from 'solid-js'
 import { createStore, produce } from 'solid-js/store'
