@@ -1,2 +1,2 @@
-// Export all contexts for easy importing
 export { RegexProvider, useRegexContext } from './regex-context'
+export { TableEditorProvider, useTableEditorContext } from './table-editor-context'

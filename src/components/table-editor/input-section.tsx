@@ -1,6 +1,3 @@
-import type { TableData } from '#/utils/table/types'
-import type { Component } from 'solid-js'
-
 import { FileUpload } from '#/components/file-upload'
 import { Button } from '#/components/ui/button'
 import Icon from '#/components/ui/icon'
@@ -8,6 +5,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '#
 import { Switch } from '#/components/ui/switch'
 import { Tabs, TabsContent, TabsIndicator, TabsList, TabsTrigger } from '#/components/ui/tabs'
 import { TextField, TextFieldTextArea } from '#/components/ui/text-field'
+import { useTableEditorContext } from '#/contexts/table-editor-context'
 import { detectTSVFormat, getExcelSheetNames, parseCSVFile, parseCSVText, parseExcelFile, parseMySQLOutput, parseTSVText } from '#/utils/table/parser'
 import { createSignal, Show } from 'solid-js'
 import { toast } from 'solid-sonner'
@@ -39,11 +37,8 @@ Example (Excel Copy/Paste):
 
 ${EXCEL_EXAMPLE}`
 
-interface InputSectionProps {
-  onDataParsed: (data: TableData) => void
-}
-
-export const InputSection: Component<InputSectionProps> = (props) => {
+export function InputSection() {
+  const { actions } = useTableEditorContext()
   // Local state for input management
   const [textInput, setTextInput] = createSignal('')
   const [replaceLineWrap, setReplaceLineWrap] = createSignal(true)
@@ -82,7 +77,7 @@ export const InputSection: Component<InputSectionProps> = (props) => {
       // MySQL CLI output format
       const result = parseMySQLOutput(input)
       if (result.success && result.data) {
-        props.onDataParsed(result.data)
+        actions.setData(result.data)
         toast.success('MySQL output parsed successfully!')
       } else if (result.error) {
         toast.error(result.error.message, {
@@ -93,7 +88,7 @@ export const InputSection: Component<InputSectionProps> = (props) => {
       // Tab-separated values (Excel copy/paste)
       const result = parseTSVText(input)
       if (result.success && result.data) {
-        props.onDataParsed(result.data)
+        actions.setData(result.data)
         toast.success('Excel table data parsed successfully!')
       } else if (result.error) {
         toast.error(result.error.message, {
@@ -104,7 +99,7 @@ export const InputSection: Component<InputSectionProps> = (props) => {
       // Default to CSV format
       const result = parseCSVText(input)
       if (result.success && result.data) {
-        props.onDataParsed(result.data)
+        actions.setData(result.data)
         toast.success('CSV text parsed successfully!')
       } else if (result.error) {
         toast.error(result.error.message, {
@@ -163,7 +158,7 @@ export const InputSection: Component<InputSectionProps> = (props) => {
         const result = await parseExcelFile(file, sheetIndex >= 0 ? sheetIndex : 0)
 
         if (result.success && result.data) {
-          props.onDataParsed(result.data)
+          actions.setData(result.data)
           toast.success('Excel file parsed successfully!')
         } else if (result.error) {
           toast.error(result.error.message, {
@@ -174,7 +169,7 @@ export const InputSection: Component<InputSectionProps> = (props) => {
         const result = await parseCSVFile(file)
 
         if (result.success && result.data) {
-          props.onDataParsed(result.data)
+          actions.setData(result.data)
           toast.success('CSV file parsed successfully!')
         } else if (result.error) {
           toast.error(result.error.message, {

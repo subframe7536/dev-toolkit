@@ -20,7 +20,7 @@ export default defineConfig<PresetWind4Theme>({
     }),
     presetObjectCompletion(),
     presetAnimations(),
-    presetThemeTW4(),
+    presetThemeTW4() as any,
   ],
   shortcuts: [
     ['effect-fv', 'outline-none ring-1.5 ring-ring ring-offset-(2 background)'],
@@ -53,7 +53,7 @@ export default defineConfig<PresetWind4Theme>({
       },
     },
   },
-  transformers: [transformerVariantGroup()],
+  transformers: [transformerVariantGroup() as any],
   extractors: [
     {
       name: 'extract-icons',

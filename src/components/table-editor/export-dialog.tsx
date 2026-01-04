@@ -9,6 +9,8 @@ import Icon from '#/components/ui/icon'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '#/components/ui/select'
 import { Switch } from '#/components/ui/switch'
 import { TextField, TextFieldInput, TextFieldLabel, TextFieldTextArea } from '#/components/ui/text-field'
+import { useTableEditorContext } from '#/contexts/table-editor-context'
+import { downloadFile } from '#/utils/download'
 import {
   exportToCSV,
   exportToExcel,
@@ -31,13 +33,9 @@ const exportOptions: Array<{ value: ExportFormat, label: string }> = [
   { value: 'markdown', label: 'Markdown' },
 ]
 
-interface ExportDialogProps extends TableData {
-  hasHeaders: boolean
-  columnVisibility: Record<string, boolean>
-}
+export function ExportDialog() {
+  const { store, computed } = useTableEditorContext()
 
-export function ExportDialog(props: ExportDialogProps) {
-  // Local state for export functionality
   const [tableName, setTableName] = createSignal('my_table')
   const [useSnakeCase, setUseSnakeCase] = createSignal(true)
   const [exportFormat, setExportFormat] = createSignal<ExportFormat>('sql-insert')
@@ -48,9 +46,7 @@ export function ExportDialog(props: ExportDialogProps) {
   // Export handler
   const handleExport = async () => {
     // Filter visible columns and create filtered table data
-    const visibleColumns = props.columns.filter(col =>
-      props.columnVisibility[col.id] ?? true,
-    )
+    const visibleColumns = computed.visibleColumns()
 
     if (visibleColumns.length === 0) {
       toast.error('No visible columns to export')
@@ -60,7 +56,7 @@ export function ExportDialog(props: ExportDialogProps) {
     // Create filtered table data with only visible columns
     const filteredData: TableData = {
       columns: visibleColumns,
-      rows: props.rows.map(row => ({
+      rows: store.tableData.rows.map(row => ({
         ...row,
         cells: Object.fromEntries(
           visibleColumns.map(col => [col.id, row.cells[col.id]]),
@@ -107,23 +103,16 @@ export function ExportDialog(props: ExportDialogProps) {
           output = generateCreateTable(filteredData, name, useSnakeCase())
           break
         case 'excel': {
-          const blob = await exportToExcel(filteredData, useSnakeCase(), props.hasHeaders)
-          const url = URL.createObjectURL(blob)
-          const a = document.createElement('a')
-          a.href = url
-          a.download = `${name || 'table'}.xlsx`
-          document.body.appendChild(a)
-          a.click()
-          document.body.removeChild(a)
-          URL.revokeObjectURL(url)
+          const blob = await exportToExcel(filteredData, useSnakeCase(), store.hasHeaders)
+          downloadFile(blob, `${name || 'table'}.xlsx`)
           toast.success('Excel file downloaded')
           return
         }
         case 'csv':
-          output = exportToCSV(filteredData, useSnakeCase(), props.hasHeaders)
+          output = exportToCSV(filteredData, useSnakeCase(), store.hasHeaders)
           break
         case 'markdown':
-          output = exportToMarkdown(filteredData, useSnakeCase(), props.hasHeaders)
+          output = exportToMarkdown(filteredData, useSnakeCase(), store.hasHeaders)
           break
       }
 
@@ -192,7 +181,7 @@ export function ExportDialog(props: ExportDialogProps) {
             </TextField>
 
             <div class="flex flex-col gap-2">
-              <label class="text-sm font-medium">Export Format</label>
+              <label class="text-muted-foreground font-500">Export Format</label>
               <Select
                 value={exportFormat()}
                 onChange={setExportFormat}
@@ -225,7 +214,7 @@ export function ExportDialog(props: ExportDialogProps) {
           <Show when={exportFormat() === 'sql-update'}>
             <label class="text-sm font-medium">Key Columns (for UPDATE)</label>
             <div class="p-2 border rounded-md bg-input flex flex-row flex-wrap gap-3">
-              <For each={props.columns.filter(col => props.columnVisibility[col.id] ?? true)}>
+              <For each={computed.visibleColumns()}>
                 {col => (
                   <Checkbox
                     class="flex gap-2 items-center"
