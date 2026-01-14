@@ -28,3 +28,9 @@ A privacy-first web-based developer toolset providing 14+ essential utilities. A
 - SQL parameter filler
 - Table editor (CSV/Excel/Markdown/SQL)
 - Text case converter
+
+### Todo
+
+- [ ] regex input misalign and redudant scrollbar
+- [ ] regex tester page scrollbar eliminate
+- [ ] json object to python/java class
