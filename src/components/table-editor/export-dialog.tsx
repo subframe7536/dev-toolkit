@@ -6,7 +6,7 @@ import { Button } from '#/components/ui/button'
 import { Checkbox } from '#/components/ui/checkbox'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '#/components/ui/dialog'
 import Icon from '#/components/ui/icon'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '#/components/ui/select'
+import { SimpleSelect } from '#/components/ui/select'
 import { Switch } from '#/components/ui/switch'
 import { TextField, TextFieldInput, TextFieldLabel, TextFieldTextArea } from '#/components/ui/text-field'
 import { useTableEditorContext } from '#/contexts/table-editor-context'
@@ -182,24 +182,13 @@ export function ExportDialog() {
 
             <div class="flex flex-col gap-2">
               <label class="text-muted-foreground font-500">Export Format</label>
-              <Select
+              <SimpleSelect
                 value={exportFormat()}
                 onChange={setExportFormat}
-                options={exportOptions.map(o => o.value)}
                 disallowEmptySelection
-                itemComponent={p => (
-                  <SelectItem item={p.item}>
-                    {exportOptions.find(o => o.value === p.item.rawValue)?.label}
-                  </SelectItem>
-                )}
-              >
-                <SelectTrigger>
-                  <SelectValue<ExportFormat>>
-                    {state => exportOptions.find(o => o.value === state.selectedOption())?.label}
-                  </SelectValue>
-                </SelectTrigger>
-                <SelectContent />
-              </Select>
+                options={exportOptions}
+                placeholder="Select format"
+              />
             </div>
           </div>
 

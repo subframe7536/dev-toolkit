@@ -2,7 +2,7 @@ import type { MatchResult } from '#/utils/regex/types'
 import type { HighlighterCore } from 'shiki'
 
 import Icon from '#/components/ui/icon'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '#/components/ui/select'
+import { SimpleSelect } from '#/components/ui/select'
 import { TextField, TextFieldLabel, TextFieldTextArea } from '#/components/ui/text-field'
 import { useRegexContext } from '#/contexts/regex-context'
 import { useColorMode } from '@solid-hooks/core/web'
@@ -305,40 +305,36 @@ export function RegexInputPanel() {
           </TextField>
 
           {/* Flag Select */}
-          <Select<string>
+          <SimpleSelect
             multiple
             value={selectedFlags()}
             onChange={handleFlagsChange}
-            options={FLAG_OPTIONS.map(o => o.flag)}
+            options={FLAG_OPTIONS.map(option => ({
+              value: option.flag,
+              label: `${option.flag} - ${option.label}`,
+              meta: option,
+            }))}
             placeholder="No Flags"
             class="pt-1"
-            itemComponent={props => (
-              <SelectItem item={props.item}>
-                <div class="flex gap-2 items-center">
-                  <code class="text-primary font-mono font-semibold">{props.item.rawValue}</code>
-                  <span class="text-muted-foreground">
-                    {FLAG_OPTIONS.find(o => o.flag === props.item.rawValue)?.label}
-                  </span>
-                </div>
-              </SelectItem>
+            renderItem={option => (
+              <div class="flex gap-2 items-center">
+                <code class="text-primary font-mono font-semibold">{option.value}</code>
+                <span class="text-muted-foreground">
+                  {option.meta.label}
+                </span>
+              </div>
             )}
-          >
-            <SelectTrigger class="shrink-0 w-28 [&>span]:(text-foreground/30 pr-2)">
-              <SelectValue<string[]>>
-                {state => (
-                  <Show
-                    when={state.selectedOptions().length > 0}
-                    fallback={<span class="text-muted-foreground">Flags</span>}
-                  >
-                    <span class="text-primary font-medium font-mono">
-                      {state.selectedOptions().join('')}
-                    </span>
-                  </Show>
-                )}
-              </SelectValue>
-            </SelectTrigger>
-            <SelectContent />
-          </Select>
+            renderValue={selected => (
+              <Show
+                when={selected.length > 0}
+                fallback={<span class="text-muted-foreground">Flags</span>}
+              >
+                <span class="text-primary font-medium font-mono">
+                  {selected.map(s => s.value).join('')}
+                </span>
+              </Show>
+            )}
+          />
         </div>
 
         {/* Error display */}

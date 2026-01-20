@@ -1,6 +1,6 @@
 import { Button } from '#/components/ui/button'
 import Icon from '#/components/ui/icon'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '#/components/ui/select'
+import { SimpleSelect } from '#/components/ui/select'
 import { Switch } from '#/components/ui/switch'
 import { useTableEditorContext } from '#/contexts/table-editor-context'
 
@@ -21,35 +21,17 @@ export function TableActions() {
   return (
     <div class="flex gap-2 items-center justify-between">
       <div class="flex gap-4 items-center">
-        <Select<string>
+        <SimpleSelect
           multiple
           value={computed.visibleColumnIds()}
           onChange={handleColumnVisibilityChange}
-          options={store.tableData.columns.map(col => col.id)}
+          options={store.tableData.columns.map(col => ({
+            value: col.id,
+            label: col.name,
+          }))}
           placeholder="Select columns..."
           class="w-48"
-          itemComponent={p => (
-            <SelectItem item={p.item}>
-              {store.tableData.columns.find(col => col.id === p.item.rawValue)?.name}
-            </SelectItem>
-          )}
-        >
-          <SelectTrigger>
-            <SelectValue<string>>
-              {() => {
-                const selected = computed.visibleColumnIds()
-                if (selected.length === 0) {
-                  return 'No columns'
-                }
-                if (selected.length === store.tableData.columns.length) {
-                  return 'All columns'
-                }
-                return `${selected.length} column${selected.length > 1 ? 's' : ''}`
-              }}
-            </SelectValue>
-          </SelectTrigger>
-          <SelectContent />
-        </Select>
+        />
 
         <Switch
           text="First row is header"
