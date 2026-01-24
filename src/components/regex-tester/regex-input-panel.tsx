@@ -296,7 +296,7 @@ export function RegexInputPanel() {
             <TextFieldTextArea
               ref={patternRef}
               placeholder="Enter regex pattern..."
-              class="c-transparent leading-relaxed font-mono caret-foreground resize-none break-all !p-2 !min-h-10"
+              class="text-sm c-transparent leading-relaxed font-mono caret-foreground resize-none break-all overflow-hidden !p-2 !min-h-10"
               rows={1}
               aria-label="Regular expression pattern"
               aria-describedby={store.parseError ? errorId : undefined}

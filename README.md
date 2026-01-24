@@ -34,4 +34,4 @@ A privacy-first web-based developer toolset providing 14+ essential utilities. A
 - [ ] regex input misalign and redudant scrollbar
 - [ ] regex tester page scrollbar eliminate
 - [ ] json object to python/java class
-- [ ] java class to api table
+- [ ] java class to api doc table
