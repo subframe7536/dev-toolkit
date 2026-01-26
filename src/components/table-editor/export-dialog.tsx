@@ -17,7 +17,7 @@ import { TextField, TextFieldInput, TextFieldLabel, TextFieldTextArea } from '#/
 import { useTableEditorContext } from '#/contexts'
 import { downloadFile } from '#/utils/download'
 import { exportToCSV, exportToExcel, exportToJSON, exportToMarkdown, generateCreateTable, generateSQLInsert, generateSQLUpdate } from '#/utils/table/export'
-import { createEffect, createMemo, createSignal, For, onCleanup, Show } from 'solid-js'
+import { createEffect, createSignal, For, Show } from 'solid-js'
 import { toast } from 'solid-sonner'
 
 type ExportFormat = 'sql-insert' | 'sql-update' | 'create-table' | 'excel' | 'csv' | 'markdown' | 'json-array'

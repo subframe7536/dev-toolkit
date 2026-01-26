@@ -90,11 +90,11 @@ function convertObjectKeys(obj: any, targetCase: CaseStyle): any {
 }
 
 /**
-  * Convert a string to the specified case style
-  * @param str - String to convert
-  * @param targetCase - Target case style
-  * @returns Converted string
-  */
+ * Convert a string to the specified case style
+ * @param str - String to convert
+ * @param targetCase - Target case style
+ * @returns Converted string
+ */
 export function convertCase(str: string, targetCase: CaseStyle): string {
   // First, split the string into words
   const words = splitIntoWords(str)
