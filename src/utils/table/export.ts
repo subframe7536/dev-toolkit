@@ -1,6 +1,25 @@
 import type { CellValue, DataType, TableData } from './types'
 
+import { convertCase } from '#/utils/json/key-converter'
 import { utils, write } from 'xlsx'
+
+type NamePattern = 'snake_case' | 'camelCase' | 'original'
+
+/**
+ * Get column names based on naming pattern
+ */
+function getColumnNames(data: TableData, pattern: NamePattern): string[] {
+  if (pattern === 'original') {
+    return data.columns.map(col => col.originalName)
+  }
+
+  if (pattern === 'snake_case') {
+    return data.columns.map(col => col.name)
+  }
+
+  // camelCase
+  return data.columns.map(col => convertCase(col.originalName, 'camelCase'))
+}
 
 /**
  * Escape SQL string values by doubling single quotes and handling special characters
@@ -67,14 +86,14 @@ export function getSQLType(dataType: DataType): string {
 export function generateSQLInsert(
   data: TableData,
   tableName: string,
-  useSnakeCase: boolean = false,
+  namePattern: NamePattern = 'original',
 ): string {
   if (data.rows.length === 0) {
     return '-- No data to insert'
   }
 
-  // Get column names (use snake_case if requested)
-  const columnNames = data.columns.map(col => useSnakeCase ? col.name : col.originalName)
+  // Get column names based on naming pattern
+  const columnNames = getColumnNames(data, namePattern)
   const columnIds = data.columns.map(col => col.id)
 
   // Build column list
@@ -101,7 +120,7 @@ export function generateSQLUpdate(
   data: TableData,
   tableName: string,
   keyColumns: string[],
-  useSnakeCase: boolean = false,
+  namePattern: NamePattern = 'original',
 ): string {
   if (data.rows.length === 0) {
     return '-- No data to update'
@@ -133,7 +152,7 @@ export function generateSQLUpdate(
   const statements = data.rows.map((row) => {
     // Build SET clause with non-key columns
     const setClauses = nonKeyColumns.map((col) => {
-      const columnName = useSnakeCase ? col.name : col.originalName
+      const columnName = getColumnNames({ columns: [col], rows: [] }, namePattern)[0]
       const value = row.cells[col.id]
       const formattedValue = formatSQLValue(value, col.dataType)
       return `\`${columnName}\` = ${formattedValue}`
@@ -141,7 +160,7 @@ export function generateSQLUpdate(
 
     // Build WHERE clause with key columns
     const whereClauses = keyColumnDefs.map((col) => {
-      const columnName = useSnakeCase ? col.name : col.originalName
+      const columnName = getColumnNames({ columns: [col], rows: [] }, namePattern)[0]
       const value = row.cells[col.id]
       const formattedValue = formatSQLValue(value, col.dataType)
       return `\`${columnName}\` = ${formattedValue}`
@@ -159,7 +178,7 @@ export function generateSQLUpdate(
 export function generateCreateTable(
   data: TableData,
   tableName: string,
-  useSnakeCase: boolean = false,
+  namePattern: NamePattern = 'original',
 ): string {
   if (data.columns.length === 0) {
     return '-- No columns to create'
@@ -167,7 +186,7 @@ export function generateCreateTable(
 
   // Build column definitions
   const columnDefs = data.columns.map((col) => {
-    const columnName = useSnakeCase ? col.name : col.originalName
+    const columnName = getColumnNames({ columns: [col], rows: [] }, namePattern)[0]
     const sqlType = getSQLType(col.dataType)
     return `  \`${columnName}\` ${sqlType}`
   }).join(',\n')
@@ -204,15 +223,15 @@ export function escapeCSVValue(value: CellValue): string {
  */
 export function exportToCSV(
   data: TableData,
-  useSnakeCase: boolean = false,
+  namePattern: NamePattern = 'original',
   includeHeaders: boolean = true,
 ): string {
   if (data.columns.length === 0) {
     return ''
   }
 
-  // Get column names (use snake_case if requested)
-  const columnNames = data.columns.map(col => useSnakeCase ? col.name : col.originalName)
+  // Get column names based on naming pattern
+  const columnNames = getColumnNames(data, namePattern)
 
   // Build header row
   const headerRow = includeHeaders ? columnNames.map(escapeCSVValue).join(',') : ''
@@ -252,15 +271,15 @@ export function escapeMarkdownValue(value: CellValue): string {
  */
 export function exportToMarkdown(
   data: TableData,
-  useSnakeCase: boolean = false,
+  namePattern: NamePattern = 'original',
   includeHeaders: boolean = true,
 ): string {
   if (data.columns.length === 0) {
     return ''
   }
 
-  // Get column names (use snake_case if requested)
-  const columnNames = data.columns.map(col => useSnakeCase ? col.name : col.originalName)
+  // Get column names based on naming pattern
+  const columnNames = getColumnNames(data, namePattern)
 
   // Build header row
   const headerRow = includeHeaders ? `| ${columnNames.map(escapeMarkdownValue).join(' | ')} |` : ''
@@ -287,11 +306,11 @@ export function exportToMarkdown(
  */
 export async function exportToExcel(
   data: TableData,
-  useSnakeCase: boolean = false,
+  namePattern: NamePattern = 'original',
   includeHeaders: boolean = true,
 ): Promise<Blob> {
-  // Get column names (use snake_case if requested)
-  const columnNames = data.columns.map(col => useSnakeCase ? col.name : col.originalName)
+  // Get column names based on naming pattern
+  const columnNames = getColumnNames(data, namePattern)
 
   // Build worksheet data as array of arrays
   // First row is the header
@@ -344,4 +363,32 @@ export async function exportToExcel(
   return new Blob([excelBuffer], {
     type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
   })
+}
+
+/**
+ * Export table data to JSON array format
+ */
+export function exportToJSON(
+  data: TableData,
+  namePattern: NamePattern = 'original',
+  _includeHeaders: boolean = true,
+): string {
+  if (data.columns.length === 0) {
+    return '[]'
+  }
+
+  // Get column names based on naming pattern
+  const columnNames = getColumnNames(data, namePattern)
+  const columnIds = data.columns.map(col => col.id)
+
+  // Build JSON array of objects
+  const jsonArray = data.rows.map((row) => {
+    const obj: Record<string, CellValue> = {}
+    columnIds.forEach((id, index) => {
+      obj[columnNames[index]] = row.cells[id]
+    })
+    return obj
+  })
+
+  return JSON.stringify(jsonArray, null, 2)
 }

@@ -15,6 +15,7 @@ interface DownloadButtonProps {
   disabled?: boolean
   class?: string
   text?: boolean | string
+  onClick?: () => void
 }
 
 export function DownloadButton(props: DownloadButtonProps) {
@@ -31,7 +32,7 @@ export function DownloadButton(props: DownloadButtonProps) {
       size={props.size}
       class={props.class}
       disabled={props.disabled}
-      onClick={handleDownload}
+      onClick={props.onClick || handleDownload}
     >
       <Show when={text()}>
         {icon}

@@ -7,22 +7,21 @@ import { Checkbox } from '#/components/ui/checkbox'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '#/components/ui/dialog'
 import Icon from '#/components/ui/icon'
 import { SimpleSelect } from '#/components/ui/select'
-import { Switch } from '#/components/ui/switch'
-import { TextField, TextFieldInput, TextFieldLabel, TextFieldTextArea } from '#/components/ui/text-field'
-import { useTableEditorContext } from '#/contexts/table-editor-context'
-import { downloadFile } from '#/utils/download'
 import {
-  exportToCSV,
-  exportToExcel,
-  exportToMarkdown,
-  generateCreateTable,
-  generateSQLInsert,
-  generateSQLUpdate,
-} from '#/utils/table/export'
-import { createSignal, For, Show } from 'solid-js'
+  Tabs,
+  TabsIndicator,
+  TabsList,
+  TabsTrigger,
+} from '#/components/ui/tabs'
+import { TextField, TextFieldInput, TextFieldLabel, TextFieldTextArea } from '#/components/ui/text-field'
+import { useTableEditorContext } from '#/contexts'
+import { downloadFile } from '#/utils/download'
+import { exportToCSV, exportToExcel, exportToJSON, exportToMarkdown, generateCreateTable, generateSQLInsert, generateSQLUpdate } from '#/utils/table/export'
+import { createEffect, createMemo, createSignal, For, onCleanup, Show } from 'solid-js'
 import { toast } from 'solid-sonner'
 
-type ExportFormat = 'sql-insert' | 'sql-update' | 'create-table' | 'excel' | 'csv' | 'markdown'
+type ExportFormat = 'sql-insert' | 'sql-update' | 'create-table' | 'excel' | 'csv' | 'markdown' | 'json-array'
+type NamePattern = 'snake_case' | 'camelCase' | 'original'
 
 const exportOptions: Array<{ value: ExportFormat, label: string }> = [
   { value: 'sql-insert', label: 'SQL INSERT' },
@@ -31,29 +30,37 @@ const exportOptions: Array<{ value: ExportFormat, label: string }> = [
   { value: 'excel', label: 'Excel (.xlsx)' },
   { value: 'csv', label: 'CSV' },
   { value: 'markdown', label: 'Markdown' },
+  { value: 'json-array', label: 'JSON Array' },
+]
+
+const namePatternOptions: Array<{ value: NamePattern, label: string }> = [
+  { value: 'snake_case', label: 'snake_case' },
+  { value: 'camelCase', label: 'camelCase' },
+  { value: 'original', label: 'Original' },
 ]
 
 export function ExportDialog() {
   const { store, computed } = useTableEditorContext()
 
   const [tableName, setTableName] = createSignal('my_table')
-  const [useSnakeCase, setUseSnakeCase] = createSignal(true)
+  const [namePattern, setNamePattern] = createSignal<NamePattern>('snake_case')
   const [exportFormat, setExportFormat] = createSignal<ExportFormat>('sql-insert')
   const [keyColumns, setKeyColumns] = createSignal<string[]>([])
-  const [isExporting, setIsExporting] = createSignal(false)
   const [exportOutput, setExportOutput] = createSignal('')
 
-  // Export handler
-  const handleExport = async () => {
-    // Filter visible columns and create filtered table data
-    const visibleColumns = computed.visibleColumns()
-
-    if (visibleColumns.length === 0) {
-      toast.error('No visible columns to export')
+  const generateExportOutput = () => {
+    const format = exportFormat()
+    if (format === 'excel') {
       return
     }
 
-    // Create filtered table data with only visible columns
+    const visibleColumns = computed.visibleColumns()
+
+    if (visibleColumns.length === 0) {
+      setExportOutput('')
+      return
+    }
+
     const filteredData: TableData = {
       columns: visibleColumns,
       rows: store.tableData.rows.map(row => ({
@@ -65,64 +72,84 @@ export function ExportDialog() {
     }
 
     const name = tableName().trim()
-    const format = exportFormat()
 
-    // Validate table name for SQL exports
-    if (['sql-insert', 'sql-update', 'create-table'].includes(format)) {
-      if (!name) {
-        toast.error('Please provide a table name')
-        return
-      }
-
-      if (!/^\w+$/.test(name)) {
-        toast.error('Invalid table name', {
-          description: 'Table name must contain only alphanumeric characters and underscores',
-        })
-        return
-      }
+    if (['sql-insert', 'sql-update', 'create-table'].includes(format) && (!name || !/^\w+$/.test(name))) {
+      setExportOutput('')
+      return
     }
 
-    // Validate key columns for UPDATE
     if (format === 'sql-update' && keyColumns().length === 0) {
-      toast.error('Please select at least one key column for UPDATE statements')
+      setExportOutput('')
       return
     }
 
     try {
-      setIsExporting(true)
       let output = ''
 
       switch (format) {
         case 'sql-insert':
-          output = generateSQLInsert(filteredData, name, useSnakeCase())
+          output = generateSQLInsert(filteredData, name, namePattern())
           break
         case 'sql-update':
-          output = generateSQLUpdate(filteredData, name, keyColumns(), useSnakeCase())
+          output = generateSQLUpdate(filteredData, name, keyColumns(), namePattern())
           break
         case 'create-table':
-          output = generateCreateTable(filteredData, name, useSnakeCase())
+          output = generateCreateTable(filteredData, name, namePattern())
           break
-        case 'excel': {
-          const blob = await exportToExcel(filteredData, useSnakeCase(), store.hasHeaders)
-          downloadFile(blob, `${name || 'table'}.xlsx`)
-          toast.success('Excel file downloaded')
-          return
-        }
         case 'csv':
-          output = exportToCSV(filteredData, useSnakeCase(), store.hasHeaders)
+          output = exportToCSV(filteredData, namePattern(), store.hasHeaders)
           break
         case 'markdown':
-          output = exportToMarkdown(filteredData, useSnakeCase(), store.hasHeaders)
+          output = exportToMarkdown(filteredData, namePattern(), store.hasHeaders)
+          break
+        case 'json-array':
+          output = exportToJSON(filteredData, namePattern(), store.hasHeaders)
           break
       }
 
       setExportOutput(output)
     } catch (error) {
+      setExportOutput('')
       toast.error('Failed to export', {
         description: error instanceof Error ? error.message : 'Unknown error',
       })
-    } finally {
-      setIsExporting(false)
+    }
+  }
+
+  createEffect(() => {
+    if (exportFormat() !== 'excel') {
+      generateExportOutput()
+    }
+  })
+
+  const handleExcelExport = async () => {
+    const visibleColumns = computed.visibleColumns()
+
+    if (visibleColumns.length === 0) {
+      toast.error('No visible columns to export')
+      return
+    }
+
+    const filteredData: TableData = {
+      columns: visibleColumns,
+      rows: store.tableData.rows.map(row => ({
+        ...row,
+        cells: Object.fromEntries(
+          visibleColumns.map(col => [col.id, row.cells[col.id]]),
+        ),
+      })),
+    }
+
+    const name = tableName().trim()
+
+    try {
+      const blob = await exportToExcel(filteredData, namePattern(), store.hasHeaders)
+      downloadFile(blob, `${name || 'table'}.xlsx`)
+      toast.success('Excel file downloaded')
+    } catch (error) {
+      toast.error('Failed to export Excel', {
+        description: error instanceof Error ? error.message : 'Unknown error',
+      })
     }
   }
 
@@ -141,6 +168,8 @@ export function ExportDialog() {
         return `${name}.csv`
       case 'markdown':
         return `${name}.md`
+      case 'json-array':
+        return `${name}.json`
       default:
         return `${name}.txt`
     }
@@ -151,6 +180,10 @@ export function ExportDialog() {
     switch (format) {
       case 'csv':
         return 'text/csv'
+      case 'json-array':
+        return 'application/json'
+      case 'excel':
+        return 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
       default:
         return 'text/plain'
     }
@@ -164,7 +197,7 @@ export function ExportDialog() {
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Export Options</DialogTitle>
+          <DialogTitle>Export</DialogTitle>
           <DialogDescription>
             Configure export settings and generate output
           </DialogDescription>
@@ -184,7 +217,9 @@ export function ExportDialog() {
               <label class="text-muted-foreground font-500">Export Format</label>
               <SimpleSelect
                 value={exportFormat()}
-                onChange={setExportFormat}
+                onChange={(value) => {
+                  setExportFormat(value as ExportFormat)
+                }}
                 disallowEmptySelection
                 options={exportOptions}
                 placeholder="Select format"
@@ -192,84 +227,80 @@ export function ExportDialog() {
             </div>
           </div>
 
-          <div class="flex items-center">
-            <Switch
-              text="Use snake_case"
-              checked={useSnakeCase()}
-              onChange={setUseSnakeCase}
-            />
-          </div>
-
-          <Show when={exportFormat() === 'sql-update'}>
-            <label class="text-sm font-medium">Key Columns (for UPDATE)</label>
-            <div class="p-2 border rounded-md bg-input flex flex-row flex-wrap gap-3">
-              <For each={computed.visibleColumns()}>
-                {col => (
-                  <Checkbox
-                    class="flex gap-2 items-center"
-                    checked={keyColumns().includes(col.id)}
-                    onChange={(checked) => {
-                      if (checked) {
-                        setKeyColumns([...keyColumns(), col.id])
-                      } else {
-                        setKeyColumns(keyColumns().filter(id => id !== col.id))
-                      }
-                    }}
-                    text={col.name}
-                  />
-                )}
-              </For>
-            </div>
-          </Show>
-
-          <Button
-            onClick={handleExport}
-            disabled={isExporting()}
-            class="w-full"
-          >
-            <Show
-              when={!isExporting()}
-              fallback={(
-                <>
-                  <Icon name="lucide:loader-2" class="mr-2 size-4 animate-spin" />
-                  Generating...
-                </>
-              )}
+          <div class="flex flex-col gap-2">
+            <label class="text-muted-foreground font-500">Column Naming Pattern</label>
+            <Tabs
+              value={namePattern()}
+              onChange={(value) => {
+                setNamePattern(value as NamePattern)
+              }}
             >
-              <Icon name="lucide:sparkles" class="mr-2 size-4" />
-              Generate Export
-            </Show>
-          </Button>
+              <TabsList>
+                <For each={namePatternOptions}>
+                  {option => <TabsTrigger value={option.value}>{option.label}</TabsTrigger>}
+                </For>
+                <TabsIndicator />
+              </TabsList>
+            </Tabs>
+          </div>
+        </div>
 
-          <Show when={exportOutput()}>
-            <div class="space-y-3">
-              <div class="flex gap-2 items-center justify-between">
-                <label class="text-sm font-medium">Output</label>
-                <div class="flex gap-2">
-                  <CopyButton
-                    content={exportOutput()}
-                    size="sm"
-                    variant="outline"
-                  />
-                  <DownloadButton
-                    content={exportOutput()}
-                    filename={getExportFilename()}
-                    mimeType={getExportMimeType()}
-                    size="sm"
-                    variant="outline"
-                  />
-                </div>
-              </div>
-              <TextField class="flex-1">
-                <TextFieldTextArea
-                  class="text-sm font-mono bg-muted/50 h-80 resize-none"
-                  readOnly
-                  value={exportOutput()}
+        <Show when={exportFormat() === 'sql-update'}>
+          <label class="text-sm font-medium">Key Columns (for UPDATE)</label>
+          <div class="p-2 border rounded-md bg-input flex flex-row flex-wrap gap-3 max-h-32 overflow-y-auto">
+            <For each={computed.visibleColumns()}>
+              {col => (
+                <Checkbox
+                  class="flex gap-2 items-center"
+                  checked={keyColumns().includes(col.id)}
+                  onChange={(checked) => {
+                    if (checked) {
+                      setKeyColumns([...keyColumns(), col.id])
+                    } else {
+                      setKeyColumns(keyColumns().filter(id => id !== col.id))
+                    }
+                  }}
+                  text={col.name}
                 />
-              </TextField>
+              )}
+            </For>
+          </div>
+        </Show>
+
+        <div class="space-y-3">
+          <div class="flex gap-2 items-center justify-between">
+            <label class="text-sm font-medium">Output</label>
+            <div class="flex gap-2">
+              <Show when={exportFormat() !== 'excel'}>
+                <CopyButton
+                  content={exportOutput()}
+                  size="sm"
+                  variant="outline"
+                />
+              </Show>
+              <DownloadButton
+                content={exportOutput()}
+                filename={getExportFilename()}
+                mimeType={getExportMimeType()}
+                size="sm"
+                variant={exportFormat() === 'excel' ? 'default' : 'outline'}
+                onClick={handleExcelExport}
+              />
             </div>
+          </div>
+          <Show
+            when={exportFormat() !== 'excel'}
+          >
+            <TextField class="flex-1">
+              <TextFieldTextArea
+                class="text-sm font-mono bg-muted/50 h-80 resize-none"
+                readOnly
+                value={exportOutput()}
+              />
+            </TextField>
           </Show>
         </div>
+
       </DialogContent>
     </Dialog>
   )
