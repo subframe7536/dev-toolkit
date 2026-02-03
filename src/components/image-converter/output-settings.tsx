@@ -2,7 +2,7 @@ import type { ImageFormat } from '#/utils/image'
 import type { Component } from 'solid-js'
 
 import { Label } from '#/components/ui/label'
-import { SimpleSelect } from '#/components/ui/select'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '#/components/ui/select'
 import { Slider } from '#/components/ui/slider'
 import { Switch } from '#/components/ui/switch'
 import { TextField, TextFieldInput } from '#/components/ui/text-field'
@@ -37,14 +37,24 @@ export const OutputSettings: Component<OutputSettingsProps> = (props) => {
     <div class="flex flex-col gap-6">
       <div>
         <Label>Output Format</Label>
-        <SimpleSelect
+        <Select
           value={props.targetFormat}
           onChange={props.onFormatChange}
-          options={FORMAT_OPTIONS.map(o => ({ value: o.value, label: o.label }))}
+          options={FORMAT_OPTIONS.map(o => o.value)}
           disallowEmptySelection
-          placeholder="Select format"
-          class="w-full"
-        />
+          itemComponent={p => (
+            <SelectItem item={p.item}>
+              {FORMAT_OPTIONS.find(o => o.value === p.item.rawValue)?.label}
+            </SelectItem>
+          )}
+        >
+          <SelectTrigger class="w-full">
+            <SelectValue<ImageFormat>>
+              {state => FORMAT_OPTIONS.find(o => o.value === state.selectedOption())?.label}
+            </SelectValue>
+          </SelectTrigger>
+          <SelectContent />
+        </Select>
       </div>
 
       <Show when={showQualitySlider()}>

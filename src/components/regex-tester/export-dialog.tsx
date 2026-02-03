@@ -2,7 +2,7 @@ import { CopyButton } from '#/components/copy-button'
 import { DownloadButton } from '#/components/download-button'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '#/components/ui/dialog'
 import Icon from '#/components/ui/icon'
-import { SimpleSelect } from '#/components/ui/select'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '#/components/ui/select'
 import { Switch } from '#/components/ui/switch'
 import { TextField, TextFieldInput, TextFieldLabel, TextFieldTextArea } from '#/components/ui/text-field'
 import { useRegexContext } from '#/contexts'
@@ -74,13 +74,24 @@ export function ExportDialog() {
           <div class="gap-4 grid grid-cols-1 sm:grid-cols-2">
             <div class="flex flex-col gap-2">
               <label id={languageLabelId} class="text-sm font-medium">Language</label>
-              <SimpleSelect
+              <Select
                 value={store.selectedExportLanguage}
-                onChange={lang => lang && actions.setExportLanguage(Array.isArray(lang) ? lang[0] : lang)}
-                options={languageOptions}
+                onChange={lang => lang && actions.setExportLanguage(lang)}
+                options={languageOptions.map(o => o.value)}
                 disallowEmptySelection
-                placeholder="Select language"
-              />
+                itemComponent={p => (
+                  <SelectItem item={p.item}>
+                    {languageOptions.find(o => o.value === p.item.rawValue)?.label}
+                  </SelectItem>
+                )}
+              >
+                <SelectTrigger aria-labelledby={languageLabelId}>
+                  <SelectValue<ExportLanguage>>
+                    {state => languageOptions.find(o => o.value === state.selectedOption())?.label}
+                  </SelectValue>
+                </SelectTrigger>
+                <SelectContent />
+              </Select>
             </div>
 
             <TextField>

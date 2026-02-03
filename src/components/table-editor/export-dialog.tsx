@@ -6,19 +6,15 @@ import { Button } from '#/components/ui/button'
 import { Checkbox } from '#/components/ui/checkbox'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '#/components/ui/dialog'
 import Icon from '#/components/ui/icon'
-import { SimpleSelect } from '#/components/ui/select'
-import {
-  Tabs,
-  TabsIndicator,
-  TabsList,
-  TabsTrigger,
-} from '#/components/ui/tabs'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '#/components/ui/select'
 import { TextField, TextFieldInput, TextFieldLabel, TextFieldTextArea } from '#/components/ui/text-field'
 import { useTableEditorContext } from '#/contexts'
 import { downloadFile } from '#/utils/download'
 import { exportToCSV, exportToExcel, exportToJSON, exportToMarkdown, generateCreateTable, generateSQLInsert, generateSQLUpdate } from '#/utils/table/export'
 import { createEffect, createSignal, For, Show } from 'solid-js'
 import { toast } from 'solid-sonner'
+
+import { Tabs, TabsIndicator, TabsList, TabsTrigger } from '../ui/tabs'
 
 type ExportFormat = 'sql-insert' | 'sql-update' | 'create-table' | 'excel' | 'csv' | 'markdown' | 'json-array'
 type NamePattern = 'snake_case' | 'camelCase' | 'original'
@@ -215,15 +211,24 @@ export function ExportDialog() {
 
             <div class="flex flex-col gap-2">
               <label class="text-muted-foreground font-500">Export Format</label>
-              <SimpleSelect
+              <Select
                 value={exportFormat()}
-                onChange={(value) => {
-                  setExportFormat(value as ExportFormat)
-                }}
+                onChange={setExportFormat}
+                options={exportOptions.map(o => o.value)}
                 disallowEmptySelection
-                options={exportOptions}
-                placeholder="Select format"
-              />
+                itemComponent={p => (
+                  <SelectItem item={p.item}>
+                    {exportOptions.find(o => o.value === p.item.rawValue)?.label}
+                  </SelectItem>
+                )}
+              >
+                <SelectTrigger>
+                  <SelectValue<ExportFormat>>
+                    {state => exportOptions.find(o => o.value === state.selectedOption())?.label}
+                  </SelectValue>
+                </SelectTrigger>
+                <SelectContent />
+              </Select>
             </div>
           </div>
 

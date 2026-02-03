@@ -3,7 +3,7 @@ import type { JSX, ValidComponent } from 'solid-js'
 
 import * as SelectPrimitive from '@kobalte/core/select'
 import { cls, clsv, clsvDefault } from 'cls-variant'
-import { createMemo, Show, splitProps } from 'solid-js'
+import { Show, splitProps } from 'solid-js'
 
 import Icon from './icon'
 
@@ -134,104 +134,6 @@ function SelectErrorMessage<T extends ValidComponent = 'div'>(props: Polymorphic
   )
 }
 
-// Unified Select Component
-type UnifiedSelectProps<T = string> = {
-  options: Array<Record<string, any>>
-  value?: T | T[]
-  onChange?: (value: T | T[]) => void
-  placeholder?: string
-  multiple?: boolean
-  searchable?: boolean
-  disabled?: boolean
-  disallowEmptySelection?: boolean
-  class?: string
-  renderItem?: (option: Record<string, any>, index: number) => JSX.Element
-  renderValue?: (selected: any, options: Array<Record<string, any>>) => JSX.Element
-}
-
-function SimpleSelect<T extends string = string>(props: UnifiedSelectProps<T>) {
-  const isMultiple = createMemo(() => props.multiple || Array.isArray(props.value))
-
-  const handleValueChange = (newValue: string | string[]) => {
-    if (!isMultiple() && Array.isArray(newValue)) {
-      // For single select, take first value
-      props.onChange?.(newValue[0] as T)
-    } else {
-      props.onChange?.(newValue as T | T[])
-    }
-  }
-
-  const getValue = createMemo(() => {
-    if (Array.isArray(props.value)) {
-      return props.value
-    }
-    return props.value ? [props.value] : []
-  })
-
-  const selectedOptions = createMemo(() => {
-    const currentValue = getValue()
-    return props.options.filter(option =>
-      currentValue.includes(option.value),
-    )
-  })
-
-  const renderDefaultValue = () => {
-    const selected = selectedOptions()
-    if (selected.length === 0) {
-      return props.placeholder || 'Select...'
-    }
-
-    if (isMultiple()) {
-      if (selected.length === props.options.length) {
-        return 'All'
-      }
-      if (selected.length === 0) {
-        return 'None'
-      }
-      return `${selected.length} selected`
-    }
-
-    return selected[0]?.label || props.placeholder
-  }
-
-  return (
-    <Select<T>
-      value={props.value as any}
-      onChange={handleValueChange as any}
-      options={props.options.map(option => option.value)}
-      disabled={props.disabled}
-      class={props.class}
-      itemComponent={(itemProps) => {
-        const option = props.options.find(opt => opt.value === itemProps.item.rawValue)
-        if (!option) {
-          return null
-        }
-
-        if (props.renderItem) {
-          // renderItem expects (option, index)
-          return props.renderItem(option, props.options.indexOf(option))
-        }
-
-        // Default SelectItem
-        return (
-          <SelectItem item={itemProps.item}>
-            {option.label}
-          </SelectItem>
-        )
-      }}
-    >
-      <SelectTrigger>
-        <SelectValue>
-          <Show when={props.renderValue} fallback={renderDefaultValue()}>
-            {props.renderValue!(selectedOptions(), props.options)}
-          </Show>
-        </SelectValue>
-      </SelectTrigger>
-      <SelectContent />
-    </Select>
-  )
-}
-
 export {
   Select,
   SelectContent,
@@ -242,5 +144,4 @@ export {
   SelectLabel,
   SelectTrigger,
   SelectValue,
-  SimpleSelect,
 }

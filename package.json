@@ -8,7 +8,7 @@
     "build": "bun --bun vite build",
     "preview": "bun --bun vite preview",
     "serve": "bun --bun vite preview",
-    "lint": "tsc && bun --bun eslint --fix --cache",
+    "lint": "tsc && bun --bun eslint",
     "format": "bun --bun eslint --fix --cache",
     "test": "bun test",
     "release": "bun run format && bun run test && bun run build && bumpp --all"

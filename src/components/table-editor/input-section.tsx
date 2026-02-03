@@ -1,7 +1,7 @@
 import { FileUpload } from '#/components/file-upload'
 import { Button } from '#/components/ui/button'
 import Icon from '#/components/ui/icon'
-import { SimpleSelect } from '#/components/ui/select'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '#/components/ui/select'
 import { Switch } from '#/components/ui/switch'
 import { Tabs, TabsContent, TabsIndicator, TabsList, TabsTrigger } from '#/components/ui/tabs'
 import { TextField, TextFieldTextArea } from '#/components/ui/text-field'
@@ -287,12 +287,18 @@ export function InputSection() {
             <Show when={sheetNames().length > 1}>
               <div class="flex flex-col gap-2">
                 <label class="text-sm font-medium">Select Sheet</label>
-                <SimpleSelect
+                <Select<string>
                   value={selectedSheet()}
                   onChange={setSelectedSheet}
-                  options={sheetNames().map(name => ({ value: name, label: name }))}
+                  options={sheetNames()}
                   placeholder="Select a sheet"
-                />
+                  itemComponent={props => <SelectItem item={props.item}>{props.item.rawValue}</SelectItem>}
+                >
+                  <SelectTrigger>
+                    <SelectValue<string>>{state => state.selectedOption()}</SelectValue>
+                  </SelectTrigger>
+                  <SelectContent />
+                </Select>
               </div>
             </Show>
 
