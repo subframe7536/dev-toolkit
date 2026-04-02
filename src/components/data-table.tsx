@@ -1,8 +1,7 @@
 import type { CellValue, TableData, TableRow } from '#/utils/table/types'
 import type { ColumnDef, SortingState } from '@tanstack/solid-table'
 
-import Icon from '#/components/ui/icon'
-import { Tooltip, TooltipContent, TooltipTrigger } from '#/components/ui/tooltip'
+import { Icon, Tooltip } from 'moraine'
 import { createSolidTable, flexRender, getCoreRowModel, getSortedRowModel } from '@tanstack/solid-table'
 import { cls } from 'cls-variant'
 import { createEffect, createMemo, createSignal, For, Show } from 'solid-js'
@@ -286,28 +285,24 @@ export function DataTable(props: DataTableProps) {
                               <span>{flexRender(header.column.columnDef.header, header.getContext())}</span>
                               <Show when={sortState}>
                                 <Icon
-                                  name={sortState?.desc ? 'lucide:arrow-down' : 'lucide:arrow-up'}
+                                  name={sortState?.desc ? 'i-lucide-arrow-down' : 'i-lucide-arrow-up'}
                                   class="ml-1 size-3 inline-block"
                                 />
                               </Show>
                             </div>
 
-                            <Tooltip>
-                              <TooltipTrigger
-                                as="button"
+                            <Tooltip text={isPinned() ? 'Unpin column' : 'Pin column'}>
+                              <button
                                 class="px-1 rounded hover:bg-accent"
                                 onClick={() => handlePinToggle(columnId)}
                                 aria-label={isPinned() ? `Unpin ${flexRender(header.column.columnDef.header, header.getContext())} column` : `Pin ${flexRender(header.column.columnDef.header, header.getContext())} column`}
                               >
                                 <Icon
-                                  name={isPinned() ? 'lucide:pin-off' : 'lucide:pin'}
+                                  name={isPinned() ? 'i-lucide-pin-off' : 'i-lucide-pin'}
                                   class={cls('mt-1', isPinned() && 'text-primary')}
                                   title=""
                                 />
-                              </TooltipTrigger>
-                              <TooltipContent>
-                                {isPinned() ? 'Unpin column' : 'Pin column'}
-                              </TooltipContent>
+                              </button>
                             </Tooltip>
                           </div>
                         </th>

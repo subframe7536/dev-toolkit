@@ -1,7 +1,7 @@
 import { CopyButton } from '#/components/copy-button'
 import { DownloadButton } from '#/components/download-button'
 import { FileUpload } from '#/components/file-upload'
-import { Switch } from '#/components/ui/switch'
+import { Switch } from 'moraine'
 import { createMemo, createSignal, Show } from 'solid-js'
 import { toast } from 'solid-sonner'
 
@@ -81,7 +81,7 @@ export function FileEncoder(props: FileEncoderProps) {
                 <Switch
                   checked={includeDataURL()}
                   onChange={setIncludeDataURL}
-                  text="Include Data URL prefix"
+                  label="Include Data URL prefix"
                 />
               </Show>
               <CopyButton content={targetOutput()} variant="secondary" size="sm" />

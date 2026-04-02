@@ -1,4 +1,4 @@
-import Icon from '#/components/ui/icon'
+import { Icon } from 'moraine'
 import { For } from 'solid-js'
 
 /**
@@ -14,7 +14,7 @@ interface SyntaxItem {
 interface SyntaxCategory {
   id: string
   title: string
-  icon: `lucide:${string}`
+  icon: `i-lucide-${string}`
   items: SyntaxItem[]
 }
 
@@ -22,7 +22,7 @@ const SYNTAX_REFERENCE: SyntaxCategory[] = [
   {
     id: 'character-classes',
     title: 'Character Classes',
-    icon: 'lucide:brackets',
+    icon: 'i-lucide-brackets',
     items: [
       { syntax: '[abc]', description: 'Match any character in the set', example: '[aeiou]', exampleMatch: 'Matches vowels' },
       { syntax: '[^abc]', description: 'Match any character NOT in the set', example: '[^0-9]', exampleMatch: 'Matches non-digits' },
@@ -39,7 +39,7 @@ const SYNTAX_REFERENCE: SyntaxCategory[] = [
   {
     id: 'quantifiers',
     title: 'Quantifiers',
-    icon: 'lucide:repeat',
+    icon: 'i-lucide-repeat',
     items: [
       { syntax: '*', description: 'Match 0 or more times (greedy)', example: 'a*', exampleMatch: 'Matches "", "a", "aaa"' },
       { syntax: '+', description: 'Match 1 or more times (greedy)', example: 'a+', exampleMatch: 'Matches "a", "aaa"' },
@@ -54,7 +54,7 @@ const SYNTAX_REFERENCE: SyntaxCategory[] = [
   {
     id: 'anchors',
     title: 'Anchors',
-    icon: 'lucide:anchor',
+    icon: 'i-lucide-anchor',
     items: [
       { syntax: '^', description: 'Match start of string/line', example: '^Hello', exampleMatch: 'Matches "Hello" at start' },
       { syntax: '$', description: 'Match end of string/line', example: 'world$', exampleMatch: 'Matches "world" at end' },
@@ -65,7 +65,7 @@ const SYNTAX_REFERENCE: SyntaxCategory[] = [
   {
     id: 'groups',
     title: 'Groups & Capturing',
-    icon: 'lucide:parentheses',
+    icon: 'i-lucide-parentheses',
     items: [
       { syntax: '(abc)', description: 'Capture group - captures matched text', example: '(\\d+)-(\\d+)', exampleMatch: 'Captures "123" and "456"' },
       { syntax: '(?:abc)', description: 'Non-capturing group', example: '(?:https?://)', exampleMatch: 'Groups without capturing' },
@@ -78,7 +78,7 @@ const SYNTAX_REFERENCE: SyntaxCategory[] = [
   {
     id: 'lookaround',
     title: 'Lookahead & Lookbehind',
-    icon: 'lucide:eye',
+    icon: 'i-lucide-eye',
     items: [
       { syntax: '(?=abc)', description: 'Positive lookahead - match if followed by', example: '\\d+(?=px)', exampleMatch: 'Matches "10" in "10px"' },
       { syntax: '(?!abc)', description: 'Negative lookahead - match if NOT followed by', example: '\\d+(?!px)', exampleMatch: 'Matches "10" not before "px"' },
@@ -89,7 +89,7 @@ const SYNTAX_REFERENCE: SyntaxCategory[] = [
   {
     id: 'escapes',
     title: 'Special Characters & Escapes',
-    icon: 'lucide:corner-down-right',
+    icon: 'i-lucide-corner-down-right',
     items: [
       { syntax: '\\', description: 'Escape special character', example: '\\.', exampleMatch: 'Matches literal "."' },
       { syntax: '\\n', description: 'Newline character', example: 'line1\\nline2', exampleMatch: 'Matches across lines' },
@@ -102,7 +102,7 @@ const SYNTAX_REFERENCE: SyntaxCategory[] = [
   {
     id: 'flags',
     title: 'Flags',
-    icon: 'lucide:flag',
+    icon: 'i-lucide-flag',
     items: [
       { syntax: 'g', description: 'Global - find all matches', example: '/a/g', exampleMatch: 'Finds all "a" in text' },
       { syntax: 'i', description: 'Case-insensitive matching', example: '/hello/i', exampleMatch: 'Matches "Hello", "HELLO"' },
@@ -139,7 +139,7 @@ export function HelpPanel() {
   return (
     <div class="p-4">
       <h3 class="text-md text-foreground font-medium mb-4 flex gap-2 items-center">
-        <Icon name="lucide:book-open" class="size-4" />
+        <Icon name="i-lucide-book-open" class="size-4" />
         Regex Syntax Reference
       </h3>
 
@@ -165,7 +165,7 @@ export function HelpPanel() {
 
       <div class="text-xs text-muted-foreground mt-6 p-3 border border-border rounded-md bg-muted/20">
         <div class="font-medium mb-1 flex gap-1 items-center">
-          <Icon name="lucide:lightbulb" class="size-3" />
+          <Icon name="i-lucide-lightbulb" class="size-3" />
           Tips
         </div>
         <ul class="list-disc list-inside space-y-0.5">

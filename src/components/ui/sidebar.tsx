@@ -1,14 +1,8 @@
-import type { ButtonProps } from './button'
 import type { PolymorphicProps } from '@kobalte/core'
 import type { VariantProps } from 'cls-variant'
 import type { Accessor, Component, ComponentProps, FlowProps, JSX, ValidComponent } from 'solid-js'
 
-import { Button } from '#/components/ui/button'
-import { Separator } from '#/components/ui/separator'
-import { Sheet, SheetContent } from '#/components/ui/sheet'
-import { Skeleton } from '#/components/ui/skeleton'
-import { TextField, TextFieldInput } from '#/components/ui/text-field'
-import { Tooltip, TooltipContent, TooltipTrigger } from '#/components/ui/tooltip'
+import { Button, Icon, Input, Separator, Sheet, Tooltip } from 'moraine'
 import { Polymorphic } from '@kobalte/core'
 import { useMediaQuery } from '@solid-hooks/core/web'
 import { cls, clsv, clsvDefault } from 'cls-variant'
@@ -23,8 +17,6 @@ import {
   Switch,
   useContext,
 } from 'solid-js'
-
-import Icon from './icon'
 
 const MOBILE_BREAKPOINT = 768
 const SIDEBAR_COOKIE_NAME = 'sidebar:state'
@@ -178,18 +170,24 @@ const Sidebar: Component<SidebarProps> = (rawProps) => {
         </div>
       </Match>
       <Match when={isMobile()}>
-        <Sheet open={openMobile()} onOpenChange={setOpenMobile} {...others}>
-          <SheetContent
-            data-sidebar="sidebar"
-            data-mobile="true"
-            class="text-sidebar-foreground p-0 bg-sidebar w-$sidebar-width [&>button]:hidden"
-            style={{
-              '--sidebar-width': SIDEBAR_WIDTH_MOBILE,
-            }}
-            position={local.side}
-          >
-            <div class="flex flex-col size-full">{local.children}</div>
-          </SheetContent>
+        <Sheet
+          open={openMobile()}
+          onOpenChange={setOpenMobile}
+          side={local.side}
+          body={(
+            <div
+              data-sidebar="sidebar"
+              data-mobile="true"
+              class="flex flex-col size-full"
+              style={{ '--sidebar-width': SIDEBAR_WIDTH_MOBILE }}
+            >
+              {local.children}
+            </div>
+          )}
+          classes={{ overlay: 'z-49', content: 'text-sidebar-foreground p-0 bg-sidebar w-$sidebar-width [&>button]:hidden' }}
+          {...others}
+        >
+          <span />
         </Sheet>
       </Match>
       <Match when={!isMobile()}>
@@ -239,19 +237,19 @@ const Sidebar: Component<SidebarProps> = (rawProps) => {
   )
 }
 
-type SidebarTriggerProps<T extends ValidComponent = 'button'> = ButtonProps<T> & {
+type SidebarTriggerProps = ComponentProps<'button'> & {
   onClick?: (event: MouseEvent) => void
 }
 
-function SidebarTrigger<T extends ValidComponent = 'button'>(props: SidebarTriggerProps<T>) {
-  const [local, others] = splitProps(props as SidebarTriggerProps, ['class', 'onClick'])
+function SidebarTrigger(props: SidebarTriggerProps) {
+  const [local, others] = splitProps(props, ['class', 'onClick'])
   const { toggleSidebar } = useSidebar()
 
   return (
     <Button
       data-sidebar="trigger"
       variant="ghost"
-      size="icon"
+      size="icon-md"
       class={cls('size-7', local.class)}
       onClick={(event: MouseEvent) => {
         local.onClick?.(event)
@@ -259,7 +257,7 @@ function SidebarTrigger<T extends ValidComponent = 'button'>(props: SidebarTrigg
       }}
       {...others}
     >
-      <Icon name="lucide:panel-left" />
+      <Icon name="i-lucide-panel-left" />
       <span class="sr-only">Toggle Sidebar</span>
     </Button>
   )
@@ -304,23 +302,19 @@ function SidebarInset(props: FlowPropsWithClass) {
   )
 }
 
-type SidebarInputProps<T extends ValidComponent = 'input'> = ComponentProps<
-  typeof TextFieldInput<T>
->
+type SidebarInputProps = ComponentProps<'input'> & { class?: string }
 
-function SidebarInput<T extends ValidComponent = 'input'>(props: SidebarInputProps<T>) {
-  const [local, others] = splitProps(props as SidebarInputProps, ['class'])
+function SidebarInput(props: SidebarInputProps) {
+  const [local, others] = splitProps(props, ['class'])
   return (
-    <TextField>
-      <TextFieldInput
-        data-sidebar="input"
-        class={cls(
-          'h-8 w-full bg-background shadow-none focus-visible:ring-2 focus-visible:ring-sidebar-ring',
-          local.class,
-        )}
-        {...others}
-      />
-    </TextField>
+    <Input
+      data-sidebar="input"
+      class={cls(
+        'h-8 w-full bg-background shadow-none focus-visible:ring-2 focus-visible:ring-sidebar-ring',
+        local.class,
+      )}
+      {...others}
+    />
   )
 }
 
@@ -344,10 +338,10 @@ function SidebarFooter(props: FlowPropsWithClass) {
   )
 }
 
-type SidebarSeparatorProps<T extends ValidComponent = 'hr'> = ComponentProps<typeof Separator<T>>
+type SidebarSeparatorProps = ComponentProps<'hr'> & { class?: string }
 
-function SidebarSeparator<T extends ValidComponent = 'hr'>(props: SidebarSeparatorProps<T>) {
-  const [local, others] = splitProps(props as SidebarSeparatorProps, ['class'])
+function SidebarSeparator(props: SidebarSeparatorProps) {
+  const [local, others] = splitProps(props, ['class'])
   return (
     <Separator
       data-sidebar="separator"
@@ -497,9 +491,8 @@ function SidebarMenuButton<T extends ValidComponent = 'button'>(rawProps: Polymo
 
   return (
     <Show when={local.tooltip && state() === 'collapsed' && !isMobile()} fallback={button}>
-      <Tooltip placement="right">
-        <TooltipTrigger class="w-full">{button}</TooltipTrigger>
-        <TooltipContent>{local.tooltip}</TooltipContent>
+      <Tooltip text={local.tooltip!} placement="right">
+        <div class="w-full">{button}</div>
       </Tooltip>
     </Show>
   )
@@ -554,10 +547,10 @@ function SidebarMenuSkeleton(props: FlowPropsWithClass<{ showIcon: boolean }>) {
       class={cls('flex h-8 items-center gap-2 rounded-md px-2', props.class)}
     >
       <Show when={props.showIcon || false}>
-        <Skeleton class="rounded-md size-4" data-sidebar="menu-skeleton-icon" />
+        <div class="animate-pulse bg-primary/10 rounded-md size-4" data-sidebar="menu-skeleton-icon" />
       </Show>
-      <Skeleton
-        class="flex-1 h-4 max-w-$skeleton-width"
+      <div
+        class="animate-pulse bg-primary/10 rounded-md flex-1 h-4 max-w-$skeleton-width"
         data-sidebar="menu-skeleton-text"
         style={{
           '--skeleton-width': width(),

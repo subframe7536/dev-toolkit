@@ -1,11 +1,9 @@
 import type { DebugSession, DebugStep } from '#/utils/regex/types'
 
-import { Button } from '#/components/ui/button'
+import { Button, Icon } from 'moraine'
 import { useRegexContext } from '#/contexts/regex-context'
 import { generateDebugSteps, getActionBgColor, getActionColor, getActionIcon } from '#/utils/regex/debug-engine'
 import { createEffect, createMemo, createSignal, For, on, onCleanup, Show } from 'solid-js'
-
-import Icon from '../ui/icon'
 
 // Highlight colors for pattern and text positions
 const PATTERN_HIGHLIGHT = 'bg-primary/30 ring-2 ring-primary'
@@ -268,7 +266,7 @@ function StepList(props: StepListProps) {
             tabIndex={index() === props.currentIndex ? 0 : -1}
           >
             <div class="flex gap-2 items-center">
-              <Icon name={getActionIcon(step.action)} class={getActionColor(step.action)} />
+              <Icon name={getActionIcon(step.action).replace("lucide:", "i-lucide-") as any} class={getActionColor(step.action)} />
               <span class={`font-medium ${getActionColor(step.action)}`}>
                 {step.action.charAt(0).toUpperCase() + step.action.slice(1)}
               </span>
@@ -498,7 +496,7 @@ export function DebugPanel() {
               {step => (
                 <div class={`p-3 rounded-md ${getActionBgColor(step().action)}`} role="status" aria-live="polite">
                   <div class="mb-2 flex gap-2 items-center">
-                    <Icon name={getActionIcon(step().action)} class={getActionColor(step().action)} />
+                    <Icon name={getActionIcon(step().action).replace("lucide:", "i-lucide-") as any} class={getActionColor(step().action)} />
                     <span class={`font-medium ${getActionColor(step().action)}`}>
                       {step().action.charAt(0).toUpperCase() + step().action.slice(1)}
                     </span>

@@ -1,8 +1,7 @@
 import type { RouteSectionProps } from '@solidjs/router'
 
 import { ThemeToggle } from '#/components/theme-toggle'
-import { Button } from '#/components/ui/button'
-import Icon from '#/components/ui/icon'
+import { Button, Icon } from 'moraine'
 import {
   Sidebar,
   SidebarContent,

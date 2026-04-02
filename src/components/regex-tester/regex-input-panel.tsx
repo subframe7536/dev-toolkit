@@ -1,9 +1,7 @@
 import type { MatchResult } from '#/utils/regex/types'
 import type { HighlighterCore } from 'shiki'
 
-import Icon from '#/components/ui/icon'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '#/components/ui/select'
-import { TextField, TextFieldLabel, TextFieldTextArea } from '#/components/ui/text-field'
+import { Icon, Select } from 'moraine'
 import { useRegexContext } from '#/contexts/regex-context'
 import { useColorMode } from '@solid-hooks/core/web'
 import { createEffect, createMemo, createResource, createUniqueId, For, on, Show, Suspense } from 'solid-js'
@@ -265,7 +263,7 @@ export function RegexInputPanel() {
           <div class="text-xs text-muted-foreground flex gap-3 items-center">
             <Show when={hasInput() && store.executionTime > 0}>
               <span class="flex gap-1 items-center">
-                <Icon name="lucide:clock" class="size-3" />
+                <Icon name="i-lucide-clock" class="size-3" />
                 {formatExecutionTime(store.executionTime)}
               </span>
             </Show>
@@ -279,7 +277,7 @@ export function RegexInputPanel() {
 
         {/* Pattern Input with Shiki highlighting + Flag Select */}
         <div class="flex gap-2 items-start">
-          <TextField value={store.pattern} onChange={handlePatternChange} class="flex-1 relative">
+          <div class="flex-1 relative">
             {/* Mirror div for syntax highlighting */}
             <div
               ref={patternMirrorRef}
@@ -293,59 +291,34 @@ export function RegexInputPanel() {
               </Suspense>
             </div>
             {/* Textarea - auto height based on content */}
-            <TextFieldTextArea
+            <textarea
               ref={patternRef}
               placeholder="Enter regex pattern..."
-              class="text-sm c-transparent leading-relaxed font-mono caret-foreground resize-none break-all overflow-hidden !p-2 !min-h-10"
+              class="text-sm c-transparent leading-relaxed font-mono caret-foreground resize-none break-all overflow-hidden !p-2 !min-h-10 w-full border rounded-md bg-transparent"
               rows={1}
+              value={store.pattern}
+              onInput={e => handlePatternChange(e.currentTarget.value)}
               aria-label="Regular expression pattern"
               aria-describedby={store.parseError ? errorId : undefined}
               aria-invalid={!store.isValid}
             />
-          </TextField>
+          </div>
 
           {/* Flag Select */}
-          <Select<string>
+          <Select
             multiple
             value={selectedFlags()}
             onChange={handleFlagsChange}
-            options={FLAG_OPTIONS.map(o => o.flag)}
-            placeholder="No Flags"
-            class="pt-1"
-            itemComponent={props => (
-              <SelectItem item={props.item}>
-                <div class="flex gap-2 items-center">
-                  <code class="text-primary font-mono font-semibold">{props.item.rawValue}</code>
-                  <span class="text-muted-foreground">
-                    {FLAG_OPTIONS.find(o => o.flag === props.item.rawValue)?.label}
-                  </span>
-                </div>
-              </SelectItem>
-            )}
-          >
-            <SelectTrigger class="shrink-0 w-28 [&>span]:(text-foreground/30 pr-2)">
-              <SelectValue<string[]>>
-                {state => (
-                  <Show
-                    when={state.selectedOptions().length > 0}
-                    fallback={<span class="text-muted-foreground">Flags</span>}
-                  >
-                    <span class="text-primary font-medium font-mono">
-                      {state.selectedOptions().join('')}
-                    </span>
-                  </Show>
-                )}
-              </SelectValue>
-            </SelectTrigger>
-            <SelectContent />
-          </Select>
+            options={FLAG_OPTIONS.map(o => ({ value: o.flag, label: `${o.flag} - ${o.label}` }))}
+            class="pt-1 shrink-0 w-32"
+          />
         </div>
 
         {/* Error display */}
         <Show when={store.parseError}>
           {error => (
             <div id={errorId} class="text-sm text-red-600 flex gap-2 items-start dark:text-red-400" role="alert">
-              <Icon name="lucide:alert-circle" class="mt-0.5 flex-shrink-0 size-4" />
+              <Icon name="i-lucide-alert-circle" class="mt-0.5 flex-shrink-0 size-4" />
               <span>{error().message}</span>
             </div>
           )}
@@ -353,9 +326,9 @@ export function RegexInputPanel() {
       </div>
 
       {/* Test Text Section - fixed 400px height with scroll */}
-      <TextField value={store.testText} onChange={actions.setTestText}>
-        <TextFieldLabel>Test String</TextFieldLabel>
-        <div class="b-(1 transparent) rounded-lg h-100 relative overflow-hidden">
+      <div>
+        <label class="text-sm font-medium">Test String</label>
+        <div class="b-(1 transparent) rounded-lg h-100 relative overflow-hidden mt-1">
           {/* Highlight layer */}
           <div
             ref={testMirrorRef}
@@ -374,10 +347,12 @@ export function RegexInputPanel() {
             </For>
           </div>
           {/* Textarea - fixed height with scroll */}
-          <TextFieldTextArea
+          <textarea
             ref={testRef}
             placeholder="Enter text to test your regex..."
-            class="c-transparent leading-relaxed font-mono caret-foreground h-full resize-none break-all !min-h-0"
+            class="c-transparent leading-relaxed font-mono caret-foreground h-full resize-none break-all w-full bg-transparent border rounded-md p-2"
+            value={store.testText}
+            onInput={e => actions.setTestText(e.currentTarget.value)}
             onScroll={syncTestScroll}
             onClick={(e: MouseEvent) => {
               const target = e.target as HTMLElement
@@ -389,12 +364,12 @@ export function RegexInputPanel() {
             aria-label="Test text"
           />
         </div>
-      </TextField>
+      </div>
 
       {/* No matches hint */}
       <Show when={hasInput() && matchCount() === 0 && store.isValid}>
         <div class="text-sm text-amber-600 p-3 border border-amber-200 rounded-lg bg-amber-50 flex gap-2 items-center dark:text-amber-400 dark:border-amber-800 dark:bg-amber-950/30">
-          <Icon name="lucide:info" class="size-4" />
+          <Icon name="i-lucide-info" class="size-4" />
           <span>No matches found. Try adjusting your pattern.</span>
         </div>
       </Show>

@@ -1,8 +1,8 @@
-import Icon from '#/components/ui/icon'
+import { Icon } from 'moraine'
 import { useColorMode } from '@solid-hooks/core/web'
 import { createMemo } from 'solid-js'
 
-import { Button } from './ui/button'
+import { Button } from 'moraine'
 
 export function ThemeToggle(props: { class?: string }) {
   const [mode, setMode] = useColorMode()
@@ -11,11 +11,11 @@ export function ThemeToggle(props: { class?: string }) {
     const current = mode()
     switch (current) {
       case 'light':
-        return 'lucide:sun'
+        return 'i-lucide-sun'
       case 'dark':
-        return 'lucide:moon'
+        return 'i-lucide-moon'
       default:
-        return 'lucide:monitor'
+        return 'i-lucide-monitor'
     }
   })
 

@@ -2,19 +2,12 @@ import type { TableData } from '#/utils/table/types'
 
 import { CopyButton } from '#/components/copy-button'
 import { DownloadButton } from '#/components/download-button'
-import { Button } from '#/components/ui/button'
-import { Checkbox } from '#/components/ui/checkbox'
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '#/components/ui/dialog'
-import Icon from '#/components/ui/icon'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '#/components/ui/select'
-import { TextField, TextFieldInput, TextFieldLabel, TextFieldTextArea } from '#/components/ui/text-field'
+import { Button, Checkbox, Dialog, Icon, Input, Select, Tabs, Textarea } from 'moraine'
 import { useTableEditorContext } from '#/contexts'
 import { downloadFile } from '#/utils/download'
 import { exportToCSV, exportToExcel, exportToJSON, exportToMarkdown, generateCreateTable, generateSQLInsert, generateSQLUpdate } from '#/utils/table/export'
 import { createEffect, createSignal, For, Show } from 'solid-js'
 import { toast } from 'solid-sonner'
-
-import { Tabs, TabsIndicator, TabsList, TabsTrigger } from '../ui/tabs'
 
 type ExportFormat = 'sql-insert' | 'sql-update' | 'create-table' | 'excel' | 'csv' | 'markdown' | 'json-array'
 type NamePattern = 'snake_case' | 'camelCase' | 'original'
@@ -186,49 +179,29 @@ export function ExportDialog() {
   }
 
   return (
-    <Dialog>
-      <DialogTrigger as={Button}>
-        <Icon name="lucide:download" class="mr-2 size-4" />
-        Export
-      </DialogTrigger>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>Export</DialogTitle>
-          <DialogDescription>
-            Configure export settings and generate output
-          </DialogDescription>
-        </DialogHeader>
+    <Dialog
+      title="Export"
+      description="Configure export settings and generate output"
+      body={(
         <div class="space-y-6">
           <div class="gap-4 grid grid-cols-1 md:grid-cols-2">
-            <TextField>
-              <TextFieldLabel>Table Name</TextFieldLabel>
-              <TextFieldInput
+            <div>
+              <label class="text-sm font-medium">Table Name</label>
+              <Input
                 value={tableName()}
                 onInput={e => setTableName(e.currentTarget.value)}
                 placeholder="my_table"
+                class="mt-1"
               />
-            </TextField>
+            </div>
 
             <div class="flex flex-col gap-2">
               <label class="text-muted-foreground font-500">Export Format</label>
               <Select
                 value={exportFormat()}
                 onChange={setExportFormat}
-                options={exportOptions.map(o => o.value)}
-                disallowEmptySelection
-                itemComponent={p => (
-                  <SelectItem item={p.item}>
-                    {exportOptions.find(o => o.value === p.item.rawValue)?.label}
-                  </SelectItem>
-                )}
-              >
-                <SelectTrigger>
-                  <SelectValue<ExportFormat>>
-                    {state => exportOptions.find(o => o.value === state.selectedOption())?.label}
-                  </SelectValue>
-                </SelectTrigger>
-                <SelectContent />
-              </Select>
+                options={exportOptions.map(o => ({ value: o.value, label: o.label }))}
+              />
             </div>
           </div>
 
@@ -236,77 +209,72 @@ export function ExportDialog() {
             <label class="text-muted-foreground font-500">Column Naming Pattern</label>
             <Tabs
               value={namePattern()}
-              onChange={(value) => {
-                setNamePattern(value as NamePattern)
-              }}
-            >
-              <TabsList>
-                <For each={namePatternOptions}>
-                  {option => <TabsTrigger value={option.value}>{option.label}</TabsTrigger>}
+              onChange={value => setNamePattern(value as NamePattern)}
+              items={namePatternOptions.map(o => ({ value: o.value, label: o.label }))}
+            />
+          </div>
+
+          <Show when={exportFormat() === 'sql-update'}>
+            <div>
+              <label class="text-sm font-medium">Key Columns (for UPDATE)</label>
+              <div class="p-2 border rounded-md bg-input flex flex-row flex-wrap gap-3 max-h-32 overflow-y-auto mt-1">
+                <For each={computed.visibleColumns()}>
+                  {col => (
+                    <Checkbox
+                      class="flex gap-2 items-center"
+                      checked={keyColumns().includes(col.id)}
+                      onChange={(checked) => {
+                        if (checked) {
+                          setKeyColumns([...keyColumns(), col.id])
+                        } else {
+                          setKeyColumns(keyColumns().filter(id => id !== col.id))
+                        }
+                      }}
+                      label={col.name}
+                    />
+                  )}
                 </For>
-                <TabsIndicator />
-              </TabsList>
-            </Tabs>
-          </div>
-        </div>
-
-        <Show when={exportFormat() === 'sql-update'}>
-          <label class="text-sm font-medium">Key Columns (for UPDATE)</label>
-          <div class="p-2 border rounded-md bg-input flex flex-row flex-wrap gap-3 max-h-32 overflow-y-auto">
-            <For each={computed.visibleColumns()}>
-              {col => (
-                <Checkbox
-                  class="flex gap-2 items-center"
-                  checked={keyColumns().includes(col.id)}
-                  onChange={(checked) => {
-                    if (checked) {
-                      setKeyColumns([...keyColumns(), col.id])
-                    } else {
-                      setKeyColumns(keyColumns().filter(id => id !== col.id))
-                    }
-                  }}
-                  text={col.name}
-                />
-              )}
-            </For>
-          </div>
-        </Show>
-
-        <div class="space-y-3">
-          <div class="flex gap-2 items-center justify-between">
-            <label class="text-sm font-medium">Output</label>
-            <div class="flex gap-2">
-              <Show when={exportFormat() !== 'excel'}>
-                <CopyButton
-                  content={exportOutput()}
-                  size="sm"
-                  variant="outline"
-                />
-              </Show>
-              <DownloadButton
-                content={exportOutput()}
-                filename={getExportFilename()}
-                mimeType={getExportMimeType()}
-                size="sm"
-                variant={exportFormat() === 'excel' ? 'default' : 'outline'}
-                onClick={handleExcelExport}
-              />
+              </div>
             </div>
-          </div>
-          <Show
-            when={exportFormat() !== 'excel'}
-          >
-            <TextField class="flex-1">
-              <TextFieldTextArea
-                class="text-sm font-mono bg-muted/50 h-80 resize-none"
+          </Show>
+
+          <div class="space-y-3">
+            <div class="flex gap-2 items-center justify-between">
+              <label class="text-sm font-medium">Output</label>
+              <div class="flex gap-2">
+                <Show when={exportFormat() !== 'excel'}>
+                  <CopyButton
+                    content={exportOutput()}
+                    size="sm"
+                    variant="outline"
+                  />
+                </Show>
+                <DownloadButton
+                  content={exportOutput()}
+                  filename={getExportFilename()}
+                  mimeType={getExportMimeType()}
+                  size="sm"
+                  variant={exportFormat() === 'excel' ? 'default' : 'outline'}
+                  onClick={handleExcelExport}
+                />
+              </div>
+            </div>
+            <Show when={exportFormat() !== 'excel'}>
+              <Textarea
+                class="flex-1"
+                classes={{ input: 'text-sm font-mono resize-none h-80' }}
                 readOnly
                 value={exportOutput()}
               />
-            </TextField>
-          </Show>
+            </Show>
+          </div>
         </div>
-
-      </DialogContent>
+      )}
+    >
+      <Button>
+        <Icon name="i-lucide-download" class="mr-2 size-4" />
+        Export
+      </Button>
     </Dialog>
   )
 }

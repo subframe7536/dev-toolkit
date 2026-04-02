@@ -1,10 +1,6 @@
 import { CopyButton } from '#/components/copy-button'
 import { DownloadButton } from '#/components/download-button'
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '#/components/ui/dialog'
-import Icon from '#/components/ui/icon'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '#/components/ui/select'
-import { Switch } from '#/components/ui/switch'
-import { TextField, TextFieldInput, TextFieldLabel, TextFieldTextArea } from '#/components/ui/text-field'
+import { Dialog, Icon, Input, Select, Switch, Textarea } from 'moraine'
 import { useRegexContext } from '#/contexts'
 import { generateExportCode } from '#/utils/regex/export-generator'
 import { createEffect, createSignal, createUniqueId, Show } from 'solid-js'
@@ -60,15 +56,12 @@ export function ExportDialog() {
   }
 
   return (
-    <Dialog open={store.showExportDialog} onOpenChange={handleClose}>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>Export Regex Pattern</DialogTitle>
-          <DialogDescription>
-            Export your regex pattern as code for different programming languages
-          </DialogDescription>
-        </DialogHeader>
-
+    <Dialog
+      open={store.showExportDialog}
+      onOpenChange={handleClose}
+      title="Export Regex Pattern"
+      description="Export your regex pattern as code for different programming languages"
+      body={(
         <div class="space-y-4">
           {/* Language and Variable Name Row */}
           <div class="gap-4 grid grid-cols-1 sm:grid-cols-2">
@@ -76,49 +69,33 @@ export function ExportDialog() {
               <label id={languageLabelId} class="text-sm font-medium">Language</label>
               <Select
                 value={store.selectedExportLanguage}
-                onChange={lang => lang && actions.setExportLanguage(lang)}
-                options={languageOptions.map(o => o.value)}
-                disallowEmptySelection
-                itemComponent={p => (
-                  <SelectItem item={p.item}>
-                    {languageOptions.find(o => o.value === p.item.rawValue)?.label}
-                  </SelectItem>
-                )}
-              >
-                <SelectTrigger aria-labelledby={languageLabelId}>
-                  <SelectValue<ExportLanguage>>
-                    {state => languageOptions.find(o => o.value === state.selectedOption())?.label}
-                  </SelectValue>
-                </SelectTrigger>
-                <SelectContent />
-              </Select>
+                onChange={lang => lang && actions.setExportLanguage(lang as ExportLanguage)}
+                options={languageOptions.map(o => ({ value: o.value, label: o.label }))}
+              />
             </div>
 
-            <TextField>
-              <TextFieldLabel>Variable Name</TextFieldLabel>
-              <TextFieldInput
+            <div>
+              <label class="text-sm font-medium">Variable Name</label>
+              <Input
                 value={variableName()}
                 onInput={e => setVariableName(e.currentTarget.value)}
                 placeholder="regex"
                 aria-describedby="variable-name-hint"
+                class="mt-1"
               />
               <span id="variable-name-hint" class="sr-only">
                 The name of the variable in the exported code
               </span>
-            </TextField>
+            </div>
           </div>
 
           {/* Options */}
           <div class="flex items-center">
             <Switch
-              text="Include comments"
+              label="Include comments"
               checked={includeComments()}
               onChange={setIncludeComments}
-              aria-describedby="comments-hint"
             />
-            <span id="comments-hint" class="sr-only">
-              Add explanatory comments to the exported code
-            </span>
           </div>
 
           {/* Code Output */}
@@ -126,7 +103,7 @@ export function ExportDialog() {
             when={store.pattern}
             fallback={(
               <div class="text-muted-foreground p-4 text-center border rounded-md bg-muted/50" role="status">
-                <Icon name="lucide:code" class="mx-auto mb-2 opacity-50 size-8" aria-hidden="true" />
+                <Icon name="i-lucide-code" class="mx-auto mb-2 opacity-50 size-8" aria-hidden="true" />
                 <p>No pattern to export</p>
               </div>
             )}
@@ -149,19 +126,17 @@ export function ExportDialog() {
                   />
                 </div>
               </div>
-              <TextField>
-                <TextFieldTextArea
-                  class="text-sm font-mono bg-muted/50 h-48 resize-none"
-                  readOnly
-                  value={exportOutput()}
-                  aria-labelledby={outputLabelId}
-                  aria-readonly="true"
-                />
-              </TextField>
+              <Textarea
+                classes={{ input: 'text-sm font-mono resize-none h-48' }}
+                readOnly
+                value={exportOutput()}
+                aria-labelledby={outputLabelId}
+                aria-readonly="true"
+              />
             </div>
           </Show>
         </div>
-      </DialogContent>
-    </Dialog>
+      )}
+    />
   )
 }

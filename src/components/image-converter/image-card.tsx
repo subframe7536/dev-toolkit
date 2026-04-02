@@ -1,8 +1,6 @@
 import type { Component } from 'solid-js'
 
-import { Button } from '#/components/ui/button'
-import { Icon } from '#/components/ui/icon'
-import { TextField, TextFieldInput } from '#/components/ui/text-field'
+import { Button, Icon, Input } from 'moraine'
 import { createEffect, on, Show } from 'solid-js'
 
 import { ClearButton } from '../clear-button'
@@ -80,27 +78,21 @@ export const ImageCard: Component<ImageCardProps> = (props) => {
       </Show>
 
       <div class="mt-2 space-y-2">
-        <TextField
+        <Input
+          type="number"
+          placeholder="Width"
+          class="text-xs h-8"
           value={props.image.targetWidth ? `${props.image.targetWidth}` : ''}
-          onChange={val => handleWidthChange(val)}
-        >
-          <TextFieldInput
-            type="number"
-            placeholder="Width"
-            class="text-xs h-8"
-          />
-        </TextField>
+          onInput={e => handleWidthChange(e.currentTarget.value)}
+        />
 
-        <TextField
+        <Input
+          type="number"
+          placeholder="Height"
+          class="text-xs h-8"
           value={props.image.targetHeight ? `${props.image.targetHeight}` : ''}
-          onChange={val => handleHeightChange(val)}
-        >
-          <TextFieldInput
-            type="number"
-            placeholder="Height"
-            class="text-xs h-8"
-          />
-        </TextField>
+          onInput={e => handleHeightChange(e.currentTarget.value)}
+        />
       </div>
 
       <div class="mt-2 flex gap-2">
@@ -117,7 +109,7 @@ export const ImageCard: Component<ImageCardProps> = (props) => {
           disabled={!props.image.origin}
           class="flex-1"
         >
-          <Icon name="lucide:rotate-ccw" class="mr-2" />
+          <Icon name="i-lucide-rotate-ccw" class="mr-2" />
           Reset
         </Button>
         <ClearButton

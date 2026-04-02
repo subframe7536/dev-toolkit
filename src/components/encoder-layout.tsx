@@ -1,13 +1,7 @@
 import type { JSX } from 'solid-js'
 
 import { CopyButton } from '#/components/copy-button'
-import { Button } from '#/components/ui/button'
-import { Icon } from '#/components/ui/icon'
-import {
-  TextField,
-  TextFieldLabel,
-  TextFieldTextArea,
-} from '#/components/ui/text-field'
+import { Button, Icon, Textarea } from 'moraine'
 import { cls } from 'cls-variant'
 import { batch, createSignal, onCleanup } from 'solid-js'
 import { toast } from 'solid-sonner'
@@ -104,27 +98,24 @@ export function EncoderLayout(props: EncoderLayoutProps): JSX.Element {
 
         {/* Left Panel (Input) */}
         <div class="space-y-4">
-          <TextField>
-            <TextFieldLabel class="!text-lg">
-              {inputLabel()}
-            </TextFieldLabel>
-            <TextFieldTextArea
-              class="text-sm font-mono h-80 resize-none md:h-100"
-              placeholder={inputPlaceholder()}
-              value={inputText()}
-              onInput={e => handleInput(e.currentTarget.value)}
-            />
-          </TextField>
+          <label class="text-lg font-medium">{inputLabel()}</label>
+          <Textarea
+            class="h-80 md:h-100"
+            classes={{ input: 'text-sm font-mono resize-none' }}
+            placeholder={inputPlaceholder()}
+            value={inputText()}
+            onInput={e => handleInput(e.currentTarget.value)}
+          />
           <div class="flex gap-2 items-center justify-between lg:justify-start">
             {/* Mobile Swap Button */}
             <Button
               onClick={toggleMode}
-              size="icon"
+              size="icon-md"
               variant="outline"
               class="p-1.5 rounded-full bg-background block shadow-md lg:hidden"
               title={`Switch to ${isEncode() ? 'decode' : 'encode'} mode`}
             >
-              <Icon name="lucide:arrow-up-down" />
+              <Icon name="i-lucide-arrow-up-down" />
             </Button>
             <ClearButton
               onClear={clear}
@@ -137,31 +128,30 @@ export function EncoderLayout(props: EncoderLayoutProps): JSX.Element {
         <div class="hidden left-1/2 top-1/3 absolute z-10 lg:block -translate-x-1/2 -translate-y-1/2">
           <Button
             onClick={toggleMode}
-            size="icon"
+            size="icon-md"
             variant="outline"
             class="rounded-full bg-background shadow-md"
             title={`Switch to ${isEncode() ? 'decode' : 'encode'} mode`}
           >
-            <Icon name="lucide:arrow-right-left" />
+            <Icon name="i-lucide-arrow-right-left" />
           </Button>
         </div>
 
         {/* Right Panel (Output) */}
         <div class="flex flex-col gap-4 items-end lg:items-start">
-          <TextField validationState={error() ? 'invalid' : 'valid'} class="w-full">
-            <TextFieldLabel class="!text-lg">
-              {outputLabel()}
-            </TextFieldLabel>
-            <TextFieldTextArea
-              class={cls(
-                'text-sm font-mono bg-muted/50 h-80 md:h-100 resize-none focus-visible:ring-0',
+          <label class="text-lg font-medium">{outputLabel()}</label>
+          <Textarea
+            class={cls('w-full h-80 md:h-100', error() ? 'border-destructive' : '')}
+            classes={{
+              input: cls(
+                'text-sm font-mono resize-none focus-visible:ring-0',
                 error() ? 'text-destructive' : !outputText() && 'text-muted-foreground',
-              )}
-              readOnly
-              placeholder={outputPlaceholder()}
-              value={error() || outputText()}
-            />
-          </TextField>
+              ),
+            }}
+            readOnly
+            placeholder={outputPlaceholder()}
+            value={error() || outputText()}
+          />
           <CopyButton
             class="w-fit"
             content={outputText()}
