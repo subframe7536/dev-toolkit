@@ -1,5 +1,5 @@
 import { EncoderLayout } from '#/components/encoder-layout'
-import { Switch } from '#/components/ui/switch'
+import { Switch } from 'moraine'
 import { createRoute } from 'solid-file-router'
 import { createSignal } from 'solid-js'
 
@@ -30,7 +30,7 @@ function URLEncoder() {
       <Switch
         checked={useComponent()}
         onChange={setUseComponent}
-        text="Regard as URL component"
+        label="Regard as URL component"
       />
       <EncoderLayout
         mode="URL"
