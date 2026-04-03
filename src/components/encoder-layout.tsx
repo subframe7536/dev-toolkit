@@ -4,7 +4,7 @@ import { CopyButton } from '#/components/copy-button'
 import { Button, Icon, Textarea } from 'moraine'
 import { cls } from 'cls-variant'
 import { batch, createSignal, onCleanup } from 'solid-js'
-import { toast } from 'solid-sonner'
+import { toast } from 'solid-toaster'
 
 import { ClearButton } from './clear-button'
 

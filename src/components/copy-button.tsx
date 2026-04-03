@@ -1,7 +1,7 @@
 import { useCopy } from '@solid-hooks/core/web'
 import { cls } from 'cls-variant'
 import { createMemo, Show } from 'solid-js'
-import { toast } from 'solid-sonner'
+import { toast } from 'solid-toaster'
 
 import { Button, Icon } from 'moraine'
 

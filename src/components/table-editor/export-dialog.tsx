@@ -7,7 +7,7 @@ import { useTableEditorContext } from '#/contexts'
 import { downloadFile } from '#/utils/download'
 import { exportToCSV, exportToExcel, exportToJSON, exportToMarkdown, generateCreateTable, generateSQLInsert, generateSQLUpdate } from '#/utils/table/export'
 import { createEffect, createSignal, For, Show } from 'solid-js'
-import { toast } from 'solid-sonner'
+import { toast } from 'solid-toaster'
 
 type ExportFormat = 'sql-insert' | 'sql-update' | 'create-table' | 'excel' | 'csv' | 'markdown' | 'json-array'
 type NamePattern = 'snake_case' | 'camelCase' | 'original'

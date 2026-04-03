@@ -3,7 +3,7 @@ import { Button, Icon, Select, Switch, Tabs, Textarea } from 'moraine'
 import { useTableEditorContext } from '#/contexts/table-editor-context'
 import { detectTSVFormat, getExcelSheetNames, parseCSVFile, parseCSVText, parseExcelFile, parseMySQLOutput, parseTSVText } from '#/utils/table/parser'
 import { createSignal, Show } from 'solid-js'
-import { toast } from 'solid-sonner'
+import { toast } from 'solid-toaster'
 
 import { ClearButton } from '../clear-button'
 

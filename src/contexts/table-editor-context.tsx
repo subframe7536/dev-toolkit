@@ -3,7 +3,7 @@ import type { ParentProps } from 'solid-js'
 
 import { batch, createContext, createSignal, useContext } from 'solid-js'
 import { createStore, produce } from 'solid-js/store'
-import { toast } from 'solid-sonner'
+import { toast } from 'solid-toaster'
 
 export interface TableEditorStore {
   tableData: TableData

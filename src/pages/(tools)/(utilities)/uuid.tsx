@@ -15,7 +15,7 @@ import {
 } from '#/components/ui/text-field'
 import { createRoute } from 'solid-file-router'
 import { createSignal, For, onMount, Show } from 'solid-js'
-import { toast } from 'solid-sonner'
+import { toast } from 'solid-toaster'
 
 const PRESET_COUNTS = [1, 5, 10, 15, 20] as const
 

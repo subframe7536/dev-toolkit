@@ -14,7 +14,7 @@ import {
 import { createRoute } from 'solid-file-router'
 import { batch, createEffect, createMemo, createSignal, Index, onCleanup, onMount, Show } from 'solid-js'
 import { createStore } from 'solid-js/store'
-import { toast } from 'solid-sonner'
+import { toast } from 'solid-toaster'
 
 export default createRoute({
   info: {

@@ -1,6 +1,6 @@
 import { useEventListener } from '@solid-hooks/core/web'
 import { createEffect, createSignal } from 'solid-js'
-import { toast } from 'solid-sonner'
+import { toast } from 'solid-toaster'
 import { useRegisterSW } from 'virtual:pwa-register/solid'
 
 // Type definition for the non-standard event

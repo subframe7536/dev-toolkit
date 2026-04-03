@@ -2,7 +2,7 @@ import type { FileFieldTriggerProps, FileRejection } from '@kobalte/core/file-fi
 
 import { FileField } from '@kobalte/core/file-field'
 import { createMemo, Show } from 'solid-js'
-import { toast } from 'solid-sonner'
+import { toast } from 'solid-toaster'
 
 import { Button, Icon } from 'moraine'
 

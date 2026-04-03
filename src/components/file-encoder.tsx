@@ -3,7 +3,7 @@ import { DownloadButton } from '#/components/download-button'
 import { FileUpload } from '#/components/file-upload'
 import { Switch } from 'moraine'
 import { createMemo, createSignal, Show } from 'solid-js'
-import { toast } from 'solid-sonner'
+import { toast } from 'solid-toaster'
 
 import { ClearButton } from './clear-button'
 
