@@ -1,7 +1,7 @@
 import type { RegexElementType } from '#/utils/regex/explanation-engine'
 import type { RegexElement } from '#/utils/regex/types'
 
-import Icon from '#/components/ui/icon'
+import { Icon } from 'moraine'
 import { useRegexContext } from '#/contexts/regex-context'
 import { explainPattern } from '#/utils/regex/explanation-engine'
 import { createMemo, For, Show } from 'solid-js'
@@ -27,19 +27,19 @@ const ELEMENT_TYPE_COLORS: Record<RegexElementType, string> = {
 /**
  * Icon mapping for different element types
  */
-const ELEMENT_TYPE_ICONS: Record<RegexElementType, `lucide:${string}`> = {
-  'literal': 'lucide:type',
-  'quantifier': 'lucide:repeat',
-  'character-class': 'lucide:brackets',
-  'predefined-class': 'lucide:hash',
-  'anchor': 'lucide:anchor',
-  'group': 'lucide:parentheses',
-  'lookahead': 'lucide:eye',
-  'lookbehind': 'lucide:eye-off',
-  'alternation': 'lucide:git-branch',
-  'escape': 'lucide:corner-down-right',
-  'backreference': 'lucide:link',
-  'flag': 'lucide:flag',
+const ELEMENT_TYPE_ICONS: Record<RegexElementType, `i-lucide-${string}`> = {
+  'literal': 'i-lucide-type',
+  'quantifier': 'i-lucide-repeat',
+  'character-class': 'i-lucide-brackets',
+  'predefined-class': 'i-lucide-hash',
+  'anchor': 'i-lucide-anchor',
+  'group': 'i-lucide-parentheses',
+  'lookahead': 'i-lucide-eye',
+  'lookbehind': 'i-lucide-eye-off',
+  'alternation': 'i-lucide-git-branch',
+  'escape': 'i-lucide-corner-down-right',
+  'backreference': 'i-lucide-link',
+  'flag': 'i-lucide-flag',
 }
 
 /**
@@ -99,7 +99,7 @@ export function ExplanationPanel() {
       {/* Overall description */}
       <div>
         <h3 class="text-md text-foreground font-medium mb-3 flex gap-2 items-center">
-          <Icon name="lucide:info" class="size-4" />
+          <Icon name="i-lucide-info" class="size-4" />
           Pattern Explanation
         </h3>
         <Show
@@ -120,7 +120,7 @@ export function ExplanationPanel() {
       <Show when={hasElements()}>
         <div>
           <h3 class="text-md text-foreground font-medium mb-3 flex gap-2 items-center">
-            <Icon name="lucide:list" class="size-4" />
+            <Icon name="i-lucide-list" class="size-4" />
             Element Breakdown
           </h3>
 

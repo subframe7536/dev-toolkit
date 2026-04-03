@@ -2,10 +2,9 @@ import type { FileFieldTriggerProps, FileRejection } from '@kobalte/core/file-fi
 
 import { FileField } from '@kobalte/core/file-field'
 import { createMemo, Show } from 'solid-js'
-import { toast } from 'solid-sonner'
+import { toast } from 'solid-toaster'
 
-import { Button } from './ui/button'
-import Icon from './ui/icon'
+import { Button, Icon } from 'moraine'
 
 interface SingleFileProps {
   file: File | undefined
@@ -60,7 +59,7 @@ export function FileUpload(props: Props) {
         onDrop={e => (e.target as HTMLDivElement).dataset.dragging = 'false'}
       >
         <Show when={props.icon}>
-          <Icon name={props.icon!} class="size-12" />
+          <Icon name={props.icon!.replace('lucide:', 'i-lucide-') as any} class="size-12" />
         </Show>
         <div class="xs:text-sm text-(xs muted-foreground center) px-4">
           {info()}
@@ -68,7 +67,7 @@ export function FileUpload(props: Props) {
         <FileField.Trigger
           as={(triggerProps: FileFieldTriggerProps) => (
             <Button {...triggerProps} variant="secondary" class="text-sm flex gap-2 w-80% items-center sm:w-unset">
-              <Icon name="lucide:upload" />
+              <Icon name="i-lucide-upload" />
               <span>Drag or Click to upload</span>
             </Button>
           )}

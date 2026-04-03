@@ -11,7 +11,7 @@ import {
 import { generateJsonSchema } from '#/utils/json/schema-generator'
 import { createRoute } from 'solid-file-router'
 import { createSignal } from 'solid-js'
-import { toast } from 'solid-sonner'
+import { toast } from 'solid-toaster'
 
 export default createRoute({
   info: {

@@ -1,5 +1,6 @@
 import type { PresetWind4Theme } from 'unocss'
 
+import { presetMoraine } from 'moraine/unocss'
 import { presetIcons, presetWind4, transformerVariantGroup } from 'unocss'
 import { presetAnimations } from 'unocss-preset-animations'
 import { presetFunctionCompletion, presetObjectCompletion } from 'unocss-preset-completion'
@@ -21,6 +22,7 @@ export default defineConfig<PresetWind4Theme>({
     presetObjectCompletion(),
     presetAnimations(),
     presetThemeTW4() as any,
+    presetMoraine(),
   ],
   shortcuts: [
     ['effect-fv', 'outline-none ring-1.5 ring-ring ring-offset-(2 background)'],

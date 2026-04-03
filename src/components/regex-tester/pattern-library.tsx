@@ -1,20 +1,18 @@
 import type { PatternCategory, PatternDefinition } from '#/utils/regex/types'
 
-import { Button } from '#/components/ui/button'
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '#/components/ui/dialog'
-import Icon from '#/components/ui/icon'
+import { Button, Dialog, Icon } from 'moraine'
 import { useRegexContext } from '#/contexts'
 import { getAllCategories } from '#/utils/regex/pattern-library'
 import { createSignal, For } from 'solid-js'
 
 // Category icons mapping
-const CATEGORY_ICONS: Record<string, `lucide:${string}`> = {
-  validation: 'lucide:check-circle',
-  phone: 'lucide:phone',
-  dates: 'lucide:calendar',
-  identifiers: 'lucide:hash',
-  text: 'lucide:type',
-  programming: 'lucide:code',
+const CATEGORY_ICONS: Record<string, `i-lucide-${string}`> = {
+  validation: 'i-lucide-check-circle',
+  phone: 'i-lucide-phone',
+  dates: 'i-lucide-calendar',
+  identifiers: 'i-lucide-hash',
+  text: 'i-lucide-type',
+  programming: 'i-lucide-code',
 }
 
 interface PatternItemProps {
@@ -52,7 +50,7 @@ function PatternItem(props: PatternItemProps) {
             {example => (
               <div class="text-xs flex gap-2 items-center">
                 <Icon
-                  name={example.shouldMatch ? 'lucide:check' : 'lucide:x'}
+                  name={example.shouldMatch ? 'i-lucide-check' : 'i-lucide-x'}
                   class={example.shouldMatch ? 'text-green-500 size-3' : 'text-red-500 size-3'}
                 />
                 <code class="text-xs font-mono px-1 rounded bg-muted/30">{example.input}</code>
@@ -82,7 +80,7 @@ interface CategorySectionProps {
 }
 
 function CategorySection(props: CategorySectionProps) {
-  const icon = () => CATEGORY_ICONS[props.category.id] || 'lucide:folder'
+  const icon = () => CATEGORY_ICONS[props.category.id] || 'i-lucide-folder'
 
   return (
     <div class="mb-6">
@@ -135,36 +133,34 @@ export function PatternLibraryDialog(props: PatternLibraryDialogProps) {
   }
 
   return (
-    <Dialog open={isOpen()} onOpenChange={setIsOpen}>
-      <DialogTrigger as={Button} variant="secondary">
-        <Icon name="lucide:library" class="mr-2 size-4" />
-        Load Example
-      </DialogTrigger>
-      <DialogContent class="max-h-[80vh] max-w-6xl overflow-y-auto">
-        <DialogHeader>
-          <DialogTitle class="flex gap-2 items-center">
-            <Icon name="lucide:library" class="size-5" />
-            Pattern Library
-          </DialogTitle>
-          <DialogDescription>
-            Browse and load common regex patterns for validation, parsing, and more. Click any pattern to load it directly.
-          </DialogDescription>
-        </DialogHeader>
-
+    <Dialog
+      open={isOpen()}
+      onOpenChange={setIsOpen}
+      title={(
+        <span class="flex gap-2 items-center">
+          <Icon name="i-lucide-library" class="size-5" />
+          Pattern Library
+        </span>
+      ) as any}
+      description="Browse and load common regex patterns for validation, parsing, and more. Click any pattern to load it directly."
+      body={(
         <div class="mt-6">
-          {/* Categories with patterns */}
           <For each={categories}>
             {category => (
               <CategorySection category={category} onSelectPattern={handleSelectPattern} />
             )}
           </For>
-
-          {/* Pattern count info */}
           <div class="text-xs text-muted-foreground pt-4 text-center border-t border-border">
             {categories.reduce((sum, cat) => sum + cat.patterns.length, 0)} patterns across {categories.length} categories
           </div>
         </div>
-      </DialogContent>
+      )}
+      classes={{ content: 'max-h-[80vh] max-w-6xl overflow-y-auto' }}
+    >
+      <Button variant="secondary">
+        <Icon name="i-lucide-library" class="mr-2 size-4" />
+        Load Example
+      </Button>
     </Dialog>
   )
 }

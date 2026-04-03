@@ -1,6 +1,6 @@
 import { EncoderLayout } from '#/components/encoder-layout'
 import { FileEncoder } from '#/components/file-encoder'
-import { Tabs, TabsContent, TabsIndicator, TabsList, TabsTrigger } from '#/components/ui/tabs'
+import { Tabs } from 'moraine'
 import { fileToHex, fromHex, toHex } from '#/utils/hex'
 import { createRoute } from 'solid-file-router'
 
@@ -17,30 +17,29 @@ export default createRoute({
 
 function HexEncoder() {
   return (
-    <Tabs defaultValue="text" class="w-full">
-      <TabsList>
-        <TabsTrigger value="text">Text Mode</TabsTrigger>
-        <TabsTrigger value="file">File Mode</TabsTrigger>
-        <TabsIndicator />
-      </TabsList>
-
-      <TabsContent value="text">
-        <EncoderLayout
-          mode="Hex"
-          onEncode={toHex}
-          onDecode={fromHex}
-        />
-      </TabsContent>
-
-      <TabsContent value="file">
-        <FileEncoder
-          mode="Hex"
-          onEncode={fileToHex}
-          uploadInfo="Upload any file to encode to Hexadecimal"
-          outputTitle="Hex Output"
-          fileExtension="hex"
-        />
-      </TabsContent>
-    </Tabs>
+    <Tabs
+      defaultValue="text"
+      class="w-full"
+      items={[
+        {
+          value: 'text',
+          label: 'Text Mode',
+          content: <EncoderLayout mode="Hex" onEncode={toHex} onDecode={fromHex} />,
+        },
+        {
+          value: 'file',
+          label: 'File Mode',
+          content: (
+            <FileEncoder
+              mode="Hex"
+              onEncode={fileToHex}
+              uploadInfo="Upload any file to encode to Hexadecimal"
+              outputTitle="Hex Output"
+              fileExtension="hex"
+            />
+          ),
+        },
+      ]}
+    />
   )
 }

@@ -25,7 +25,7 @@ import {
 } from '#/utils/json/converter'
 import { createRoute } from 'solid-file-router'
 import { createEffect, createSignal } from 'solid-js'
-import { toast } from 'solid-sonner'
+import { toast } from 'solid-toaster'
 
 export default createRoute({
   info: {

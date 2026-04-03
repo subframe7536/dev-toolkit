@@ -22,7 +22,7 @@ import { generateHash } from '#/utils/hash'
 import { cls } from 'cls-variant'
 import { createRoute } from 'solid-file-router'
 import { createMemo, createSignal, For, Show } from 'solid-js'
-import { toast } from 'solid-sonner'
+import { toast } from 'solid-toaster'
 
 const ALGORITHMS: HashAlgorithm[] = ['MD5', 'SHA-1', 'SHA-256', 'SHA-384', 'SHA-512']
 

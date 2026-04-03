@@ -1,7 +1,7 @@
 import type { FileRouteInfo } from 'solid-file-router'
 import type { ParentProps } from 'solid-js'
 
-import Icon from '#/components/ui/icon'
+import { Icon } from 'moraine'
 import { useCurrentMatches } from '@solidjs/router'
 import { createRoute } from 'solid-file-router'
 import { createEffect, createRenderEffect, For, Show } from 'solid-js'

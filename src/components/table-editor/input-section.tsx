@@ -1,14 +1,9 @@
 import { FileUpload } from '#/components/file-upload'
-import { Button } from '#/components/ui/button'
-import Icon from '#/components/ui/icon'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '#/components/ui/select'
-import { Switch } from '#/components/ui/switch'
-import { Tabs, TabsContent, TabsIndicator, TabsList, TabsTrigger } from '#/components/ui/tabs'
-import { TextField, TextFieldTextArea } from '#/components/ui/text-field'
+import { Button, Icon, Select, Switch, Tabs, Textarea } from 'moraine'
 import { useTableEditorContext } from '#/contexts/table-editor-context'
 import { detectTSVFormat, getExcelSheetNames, parseCSVFile, parseCSVText, parseExcelFile, parseMySQLOutput, parseTSVText } from '#/utils/table/parser'
 import { createSignal, Show } from 'solid-js'
-import { toast } from 'solid-sonner'
+import { toast } from 'solid-toaster'
 
 import { ClearButton } from '../clear-button'
 
@@ -199,136 +194,133 @@ export function InputSection() {
 
   return (
     <div class="space-y-4">
-      <Tabs>
-        <TabsList class="grid grid-cols-2 w-full">
-          <TabsTrigger value="text">Text Input</TabsTrigger>
-          <TabsTrigger value="file">File Upload</TabsTrigger>
-          <TabsIndicator />
-        </TabsList>
-
-        <TabsContent value="text">
-          <div class="mt-4 flex flex-col gap-3">
-            <div class="flex gap-4 justify-between">
-              <p class="text-sm text-muted-foreground">
-                Paste MySQL CLI output (starts with +-), CSV text, or Excel table data here.
-              </p>
-              <Switch
-                class="whitespace-nowrap"
-                text="Replace \n"
-                checked={replaceLineWrap()}
-                onChange={handleReplaceLineWrap}
-              />
-            </div>
-            <TextField value={textInput()} onChange={setTextInput}>
-              <TextFieldTextArea
-                class="text-sm font-mono h-120 resize-none whitespace-nowrap overflow-x-scroll placeholder:whitespace-pre-wrap"
-                placeholder={PLACEHOLDER}
-              />
-            </TextField>
-            <div class="flex flex-wrap gap-2 items-center">
-              <Button
-                onClick={handleParseText}
-                disabled={!textInput().trim()}
-                class="flex-1 min-w-48"
-              >
-                <Icon name="lucide:play" class="mr-2" />
-                Parse
-              </Button>
-              <Button
-                variant="secondary"
-                onClick={() => {
-                  setTextInput(MYSQL_EXAMPLE)
-                  setReplaceLineWrap(true)
-                }}
-              >
-                <Icon name="lucide:database" class="mr-2" />
-                MySQL Example
-              </Button>
-              <Button
-                variant="secondary"
-                onClick={() => {
-                  setTextInput(CSV_EXAMPLE)
-                  setReplaceLineWrap(true)
-                }}
-              >
-                <Icon name="lucide:table" class="mr-2" />
-                CSV Example
-              </Button>
-              <Button
-                variant="secondary"
-                onClick={() => {
-                  setTextInput(EXCEL_EXAMPLE)
-                  setReplaceLineWrap(true)
-                }}
-              >
-                <Icon name="lucide:file-spreadsheet" class="mr-2" />
-                Excel Example
-              </Button>
-              <ClearButton
-                onClear={() => setTextInput('')}
-                disabled={!textInput().trim()}
-              />
-            </div>
-          </div>
-        </TabsContent>
-
-        <TabsContent value="file">
-          <div class="mt-4 flex flex-col gap-3">
-            <p class="text-sm text-muted-foreground">
-              {getFileDescription()}
-            </p>
-            <FileUpload
-              file={uploadedFile()}
-              setFile={handleFileSelect}
-              accept={['.xlsx', '.xls', '.csv']}
-              icon="lucide:file-spreadsheet"
-            />
-
-            <Show when={sheetNames().length > 1}>
-              <div class="flex flex-col gap-2">
-                <label class="text-sm font-medium">Select Sheet</label>
-                <Select<string>
-                  value={selectedSheet()}
-                  onChange={setSelectedSheet}
-                  options={sheetNames()}
-                  placeholder="Select a sheet"
-                  itemComponent={props => <SelectItem item={props.item}>{props.item.rawValue}</SelectItem>}
-                >
-                  <SelectTrigger>
-                    <SelectValue<string>>{state => state.selectedOption()}</SelectValue>
-                  </SelectTrigger>
-                  <SelectContent />
-                </Select>
+      <Tabs
+        defaultValue="text"
+        items={[
+          {
+            value: 'text',
+            label: 'Text Input',
+            content: (
+              <div class="mt-4 flex flex-col gap-3">
+                <div class="flex gap-4 justify-between">
+                  <p class="text-sm text-muted-foreground">
+                    Paste MySQL CLI output (starts with +-), CSV text, or Excel table data here.
+                  </p>
+                  <Switch
+                    class="whitespace-nowrap"
+                    label="Replace \n"
+                    checked={replaceLineWrap()}
+                    onChange={handleReplaceLineWrap}
+                  />
+                </div>
+                <Textarea
+                  classes={{ input: 'text-sm font-mono h-120 resize-none whitespace-nowrap overflow-x-scroll placeholder:whitespace-pre-wrap' }}
+                  placeholder={PLACEHOLDER}
+                  value={textInput()}
+                  onValueChange={setTextInput}
+                />
+                <div class="flex flex-wrap gap-2 items-center">
+                  <Button
+                    onClick={handleParseText}
+                    disabled={!textInput().trim()}
+                    class="flex-1 min-w-48"
+                  >
+                    <Icon name="i-lucide-play" class="mr-2" />
+                    Parse
+                  </Button>
+                  <Button
+                    variant="secondary"
+                    onClick={() => {
+                      setTextInput(MYSQL_EXAMPLE)
+                      setReplaceLineWrap(true)
+                    }}
+                  >
+                    <Icon name="i-lucide-database" class="mr-2" />
+                    MySQL Example
+                  </Button>
+                  <Button
+                    variant="secondary"
+                    onClick={() => {
+                      setTextInput(CSV_EXAMPLE)
+                      setReplaceLineWrap(true)
+                    }}
+                  >
+                    <Icon name="i-lucide-table" class="mr-2" />
+                    CSV Example
+                  </Button>
+                  <Button
+                    variant="secondary"
+                    onClick={() => {
+                      setTextInput(EXCEL_EXAMPLE)
+                      setReplaceLineWrap(true)
+                    }}
+                  >
+                    <Icon name="i-lucide-file-spreadsheet" class="mr-2" />
+                    Excel Example
+                  </Button>
+                  <ClearButton
+                    onClear={() => setTextInput('')}
+                    disabled={!textInput().trim()}
+                  />
+                </div>
               </div>
-            </Show>
+            ),
+          },
+          {
+            value: 'file',
+            label: 'File Upload',
+            content: (
+              <div class="mt-4 flex flex-col gap-3">
+                <p class="text-sm text-muted-foreground">
+                  {getFileDescription()}
+                </p>
+                <FileUpload
+                  file={uploadedFile()}
+                  setFile={handleFileSelect}
+                  accept={['.xlsx', '.xls', '.csv']}
+                  icon="i-lucide-file-spreadsheet"
+                />
 
-            <div class="flex gap-2 items-center">
-              <Button
-                onClick={handleParseFile}
-                disabled={!uploadedFile() || isParsing()}
-                class="flex-1"
-              >
-                <Show
-                  when={!isParsing()}
-                  fallback={(
-                    <>
-                      <Icon name="lucide:loader" class="mr-2 animate-spin" />
-                      Parsing...
-                    </>
-                  )}
-                >
-                  <Icon name="lucide:play" class="mr-2" />
-                  Parse
+                <Show when={sheetNames().length > 1}>
+                  <div class="flex flex-col gap-2">
+                    <label class="text-sm font-medium">Select Sheet</label>
+                    <Select
+                      value={selectedSheet()}
+                      onChange={setSelectedSheet}
+                      options={sheetNames().map(s => ({ value: s, label: s }))}
+                    />
+                  </div>
                 </Show>
-              </Button>
-              <ClearButton
-                onClear={() => handleFileSelect(undefined)}
-                disabled={!uploadedFile()}
-              />
-            </div>
-          </div>
-        </TabsContent>
-      </Tabs>
+
+                <div class="flex gap-2 items-center">
+                  <Button
+                    onClick={handleParseFile}
+                    disabled={!uploadedFile() || isParsing()}
+                    class="flex-1"
+                  >
+                    <Show
+                      when={!isParsing()}
+                      fallback={(
+                        <>
+                          <Icon name="i-lucide-loader" class="mr-2 animate-spin" />
+                          Parsing...
+                        </>
+                      )}
+                    >
+                      <Icon name="i-lucide-play" class="mr-2" />
+                      Parse
+                    </Show>
+                  </Button>
+                  <ClearButton
+                    onClear={() => handleFileSelect(undefined)}
+                    disabled={!uploadedFile()}
+                  />
+                </div>
+              </div>
+            ),
+          },
+        ]}
+      />
     </div>
   )
 }

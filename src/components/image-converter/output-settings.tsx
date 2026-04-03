@@ -1,11 +1,7 @@
 import type { ImageFormat } from '#/utils/image'
 import type { Component } from 'solid-js'
 
-import { Label } from '#/components/ui/label'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '#/components/ui/select'
-import { Slider } from '#/components/ui/slider'
-import { Switch } from '#/components/ui/switch'
-import { TextField, TextFieldInput } from '#/components/ui/text-field'
+import { Input, Select, Slider, Switch } from 'moraine'
 import { Show } from 'solid-js'
 
 const FORMAT_OPTIONS: { value: ImageFormat, label: string }[] = [
@@ -36,74 +32,59 @@ export const OutputSettings: Component<OutputSettingsProps> = (props) => {
   return (
     <div class="flex flex-col gap-6">
       <div>
-        <Label>Output Format</Label>
+        <label class="text-sm font-medium">Output Format</label>
         <Select
           value={props.targetFormat}
           onChange={props.onFormatChange}
-          options={FORMAT_OPTIONS.map(o => o.value)}
-          disallowEmptySelection
-          itemComponent={p => (
-            <SelectItem item={p.item}>
-              {FORMAT_OPTIONS.find(o => o.value === p.item.rawValue)?.label}
-            </SelectItem>
-          )}
-        >
-          <SelectTrigger class="w-full">
-            <SelectValue<ImageFormat>>
-              {state => FORMAT_OPTIONS.find(o => o.value === state.selectedOption())?.label}
-            </SelectValue>
-          </SelectTrigger>
-          <SelectContent />
-        </Select>
+          options={FORMAT_OPTIONS.map(o => ({ value: o.value, label: o.label }))}
+        />
       </div>
 
       <Show when={showQualitySlider()}>
-        <Slider
-          value={[props.quality]}
-          onChange={value => props.onQualityChange(value[0])}
-          minValue={1}
-          maxValue={100}
-          step={1}
-          label={`${props.targetFormat.toUpperCase()} Quality: ${props.quality}`}
-        />
+        <div>
+          <label class="text-sm font-medium">{`${props.targetFormat.toUpperCase()} Quality: ${props.quality}`}</label>
+          <Slider
+            value={[props.quality]}
+            onChange={value => props.onQualityChange(value[0])}
+            min={1}
+            max={100}
+            step={1}
+          />
+        </div>
       </Show>
 
       <Switch
         checked={props.ratio}
         onChange={props.onRatioChange}
-        text="Keep aspect ratio"
+        label="Keep aspect ratio"
       />
 
       <div>
-        <Label class="mb-2 block">Global Dimensions</Label>
+        <label class="text-sm font-medium mb-2 block">Global Dimensions</label>
         <p class="text-xs text-muted-foreground mb-3">
           Apply to all images without individual settings
         </p>
         <div class="flex gap-2">
-          <TextField
+          <Input
             class="flex-1"
+            type="number"
+            placeholder="Width"
             value={props.globalWidth ? `${props.globalWidth}` : ''}
-            onChange={(val) => {
+            onInput={(e) => {
+              const val = e.currentTarget.value
               props.onGlobalWidthChange(val ? Number.parseInt(val) : undefined)
             }}
-          >
-            <TextFieldInput
-              type="number"
-              placeholder="Width"
-            />
-          </TextField>
-          <TextField
+          />
+          <Input
             class="flex-1"
+            type="number"
+            placeholder="Height"
             value={props.globalHeight ? `${props.globalHeight}` : ''}
-            onChange={(val) => {
+            onInput={(e) => {
+              const val = e.currentTarget.value
               props.onGlobalHeightChange(val ? Number.parseInt(val) : undefined)
             }}
-          >
-            <TextFieldInput
-              type="number"
-              placeholder="Height"
-            />
-          </TextField>
+          />
         </div>
       </div>
     </div>

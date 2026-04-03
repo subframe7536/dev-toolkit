@@ -1,10 +1,9 @@
 import { useCopy } from '@solid-hooks/core/web'
 import { cls } from 'cls-variant'
 import { createMemo, Show } from 'solid-js'
-import { toast } from 'solid-sonner'
+import { toast } from 'solid-toaster'
 
-import { Button } from './ui/button'
-import { Icon } from './ui/icon'
+import { Button, Icon } from 'moraine'
 
 interface CopyButtonProps {
   content: string
@@ -27,7 +26,7 @@ export function CopyButton(props: CopyButtonProps) {
     }
   }
   const text = createMemo(() => props.text ?? true)
-  const icon = <Icon name={isCopied() ? 'lucide:check' : 'lucide:copy'} class={cls(text() && 'mr-2')} />
+  const icon = <Icon name={isCopied() ? 'i-lucide-check' : 'i-lucide-copy'} class={cls(text() && 'mr-2')} />
   return (
     <Button
       variant={props.variant ?? 'outline'}

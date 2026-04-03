@@ -1,7 +1,6 @@
 import { Show } from 'solid-js'
 
-import { Button } from './ui/button'
-import Icon from './ui/icon'
+import { Button, Icon } from 'moraine'
 
 interface ClearButtonProps {
   onClear: () => void
@@ -14,7 +13,7 @@ interface ClearButtonProps {
 export function ClearButton(props: ClearButtonProps) {
   const showText = () => props.text ?? true
 
-  const icon = <Icon name="lucide:x" class={showText() ? 'mr-2 size-4' : 'size-4'} />
+  const icon = <Icon name="i-lucide-x" class={showText() ? 'mr-2 size-4' : 'size-4'} />
   return (
     <Button
       variant="destructive"

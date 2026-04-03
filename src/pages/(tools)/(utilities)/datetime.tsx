@@ -1,14 +1,6 @@
 import { Card } from '#/components/card'
 import { CopyButton } from '#/components/copy-button'
-import { Button } from '#/components/ui/button'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '#/components/ui/select'
-import { TextField, TextFieldInput, TextFieldLabel } from '#/components/ui/text-field'
+import { Button, Input, Select } from 'moraine'
 import {
   commonTimeZones,
   formatDateTime,
@@ -22,7 +14,7 @@ import {
 import { createRoute } from 'solid-file-router'
 import { batch, createEffect, createMemo, createSignal, Index, onCleanup, onMount, Show } from 'solid-js'
 import { createStore } from 'solid-js/store'
-import { toast } from 'solid-sonner'
+import { toast } from 'solid-toaster'
 
 export default createRoute({
   info: {
@@ -168,14 +160,14 @@ function DateTimeTool() {
             {/* Custom Date Input */}
             <div class="space-y-2">
               <div class="flex gap-2 items-end">
-                <TextField class="flex-1">
-                  <TextFieldLabel>Custom Date Input</TextFieldLabel>
-                  <TextFieldInput
+                <div class="flex-1 flex flex-col gap-1">
+                  <label class="text-sm font-medium">Custom Date Input</label>
+                  <Input
                     value={customInput()}
                     onInput={e => setCustomInput(e.currentTarget.value)}
                     placeholder="ISO, Unix timestamp, yyyy-MM-dd HH:mm:ss..."
                   />
-                </TextField>
+                </div>
                 <Button onClick={handleParseCustomDate} class="shrink-0">
                   {customDate() ? 'Reset' : 'Parse'}
                 </Button>
@@ -195,87 +187,35 @@ function DateTimeTool() {
               <div class="gap-4 grid grid-cols-2">
                 <div>
                   <label class="text-xs text-muted-foreground mb-1.5 block">Locale</label>
-                  <Select<string>
+                  <Select
                     value={selectedLocale()}
                     onChange={setSelectedLocale}
-                    options={locales}
-                    disallowEmptySelection
-                    itemComponent={props => (
-                      <SelectItem item={props.item}>
-                        {props.item.rawValue}
-                      </SelectItem>
-                    )}
-                  >
-                    <SelectTrigger>
-                      <SelectValue<string>>
-                        {state => state.selectedOption()}
-                      </SelectValue>
-                    </SelectTrigger>
-                    <SelectContent />
-                  </Select>
+                    options={locales.map(v => ({ value: v, label: v }))}
+                  />
                 </div>
                 <div>
                   <label class="text-xs text-muted-foreground mb-1.5 block">Time Zone</label>
-                  <Select<string>
+                  <Select
                     value={selectedTimeZone()}
                     onChange={setSelectedTimeZone}
-                    options={commonTimeZones}
-                    disallowEmptySelection
-                    itemComponent={props => (
-                      <SelectItem item={props.item}>
-                        {props.item.rawValue}
-                      </SelectItem>
-                    )}
-                  >
-                    <SelectTrigger>
-                      <SelectValue<string>>
-                        {state => state.selectedOption()}
-                      </SelectValue>
-                    </SelectTrigger>
-                    <SelectContent />
-                  </Select>
+                    options={commonTimeZones.map(v => ({ value: v, label: v }))}
+                  />
                 </div>
                 <div>
                   <label class="text-xs text-muted-foreground mb-1.5 block">Date Style</label>
-                  <Select<string>
+                  <Select
                     value={dateStyle()}
-                    onChange={setDateStyle}
-                    options={[...styles]}
-                    disallowEmptySelection
-                    itemComponent={props => (
-                      <SelectItem item={props.item}>
-                        {props.item.rawValue}
-                      </SelectItem>
-                    )}
-                  >
-                    <SelectTrigger>
-                      <SelectValue<'full' | 'long' | 'medium' | 'short'>>
-                        {state => state.selectedOption()}
-                      </SelectValue>
-                    </SelectTrigger>
-                    <SelectContent />
-                  </Select>
+                    onChange={v => v && setDateStyle(v as any)}
+                    options={[...styles].map(v => ({ value: v, label: v }))}
+                  />
                 </div>
                 <div>
                   <label class="text-xs text-muted-foreground mb-1.5 block">Time Style</label>
-                  <Select<string>
+                  <Select
                     value={timeStyle()}
-                    onChange={setTimeStyle}
-                    options={[...styles]}
-                    disallowEmptySelection
-                    itemComponent={props => (
-                      <SelectItem item={props.item}>
-                        {props.item.rawValue}
-                      </SelectItem>
-                    )}
-                  >
-                    <SelectTrigger>
-                      <SelectValue<'full' | 'long' | 'medium' | 'short'>>
-                        {state => state.selectedOption()}
-                      </SelectValue>
-                    </SelectTrigger>
-                    <SelectContent />
-                  </Select>
+                    onChange={v => v && setTimeStyle(v as any)}
+                    options={[...styles].map(v => ({ value: v, label: v }))}
+                  />
                 </div>
               </div>
             </div>
@@ -288,13 +228,11 @@ function DateTimeTool() {
             icon="lucide:calculator"
             content={(
               <div class="space-y-2">
-                <TextField>
-                  <TextFieldInput
-                    value={manipulationInput()}
-                    onInput={e => setManipulationInput(e.currentTarget.value)}
-                    placeholder="e.g., +1h -30m +2d"
-                  />
-                </TextField>
+                <Input
+                  value={manipulationInput()}
+                  onInput={e => setManipulationInput(e.currentTarget.value)}
+                  placeholder="e.g., +1h -30m +2d"
+                />
                 <Show when={manipulatedTime()}>
                   <div class="p-3 border rounded-lg bg-muted/50">
                     <div class="flex items-center justify-between">
@@ -325,14 +263,12 @@ function DateTimeTool() {
             <div class="space-y-4">
               {/* Custom Format */}
               <div class="space-y-2">
-                <TextField>
-                  <TextFieldLabel>Custom Format Pattern</TextFieldLabel>
-                  <TextFieldInput
-                    value={customFormat()}
-                    onInput={e => setCustomFormat(e.currentTarget.value)}
-                    placeholder="e.g., yyyy/MM/dd or dd-MM-yyyy HH:mm"
-                  />
-                </TextField>
+                <label class="text-sm font-medium">Custom Format Pattern</label>
+                <Input
+                  value={customFormat()}
+                  onInput={e => setCustomFormat(e.currentTarget.value)}
+                  placeholder="e.g., yyyy/MM/dd or dd-MM-yyyy HH:mm"
+                />
                 <div class="text-xs text-muted-foreground space-y-1">
                   <div>Tokens: yyyy (year), MM (month), dd (day)</div>
                   <div>HH/hh (hours), mm (minutes), ss (seconds), SSS (ms)</div>

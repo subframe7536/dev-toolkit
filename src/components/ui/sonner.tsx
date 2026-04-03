@@ -1,21 +1,17 @@
 import type { Component, ComponentProps } from 'solid-js'
 
-import { Toaster as Sonner } from 'solid-sonner'
+import { Toaster as SolidToaster } from 'solid-toaster'
 
-type ToasterProps = ComponentProps<typeof Sonner>
+type ToasterProps = ComponentProps<typeof SolidToaster>
 
 const Toaster: Component<ToasterProps> = (props) => {
   return (
-    <Sonner
-      class="toaster group"
-      toastOptions={{
-        classes: {
-          toast:
-            'group toast group-[.toaster]:(bg-popover text-popover-foreground b-(1 border) shadow-lg p-4)',
-          description: 'group-[.toast]:text-muted-foreground',
-          actionButton: 'group-[.toast]:(bg-primary text-primary-foreground)',
-          cancelButton: 'group-[.toast]:(bg-muted text-muted-foreground)',
-        },
+    <SolidToaster
+      classes={{
+        toast: 'bg-popover text-popover-foreground b-(1 border) shadow-lg',
+        description: 'text-muted-foreground',
+        actionButton: 'bg-primary text-primary-foreground',
+        cancelButton: 'bg-muted text-muted-foreground',
       }}
       {...props}
     />

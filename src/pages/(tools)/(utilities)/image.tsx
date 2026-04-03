@@ -13,7 +13,7 @@ import { convertImage, getFileExtension } from '#/utils/image'
 import { createRoute } from 'solid-file-router'
 import { createEffect, createSignal, For, onCleanup, Show } from 'solid-js'
 import { createStore } from 'solid-js/store'
-import { toast } from 'solid-sonner'
+import { toast } from 'solid-toaster'
 
 export default createRoute({
   info: {

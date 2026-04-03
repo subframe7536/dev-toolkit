@@ -1,9 +1,6 @@
 import type { Component } from 'solid-js'
 
-import { Button } from '#/components/ui/button'
-import { Icon } from '#/components/ui/icon'
-import { Label } from '#/components/ui/label'
-import { TextField, TextFieldInput } from '#/components/ui/text-field'
+import { Button, Icon, Input } from 'moraine'
 import { Show } from 'solid-js'
 
 interface SvgOptionsProps {
@@ -22,7 +19,7 @@ export const SvgOptions: Component<SvgOptionsProps> = (props) => {
     <div class="space-y-4">
       <Show when={props.previewUrl}>
         <div>
-          <Label class="mb-2 block">Preview</Label>
+          <label class="text-sm font-medium mb-2 block">Preview</label>
           <div class="p-4 border rounded-lg bg-muted/30 flex items-center justify-center">
             <img
               src={props.previewUrl}
@@ -34,7 +31,7 @@ export const SvgOptions: Component<SvgOptionsProps> = (props) => {
       </Show>
 
       <div>
-        <Label>Background Color (optional)</Label>
+        <label class="text-sm font-medium">Background Color (optional)</label>
         <div class="flex gap-2">
           <input
             type="color"
@@ -42,20 +39,17 @@ export const SvgOptions: Component<SvgOptionsProps> = (props) => {
             onInput={e => props.onBackgroundColorChange(e.currentTarget.value)}
             class="border rounded h-10 w-14 cursor-pointer"
           />
-          <TextField
+          <Input
+            type="text"
+            placeholder="Leave empty for transparent"
             value={props.backgroundColor}
-            onChange={props.onBackgroundColorChange}
-          >
-            <TextFieldInput
-              type="text"
-              placeholder="Leave empty for transparent"
-            />
-          </TextField>
+            onValueChange={props.onBackgroundColorChange}
+          />
         </div>
       </div>
 
       <div>
-        <Label>Fill Color (optional)</Label>
+        <label class="text-sm font-medium">Fill Color (optional)</label>
         <div class="flex gap-2">
           <input
             type="color"
@@ -63,20 +57,17 @@ export const SvgOptions: Component<SvgOptionsProps> = (props) => {
             onInput={e => props.onFillColorChange(e.currentTarget.value)}
             class="border rounded h-10 w-14 cursor-pointer"
           />
-          <TextField
+          <Input
+            type="text"
+            placeholder="Leave empty for original"
             value={props.fillColor}
-            onChange={props.onFillColorChange}
-          >
-            <TextFieldInput
-              type="text"
-              placeholder="Leave empty for original"
-            />
-          </TextField>
+            onValueChange={props.onFillColorChange}
+          />
         </div>
       </div>
 
       <div>
-        <Label>Stroke Color (optional)</Label>
+        <label class="text-sm font-medium">Stroke Color (optional)</label>
         <div class="flex gap-2">
           <input
             type="color"
@@ -84,15 +75,12 @@ export const SvgOptions: Component<SvgOptionsProps> = (props) => {
             onInput={e => props.onStrokeColorChange(e.currentTarget.value)}
             class="border rounded h-10 w-14 cursor-pointer"
           />
-          <TextField
+          <Input
+            type="text"
+            placeholder="Leave empty for original"
             value={props.strokeColor}
-            onChange={props.onStrokeColorChange}
-          >
-            <TextFieldInput
-              type="text"
-              placeholder="Leave empty for original"
-            />
-          </TextField>
+            onValueChange={props.onStrokeColorChange}
+          />
         </div>
       </div>
 
@@ -102,7 +90,7 @@ export const SvgOptions: Component<SvgOptionsProps> = (props) => {
         class="w-full"
         onClick={props.onReset}
       >
-        <Icon name="lucide:rotate-ccw" class="mr-2 size-4" />
+        <Icon name="i-lucide-rotate-ccw" class="mr-2 size-4" />
         Reset SVG Options
       </Button>
     </div>
