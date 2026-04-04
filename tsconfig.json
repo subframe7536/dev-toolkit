@@ -6,21 +6,22 @@
     "module": "ESNext",
     "moduleResolution": "bundler",
     "paths": {
-      "#/*": [
-        "./src/*"
-      ]
+      "#/*": ["./src/*"]
     },
     "types": [
       "vite/client",
       "vite-plugin-pwa/solid",
       "solid-file-router/client",
-      "bun-types"
+      "@types/bun"
     ],
+    "allowJs": true,
+    "strict": true,
     "strictNullChecks": true,
     "noEmit": true,
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
     "isolatedModules": true,
+    "resolveJsonModule": true,
     "skipLibCheck": true
   }
 }
