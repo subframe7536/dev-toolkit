@@ -25,7 +25,6 @@ export function CopyButton(props: CopyButtonProps) {
     }
   }
   const text = createMemo(() => props.text ?? true)
-  const iconName = () => isCopied() ? 'i-lucide-check' : 'i-lucide-copy'
   return (
     <Button
       variant={props.variant ?? 'outline'}
@@ -33,9 +32,9 @@ export function CopyButton(props: CopyButtonProps) {
       classes={{ root: props.class }}
       disabled={props.disabled}
       onClick={handleCopy}
-      leading={text() ? iconName() : undefined}
+      leading={text() ? (isCopied() ? 'i-lucide-check' : 'i-lucide-copy') : undefined}
     >
-      <Show when={text()} fallback={<Icon name={iconName()} />}>
+      <Show when={text()} fallback={<Icon name={isCopied() ? 'i-lucide-check' : 'i-lucide-copy'} />}>
         {isCopied() ? 'Copied!' : (text() === true ? 'Copy' : props.text)}
       </Show>
     </Button>
