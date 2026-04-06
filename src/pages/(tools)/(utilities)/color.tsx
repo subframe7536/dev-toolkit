@@ -113,7 +113,7 @@ function ColorConverter() {
             value={inputValue()}
             onInput={e => handleInputChange(e.currentTarget.value)}
             placeholder="Enter color..."
-            classes={{ root: 'font-mono' }}
+            classes={{ input: 'font-mono' }}
           />
           <button
             class="rounded-1.5 size-6 translate-y--50% right-2 top-50% absolute hover:bg-background"
