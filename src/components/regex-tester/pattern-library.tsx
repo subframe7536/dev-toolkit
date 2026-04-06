@@ -157,8 +157,7 @@ export function PatternLibraryDialog(props: PatternLibraryDialogProps) {
       )}
       classes={{ content: 'max-h-[80vh] max-w-6xl overflow-y-auto' }}
     >
-      <Button variant="secondary">
-        <Icon name="i-lucide-library" classes={{ icon: 'mr-2 size-4' }} />
+      <Button variant="secondary" leading="i-lucide-library">
         Load Example
       </Button>
     </Dialog>

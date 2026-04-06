@@ -1,9 +1,8 @@
 import { downloadFile } from '#/utils/download'
-import { cls } from 'cls-variant'
 import { createMemo, Show } from 'solid-js'
 import { toast } from 'solid-toaster'
 
-import { Button, Icon } from 'moraine'
+import { Button } from 'moraine'
 
 interface DownloadButtonProps {
   content: string | Blob
@@ -24,17 +23,16 @@ export function DownloadButton(props: DownloadButtonProps) {
   }
 
   const text = createMemo(() => props.text ?? true)
-  const icon = <Icon name="i-lucide-download" classes={{ icon: cls(text() && 'mr-2') }} />
   return (
     <Button
       variant={props.variant ?? 'outline'}
       size={props.size}
-      class={props.class}
+      classes={{ root: props.class }}
       disabled={props.disabled}
       onClick={props.onClick || handleDownload}
+      leading={text() ? 'i-lucide-download' : undefined}
     >
       <Show when={text()}>
-        {icon}
         {text() === true ? 'Download' : text()}
       </Show>
     </Button>

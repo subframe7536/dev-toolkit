@@ -1,9 +1,7 @@
 import type { JSXElement } from 'solid-js'
 
-import { cls } from 'cls-variant'
+import { cn, Icon } from 'moraine'
 import { Show } from 'solid-js'
-
-import { Icon } from 'moraine'
 
 type CardProps = {
   class?: string
@@ -17,7 +15,7 @@ type CardProps = {
 export function Card(props: CardProps) {
   return (
     <div
-      class={cls('rounded-lg b-(1 border) bg-card text-card-foreground shadow-sm', props.class)}
+      class={cn('rounded-lg b-(1 border) bg-card text-card-foreground shadow-sm', props.class)}
     >
       <div class="p-6 flex flex-col gap-2">
         <div class="flex gap-2 items-center">

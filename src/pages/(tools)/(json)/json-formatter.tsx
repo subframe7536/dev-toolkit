@@ -7,7 +7,6 @@ import { DownloadButton } from '#/components/download-button'
 import { Button, Icon, Select, Slider, Switch, Textarea } from 'moraine'
 import { formatJSON, formatJSONWithNested, repairJSON, sortKeys } from '#/utils/json/formatter'
 import { convertKeys } from '#/utils/json/key-converter'
-import { cls } from 'cls-variant'
 import { createRoute } from 'solid-file-router'
 import { createEffect, createSignal, on, Show } from 'solid-js'
 import { toast } from 'solid-toaster'
@@ -170,7 +169,7 @@ function JSONFormatter() {
             <Button
               variant="secondary"
               size="icon"
-              classes={{ root: cls('right-2 top-9 absolute', !output() && 'hidden') }}
+              classes={{ root: ['right-2 top-9 absolute', !output() && 'hidden'] }}
               onClick={() => setIsFullscreen(true)}
             >
               <Icon name="lucide:maximize-2" />

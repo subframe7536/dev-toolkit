@@ -25,8 +25,8 @@ function ErrorFallback(props: { error: Error, reset: () => void }) {
             size="sm"
             classes={{ root: 'mt-3' }}
             onClick={() => props.reset()}
+            leading="lucide:refresh-cw"
           >
-            <Icon name="lucide:refresh-cw" classes={{ icon: 'mr-2 size-4' }} />
             Try Again
           </Button>
         </div>
@@ -97,8 +97,7 @@ function RegexTester() {
 
             {/* Action buttons section */}
             <div class="mt-6 flex flex-wrap gap-3">
-              <Button variant="default" onClick={() => actions.toggleExportDialog(true)}>
-                <Icon name="lucide:download" classes={{ icon: 'mr-2 size-4' }} />
+              <Button variant="default" onClick={() => actions.toggleExportDialog(true)} leading="lucide:download">
                 Export Code
               </Button>
               <PatternLibraryDialog />
@@ -108,8 +107,8 @@ function RegexTester() {
                   actions.setPattern('')
                   actions.setTestText('')
                 }}
+                leading="lucide:trash-2"
               >
-                <Icon name="lucide:trash-2" classes={{ icon: 'mr-2 size-4' }} />
                 Clear All
               </Button>
               {/* Reference Dialog */}
@@ -118,8 +117,7 @@ function RegexTester() {
                 classes={{ content: 'max-h-[60vh] max-w-4xl overflow-y-auto' }}
                 body={<HelpPanel />}
               >
-                <Button variant="outline">
-                  <Icon name="lucide:book-open" classes={{ icon: 'mr-2 size-4' }} />
+                <Button variant="outline" leading="lucide:book-open">
                   Reference
                 </Button>
               </Dialog>

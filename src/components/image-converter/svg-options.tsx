@@ -1,6 +1,6 @@
 import type { Component } from 'solid-js'
 
-import { Button, Icon, Input } from 'moraine'
+import { Button, Input } from 'moraine'
 import { Show } from 'solid-js'
 
 interface SvgOptionsProps {
@@ -87,10 +87,10 @@ export const SvgOptions: Component<SvgOptionsProps> = (props) => {
       <Button
         variant="outline"
         size="sm"
-        class="w-full"
+        classes={{ root: 'w-full' }}
         onClick={props.onReset}
+        leading="i-lucide-rotate-ccw"
       >
-        <Icon name="i-lucide-rotate-ccw" classes={{ icon: 'mr-2 size-4' }} />
         Reset SVG Options
       </Button>
     </div>

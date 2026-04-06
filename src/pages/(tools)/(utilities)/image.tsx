@@ -322,10 +322,12 @@ function ImageConverter() {
           disabled={converting() || images.length === 0}
           size="lg"
           classes={{ root: 'w-full' }}
+          leading={
+            converting()
+              ? <Icon name="lucide:loader-2" classes={{ icon: 'animate-spin' }} />
+              : 'lucide:download'
+          }
         >
-          <Show when={converting()} fallback={<Icon name="lucide:download" classes={{ icon: 'mr-2' }} />}>
-            <Icon name="lucide:loader-2" classes={{ icon: 'mr-2 animate-spin' }} />
-          </Show>
           {converting() ? 'Converting...' : `Convert & Download ${images.length > 0 ? `(${images.length})` : ''}`}
         </Button>
       </div>

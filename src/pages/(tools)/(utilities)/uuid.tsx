@@ -80,8 +80,7 @@ function UUIDGenerator() {
         </div>
 
         <div class="flex gap-2">
-          <Button classes={{ root: 'flex-1' }} onClick={generateUUIDs}>
-            <Icon name="lucide:refresh-cw" classes={{ icon: 'mr-2 size-4' }} />
+          <Button classes={{ root: 'flex-1' }} onClick={generateUUIDs} leading="lucide:refresh-cw">
             Generate
           </Button>
           <ClearButton

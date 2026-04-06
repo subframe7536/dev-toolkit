@@ -4,9 +4,8 @@ import { Card } from '#/components/card'
 import { ClearButton } from '#/components/clear-button'
 import { CopyButton } from '#/components/copy-button'
 import { FileUpload } from '#/components/file-upload'
-import { Button, Icon, Tabs, Textarea } from 'moraine'
+import { Button, Icon, Tabs, Textarea, cn } from 'moraine'
 import { generateHash } from '#/utils/hash'
-import { cls } from 'cls-variant'
 import { createRoute } from 'solid-file-router'
 import { createMemo, createSignal, For, Show } from 'solid-js'
 import { toast } from 'solid-toaster'
@@ -131,8 +130,8 @@ function HashGenerator() {
             classes={{ root: 'flex-1' }}
             onClick={handleGenerate}
             disabled={isGenerating()}
+            leading="lucide:refresh-cw"
           >
-            <Icon name="lucide:refresh-cw" classes={{ icon: 'mr-2 size-4' }} />
             {isGenerating() ? 'Generating...' : 'Generate'}
           </Button>
           <ClearButton
@@ -175,7 +174,7 @@ function HashGenerator() {
                     const match = createMemo(() => isHashMatch(result.hash))
                     return (
                       <div
-                        class={cls(
+                        class={cn(
                           'p-2 border rounded-lg flex gap-2 items-center',
                           match() === true
                             ? 'bg-green-500/10 border-green-500/50'

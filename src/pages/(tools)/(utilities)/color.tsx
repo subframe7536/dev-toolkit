@@ -2,7 +2,7 @@ import type { ColorFormat, RGB } from '#/utils/color'
 
 import { Card } from '#/components/card'
 import { CopyButton } from '#/components/copy-button'
-import { Button, Icon, Input, Slider } from 'moraine'
+import { Button, Icon, Input, Slider, cn } from 'moraine'
 import {
   formatColor,
   hexToRgb,
@@ -12,7 +12,6 @@ import {
   rgbToHex,
   rgbToHsl,
 } from '#/utils/color'
-import { cls } from 'cls-variant'
 import { createRoute } from 'solid-file-router'
 import { createMemo, createSignal, For } from 'solid-js'
 import { toast } from 'solid-toaster'
@@ -125,12 +124,10 @@ function ColorConverter() {
 
         {/* Action Buttons */}
         <div class="flex gap-2">
-          <Button onClick={handleRandomize} classes={{ root: 'flex-1' }}>
-            <Icon name="lucide:shuffle" classes={{ icon: 'mr-2' }} />
+          <Button onClick={handleRandomize} classes={{ root: 'flex-1' }} leading="lucide:shuffle">
             Random
           </Button>
-          <Button onClick={handleSaveColor} variant="secondary" classes={{ root: 'flex-1' }}>
-            <Icon name="lucide:save" classes={{ icon: 'mr-2' }} />
+          <Button onClick={handleSaveColor} variant="secondary" classes={{ root: 'flex-1' }} leading="lucide:save">
             Save
           </Button>
         </div>
@@ -145,7 +142,7 @@ function ColorConverter() {
                 return (
                   <button
                     onClick={() => color() && applySavedColor(color()!)}
-                    class={cls(
+                    class={cn(
                       'b-(2 border) rounded h-10 w-10 transition-all',
                       color()
                         ? 'cursor-pointer hover:(shadow-md scale-110)'

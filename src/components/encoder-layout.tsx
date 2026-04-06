@@ -2,7 +2,6 @@ import type { JSX } from 'solid-js'
 
 import { CopyButton } from '#/components/copy-button'
 import { Button, Icon, Textarea } from 'moraine'
-import { cls } from 'cls-variant'
 import { batch, createSignal, onCleanup } from 'solid-js'
 import { toast } from 'solid-toaster'
 
@@ -100,8 +99,10 @@ export function EncoderLayout(props: EncoderLayoutProps): JSX.Element {
         <div class="space-y-4">
           <label class="text-lg font-medium">{inputLabel()}</label>
           <Textarea
-            class="h-80 md:h-100"
-            classes={{ input: 'text-sm font-mono resize-none' }}
+            classes={{
+              root: 'h-80 md:h-100',
+              input: 'text-sm font-mono resize-none',
+            }}
             placeholder={inputPlaceholder()}
             value={inputText()}
             onInput={e => handleInput(e.currentTarget.value)}
@@ -112,7 +113,7 @@ export function EncoderLayout(props: EncoderLayoutProps): JSX.Element {
               onClick={toggleMode}
               size="icon-md"
               variant="outline"
-              class="p-1.5 rounded-full bg-background block shadow-md lg:hidden"
+              classes={{ root: 'p-1.5 rounded-full bg-background block shadow-md lg:hidden' }}
               title={`Switch to ${isEncode() ? 'decode' : 'encode'} mode`}
             >
               <Icon name="i-lucide-arrow-up-down" />
@@ -130,7 +131,7 @@ export function EncoderLayout(props: EncoderLayoutProps): JSX.Element {
             onClick={toggleMode}
             size="icon-md"
             variant="outline"
-            class="rounded-full bg-background shadow-md"
+            classes={{ root: 'rounded-full bg-background shadow-md' }}
             title={`Switch to ${isEncode() ? 'decode' : 'encode'} mode`}
           >
             <Icon name="i-lucide-arrow-right-left" />
@@ -141,12 +142,12 @@ export function EncoderLayout(props: EncoderLayoutProps): JSX.Element {
         <div class="flex flex-col gap-4 items-end lg:items-start">
           <label class="text-lg font-medium">{outputLabel()}</label>
           <Textarea
-            class={cls('w-full h-80 md:h-100', error() ? 'border-destructive' : '')}
             classes={{
-              input: cls(
+              root: ['w-full h-80 md:h-100', error() && 'border-destructive'],
+              input: [
                 'text-sm font-mono resize-none focus-visible:ring-0',
                 error() ? 'text-destructive' : !outputText() && 'text-muted-foreground',
-              ),
+              ],
             }}
             readOnly
             placeholder={outputPlaceholder()}

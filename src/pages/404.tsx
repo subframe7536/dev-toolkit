@@ -22,12 +22,10 @@ function NotFound() {
       </p>
 
       <div class="flex gap-4">
-        <Button onClick={() => navigate('/')}>
-          <Icon name="lucide:home" classes={{ icon: 'mr-2 h-4 w-4' }} />
+        <Button onClick={() => navigate('/')} leading="lucide:home">
           Go Home
         </Button>
-        <Button variant="outline" onClick={() => window.history.back()}>
-          <Icon name="lucide:arrow-left" classes={{ icon: 'mr-2 h-4 w-4' }} />
+        <Button variant="outline" onClick={() => window.history.back()} leading="lucide:arrow-left">
           Go Back
         </Button>
       </div>

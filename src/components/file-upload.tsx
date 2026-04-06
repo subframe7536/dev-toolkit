@@ -66,9 +66,8 @@ export function FileUpload(props: Props) {
         </div>
         <FileField.Trigger
           as={(triggerProps: FileFieldTriggerProps) => (
-            <Button {...triggerProps} variant="secondary" classes={{ root: 'text-sm flex gap-2 w-80% items-center sm:w-unset' }}>
-              <Icon name="i-lucide-upload" />
-              <span>Drag or Click to upload</span>
+            <Button {...triggerProps} variant="secondary" classes={{ root: 'text-sm flex gap-2 w-80% items-center sm:w-unset' }} leading="i-lucide-upload">
+              Drag or Click to upload
             </Button>
           )}
         />

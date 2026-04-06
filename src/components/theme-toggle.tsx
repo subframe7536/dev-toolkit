@@ -1,4 +1,3 @@
-import { Icon } from 'moraine'
 import { useColorMode } from '@solid-hooks/core/web'
 import { createMemo } from 'solid-js'
 
@@ -28,9 +27,9 @@ export function ThemeToggle(props: { class?: string }) {
       onClick={handleToggle}
       variant="ghost"
       aria-label="Toggle theme"
-      class={props.class}
+      classes={{ root: props.class }}
+      leading={themeIcon() as any}
     >
-      <Icon name={themeIcon() as any} title={mode()} classes={{ icon: 'mr-2' }} />
       {mode()}
     </Button>
   )
