@@ -24,7 +24,7 @@ export function DownloadButton(props: DownloadButtonProps) {
   }
 
   const text = createMemo(() => props.text ?? true)
-  const icon = <Icon name="i-lucide-download" class={cls(text() && 'mr-2')} />
+  const icon = <Icon name="i-lucide-download" classes={{ icon: cls(text() && 'mr-2') }} />
   return (
     <Button
       variant={props.variant ?? 'outline'}

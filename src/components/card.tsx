@@ -22,7 +22,7 @@ export function Card(props: CardProps) {
       <div class="p-6 flex flex-col gap-2">
         <div class="flex gap-2 items-center">
           <Show when={props.icon}>
-            <Icon name={props.icon as any} class="text-muted-foreground size-6" />
+            <Icon name={props.icon as any} classes={{ icon: 'text-muted-foreground size-6' }} />
           </Show>
           <h3 class="text-lg leading-none tracking-tight font-semibold">{props.title}</h3>
         </div>

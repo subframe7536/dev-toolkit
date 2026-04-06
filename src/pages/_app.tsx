@@ -109,7 +109,7 @@ function App(props: RouteSectionProps) {
             href="https://github.com/subframe7536/dev-toolkit"
             target="_blank"
           >
-            <Icon name="lucide:github" title="GitHub Link" class="mr-2" />
+            <Icon name="lucide:github" title="GitHub Link" classes={{ icon: 'mr-2' }} />
             GitHub
           </Button>
         </div>

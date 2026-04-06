@@ -139,7 +139,7 @@ export function HelpPanel() {
   return (
     <div class="p-4">
       <h3 class="text-md text-foreground font-medium mb-4 flex gap-2 items-center">
-        <Icon name="i-lucide-book-open" class="size-4" />
+        <Icon name="i-lucide-book-open" classes={{ icon: 'size-4' }} />
         Regex Syntax Reference
       </h3>
 
@@ -148,7 +148,7 @@ export function HelpPanel() {
           {category => (
             <div class="space-y-3">
               <h4 class="text-sm text-foreground font-semibold flex gap-2 items-center">
-                <Icon name={category.icon} class="text-muted-foreground size-4" />
+                <Icon name={category.icon} classes={{ icon: 'text-muted-foreground size-4' }} />
                 {category.title}
                 <span class="text-xs text-muted-foreground font-normal">({category.items.length})</span>
               </h4>
@@ -165,7 +165,7 @@ export function HelpPanel() {
 
       <div class="text-xs text-muted-foreground mt-6 p-3 border border-border rounded-md bg-muted/20">
         <div class="font-medium mb-1 flex gap-1 items-center">
-          <Icon name="i-lucide-lightbulb" class="size-3" />
+          <Icon name="i-lucide-lightbulb" classes={{ icon: 'size-3' }} />
           Tips
         </div>
         <ul class="list-disc list-inside space-y-0.5">

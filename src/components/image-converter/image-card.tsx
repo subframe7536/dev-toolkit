@@ -109,7 +109,7 @@ export const ImageCard: Component<ImageCardProps> = (props) => {
           disabled={!props.image.origin}
           class="flex-1"
         >
-          <Icon name="i-lucide-rotate-ccw" class="mr-2" />
+          <Icon name="i-lucide-rotate-ccw" classes={{ icon: 'mr-2' }} />
           Reset
         </Button>
         <ClearButton

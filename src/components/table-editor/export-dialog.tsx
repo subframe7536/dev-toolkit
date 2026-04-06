@@ -191,7 +191,7 @@ export function ExportDialog() {
                 value={tableName()}
                 onInput={e => setTableName(e.currentTarget.value)}
                 placeholder="my_table"
-                class="mt-1"
+                classes={{ root: 'mt-1' }}
               />
             </div>
 
@@ -221,7 +221,7 @@ export function ExportDialog() {
                 <For each={computed.visibleColumns()}>
                   {col => (
                     <Checkbox
-                      class="flex gap-2 items-center"
+                      classes={{ root: 'flex gap-2 items-center' }}
                       checked={keyColumns().includes(col.id)}
                       onChange={(checked) => {
                         if (checked) {
@@ -261,8 +261,7 @@ export function ExportDialog() {
             </div>
             <Show when={exportFormat() !== 'excel'}>
               <Textarea
-                class="flex-1"
-                classes={{ input: 'text-sm font-mono resize-none h-80' }}
+                classes={{ root: 'flex-1', input: 'text-sm font-mono resize-none h-80' }}
                 readOnly
                 value={exportOutput()}
               />
@@ -272,7 +271,7 @@ export function ExportDialog() {
       )}
     >
       <Button>
-        <Icon name="i-lucide-download" class="mr-2 size-4" />
+        <Icon name="i-lucide-download" classes={{ icon: 'mr-2 size-4' }} />
         Export
       </Button>
     </Dialog>

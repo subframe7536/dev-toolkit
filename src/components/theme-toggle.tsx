@@ -30,7 +30,7 @@ export function ThemeToggle(props: { class?: string }) {
       aria-label="Toggle theme"
       class={props.class}
     >
-      <Icon name={themeIcon() as any} title={mode()} class="mr-2" />
+      <Icon name={themeIcon() as any} title={mode()} classes={{ icon: 'mr-2' }} />
       {mode()}
     </Button>
   )

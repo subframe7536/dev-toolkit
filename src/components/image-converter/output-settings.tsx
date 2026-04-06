@@ -66,7 +66,7 @@ export const OutputSettings: Component<OutputSettingsProps> = (props) => {
         </p>
         <div class="flex gap-2">
           <Input
-            class="flex-1"
+            classes={{ root: 'flex-1' }}
             type="number"
             placeholder="Width"
             value={props.globalWidth ? `${props.globalWidth}` : ''}
@@ -76,7 +76,7 @@ export const OutputSettings: Component<OutputSettingsProps> = (props) => {
             }}
           />
           <Input
-            class="flex-1"
+            classes={{ root: 'flex-1' }}
             type="number"
             placeholder="Height"
             value={props.globalHeight ? `${props.globalHeight}` : ''}

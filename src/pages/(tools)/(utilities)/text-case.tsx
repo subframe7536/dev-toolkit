@@ -3,7 +3,7 @@ import type { TextCaseStyle } from '#/utils/text-case'
 import { Card } from '#/components/card'
 import { ClearButton } from '#/components/clear-button'
 import { CopyButton } from '#/components/copy-button'
-import { TextField, TextFieldLabel, TextFieldTextArea } from '#/components/ui/text-field'
+import { Textarea } from 'moraine'
 import { convertTextCase } from '#/utils/text-case'
 import { createRoute } from 'solid-file-router'
 import { createMemo, createSignal, For } from 'solid-js'
@@ -44,13 +44,15 @@ function TextCase() {
   return (
     <div class="flex flex-col gap-6">
       <div class="relative">
-        <TextField value={input()} onChange={setInput}>
-          <TextFieldLabel>Input Text</TextFieldLabel>
-          <TextFieldTextArea
-            class="font-mono h-36 resize-none"
+        <div>
+          <label class="text-sm font-medium">Input Text</label>
+          <Textarea
+            value={input()}
+            onChange={setInput}
+            classes={{ input: 'font-mono h-36 resize-none' }}
             placeholder="Enter text to convert..."
           />
-        </TextField>
+        </div>
         <ClearButton
           onClear={handleClear}
           disabled={!input()}

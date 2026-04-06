@@ -4,8 +4,6 @@ import { defineConfig } from 'vite'
 import { meta } from 'vite-plugin-meta-tags'
 import { VitePWA as pwa } from 'vite-plugin-pwa'
 import solid from 'vite-plugin-solid'
-import tsconfig from 'vite-tsconfig-paths'
-
 // const base = '/dev-toolkit'
 const base = ''
 
@@ -15,7 +13,6 @@ const url = 'https://tool.subf.dev'
 export default defineConfig({
   base,
   plugins: [
-    tsconfig(),
     unocss({ inspector: false }),
     solid(),
     fileRouter({

@@ -4,22 +4,7 @@ import type { CaseStyle } from '#/utils/json/key-converter'
 import { ClearButton } from '#/components/clear-button'
 import { CopyButton } from '#/components/copy-button'
 import { DownloadButton } from '#/components/download-button'
-import { Button } from '#/components/ui/button'
-import { Icon } from '#/components/ui/icon'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '#/components/ui/select'
-import { Slider } from '#/components/ui/slider'
-import { Switch } from '#/components/ui/switch'
-import {
-  TextField,
-  TextFieldLabel,
-  TextFieldTextArea,
-} from '#/components/ui/text-field'
+import { Button, Icon, Select, Slider, Switch, Textarea } from 'moraine'
 import { formatJSON, formatJSONWithNested, repairJSON, sortKeys } from '#/utils/json/formatter'
 import { convertKeys } from '#/utils/json/key-converter'
 import { cls } from 'cls-variant'
@@ -135,9 +120,9 @@ function JSONFormatter() {
         <div class="space-y-4">
           <div class="text-sm font-medium">Options</div>
           <div class="flex flex-wrap gap-4">
-            <Switch checked={autoRepair()} onChange={setAutoRepair} text="Auto repair JSON string" />
-            <Switch checked={shouldSortKeys()} onChange={setShouldSortKeys} text="Sort Keys" />
-            <Switch checked={parseNested()} onChange={setParseNested} text="Parse Nested JSON" />
+            <Switch checked={autoRepair()} onChange={setAutoRepair} label="Auto repair JSON string" />
+            <Switch checked={shouldSortKeys()} onChange={setShouldSortKeys} label="Sort Keys" />
+            <Switch checked={parseNested()} onChange={setParseNested} label="Parse Nested JSON" />
           </div>
         </div>
         <div class="space-y-4">
@@ -145,47 +130,34 @@ function JSONFormatter() {
           <Select
             value={targetCase()}
             onChange={setTargetCase}
-            options={caseOptions.map(o => o.value)}
+            options={caseOptions}
             disallowEmptySelection
-            class="w-50"
-            itemComponent={props => (
-              <SelectItem item={props.item}>
-                {caseOptions.find(o => o.value === props.item.rawValue)?.label}
-              </SelectItem>
-            )}
-          >
-            <SelectTrigger>
-              <SelectValue<CaseStyle>>
-                {state => caseOptions.find(o => o.value === state.selectedOption())?.label}
-              </SelectValue>
-            </SelectTrigger>
-            <SelectContent />
-          </Select>
+            classes={{ root: 'w-50' }}
+          />
         </div>
         <div class="max-w-120 min-w-80">
+          <label class="text-sm font-medium">Indent Size</label>
           <Slider
             value={[indent()]}
             onChange={value => setIndent(value[0])}
-            minValue={2}
-            maxValue={8}
+            min={2}
+            max={8}
             step={2}
-            loose
-            label="Indent Size"
           />
         </div>
       </div>
 
       <div class="gap-6 grid lg:grid-cols-2">
         <div class="space-y-4">
-          <TextField>
-            <TextFieldLabel>Input JSON</TextFieldLabel>
-            <TextFieldTextArea
-              class="text-sm font-mono h-96 resize-none"
+          <div>
+            <label class="text-sm font-medium">Input JSON</label>
+            <Textarea
+              classes={{ input: 'text-sm font-mono h-96 resize-none' }}
               placeholder="Paste your JSON here..."
               value={input()}
               onInput={e => setInput(e.currentTarget.value)}
             />
-          </TextField>
+          </div>
           <ClearButton
             onClear={handleClear}
             disabled={!input() && !output()}
@@ -193,23 +165,23 @@ function JSONFormatter() {
         </div>
 
         <div class="space-y-4">
-          <TextField class="flex-1 relative">
-            <TextFieldLabel>Output</TextFieldLabel>
+          <div class="flex-1 relative">
+            <label class="text-sm font-medium">Output</label>
             <Button
               variant="secondary"
               size="icon"
-              class={cls('right-2 top-9 absolute', !output() && 'hidden')}
+              classes={{ root: cls('right-2 top-9 absolute', !output() && 'hidden') }}
               onClick={() => setIsFullscreen(true)}
             >
               <Icon name="lucide:maximize-2" />
             </Button>
-            <TextFieldTextArea
-              class="text-sm font-mono bg-muted/50 h-96 resize-none"
+            <Textarea
+              classes={{ input: 'text-sm font-mono bg-muted/50 h-96 resize-none' }}
               readOnly
               placeholder="Formatted JSON will appear here..."
               value={output()}
             />
-          </TextField>
+          </div>
           <div class="flex gap-2">
             <CopyButton
               content={output()}
@@ -234,14 +206,14 @@ function JSONFormatter() {
               <Icon name="lucide:x" />
             </button>
           </div>
-          <TextField class="flex-1">
-            <TextFieldLabel>Output</TextFieldLabel>
-            <TextFieldTextArea
-              class="text-sm font-mono bg-muted/50 h-full resize-none"
+          <div class="flex-1">
+            <label class="text-sm font-medium">Output</label>
+            <Textarea
+              classes={{ input: 'text-sm font-mono bg-muted/50 h-full resize-none' }}
               readOnly
               value={output()}
             />
-          </TextField>
+          </div>
         </div>
       </Show>
     </div>

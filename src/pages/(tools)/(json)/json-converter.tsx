@@ -3,19 +3,7 @@ import type { ConversionResult } from '#/utils/json/converter'
 import { ClearButton } from '#/components/clear-button'
 import { CopyButton } from '#/components/copy-button'
 import { DownloadButton } from '#/components/download-button'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '#/components/ui/select'
-import { Switch } from '#/components/ui/switch'
-import {
-  TextField,
-  TextFieldLabel,
-  TextFieldTextArea,
-} from '#/components/ui/text-field'
+import { Select, Switch, Textarea } from 'moraine'
 import {
   jsonToJavaClass,
   jsonToJSObject,
@@ -136,21 +124,21 @@ function JSONConverter() {
         <Switch
           checked={useRepair()}
           onChange={setUseRepair}
-          text="Auto-repair JSON"
+          label="Auto-repair JSON"
         />
       </div>
 
       <div class="gap-6 grid lg:grid-cols-2">
         <div class="flex flex-col gap-4">
-          <TextField class="mt-3 flex-1">
-            <TextFieldLabel>JSON Input</TextFieldLabel>
-            <TextFieldTextArea
-              class="text-sm font-mono mt-2 h-96 resize-none"
+          <div class="mt-3 flex-1">
+            <label class="text-sm font-medium">JSON Input</label>
+            <Textarea
+              classes={{ input: 'text-sm font-mono mt-2 h-96 resize-none' }}
               placeholder="Paste your JSON here..."
               value={input()}
               onInput={e => setInput(e.currentTarget.value)}
             />
-          </TextField>
+          </div>
           <div>
             <ClearButton
               onClear={handleClear}
@@ -160,33 +148,21 @@ function JSONConverter() {
         </div>
 
         <div class="flex flex-col gap-4">
-          <TextField class="flex-1">
+          <div class="flex-1">
             <Select
               value={mode()}
               onChange={setMode}
-              options={conversionModes.map(({ value }) => value)}
+              options={conversionModes.map(({ value, label }) => ({ value, label }))}
               disallowEmptySelection
-              class="w-60"
-              itemComponent={props => (
-                <SelectItem item={props.item}>
-                  {conversionModes.find(m => m.value === props.item.rawValue)?.label}
-                </SelectItem>
-              )}
-            >
-              <SelectTrigger class="w-full">
-                <SelectValue<ConversionMode>>
-                  {state => conversionModes.find(m => m.value === state.selectedOption())?.label}
-                </SelectValue>
-              </SelectTrigger>
-              <SelectContent />
-            </Select>
-            <TextFieldTextArea
-              class="text-sm font-mono mt-2 bg-muted/50 h-96 resize-none"
+              classes={{ root: 'w-60' }}
+            />
+            <Textarea
+              classes={{ input: 'text-sm font-mono mt-2 bg-muted/50 h-96 resize-none' }}
               readOnly
               placeholder="Converted output will appear here..."
               value={output()}
             />
-          </TextField>
+          </div>
           <div class="flex flex-wrap gap-4">
             <CopyButton
               content={output()}

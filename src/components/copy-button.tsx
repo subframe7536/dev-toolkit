@@ -26,7 +26,7 @@ export function CopyButton(props: CopyButtonProps) {
     }
   }
   const text = createMemo(() => props.text ?? true)
-  const icon = <Icon name={isCopied() ? 'i-lucide-check' : 'i-lucide-copy'} class={cls(text() && 'mr-2')} />
+  const icon = <Icon name={isCopied() ? 'i-lucide-check' : 'i-lucide-copy'} classes={{ icon: cls(text() && 'mr-2') }} />
   return (
     <Button
       variant={props.variant ?? 'outline'}

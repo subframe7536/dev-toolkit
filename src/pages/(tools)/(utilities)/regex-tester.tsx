@@ -6,10 +6,7 @@ import { HelpPanel } from '#/components/regex-tester/help-panel'
 import { PatternLibraryDialog } from '#/components/regex-tester/pattern-library'
 import { RegexInputPanel } from '#/components/regex-tester/regex-input-panel'
 import { ReplacementPanel } from '#/components/regex-tester/replacement-panel'
-import { Button } from '#/components/ui/button'
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '#/components/ui/dialog'
-import Icon from '#/components/ui/icon'
-import { Tabs, TabsContent, TabsIndicator, TabsList, TabsTrigger } from '#/components/ui/tabs'
+import { Button, Dialog, Icon, Tabs } from 'moraine'
 import { RegexProvider, useRegexContext } from '#/contexts'
 import { createRoute } from 'solid-file-router'
 import { ErrorBoundary, Suspense } from 'solid-js'
@@ -19,17 +16,17 @@ function ErrorFallback(props: { error: Error, reset: () => void }) {
   return (
     <div class="p-6 border border-red-200 rounded-lg bg-red-50 dark:border-red-800 dark:bg-red-950/30" role="alert">
       <div class="flex gap-3 items-start">
-        <Icon name="lucide:alert-triangle" class="text-red-600 mt-0.5 size-5 dark:text-red-400" />
+        <Icon name="lucide:alert-triangle" classes={{ icon: 'text-red-600 mt-0.5 size-5 dark:text-red-400' }} />
         <div class="flex-1">
           <h3 class="text-red-800 font-medium dark:text-red-200">Something went wrong</h3>
           <p class="text-sm text-red-600 mt-1 dark:text-red-400">{props.error.message}</p>
           <Button
             variant="outline"
             size="sm"
-            class="mt-3"
+            classes={{ root: 'mt-3' }}
             onClick={() => props.reset()}
           >
-            <Icon name="lucide:refresh-cw" class="mr-2 size-4" />
+            <Icon name="lucide:refresh-cw" classes={{ icon: 'mr-2 size-4' }} />
             Try Again
           </Button>
         </div>
@@ -101,7 +98,7 @@ function RegexTester() {
             {/* Action buttons section */}
             <div class="mt-6 flex flex-wrap gap-3">
               <Button variant="default" onClick={() => actions.toggleExportDialog(true)}>
-                <Icon name="lucide:download" class="mr-2 size-4" />
+                <Icon name="lucide:download" classes={{ icon: 'mr-2 size-4' }} />
                 Export Code
               </Button>
               <PatternLibraryDialog />
@@ -112,21 +109,19 @@ function RegexTester() {
                   actions.setTestText('')
                 }}
               >
-                <Icon name="lucide:trash-2" class="mr-2 size-4" />
+                <Icon name="lucide:trash-2" classes={{ icon: 'mr-2 size-4' }} />
                 Clear All
               </Button>
               {/* Reference Dialog */}
-              <Dialog>
-                <DialogTrigger as={Button} variant="outline">
-                  <Icon name="lucide:book-open" class="mr-2 size-4" />
+              <Dialog
+                title="Regex Syntax Reference"
+                classes={{ content: 'max-h-[60vh] max-w-4xl overflow-y-auto' }}
+                body={<HelpPanel />}
+              >
+                <Button variant="outline">
+                  <Icon name="lucide:book-open" classes={{ icon: 'mr-2 size-4' }} />
                   Reference
-                </DialogTrigger>
-                <DialogContent class="max-h-[60vh] max-w-4xl overflow-y-auto">
-                  <DialogHeader>
-                    <DialogTitle>Regex Syntax Reference</DialogTitle>
-                  </DialogHeader>
-                  <HelpPanel />
-                </DialogContent>
+                </Button>
               </Dialog>
             </div>
           </div>
@@ -136,31 +131,16 @@ function RegexTester() {
         <div class="space-y-6">
           {/* Explanation and Debug Panels */}
           <div class="text-card-foreground border rounded-lg bg-card shadow-sm">
-            <Tabs defaultValue="matches">
-              <TabsList class="m-4 mb-0 p-1">
-                <TabsTrigger value="matches">Matches</TabsTrigger>
-                <TabsTrigger value="replace">Replace</TabsTrigger>
-                <TabsTrigger value="explanation">Explain</TabsTrigger>
-                <TabsTrigger value="debug">Debug</TabsTrigger>
-                <TabsIndicator />
-              </TabsList>
-
-              <TabsContent value="matches">
-                <DetailsPanel />
-              </TabsContent>
-
-              <TabsContent value="replace">
-                <ReplacementPanel />
-              </TabsContent>
-
-              <TabsContent value="explanation">
-                <ExplanationPanel />
-              </TabsContent>
-
-              <TabsContent value="debug">
-                <DebugPanel />
-              </TabsContent>
-            </Tabs>
+            <Tabs
+              defaultValue="matches"
+              classes={{ list: 'm-4 mb-0 p-1' }}
+              items={[
+                { value: 'matches', label: 'Matches', content: <DetailsPanel /> },
+                { value: 'replace', label: 'Replace', content: <ReplacementPanel /> },
+                { value: 'explanation', label: 'Explain', content: <ExplanationPanel /> },
+                { value: 'debug', label: 'Debug', content: <DebugPanel /> },
+              ]}
+            />
           </div>
         </div>
       </div>

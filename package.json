@@ -53,8 +53,7 @@
     "vite": "^8.0.3",
     "vite-plugin-meta-tags": "^0.1.4",
     "vite-plugin-pwa": "^1.2.0",
-    "vite-plugin-solid": "^2.11.11",
-    "vite-tsconfig-paths": "^6.1.1"
+    "vite-plugin-solid": "^2.11.11"
   },
   "overrides": {
     "@unocss/inspector": "npm:has-flag"

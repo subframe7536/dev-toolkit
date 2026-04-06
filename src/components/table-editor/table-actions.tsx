@@ -37,7 +37,7 @@ export function TableActions() {
         <ExportDialog />
 
         <Button variant="secondary" onClick={actions.reset}>
-          <Icon name="i-lucide-rotate-ccw" class="mr-2" />
+          <Icon name="i-lucide-rotate-ccw" classes={{ icon: 'mr-2' }} />
           Reset
         </Button>
 

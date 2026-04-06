@@ -1,13 +1,7 @@
 import { ClearButton } from '#/components/clear-button'
 import { CopyButton } from '#/components/copy-button'
 import { DownloadButton } from '#/components/download-button'
-import { Switch } from '#/components/ui/switch'
-import {
-  TextField,
-  TextFieldInput,
-  TextFieldLabel,
-  TextFieldTextArea,
-} from '#/components/ui/text-field'
+import { Input, Switch, Textarea } from 'moraine'
 import { generateJsonSchema } from '#/utils/json/schema-generator'
 import { createRoute } from 'solid-file-router'
 import { createSignal } from 'solid-js'
@@ -57,38 +51,38 @@ function JSONSchemaGenerator() {
   return (
     <div class="space-y-6">
       <div class="flex flex-wrap gap-6">
-        <Switch checked={required()} onChange={setRequired} text="Mark fields as required" />
+        <Switch checked={required()} onChange={setRequired} label="Mark fields as required" />
         <Switch
           checked={additionalProperties()}
           onChange={setAdditionalProperties}
-          text="Allow additional properties"
+          label="Allow additional properties"
         />
       </div>
       <div class="flex flex-wrap gap-6 items-center">
-        <TextField class="flex-1 min-w-60">
-          <TextFieldLabel>Schema Title (optional)</TextFieldLabel>
-          <TextFieldInput
+        <div class="flex-1 min-w-60">
+          <label class="text-sm font-medium">Schema Title (optional)</label>
+          <Input
             value={title()}
             onInput={e => setTitle(e.currentTarget.value)}
             placeholder="My Schema"
           />
-        </TextField>
-        <TextField class="flex-1 min-w-60">
-          <TextFieldLabel>Schema Description (optional)</TextFieldLabel>
-          <TextFieldInput
+        </div>
+        <div class="flex-1 min-w-60">
+          <label class="text-sm font-medium">Schema Description (optional)</label>
+          <Input
             value={description()}
             onInput={e => setDescription(e.currentTarget.value)}
             placeholder="Description of the schema"
           />
-        </TextField>
+        </div>
       </div>
 
       <div class="gap-6 grid lg:grid-cols-2">
         <div class="space-y-4">
-          <TextField>
-            <TextFieldLabel>Input JSON</TextFieldLabel>
-            <TextFieldTextArea
-              class="text-sm font-mono h-96"
+          <div>
+            <label class="text-sm font-medium">Input JSON</label>
+            <Textarea
+              classes={{ input: 'text-sm font-mono h-96' }}
               placeholder='{"name": "John", "age": 30}'
               value={input()}
               onInput={(e) => {
@@ -96,7 +90,7 @@ function JSONSchemaGenerator() {
                 handleGenerate()
               }}
             />
-          </TextField>
+          </div>
           <div class="flex flex-wrap gap-2">
             <ClearButton
               onClear={handleClear}
@@ -106,15 +100,15 @@ function JSONSchemaGenerator() {
         </div>
 
         <div class="space-y-4">
-          <TextField>
-            <TextFieldLabel>JSON Schema Output</TextFieldLabel>
-            <TextFieldTextArea
-              class="text-sm font-mono bg-muted/50 h-96"
+          <div>
+            <label class="text-sm font-medium">JSON Schema Output</label>
+            <Textarea
+              classes={{ input: 'text-sm font-mono bg-muted/50 h-96' }}
               readOnly
               placeholder="Generated schema will appear here"
               value={output()}
             />
-          </TextField>
+          </div>
           <div class="flex flex-wrap gap-2">
             <CopyButton
               content={output()}

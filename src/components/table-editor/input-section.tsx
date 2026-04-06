@@ -225,7 +225,7 @@ export function InputSection() {
                     disabled={!textInput().trim()}
                     class="flex-1 min-w-48"
                   >
-                    <Icon name="i-lucide-play" class="mr-2" />
+                    <Icon name="i-lucide-play" classes={{ icon: 'mr-2' }} />
                     Parse
                   </Button>
                   <Button
@@ -235,7 +235,7 @@ export function InputSection() {
                       setReplaceLineWrap(true)
                     }}
                   >
-                    <Icon name="i-lucide-database" class="mr-2" />
+                    <Icon name="i-lucide-database" classes={{ icon: 'mr-2' }} />
                     MySQL Example
                   </Button>
                   <Button
@@ -245,7 +245,7 @@ export function InputSection() {
                       setReplaceLineWrap(true)
                     }}
                   >
-                    <Icon name="i-lucide-table" class="mr-2" />
+                    <Icon name="i-lucide-table" classes={{ icon: 'mr-2' }} />
                     CSV Example
                   </Button>
                   <Button
@@ -255,7 +255,7 @@ export function InputSection() {
                       setReplaceLineWrap(true)
                     }}
                   >
-                    <Icon name="i-lucide-file-spreadsheet" class="mr-2" />
+                    <Icon name="i-lucide-file-spreadsheet" classes={{ icon: 'mr-2' }} />
                     Excel Example
                   </Button>
                   <ClearButton
@@ -302,12 +302,12 @@ export function InputSection() {
                       when={!isParsing()}
                       fallback={(
                         <>
-                          <Icon name="i-lucide-loader" class="mr-2 animate-spin" />
+                          <Icon name="i-lucide-loader" classes={{ icon: 'mr-2 animate-spin' }} />
                           Parsing...
                         </>
                       )}
                     >
-                      <Icon name="i-lucide-play" class="mr-2" />
+                      <Icon name="i-lucide-play" classes={{ icon: 'mr-2' }} />
                       Parse
                     </Show>
                   </Button>

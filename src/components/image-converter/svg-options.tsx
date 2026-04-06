@@ -90,7 +90,7 @@ export const SvgOptions: Component<SvgOptionsProps> = (props) => {
         class="w-full"
         onClick={props.onReset}
       >
-        <Icon name="i-lucide-rotate-ccw" class="mr-2 size-4" />
+        <Icon name="i-lucide-rotate-ccw" classes={{ icon: 'mr-2 size-4' }} />
         Reset SVG Options
       </Button>
     </div>
