@@ -7,7 +7,7 @@ import { Button, Icon } from 'moraine'
 interface CopyButtonProps {
   content: string
   variant?: 'default' | 'outline' | 'ghost' | 'secondary'
-  size?: 'sm' | 'default' | 'lg'
+  size?: 'sm' | 'md' | 'lg'
   disabled?: boolean
   class?: string
   text?: boolean | string

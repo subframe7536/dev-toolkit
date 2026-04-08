@@ -1,6 +1,6 @@
 import { ClearButton } from '#/components/clear-button'
 import { CopyButton } from '#/components/copy-button'
-import { Button, Icon, Input, Tabs } from 'moraine'
+import { Button, Icon, InputNumber, Tabs } from 'moraine'
 import { createRoute } from 'solid-file-router'
 import { createSignal, For, onMount, Show } from 'solid-js'
 import { toast } from 'solid-toaster'
@@ -63,18 +63,20 @@ function UUIDGenerator() {
           <Tabs
             value={selectedTab()}
             onChange={handleTabChange}
-            items={PRESET_COUNTS.map(preset => ({ value: preset.toString(), label: String(preset) }))}
+            items={PRESET_COUNTS.map((preset) => ({
+              value: preset.toString(),
+              label: String(preset),
+            }))}
           />
         </div>
 
         <div>
           <label class="text-sm font-medium">Custom Count</label>
-          <Input
-            type="number"
-            min="1"
-            max="100"
-            value={count().toString()}
-            onInput={e => handleCustomInput((e.target as HTMLInputElement).value)}
+          <InputNumber
+            minValue={1}
+            maxValue={100}
+            value={count()}
+            onChange={(val) => handleCustomInput(val)}
             classes={{ input: 'text-center h-9' }}
           />
         </div>
@@ -83,24 +85,23 @@ function UUIDGenerator() {
           <Button classes={{ root: 'flex-1' }} onClick={generateUUIDs} leading="lucide:refresh-cw">
             Generate
           </Button>
-          <ClearButton
-            class="flex-1"
-            onClear={handleClear}
-            disabled={uuids().length === 0}
-          />
+          <ClearButton class="flex-1" onClear={handleClear} disabled={uuids().length === 0} />
         </div>
       </div>
 
       <Show
         when={uuids().length > 0}
-        fallback={(
+        fallback={
           <div class="text-muted-foreground p-12 text-center border rounded-lg border-dashed flex items-center justify-center">
             <div>
-              <Icon name="lucide:fingerprint" classes={{ icon: 'mx-auto mb-4 opacity-50 size-12' }} />
+              <Icon
+                name="lucide:fingerprint"
+                classes={{ icon: 'mx-auto mb-4 opacity-50 size-12' }}
+              />
               <p>Click "Generate" to create UUIDs</p>
             </div>
           </div>
-        )}
+        }
       >
         <div class="flex flex-col gap-4">
           <div class="flex items-center justify-between">
@@ -117,15 +118,10 @@ function UUIDGenerator() {
 
           <div class="flex flex-col gap-2">
             <For each={uuids()}>
-              {uuid => (
+              {(uuid) => (
                 <div class="text-sm font-mono p-3 border rounded-md bg-muted/50 flex gap-2 items-center">
                   <span class="flex-1 truncate">{uuid}</span>
-                  <CopyButton
-                    content={uuid}
-                    variant="ghost"
-                    size="sm"
-                    text={false}
-                  />
+                  <CopyButton content={uuid} variant="ghost" size="sm" text={false} />
                 </div>
               )}
             </For>

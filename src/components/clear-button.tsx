@@ -4,7 +4,7 @@ import { Button, Icon } from 'moraine'
 
 interface ClearButtonProps {
   onClear: () => void
-  size?: 'sm' | 'default' | 'lg'
+  size?: 'sm' | 'md' | 'lg'
   disabled?: boolean
   class?: string
   text?: boolean

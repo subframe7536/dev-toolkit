@@ -1,7 +1,7 @@
 import { ClearButton } from '#/components/clear-button'
 import { CopyButton } from '#/components/copy-button'
-import { Button, Textarea } from 'moraine'
 import { fillSqlParams, splitSqlAndParams } from '#/utils/sql'
+import { Button, Textarea } from 'moraine'
 import { createRoute } from 'solid-file-router'
 import { createEffect, createSignal } from 'solid-js'
 
@@ -75,8 +75,12 @@ function SqlParamFill() {
 
   return (
     <div class="flex flex-col gap-4 h-full relative">
-
-      <Button onClick={loadSample} variant="outline" size="sm" classes={{ root: 'right-0 top--2 absolute' }}>
+      <Button
+        onClick={loadSample}
+        variant="outline"
+        size="sm"
+        classes={{ root: 'right-0 top--2 absolute' }}
+      >
         Load Sample
       </Button>
 
@@ -85,7 +89,7 @@ function SqlParamFill() {
           <label class="text-sm font-medium">SQL Template</label>
           <Textarea
             value={sqlInput()}
-            onInput={e => setSqlInput(e.currentTarget.value)}
+            onInput={(e) => setSqlInput(e.currentTarget.value)}
             placeholder={`All Mybatis logs\n\nor\n\nSELECT * FROM T WHERE id = ? AND name = ?`}
             classes={{ input: 'font-mono h-48 resize-none' }}
           />
@@ -95,7 +99,7 @@ function SqlParamFill() {
           <label class="text-sm font-medium">Parameters</label>
           <Textarea
             value={paramsInput()}
-            onInput={e => setParamsInput(e.currentTarget.value)}
+            onInput={(e) => setParamsInput(e.currentTarget.value)}
             placeholder="1(Integer), zhangshan(String)"
             classes={{ input: 'font-mono h-48 resize-none' }}
           />
@@ -109,20 +113,12 @@ function SqlParamFill() {
             value={error() || output()}
             readOnly
             placeholder="SELECT * FROM T WHERE id=1 AND name='zhangshan'"
-            classes={{ input: 'font-mono h-48 resize-none' }}
-            classList={{ 'text-red-500': !!error() }}
+            classes={{ root: error() && 'text-red-500', input: 'font-mono h-48 resize-none' }}
           />
         </div>
         <div class="mt-4 flex gap-4 justify-end">
-          <CopyButton
-            content={output()}
-            disabled={!output() || !error()}
-            variant="secondary"
-          />
-          <ClearButton
-            onClear={handleClear}
-            disabled={!sqlInput() && !paramsInput()}
-          />
+          <CopyButton content={output()} disabled={!output() || !error()} variant="secondary" />
+          <ClearButton onClear={handleClear} disabled={!sqlInput() && !paramsInput()} />
         </div>
       </div>
 
@@ -131,13 +127,21 @@ function SqlParamFill() {
           <strong>How to use:</strong>
           <ul class="mt-1 list-disc list-inside space-y-0.5">
             <li>Paste MyBatis log directly in the top left textarea</li>
-            <li>Or enter SQL template (with <code class="px-1 rounded bg-muted">?</code> placeholders) and parameters separately</li>
+            <li>
+              Or enter SQL template (with <code class="px-1 rounded bg-muted">?</code> placeholders)
+              and parameters separately
+            </li>
           </ul>
         </div>
         <div>
           <strong>Parameter format:</strong>
           <code class="text-xs px-1.5 py-0.5 rounded bg-muted">value(Type), value(Type), ...</code>
-          <div class="mt-1">Supported types: <code class="text-xs px-1 rounded bg-muted">String</code>, <code class="text-xs px-1 rounded bg-muted">Integer</code>, <code class="text-xs px-1 rounded bg-muted">Long</code>, <code class="text-xs px-1 rounded bg-muted">Timestamp</code></div>
+          <div class="mt-1">
+            Supported types: <code class="text-xs px-1 rounded bg-muted">String</code>,{' '}
+            <code class="text-xs px-1 rounded bg-muted">Integer</code>,{' '}
+            <code class="text-xs px-1 rounded bg-muted">Long</code>,{' '}
+            <code class="text-xs px-1 rounded bg-muted">Timestamp</code>
+          </div>
         </div>
       </div>
     </div>

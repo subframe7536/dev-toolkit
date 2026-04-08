@@ -1,8 +1,13 @@
 import type { PresetWind4Theme } from '@subf/unocss'
-
+import {
+  defineConfig,
+  presetCompletion,
+  presetIcons,
+  presetWind4,
+  transformerVariantGroup,
+} from '@subf/unocss'
 import { presetMoraine } from 'moraine/unocss'
-import { defineConfig, presetCompletion, presetIcons, presetWind4, transformerVariantGroup } from '@subf/unocss'
-import { presetAnimations } from 'unocss-preset-animations'
+// import { presetAnimations } from 'unocss-preset-animations'
 
 import { presetThemeTW4 } from './unocss-preset-theme'
 
@@ -15,7 +20,7 @@ export default defineConfig<PresetWind4Theme>({
       scale: 1.2,
     }),
     presetCompletion(),
-    presetAnimations(),
+    // presetAnimations(),
     presetThemeTW4() as any,
     presetMoraine(),
   ],
@@ -31,19 +36,20 @@ export default defineConfig<PresetWind4Theme>({
     },
     animation: {
       keyframes: {
-        'accordion-down': '{ from { height: 0 } to { height: var(--kb-accordion-content-height) } }',
+        'accordion-down':
+          '{ from { height: 0 } to { height: var(--kb-accordion-content-height) } }',
         'accordion-up': '{ from { height: var(--kb-accordion-content-height) } to { height: 0 } }',
-        'flashing': '{ from, to { opacity: 0 } 50% { opacity: 1 } }',
+        flashing: '{ from, to { opacity: 0 } 50% { opacity: 1 } }',
       },
       timingFns: {
         'accordion-down': 'ease-in-out',
         'accordion-up': 'ease-in-out',
-        'flashing': 'ease-in',
+        flashing: 'ease-in',
       },
       durations: {
         'accordion-down': '0.3s',
         'accordion-up': '0.3s',
-        'flashing': '2s',
+        flashing: '2s',
       },
       counts: {
         flashing: 'infinite',
