@@ -1,10 +1,8 @@
-import type { PresetWind4Theme } from 'unocss'
+import type { PresetWind4Theme } from '@subf/unocss'
 
 import { presetMoraine } from 'moraine/unocss'
-import { presetIcons, presetWind4, transformerVariantGroup } from 'unocss'
+import { defineConfig, presetCompletion, presetIcons, presetWind4, transformerVariantGroup } from '@subf/unocss'
 import { presetAnimations } from 'unocss-preset-animations'
-import { presetFunctionCompletion, presetObjectCompletion } from 'unocss-preset-completion'
-import { defineConfig } from 'unocss/vite'
 
 import { presetThemeTW4 } from './unocss-preset-theme'
 
@@ -16,10 +14,7 @@ export default defineConfig<PresetWind4Theme>({
     presetIcons({
       scale: 1.2,
     }),
-    presetFunctionCompletion({
-      autocompleteFunctions: ['cls', 'clsv'],
-    }),
-    presetObjectCompletion(),
+    presetCompletion(),
     presetAnimations(),
     presetThemeTW4() as any,
     presetMoraine(),

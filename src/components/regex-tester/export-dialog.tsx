@@ -103,7 +103,7 @@ export function ExportDialog() {
             when={store.pattern}
             fallback={(
               <div class="text-muted-foreground p-4 text-center border rounded-md bg-muted/50" role="status">
-                <Icon name="i-lucide-code" class="mx-auto mb-2 opacity-50 size-8" aria-hidden="true" />
+                <Icon name="i-lucide-code" classes={{ icon: 'mx-auto mb-2 opacity-50 size-8' }} aria-hidden="true" />
                 <p>No pattern to export</p>
               </div>
             )}

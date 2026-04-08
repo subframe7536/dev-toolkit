@@ -6,8 +6,7 @@ import { FileUpload } from '#/components/file-upload'
 import { ImageCard } from '#/components/image-converter/image-card'
 import { OutputSettings } from '#/components/image-converter/output-settings'
 import { SvgOptions } from '#/components/image-converter/svg-options'
-import { Button } from '#/components/ui/button'
-import { Icon } from '#/components/ui/icon'
+import { Button, Icon } from 'moraine'
 import { downloadFile } from '#/utils/download'
 import { convertImage, getFileExtension } from '#/utils/image'
 import { createRoute } from 'solid-file-router'
@@ -322,11 +321,13 @@ function ImageConverter() {
           onClick={handleConvertAll}
           disabled={converting() || images.length === 0}
           size="lg"
-          class="w-full"
+          classes={{ root: 'w-full' }}
+          leading={
+            converting()
+              ? <Icon name="lucide:loader-2" classes={{ icon: 'animate-spin' }} />
+              : 'lucide:download'
+          }
         >
-          <Show when={converting()} fallback={<Icon name="lucide:download" class="mr-2" />}>
-            <Icon name="lucide:loader-2" class="mr-2 animate-spin" />
-          </Show>
           {converting() ? 'Converting...' : `Convert & Download ${images.length > 0 ? `(${images.length})` : ''}`}
         </Button>
       </div>

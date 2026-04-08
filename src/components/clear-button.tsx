@@ -13,17 +13,16 @@ interface ClearButtonProps {
 export function ClearButton(props: ClearButtonProps) {
   const showText = () => props.text ?? true
 
-  const icon = <Icon name="i-lucide-x" class={showText() ? 'mr-2 size-4' : 'size-4'} />
   return (
     <Button
       variant="destructive"
       size={props.size}
-      class={props.class}
+      classes={{ root: props.class }}
       disabled={props.disabled}
       onClick={props.onClear}
+      leading={showText() ? 'i-lucide-x' : undefined}
     >
-      <Show when={showText()} fallback={icon}>
-        {icon}
+      <Show when={showText()} fallback={<Icon name="i-lucide-x" />}>
         Clear
       </Show>
     </Button>

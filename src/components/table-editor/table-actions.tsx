@@ -1,4 +1,4 @@
-import { Button, Icon, Select, Switch } from 'moraine'
+import { Button, Select, Switch } from 'moraine'
 import { useTableEditorContext } from '#/contexts/table-editor-context'
 
 import { ClearButton } from '../clear-button'
@@ -23,7 +23,7 @@ export function TableActions() {
           value={computed.visibleColumnIds()}
           onChange={handleColumnVisibilityChange}
           options={store.tableData.columns.map(col => ({ value: col.id, label: col.name }))}
-          class="w-48"
+          classes={{ root: 'w-48' }}
         />
 
         <Switch
@@ -36,8 +36,7 @@ export function TableActions() {
       <div class="flex gap-2">
         <ExportDialog />
 
-        <Button variant="secondary" onClick={actions.reset}>
-          <Icon name="i-lucide-rotate-ccw" class="mr-2" />
+        <Button variant="secondary" onClick={actions.reset} leading="i-lucide-rotate-ccw">
           Reset
         </Button>
 

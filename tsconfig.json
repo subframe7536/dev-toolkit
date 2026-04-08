@@ -1,26 +1,14 @@
 {
+  "extends": "@subf/config/tsconfig-web",
   "compilerOptions": {
-    "target": "ESNext",
-    "jsx": "preserve",
-    "jsxImportSource": "solid-js",
-    "module": "ESNext",
-    "moduleResolution": "bundler",
     "paths": {
-      "#/*": [
-        "./src/*"
-      ]
+      "#/*": ["./src/*"]
     },
     "types": [
       "vite/client",
       "vite-plugin-pwa/solid",
       "solid-file-router/client",
-      "bun-types"
-    ],
-    "strictNullChecks": true,
-    "noEmit": true,
-    "allowSyntheticDefaultImports": true,
-    "esModuleInterop": true,
-    "isolatedModules": true,
-    "skipLibCheck": true
+      "@types/bun"
+    ]
   }
 }

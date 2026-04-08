@@ -2,7 +2,7 @@ import type { TableData } from '#/utils/table/types'
 
 import { CopyButton } from '#/components/copy-button'
 import { DownloadButton } from '#/components/download-button'
-import { Button, Checkbox, Dialog, Icon, Input, Select, Tabs, Textarea } from 'moraine'
+import { Button, Checkbox, Dialog, Input, Select, Tabs, Textarea } from 'moraine'
 import { useTableEditorContext } from '#/contexts'
 import { downloadFile } from '#/utils/download'
 import { exportToCSV, exportToExcel, exportToJSON, exportToMarkdown, generateCreateTable, generateSQLInsert, generateSQLUpdate } from '#/utils/table/export'
@@ -191,7 +191,7 @@ export function ExportDialog() {
                 value={tableName()}
                 onInput={e => setTableName(e.currentTarget.value)}
                 placeholder="my_table"
-                class="mt-1"
+                classes={{ root: 'mt-1' }}
               />
             </div>
 
@@ -221,7 +221,7 @@ export function ExportDialog() {
                 <For each={computed.visibleColumns()}>
                   {col => (
                     <Checkbox
-                      class="flex gap-2 items-center"
+                      classes={{ root: 'flex gap-2 items-center' }}
                       checked={keyColumns().includes(col.id)}
                       onChange={(checked) => {
                         if (checked) {
@@ -261,8 +261,7 @@ export function ExportDialog() {
             </div>
             <Show when={exportFormat() !== 'excel'}>
               <Textarea
-                class="flex-1"
-                classes={{ input: 'text-sm font-mono resize-none h-80' }}
+                classes={{ root: 'flex-1', input: 'text-sm font-mono resize-none h-80' }}
                 readOnly
                 value={exportOutput()}
               />
@@ -271,8 +270,7 @@ export function ExportDialog() {
         </div>
       )}
     >
-      <Button>
-        <Icon name="i-lucide-download" class="mr-2 size-4" />
+      <Button leading="i-lucide-download">
         Export
       </Button>
     </Dialog>

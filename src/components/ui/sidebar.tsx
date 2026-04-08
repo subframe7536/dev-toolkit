@@ -250,7 +250,7 @@ function SidebarTrigger(props: SidebarTriggerProps) {
       data-sidebar="trigger"
       variant="ghost"
       size="icon-md"
-      class={cls('size-7', local.class)}
+      classes={{ root: cls('size-7', local.class) }}
       onClick={(event: MouseEvent) => {
         local.onClick?.(event)
         toggleSidebar()

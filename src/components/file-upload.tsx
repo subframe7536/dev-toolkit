@@ -59,16 +59,15 @@ export function FileUpload(props: Props) {
         onDrop={e => (e.target as HTMLDivElement).dataset.dragging = 'false'}
       >
         <Show when={props.icon}>
-          <Icon name={props.icon!.replace('lucide:', 'i-lucide-') as any} class="size-12" />
+          <Icon name={props.icon!.replace('lucide:', 'i-lucide-') as any} classes={{ icon: 'size-12' }} />
         </Show>
         <div class="xs:text-sm text-(xs muted-foreground center) px-4">
           {info()}
         </div>
         <FileField.Trigger
           as={(triggerProps: FileFieldTriggerProps) => (
-            <Button {...triggerProps} variant="secondary" class="text-sm flex gap-2 w-80% items-center sm:w-unset">
-              <Icon name="i-lucide-upload" />
-              <span>Drag or Click to upload</span>
+            <Button {...triggerProps} variant="secondary" classes={{ root: 'text-sm flex gap-2 w-80% items-center sm:w-unset' }} leading="i-lucide-upload">
+              Drag or Click to upload
             </Button>
           )}
         />

@@ -168,7 +168,7 @@ function DateTimeTool() {
                     placeholder="ISO, Unix timestamp, yyyy-MM-dd HH:mm:ss..."
                   />
                 </div>
-                <Button onClick={handleParseCustomDate} class="shrink-0">
+                <Button onClick={handleParseCustomDate} classes={{ root: 'shrink-0' }}>
                   {customDate() ? 'Reset' : 'Parse'}
                 </Button>
               </div>

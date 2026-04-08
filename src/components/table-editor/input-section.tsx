@@ -223,9 +223,9 @@ export function InputSection() {
                   <Button
                     onClick={handleParseText}
                     disabled={!textInput().trim()}
-                    class="flex-1 min-w-48"
+                    classes={{ root: 'flex-1 min-w-48' }}
+                    leading="i-lucide-play"
                   >
-                    <Icon name="i-lucide-play" class="mr-2" />
                     Parse
                   </Button>
                   <Button
@@ -234,8 +234,8 @@ export function InputSection() {
                       setTextInput(MYSQL_EXAMPLE)
                       setReplaceLineWrap(true)
                     }}
+                    leading="i-lucide-database"
                   >
-                    <Icon name="i-lucide-database" class="mr-2" />
                     MySQL Example
                   </Button>
                   <Button
@@ -244,8 +244,8 @@ export function InputSection() {
                       setTextInput(CSV_EXAMPLE)
                       setReplaceLineWrap(true)
                     }}
+                    leading="i-lucide-table"
                   >
-                    <Icon name="i-lucide-table" class="mr-2" />
                     CSV Example
                   </Button>
                   <Button
@@ -254,8 +254,8 @@ export function InputSection() {
                       setTextInput(EXCEL_EXAMPLE)
                       setReplaceLineWrap(true)
                     }}
+                    leading="i-lucide-file-spreadsheet"
                   >
-                    <Icon name="i-lucide-file-spreadsheet" class="mr-2" />
                     Excel Example
                   </Button>
                   <ClearButton
@@ -296,20 +296,14 @@ export function InputSection() {
                   <Button
                     onClick={handleParseFile}
                     disabled={!uploadedFile() || isParsing()}
-                    class="flex-1"
+                    classes={{ root: 'flex-1' }}
+                    leading={
+                      isParsing()
+                        ? <Icon name="i-lucide-loader" classes={{ icon: 'animate-spin' }} />
+                        : 'i-lucide-play'
+                    }
                   >
-                    <Show
-                      when={!isParsing()}
-                      fallback={(
-                        <>
-                          <Icon name="i-lucide-loader" class="mr-2 animate-spin" />
-                          Parsing...
-                        </>
-                      )}
-                    >
-                      <Icon name="i-lucide-play" class="mr-2" />
-                      Parse
-                    </Show>
+                    {isParsing() ? 'Parsing...' : 'Parse'}
                   </Button>
                   <ClearButton
                     onClear={() => handleFileSelect(undefined)}

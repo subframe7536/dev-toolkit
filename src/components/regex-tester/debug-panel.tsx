@@ -266,7 +266,7 @@ function StepList(props: StepListProps) {
             tabIndex={index() === props.currentIndex ? 0 : -1}
           >
             <div class="flex gap-2 items-center">
-              <Icon name={getActionIcon(step.action).replace("lucide:", "i-lucide-") as any} class={getActionColor(step.action)} />
+              <Icon name={getActionIcon(step.action).replace("lucide:", "i-lucide-") as any} classes={{ icon: getActionColor(step.action) }} />
               <span class={`font-medium ${getActionColor(step.action)}`}>
                 {step.action.charAt(0).toUpperCase() + step.action.slice(1)}
               </span>
@@ -496,7 +496,7 @@ export function DebugPanel() {
               {step => (
                 <div class={`p-3 rounded-md ${getActionBgColor(step().action)}`} role="status" aria-live="polite">
                   <div class="mb-2 flex gap-2 items-center">
-                    <Icon name={getActionIcon(step().action).replace("lucide:", "i-lucide-") as any} class={getActionColor(step().action)} />
+                    <Icon name={getActionIcon(step().action).replace("lucide:", "i-lucide-") as any} classes={{ icon: getActionColor(step().action) }} />
                     <span class={`font-medium ${getActionColor(step().action)}`}>
                       {step().action.charAt(0).toUpperCase() + step().action.slice(1)}
                     </span>

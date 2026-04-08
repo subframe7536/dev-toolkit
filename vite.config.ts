@@ -1,11 +1,9 @@
-import unocss from '@unocss/vite'
+import unocss from '@subf/unocss/vite'
 import { fileRouter } from 'solid-file-router/plugin'
 import { defineConfig } from 'vite'
 import { meta } from 'vite-plugin-meta-tags'
 import { VitePWA as pwa } from 'vite-plugin-pwa'
 import solid from 'vite-plugin-solid'
-import tsconfig from 'vite-tsconfig-paths'
-
 // const base = '/dev-toolkit'
 const base = ''
 
@@ -15,7 +13,6 @@ const url = 'https://tool.subf.dev'
 export default defineConfig({
   base,
   plugins: [
-    tsconfig(),
     unocss({ inspector: false }),
     solid(),
     fileRouter({
@@ -23,7 +20,6 @@ export default defineConfig({
         title: 'string',
         description: 'string',
         category: '"Encoding" | "JSON" | "Utilities"',
-        // eslint-disable-next-line no-template-curly-in-string
         icon: '`lucide:${string}`',
         tags: 'string[]',
       },

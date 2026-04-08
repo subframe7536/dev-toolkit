@@ -85,7 +85,7 @@ function CategorySection(props: CategorySectionProps) {
   return (
     <div class="mb-6">
       <div class="mb-3 flex gap-2 items-center">
-        <Icon name={icon()} class="text-muted-foreground size-4" />
+        <Icon name={icon()} classes={{ icon: 'text-muted-foreground size-4' }} />
         <h3 class="text-sm text-foreground font-semibold">{props.category.name}</h3>
         <span class="text-xs text-muted-foreground">({props.category.patterns.length})</span>
       </div>
@@ -138,7 +138,7 @@ export function PatternLibraryDialog(props: PatternLibraryDialogProps) {
       onOpenChange={setIsOpen}
       title={(
         <span class="flex gap-2 items-center">
-          <Icon name="i-lucide-library" class="size-5" />
+          <Icon name="i-lucide-library" classes={{ icon: 'size-5' }} />
           Pattern Library
         </span>
       ) as any}
@@ -157,8 +157,7 @@ export function PatternLibraryDialog(props: PatternLibraryDialogProps) {
       )}
       classes={{ content: 'max-h-[80vh] max-w-6xl overflow-y-auto' }}
     >
-      <Button variant="secondary">
-        <Icon name="i-lucide-library" class="mr-2 size-4" />
+      <Button variant="secondary" leading="i-lucide-library">
         Load Example
       </Button>
     </Dialog>

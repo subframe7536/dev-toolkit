@@ -1,7 +1,6 @@
 import { ClearButton } from '#/components/clear-button'
 import { CopyButton } from '#/components/copy-button'
-import { Button } from '#/components/ui/button'
-import { TextField, TextFieldLabel, TextFieldTextArea } from '#/components/ui/text-field'
+import { Button, Textarea } from 'moraine'
 import { fillSqlParams, splitSqlAndParams } from '#/utils/sql'
 import { createRoute } from 'solid-file-router'
 import { createEffect, createSignal } from 'solid-js'
@@ -77,43 +76,43 @@ function SqlParamFill() {
   return (
     <div class="flex flex-col gap-4 h-full relative">
 
-      <Button onClick={loadSample} variant="outline" size="sm" class="right-0 top--2 absolute">
+      <Button onClick={loadSample} variant="outline" size="sm" classes={{ root: 'right-0 top--2 absolute' }}>
         Load Sample
       </Button>
 
       <div class="flex-1 gap-4 grid grid-cols-1 lg:gap-6 lg:grid-cols-2">
-        <TextField>
-          <TextFieldLabel>SQL Template</TextFieldLabel>
-          <TextFieldTextArea
+        <div>
+          <label class="text-sm font-medium">SQL Template</label>
+          <Textarea
             value={sqlInput()}
             onInput={e => setSqlInput(e.currentTarget.value)}
             placeholder={`All Mybatis logs\n\nor\n\nSELECT * FROM T WHERE id = ? AND name = ?`}
-            class="font-mono h-48 resize-none"
+            classes={{ input: 'font-mono h-48 resize-none' }}
           />
-        </TextField>
+        </div>
 
-        <TextField>
-          <TextFieldLabel>Parameters</TextFieldLabel>
-          <TextFieldTextArea
+        <div>
+          <label class="text-sm font-medium">Parameters</label>
+          <Textarea
             value={paramsInput()}
             onInput={e => setParamsInput(e.currentTarget.value)}
             placeholder="1(Integer), zhangshan(String)"
-            class="font-mono h-48 resize-none"
+            classes={{ input: 'font-mono h-48 resize-none' }}
           />
-        </TextField>
+        </div>
       </div>
 
       <div class="relative">
-        <TextField>
-          <TextFieldLabel>Output</TextFieldLabel>
-          <TextFieldTextArea
+        <div>
+          <label class="text-sm font-medium">Output</label>
+          <Textarea
             value={error() || output()}
             readOnly
             placeholder="SELECT * FROM T WHERE id=1 AND name='zhangshan'"
-            class="font-mono h-48 resize-none"
+            classes={{ input: 'font-mono h-48 resize-none' }}
             classList={{ 'text-red-500': !!error() }}
           />
-        </TextField>
+        </div>
         <div class="mt-4 flex gap-4 justify-end">
           <CopyButton
             content={output()}

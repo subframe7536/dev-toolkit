@@ -1,6 +1,8 @@
 {
+  "editor.defaultFormatter": "oxc.oxc-vscode",
+  "editor.formatOnSave": true,
   "editor.codeActionsOnSave": {
-    "source.fixAll.eslint": "always"
+    "source.fixAll.oxc": "explicit"
   },
   "typescript.autoClosingTags": false
 }

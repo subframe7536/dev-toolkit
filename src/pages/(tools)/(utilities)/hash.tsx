@@ -4,22 +4,8 @@ import { Card } from '#/components/card'
 import { ClearButton } from '#/components/clear-button'
 import { CopyButton } from '#/components/copy-button'
 import { FileUpload } from '#/components/file-upload'
-import { Button } from '#/components/ui/button'
-import { Icon } from '#/components/ui/icon'
-import {
-  Tabs,
-  TabsContent,
-  TabsIndicator,
-  TabsList,
-  TabsTrigger,
-} from '#/components/ui/tabs'
-import {
-  TextField,
-  TextFieldLabel,
-  TextFieldTextArea,
-} from '#/components/ui/text-field'
+import { Button, Icon, Tabs, Textarea, cn } from 'moraine'
 import { generateHash } from '#/utils/hash'
-import { cls } from 'cls-variant'
 import { createRoute } from 'solid-file-router'
 import { createMemo, createSignal, For, Show } from 'solid-js'
 import { toast } from 'solid-toaster'
@@ -99,48 +85,53 @@ function HashGenerator() {
   return (
     <div class="gap-6 grid grid-cols-1 lg:grid-cols-[auto_1fr]">
       <div class="flex flex-col gap-3 lg:w-96">
-        <Tabs value={inputMode()} onChange={handleInputModeChange}>
-          <TabsList>
-            <TabsTrigger value="text">Text Input</TabsTrigger>
-            <TabsTrigger value="file">File Upload</TabsTrigger>
-            <TabsIndicator />
-          </TabsList>
-
-          <TabsContent value="text">
-            <TextField class="mt-4">
-              <TextFieldTextArea
-                value={textInput()}
-                onInput={e => setTextInput((e.target as HTMLTextAreaElement).value)}
-                placeholder="Enter text to generate hash..."
-                rows={10}
-                class="text-sm font-mono h-120 resize-y"
-              />
-            </TextField>
-          </TabsContent>
-
-          <TabsContent value="file">
-            <div class="mt-4">
-              <FileUpload
-                file={file()}
-                setFile={setFile}
-                multiple={false}
-              />
-              <Show when={file()}>
-                <div class="text-sm text-muted-foreground mt-2">
-                  Selected: {file()!.name} ({(file()!.size / 1024).toFixed(2)} KB)
+        <Tabs
+          value={inputMode()}
+          onChange={handleInputModeChange}
+          items={[
+            {
+              value: 'text',
+              label: 'Text Input',
+              content: (
+                <div class="mt-4">
+                  <Textarea
+                    value={textInput()}
+                    onInput={e => setTextInput((e.target as HTMLTextAreaElement).value)}
+                    placeholder="Enter text to generate hash..."
+                    rows={10}
+                    classes={{ input: 'text-sm font-mono h-120 resize-y' }}
+                  />
                 </div>
-              </Show>
-            </div>
-          </TabsContent>
-        </Tabs>
+              ),
+            },
+            {
+              value: 'file',
+              label: 'File Upload',
+              content: (
+                <div class="mt-4">
+                  <FileUpload
+                    file={file()}
+                    setFile={setFile}
+                    multiple={false}
+                  />
+                  <Show when={file()}>
+                    <div class="text-sm text-muted-foreground mt-2">
+                      Selected: {file()!.name} ({(file()!.size / 1024).toFixed(2)} KB)
+                    </div>
+                  </Show>
+                </div>
+              ),
+            },
+          ]}
+        />
 
         <div class="flex gap-3">
           <Button
-            class="flex-1"
+            classes={{ root: 'flex-1' }}
             onClick={handleGenerate}
             disabled={isGenerating()}
+            leading="lucide:refresh-cw"
           >
-            <Icon name="lucide:refresh-cw" class="mr-2 size-4" />
             {isGenerating() ? 'Generating...' : 'Generate'}
           </Button>
           <ClearButton
@@ -156,7 +147,7 @@ function HashGenerator() {
         fallback={(
           <div class="text-muted-foreground p-12 text-center border rounded-lg border-dashed flex items-center justify-center">
             <div>
-              <Icon name="lucide:hash" class="mx-auto mb-4 opacity-50 size-12" />
+              <Icon name="lucide:hash" classes={{ icon: 'mx-auto mb-4 opacity-50 size-12' }} />
               <p>Enter text or upload a file, then click "Generate"</p>
             </div>
           </div>
@@ -166,16 +157,16 @@ function HashGenerator() {
           title="Generated Hashes"
           content={(
             <div class="flex flex-col gap-4">
-              <TextField>
-                <TextFieldLabel>Verify Hash (Optional)</TextFieldLabel>
-                <TextFieldTextArea
+              <div>
+                <label class="text-sm font-medium">Verify Hash (Optional)</label>
+                <Textarea
                   value={verifyHash()}
                   onInput={e => setVerifyHash((e.target as HTMLTextAreaElement).value)}
                   placeholder="Paste a hash to verify against generated hashes..."
                   rows={2}
-                  class="text-sm font-mono resize-y"
+                  classes={{ input: 'text-sm font-mono resize-y' }}
                 />
-              </TextField>
+              </div>
 
               <div class="flex flex-col gap-3">
                 <For each={results()}>
@@ -183,7 +174,7 @@ function HashGenerator() {
                     const match = createMemo(() => isHashMatch(result.hash))
                     return (
                       <div
-                        class={cls(
+                        class={cn(
                           'p-2 border rounded-lg flex gap-2 items-center',
                           match() === true
                             ? 'bg-green-500/10 border-green-500/50'
@@ -198,7 +189,7 @@ function HashGenerator() {
                               {result.algorithm}
                             </div>
                             <Show when={match()}>
-                              <Icon name="lucide:check" class="text-sm text-green-600" />
+                              <Icon name="lucide:check" classes={{ icon: 'text-sm text-green-600' }} />
                             </Show>
                           </div>
                           <code class="text-sm font-mono break-all">{result.hash}</code>

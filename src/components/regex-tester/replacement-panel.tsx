@@ -61,7 +61,7 @@ export function ReplacementPanel() {
               class="text-sm text-amber-600 p-3 border border-amber-200 rounded-md bg-amber-50 dark:text-amber-400 dark:border-amber-800 dark:bg-amber-950/30"
               role="status"
             >
-              <Icon name="i-lucide-info" class="mr-2 size-4 inline-block" aria-hidden="true" />
+              <Icon name="i-lucide-info" classes={{ icon: 'mr-2 size-4 inline-block' }} aria-hidden="true" />
               No matches to replace
             </div>
           )}
@@ -71,7 +71,7 @@ export function ReplacementPanel() {
             <Show when={replacementResult()}>
               {result => (
                 <div class="text-xs text-muted-foreground flex gap-2 items-center" aria-live="polite">
-                  <Icon name="i-lucide-repeat" class="size-3" aria-hidden="true" />
+                  <Icon name="i-lucide-repeat" classes={{ icon: 'size-3' }} aria-hidden="true" />
                   {result().replacementCount}
                   {' '}
                   replacement
@@ -102,8 +102,8 @@ export function ReplacementPanel() {
                 onClick={handleCopyResult}
                 disabled={!replacementResult()}
                 aria-label="Copy replacement result to clipboard"
+                leading="i-lucide-copy"
               >
-                <Icon name="i-lucide-copy" class="mr-1 size-4" aria-hidden="true" />
                 Copy Result
               </Button>
               <Button
@@ -112,8 +112,8 @@ export function ReplacementPanel() {
                 onClick={handleApplyReplace}
                 disabled={!replacementResult() || replacementResult()?.replacementCount === 0}
                 aria-label="Apply replacement to test text"
+                leading="i-lucide-check"
               >
-                <Icon name="i-lucide-check" class="mr-1 size-4" aria-hidden="true" />
                 Apply to Test Text
               </Button>
             </div>

@@ -1,6 +1,6 @@
 import type { Component } from 'solid-js'
 
-import { Button, Icon, Input } from 'moraine'
+import { Button, Input } from 'moraine'
 import { createEffect, on, Show } from 'solid-js'
 
 import { ClearButton } from '../clear-button'
@@ -107,9 +107,9 @@ export const ImageCard: Component<ImageCardProps> = (props) => {
             }
           }}
           disabled={!props.image.origin}
-          class="flex-1"
+          classes={{ root: 'flex-1' }}
+          leading="i-lucide-rotate-ccw"
         >
-          <Icon name="i-lucide-rotate-ccw" class="mr-2" />
           Reset
         </Button>
         <ClearButton

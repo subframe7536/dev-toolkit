@@ -1,5 +1,4 @@
-import { Button } from '#/components/ui/button'
-import Icon from '#/components/ui/icon'
+import { Button, Icon } from 'moraine'
 import { useNavigate } from '@solidjs/router'
 import { createRoute } from 'solid-file-router'
 
@@ -9,7 +8,7 @@ function NotFound() {
   return (
     <div class="px-4 text-center flex flex-col min-h-[calc(100vh-4rem)] items-center justify-center">
       <div class="mb-8">
-        <Icon name="lucide:search-x" class="text-muted-foreground h-24 w-24" />
+        <Icon name="lucide:search-x" classes={{ icon: 'text-muted-foreground h-24 w-24' }} />
       </div>
 
       <h1 class="text-4xl font-bold mb-2">404</h1>
@@ -23,12 +22,10 @@ function NotFound() {
       </p>
 
       <div class="flex gap-4">
-        <Button onClick={() => navigate('/')}>
-          <Icon name="lucide:home" class="mr-2 h-4 w-4" />
+        <Button onClick={() => navigate('/')} leading="lucide:home">
           Go Home
         </Button>
-        <Button variant="outline" onClick={() => window.history.back()}>
-          <Icon name="lucide:arrow-left" class="mr-2 h-4 w-4" />
+        <Button variant="outline" onClick={() => window.history.back()} leading="lucide:arrow-left">
           Go Back
         </Button>
       </div>

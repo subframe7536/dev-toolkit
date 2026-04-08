@@ -1,5 +1,4 @@
 import { useCopy } from '@solid-hooks/core/web'
-import { cls } from 'cls-variant'
 import { createMemo, Show } from 'solid-js'
 import { toast } from 'solid-toaster'
 
@@ -26,17 +25,16 @@ export function CopyButton(props: CopyButtonProps) {
     }
   }
   const text = createMemo(() => props.text ?? true)
-  const icon = <Icon name={isCopied() ? 'i-lucide-check' : 'i-lucide-copy'} class={cls(text() && 'mr-2')} />
   return (
     <Button
       variant={props.variant ?? 'outline'}
       size={props.size}
-      class={props.class}
+      classes={{ root: props.class }}
       disabled={props.disabled}
       onClick={handleCopy}
+      leading={text() ? (isCopied() ? 'i-lucide-check' : 'i-lucide-copy') : undefined}
     >
-      <Show when={text()} fallback={icon}>
-        {icon}
+      <Show when={text()} fallback={<Icon name={isCopied() ? 'i-lucide-check' : 'i-lucide-copy'} />}>
         {isCopied() ? 'Copied!' : (text() === true ? 'Copy' : props.text)}
       </Show>
     </Button>

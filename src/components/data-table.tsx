@@ -1,9 +1,8 @@
 import type { CellValue, TableData, TableRow } from '#/utils/table/types'
 import type { ColumnDef, SortingState } from '@tanstack/solid-table'
 
-import { Icon, Tooltip } from 'moraine'
+import { Icon, Tooltip, cn } from 'moraine'
 import { createSolidTable, flexRender, getCoreRowModel, getSortedRowModel } from '@tanstack/solid-table'
-import { cls } from 'cls-variant'
 import { createEffect, createMemo, createSignal, For, Show } from 'solid-js'
 
 export interface DataTableProps {
@@ -125,7 +124,7 @@ export function DataTable(props: DataTableProps) {
             when={isEditing()}
             fallback={(
               <div
-                class={cls(
+                class={cn(
                   'cursor-text px-3 py-2 outline-none h-full',
                   props.editable && 'hover:bg-accent/50',
                   isFocused() && 'ring-2 ring-primary ring-inset select-none rounded',
@@ -270,7 +269,7 @@ export function DataTable(props: DataTableProps) {
 
                       return (
                         <th
-                          class={cls(
+                          class={cn(
                             'select-none b-(b r border) text-left text-sm font-semibold min-w-30',
                             isPinned() ? 'sticky left-0 z-10 bg-muted shadow-[2px_0_8px_rgba(0,0,0,0.1)] border-r-2!' : 'bg-muted/50',
                           )}
@@ -299,7 +298,7 @@ export function DataTable(props: DataTableProps) {
                               >
                                 <Icon
                                   name={isPinned() ? 'i-lucide-pin-off' : 'i-lucide-pin'}
-                                  class={cls('mt-1', isPinned() && 'text-primary')}
+                                  class={cn('mt-1', isPinned() && 'text-primary')}
                                   title=""
                                 />
                               </button>
@@ -318,7 +317,7 @@ export function DataTable(props: DataTableProps) {
           <For each={table.getRowModel().rows}>
             {(row, index) => {
               return (
-                <tr class={cls('b-(b border)', index() % 2 === 0 ? 'bg-background/20' : 'bg-muted/20')} role="row">
+                <tr class={cn('b-(b border)', index() % 2 === 0 ? 'bg-background/20' : 'bg-muted/20')} role="row">
                   <For each={row.getVisibleCells()}>
                     {(cell) => {
                       const columnId = cell.column.id
@@ -326,7 +325,7 @@ export function DataTable(props: DataTableProps) {
 
                       return (
                         <td
-                          class={cls(
+                          class={cn(
                             'text-sm min-w-30 b-(r border)',
                             isPinned() && ['sticky left-0 z-10 shadow-sm', index() % 2 === 0 ? 'bg-background' : 'bg-muted'],
                           )}

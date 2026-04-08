@@ -263,7 +263,7 @@ export function RegexInputPanel() {
           <div class="text-xs text-muted-foreground flex gap-3 items-center">
             <Show when={hasInput() && store.executionTime > 0}>
               <span class="flex gap-1 items-center">
-                <Icon name="i-lucide-clock" class="size-3" />
+                <Icon name="i-lucide-clock" classes={{ icon: 'size-3' }} />
                 {formatExecutionTime(store.executionTime)}
               </span>
             </Show>
@@ -318,7 +318,7 @@ export function RegexInputPanel() {
         <Show when={store.parseError}>
           {error => (
             <div id={errorId} class="text-sm text-red-600 flex gap-2 items-start dark:text-red-400" role="alert">
-              <Icon name="i-lucide-alert-circle" class="mt-0.5 flex-shrink-0 size-4" />
+              <Icon name="i-lucide-alert-circle" classes={{ icon: 'mt-0.5 flex-shrink-0 size-4' }} />
               <span>{error().message}</span>
             </div>
           )}
@@ -369,7 +369,7 @@ export function RegexInputPanel() {
       {/* No matches hint */}
       <Show when={hasInput() && matchCount() === 0 && store.isValid}>
         <div class="text-sm text-amber-600 p-3 border border-amber-200 rounded-lg bg-amber-50 flex gap-2 items-center dark:text-amber-400 dark:border-amber-800 dark:bg-amber-950/30">
-          <Icon name="i-lucide-info" class="size-4" />
+          <Icon name="i-lucide-info" classes={{ icon: 'size-4' }} />
           <span>No matches found. Try adjusting your pattern.</span>
         </div>
       </Show>

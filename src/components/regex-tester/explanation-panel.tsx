@@ -74,7 +74,7 @@ function ElementBadge(props: ElementBadgeProps) {
     <div class="p-2 border border-border rounded-md bg-card transition-colors hover:bg-muted/50">
       <div class="flex gap-2 items-start">
         <span class={`text-xs font-medium px-2 py-0.5 rounded flex gap-1 items-center ${colorClass()}`}>
-          <Icon name={icon()} class="size-3" />
+          <Icon name={icon()} classes={{ icon: 'size-3' }} />
           {label()}
         </span>
         <code class="text-sm font-mono font-semibold break-all">{props.element.value}</code>
@@ -99,7 +99,7 @@ export function ExplanationPanel() {
       {/* Overall description */}
       <div>
         <h3 class="text-md text-foreground font-medium mb-3 flex gap-2 items-center">
-          <Icon name="i-lucide-info" class="size-4" />
+          <Icon name="i-lucide-info" classes={{ icon: 'size-4' }} />
           Pattern Explanation
         </h3>
         <Show
@@ -120,7 +120,7 @@ export function ExplanationPanel() {
       <Show when={hasElements()}>
         <div>
           <h3 class="text-md text-foreground font-medium mb-3 flex gap-2 items-center">
-            <Icon name="i-lucide-list" class="size-4" />
+            <Icon name="i-lucide-list" classes={{ icon: 'size-4' }} />
             Element Breakdown
           </h3>
 
