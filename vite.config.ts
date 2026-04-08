@@ -1,3 +1,5 @@
+import { resolve } from 'node:path'
+
 import unocss from '@subf/unocss/vite'
 import { fileRouter } from 'solid-file-router/plugin'
 import { defineConfig } from 'vite'
@@ -12,6 +14,11 @@ const description = 'Tools for developers, just in browser'
 const url = 'https://tool.subf.dev'
 export default defineConfig({
   base,
+  resolve: {
+    alias: {
+      '#': resolve(__dirname, 'src'),
+    },
+  },
   plugins: [
     unocss({ inspector: false }),
     solid(),
@@ -20,6 +27,7 @@ export default defineConfig({
         title: 'string',
         description: 'string',
         category: '"Encoding" | "JSON" | "Utilities"',
+        // oxlint-disable-next-line no-template-curly-in-string
         icon: '`lucide:${string}`',
         tags: 'string[]',
       },
