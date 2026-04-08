@@ -1,11 +1,10 @@
 import type { PolymorphicProps } from '@kobalte/core'
-import type { VariantProps } from 'cls-variant'
-import type { Accessor, Component, ComponentProps, FlowProps, JSX, ValidComponent } from 'solid-js'
-
-import { Button, Icon, Input, Separator, Sheet, Tooltip } from 'moraine'
 import { Polymorphic } from '@kobalte/core'
 import { useMediaQuery } from '@solid-hooks/core/web'
+import type { VariantProps } from 'cls-variant'
 import { cls, clsv, clsvDefault } from 'cls-variant'
+import { Button, Icon, Input, Separator, Sheet, Tooltip } from 'moraine'
+import type { Accessor, Component, ComponentProps, FlowProps, JSX, ValidComponent } from 'solid-js'
 import {
   createContext,
   createMemo,
@@ -25,9 +24,11 @@ const SIDEBAR_WIDTH = '16rem'
 const SIDEBAR_WIDTH_MOBILE = '18rem'
 const SIDEBAR_WIDTH_ICON = '3rem'
 // const SIDEBAR_KEYBOARD_SHORTCUT = 'b'
-type FlowPropsWithClass<T extends Record<string, any> = {}> = FlowProps<T & {
-  class?: string
-}>
+type FlowPropsWithClass<T extends Record<string, any> = {}> = FlowProps<
+  T & {
+    class?: string
+  }
+>
 
 type TSidebarContext = {
   state: Accessor<'expanded' | 'collapsed'>
@@ -87,7 +88,7 @@ const SidebarProvider: Component<SidebarProviderProps> = (rawProps) => {
 
   // Helper to toggle the sidebar.
   const toggleSidebar = () => {
-    return isMobile() ? setOpenMobile(open => !open) : setOpen(open => !open)
+    return isMobile() ? setOpenMobile((open) => !open) : setOpen((open) => !open)
   }
 
   // Adds a keyboard shortcut to toggle the sidebar.
@@ -174,7 +175,7 @@ const Sidebar: Component<SidebarProps> = (rawProps) => {
           open={openMobile()}
           onOpenChange={setOpenMobile}
           side={local.side}
-          body={(
+          body={
             <div
               data-sidebar="sidebar"
               data-mobile="true"
@@ -183,8 +184,11 @@ const Sidebar: Component<SidebarProps> = (rawProps) => {
             >
               {local.children}
             </div>
-          )}
-          classes={{ overlay: 'z-49', content: 'text-sidebar-foreground p-0 bg-sidebar w-$sidebar-width [&>button]:hidden' }}
+          }
+          classes={{
+            overlay: 'z-49',
+            content: 'text-sidebar-foreground p-0 bg-sidebar w-$sidebar-width [&>button]:hidden',
+          }}
           {...others}
         >
           <span />
@@ -226,7 +230,7 @@ const Sidebar: Component<SidebarProps> = (rawProps) => {
           >
             <div
               data-sidebar="sidebar"
-              class="bg-sidebar flex flex-col size-full group-data-[variant=floating]:(b-1 b-sidebar-border rounded-lg shadow)"
+              class="bg-sidebar group-data-[variant=floating]:b-sidebar-border flex flex-col size-full group-data-[variant=floating]:(b-1 rounded-lg shadow)"
             >
               {local.children}
             </div>
@@ -309,7 +313,7 @@ function SidebarInput(props: SidebarInputProps) {
   return (
     <Input
       data-sidebar="input"
-      class={cls(
+      classes={cls(
         'h-8 w-full bg-background shadow-none focus-visible:ring-2 focus-visible:ring-sidebar-ring',
         local.class,
       )}
@@ -441,7 +445,7 @@ const sidebarMenuButtonVariants = clsvDefault(
       variant: {
         default: 'hover:bg-sidebar-accent hover:text-sidebar-accent-foreground',
         outline:
-        'bg-background shadow-[0_0_0_1px_hsl(var(--sidebar-border))] hover:bg-sidebar-accent hover:text-sidebar-accent-foreground hover:shadow-[0_0_0_1px_hsl(var(--sidebar-accent))]',
+          'bg-background shadow-[0_0_0_1px_hsl(var(--sidebar-border))] hover:bg-sidebar-accent hover:text-sidebar-accent-foreground hover:shadow-[0_0_0_1px_hsl(var(--sidebar-accent))]',
       },
       size: {
         default: 'h-8 text-sm',
@@ -456,15 +460,20 @@ const sidebarMenuButtonVariants = clsvDefault(
   },
 )
 
-type SidebarMenuButtonProps<T extends ValidComponent = 'button'> = ComponentProps<T>
-  & VariantProps<typeof sidebarMenuButtonVariants> & {
+type SidebarMenuButtonProps<T extends ValidComponent = 'button'> = ComponentProps<T> &
+  VariantProps<typeof sidebarMenuButtonVariants> & {
     isActive?: boolean
     tooltip?: string
     as?: T
   }
 
-function SidebarMenuButton<T extends ValidComponent = 'button'>(rawProps: PolymorphicProps<T, SidebarMenuButtonProps<T>>) {
-  const props = mergeProps({ isActive: false, variant: 'default', size: 'default', as: 'button' }, rawProps)
+function SidebarMenuButton<T extends ValidComponent = 'button'>(
+  rawProps: PolymorphicProps<T, SidebarMenuButtonProps<T>>,
+) {
+  const props = mergeProps(
+    { isActive: false, variant: 'default', size: 'default', as: 'button' },
+    rawProps,
+  )
   const [local, others] = splitProps(props as SidebarMenuButtonProps, [
     'as',
     'isActive',
@@ -510,8 +519,8 @@ function SidebarMenuAction(props: FlowPropsWithClass<{ showOnHover: boolean }>) 
         'peer-data-[size=default]/menu-button:top-1.5',
         'peer-data-[size=lg]/menu-button:top-2.5',
         'group-data-[collapsible=icon]:hidden',
-        (props.showOnHover || false)
-        && 'group-focus-within/menu-item:opacity-100 group-hover/menu-item:opacity-100 data-[state=open]:opacity-100 peer-data-[active=true]/menu-button:text-sidebar-accent-foreground md:opacity-0',
+        (props.showOnHover || false) &&
+          'group-focus-within/menu-item:opacity-100 group-hover/menu-item:opacity-100 data-[state=open]:opacity-100 peer-data-[active=true]/menu-button:text-sidebar-accent-foreground md:opacity-0',
         props.class,
       )}
       children={props.children}
@@ -547,10 +556,13 @@ function SidebarMenuSkeleton(props: FlowPropsWithClass<{ showIcon: boolean }>) {
       class={cls('flex h-8 items-center gap-2 rounded-md px-2', props.class)}
     >
       <Show when={props.showIcon || false}>
-        <div class="animate-pulse bg-primary/10 rounded-md size-4" data-sidebar="menu-skeleton-icon" />
+        <div
+          class="rounded-md bg-primary/10 size-4 animate-pulse"
+          data-sidebar="menu-skeleton-icon"
+        />
       </Show>
       <div
-        class="animate-pulse bg-primary/10 rounded-md flex-1 h-4 max-w-$skeleton-width"
+        class="rounded-md bg-primary/10 flex-1 h-4 max-w-$skeleton-width animate-pulse"
         data-sidebar="menu-skeleton-text"
         style={{
           '--skeleton-width': width(),
@@ -575,14 +587,16 @@ const SidebarMenuSub: Component<ComponentProps<'ul'>> = (props) => {
   )
 }
 
-const SidebarMenuSubItem: Component<ComponentProps<'li'>> = props => <li {...props} />
+const SidebarMenuSubItem: Component<ComponentProps<'li'>> = (props) => <li {...props} />
 
 type SidebarMenuSubButtonProps<T extends ValidComponent = 'a'> = ComponentProps<T> & {
   size?: 'sm' | 'md'
   isActive?: boolean
 }
 
-function SidebarMenuSubButton<T extends ValidComponent = 'a'>(rawProps: PolymorphicProps<T, SidebarMenuSubButtonProps<T>>) {
+function SidebarMenuSubButton<T extends ValidComponent = 'a'>(
+  rawProps: PolymorphicProps<T, SidebarMenuSubButtonProps<T>>,
+) {
   const props = mergeProps({ size: 'md' }, rawProps)
   const [local, others] = splitProps(props as SidebarMenuSubButtonProps, [
     'size',

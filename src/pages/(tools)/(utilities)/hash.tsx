@@ -1,11 +1,10 @@
-import type { HashAlgorithm } from '#/utils/hash'
-
 import { Card } from '#/components/card'
 import { ClearButton } from '#/components/clear-button'
 import { CopyButton } from '#/components/copy-button'
 import { FileUpload } from '#/components/file-upload'
-import { Button, Icon, Tabs, Textarea, cn } from 'moraine'
+import type { HashAlgorithm } from '#/utils/hash'
 import { generateHash } from '#/utils/hash'
+import { Button, Icon, Tabs, Textarea, cn } from 'moraine'
 import { createRoute } from 'solid-file-router'
 import { createMemo, createSignal, For, Show } from 'solid-js'
 import { toast } from 'solid-toaster'
@@ -96,7 +95,7 @@ function HashGenerator() {
                 <div class="mt-4">
                   <Textarea
                     value={textInput()}
-                    onInput={e => setTextInput((e.target as HTMLTextAreaElement).value)}
+                    onInput={(e) => setTextInput((e.target as HTMLTextAreaElement).value)}
                     placeholder="Enter text to generate hash..."
                     rows={10}
                     classes={{ input: 'text-sm font-mono h-120 resize-y' }}
@@ -109,11 +108,7 @@ function HashGenerator() {
               label: 'File Upload',
               content: (
                 <div class="mt-4">
-                  <FileUpload
-                    file={file()}
-                    setFile={setFile}
-                    multiple={false}
-                  />
+                  <FileUpload file={file()} setFile={setFile} multiple={false} />
                   <Show when={file()}>
                     <div class="text-sm text-muted-foreground mt-2">
                       Selected: {file()!.name} ({(file()!.size / 1024).toFixed(2)} KB)
@@ -144,24 +139,24 @@ function HashGenerator() {
 
       <Show
         when={results().length > 0}
-        fallback={(
+        fallback={
           <div class="text-muted-foreground p-12 text-center border rounded-lg border-dashed flex items-center justify-center">
             <div>
               <Icon name="lucide:hash" classes={{ icon: 'mx-auto mb-4 opacity-50 size-12' }} />
               <p>Enter text or upload a file, then click "Generate"</p>
             </div>
           </div>
-        )}
+        }
       >
         <Card
           title="Generated Hashes"
-          content={(
+          content={
             <div class="flex flex-col gap-4">
               <div>
                 <label class="text-sm font-medium">Verify Hash (Optional)</label>
                 <Textarea
                   value={verifyHash()}
-                  onInput={e => setVerifyHash((e.target as HTMLTextAreaElement).value)}
+                  onInput={(e) => setVerifyHash((e.target as HTMLTextAreaElement).value)}
                   placeholder="Paste a hash to verify against generated hashes..."
                   rows={2}
                   classes={{ input: 'text-sm font-mono resize-y' }}
@@ -177,7 +172,7 @@ function HashGenerator() {
                         class={cn(
                           'p-2 border rounded-lg flex gap-2 items-center',
                           match() === true
-                            ? 'bg-green-500/10 border-green-500/50'
+                            ? 'border-green-500/50 bg-green-500/10'
                             : match() === false
                               ? 'bg-red-500/5 border-red-500/20'
                               : 'bg-muted/30',
@@ -189,24 +184,22 @@ function HashGenerator() {
                               {result.algorithm}
                             </div>
                             <Show when={match()}>
-                              <Icon name="lucide:check" classes={{ icon: 'text-sm text-green-600' }} />
+                              <Icon
+                                name="lucide:check"
+                                classes={{ icon: 'text-sm text-green-600' }}
+                              />
                             </Show>
                           </div>
                           <code class="text-sm font-mono break-all">{result.hash}</code>
                         </div>
-                        <CopyButton
-                          content={result.hash}
-                          variant="ghost"
-                          size="sm"
-                          text={false}
-                        />
+                        <CopyButton content={result.hash} variant="ghost" size="sm" text={false} />
                       </div>
                     )
                   }}
                 </For>
               </div>
             </div>
-          )}
+          }
         />
       </Show>
     </div>
