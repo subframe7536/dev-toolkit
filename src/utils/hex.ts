@@ -3,8 +3,7 @@
 // ----------------------------------------------------------------------------
 
 // Array of '00'..'ff'
-const byteToHex: string[] = Array.from({ length: 256 }, (_, i) =>
-  i.toString(16).padStart(2, '0'))
+const byteToHex: string[] = Array.from({ length: 256 }, (_, i) => i.toString(16).padStart(2, '0'))
 
 // Map of charCode -> 0-15 (0-9, a-f, A-F)
 const hexToByte = new Int8Array(256).fill(-1)
@@ -73,8 +72,8 @@ export function fromHex(input: string): string {
 
   for (let i = 0, j = 0; i < len; i += 2, j++) {
     // Read char codes directly (faster than input[i])
-    const high = hexToByte[input.charCodeAt(i)]
-    const low = hexToByte[input.charCodeAt(i + 1)]
+    const high = hexToByte[input.codePointAt(i)!]
+    const low = hexToByte[input.codePointAt(i + 1)!]
 
     if (high === -1 || low === -1) {
       throw new Error(`Invalid hex character at index ${i}`)

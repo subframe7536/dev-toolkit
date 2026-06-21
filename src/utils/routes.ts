@@ -1,6 +1,5 @@
 import type { RouteDefinition } from '@solidjs/router'
 import type { FileRouteInfo, FileRoutePath } from 'solid-file-router'
-
 import { fileRoutes } from 'virtual:routes'
 
 export interface ToolRoute {

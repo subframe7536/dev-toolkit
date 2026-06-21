@@ -1,9 +1,18 @@
-import { FileUpload } from '#/components/file-upload'
 import { Button, Icon, Select, Switch, Tabs, Textarea } from 'moraine'
-import { useTableEditorContext } from '#/contexts/table-editor-context'
-import { detectTSVFormat, getExcelSheetNames, parseCSVFile, parseCSVText, parseExcelFile, parseMySQLOutput, parseTSVText } from '#/utils/table/parser'
 import { createSignal, Show } from 'solid-js'
 import { toast } from 'solid-toaster'
+
+import { FileUpload } from '#/components/file-upload'
+import { useTableEditorContext } from '#/contexts/table-editor-context'
+import {
+  detectTSVFormat,
+  getExcelSheetNames,
+  parseCSVFile,
+  parseCSVText,
+  parseExcelFile,
+  parseMySQLOutput,
+  parseTSVText,
+} from '#/utils/table/parser'
 
 import { ClearButton } from '../clear-button'
 
@@ -47,8 +56,12 @@ export function InputSection() {
     const name = file.name.toLowerCase()
     const mime = file.type.toLowerCase()
 
-    if (name.endsWith('.xlsx') || name.endsWith('.xls')
-      || mime.includes('spreadsheet') || mime.includes('excel')) {
+    if (
+      name.endsWith('.xlsx') ||
+      name.endsWith('.xls') ||
+      mime.includes('spreadsheet') ||
+      mime.includes('excel')
+    ) {
       return 'excel'
     }
     return 'csv'
@@ -56,7 +69,7 @@ export function InputSection() {
 
   const handleReplaceLineWrap = (replace: boolean) => {
     setReplaceLineWrap(replace)
-    setTextInput(t => replace ? t.replace(/(?:\\r)?\\n/g, '\n') : t.replace(/\r?\n/g, '\\n'))
+    setTextInput((t) => (replace ? t.replace(/(?:\\r)?\\n/g, '\n') : t.replace(/\r?\n/g, '\\n')))
   }
 
   // Handle text input parsing (auto-detects MySQL vs CSV vs TSV)
@@ -207,14 +220,17 @@ export function InputSection() {
                     Paste MySQL CLI output (starts with +-), CSV text, or Excel table data here.
                   </p>
                   <Switch
-                    class="whitespace-nowrap"
+                    classes={{ root: 'whitespace-nowrap' }}
                     label="Replace \n"
                     checked={replaceLineWrap()}
                     onChange={handleReplaceLineWrap}
                   />
                 </div>
                 <Textarea
-                  classes={{ input: 'text-sm font-mono h-120 resize-none whitespace-nowrap overflow-x-scroll placeholder:whitespace-pre-wrap' }}
+                  classes={{
+                    input:
+                      'text-sm font-mono h-120 resize-none whitespace-nowrap overflow-x-scroll placeholder:whitespace-pre-wrap',
+                  }}
                   placeholder={PLACEHOLDER}
                   value={textInput()}
                   onValueChange={setTextInput}
@@ -254,14 +270,11 @@ export function InputSection() {
                       setTextInput(EXCEL_EXAMPLE)
                       setReplaceLineWrap(true)
                     }}
-                    leading="i-lucide-file-spreadsheet"
+                    leading="lucide:file-spreadsheet"
                   >
                     Excel Example
                   </Button>
-                  <ClearButton
-                    onClear={() => setTextInput('')}
-                    disabled={!textInput().trim()}
-                  />
+                  <ClearButton onClear={() => setTextInput('')} disabled={!textInput().trim()} />
                 </div>
               </div>
             ),
@@ -271,9 +284,7 @@ export function InputSection() {
             label: 'File Upload',
             content: (
               <div class="mt-4 flex flex-col gap-3">
-                <p class="text-sm text-muted-foreground">
-                  {getFileDescription()}
-                </p>
+                <p class="text-sm text-muted-foreground">{getFileDescription()}</p>
                 <FileUpload
                   file={uploadedFile()}
                   setFile={handleFileSelect}
@@ -287,7 +298,7 @@ export function InputSection() {
                     <Select
                       value={selectedSheet()}
                       onChange={setSelectedSheet}
-                      options={sheetNames().map(s => ({ value: s, label: s }))}
+                      options={sheetNames().map((s) => ({ value: s, label: s }))}
                     />
                   </div>
                 </Show>
@@ -298,9 +309,11 @@ export function InputSection() {
                     disabled={!uploadedFile() || isParsing()}
                     classes={{ root: 'flex-1' }}
                     leading={
-                      isParsing()
-                        ? <Icon name="i-lucide-loader" classes={{ icon: 'animate-spin' }} />
-                        : 'i-lucide-play'
+                      isParsing() ? (
+                        <Icon name="i-lucide-loader" class="animate-spin" />
+                      ) : (
+                        'i-lucide-play'
+                      )
                     }
                   >
                     {isParsing() ? 'Parsing...' : 'Parse'}

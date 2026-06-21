@@ -1,6 +1,5 @@
-import type { DebugSession, DebugStep, RegexFlags } from './types'
-
 import { flagsToString } from './match-engine'
+import type { DebugSession, DebugStep, RegexFlags } from './types'
 
 /**
  * Simulates regex matching step-by-step for educational visualization.
@@ -9,7 +8,15 @@ import { flagsToString } from './match-engine'
  */
 
 interface PatternToken {
-  type: 'literal' | 'charClass' | 'quantifier' | 'anchor' | 'group' | 'alternation' | 'escape' | 'dot'
+  type:
+    | 'literal'
+    | 'charClass'
+    | 'quantifier'
+    | 'anchor'
+    | 'group'
+    | 'alternation'
+    | 'escape'
+    | 'dot'
   value: string
   position: number
   length: number
@@ -75,7 +82,9 @@ function tokenizePattern(pattern: string): PatternToken[] {
         value: classContent,
         position: i,
         length: end - i,
-        description: isNegated ? `any character NOT in ${classContent}` : `any character in ${classContent}`,
+        description: isNegated
+          ? `any character NOT in ${classContent}`
+          : `any character in ${classContent}`,
       })
       i = end
       continue
@@ -237,11 +246,7 @@ function tokenizePattern(pattern: string): PatternToken[] {
  * Generate debug steps for a regex pattern matching against text.
  * This simulates the matching process for educational purposes.
  */
-export function generateDebugSteps(
-  pattern: string,
-  flags: RegexFlags,
-  text: string,
-): DebugSession {
+export function generateDebugSteps(pattern: string, flags: RegexFlags, text: string): DebugSession {
   const steps: DebugStep[] = []
 
   if (!pattern || !text) {
@@ -307,9 +312,11 @@ export function generateDebugSteps(
 
           // Handle anchors
           if (token.type === 'anchor') {
-            const anchorSuccess = token.value === '^'
-              ? (currentTextPos === 0 || (flags.multiline && text[currentTextPos - 1] === '\n'))
-              : (currentTextPos === text.length || (flags.multiline && text[currentTextPos] === '\n'))
+            const anchorSuccess =
+              token.value === '^'
+                ? currentTextPos === 0 || (flags.multiline && text[currentTextPos - 1] === '\n')
+                : currentTextPos === text.length ||
+                  (flags.multiline && text[currentTextPos] === '\n')
 
             steps.push({
               stepNumber: steps.length,
@@ -404,15 +411,17 @@ export function generateDebugSteps(
     }
   } catch {
     return {
-      steps: [{
-        stepNumber: 0,
-        patternPosition: 0,
-        textPosition: 0,
-        action: 'fail',
-        description: 'Invalid regex pattern',
-        patternElement: pattern,
-        isBacktrack: false,
-      }],
+      steps: [
+        {
+          stepNumber: 0,
+          patternPosition: 0,
+          textPosition: 0,
+          action: 'fail',
+          description: 'Invalid regex pattern',
+          patternElement: pattern,
+          isBacktrack: false,
+        },
+      ],
       currentStepIndex: 0,
       isPlaying: false,
       playSpeed: 500,

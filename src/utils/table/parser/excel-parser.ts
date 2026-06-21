@@ -1,8 +1,9 @@
-import type { CellValue, ColumnDefinition, ParseResult, TableData, TableRow } from '../types'
 import type { WorkBook } from 'xlsx'
+import { read, utils } from 'xlsx'
 
 import { generateId } from '#/utils/random'
-import { read, utils } from 'xlsx'
+
+import type { CellValue, ColumnDefinition, ParseResult, TableData, TableRow } from '../types'
 
 /**
  * Get list of sheet names from an Excel file
@@ -16,7 +17,9 @@ export async function getExcelSheetNames(file: File): Promise<string[]> {
     const workbook = read(arrayBuffer, { type: 'array' })
     return workbook.SheetNames
   } catch (error) {
-    throw new Error(`Failed to read Excel file: ${error instanceof Error ? error.message : 'Unknown error'}`)
+    throw new Error(
+      `Failed to read Excel file: ${error instanceof Error ? error.message : 'Unknown error'}`,
+    )
   }
 }
 
@@ -147,7 +150,7 @@ export async function parseExcelFile(
     }
 
     // Create column definitions
-    const columns: ColumnDefinition[] = columnNames.map(name => ({
+    const columns: ColumnDefinition[] = columnNames.map((name) => ({
       id: generateId(),
       name,
       originalName: name,
@@ -162,7 +165,7 @@ export async function parseExcelFile(
       const rowData = rawData[i]
 
       // Skip completely empty rows
-      if (!rowData || rowData.every(cell => cell === null || cell === undefined || cell === '')) {
+      if (!rowData || rowData.every((cell) => cell === null || cell === undefined || cell === '')) {
         continue
       }
 

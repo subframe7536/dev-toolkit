@@ -1,8 +1,11 @@
-import type { ColorFormat, RGB } from '#/utils/color'
+import { Button, Icon, Input, Slider, cn } from 'moraine'
+import { createRoute } from 'solid-file-router'
+import { createMemo, createSignal, For } from 'solid-js'
+import { toast } from 'solid-toaster'
 
 import { Card } from '#/components/card'
 import { CopyButton } from '#/components/copy-button'
-import { Button, Icon, Input, Slider, cn } from 'moraine'
+import type { ColorFormat, RGB } from '#/utils/color'
 import {
   formatColor,
   hexToRgb,
@@ -12,9 +15,6 @@ import {
   rgbToHex,
   rgbToHsl,
 } from '#/utils/color'
-import { createRoute } from 'solid-file-router'
-import { createMemo, createSignal, For } from 'solid-js'
-import { toast } from 'solid-toaster'
 
 export default createRoute({
   info: {
@@ -76,7 +76,7 @@ function ColorConverter() {
   }
 
   const updateFromSliders = (component: 'r' | 'g' | 'b', value: number) => {
-    setRgb(prev => ({ ...prev, [component]: value }))
+    setRgb((prev) => ({ ...prev, [component]: value }))
   }
 
   const updateFromHsl = (component: 'h' | 's' | 'l', value: number) => {
@@ -96,21 +96,16 @@ function ColorConverter() {
             style={{ 'background-color': rgbToHex(rgb()) }}
           />
           <div class="opacity-0 flex transition-opacity items-center inset-0 justify-center absolute group-hover:opacity-100">
-            <Icon name="lucide:pipette" classes={{ icon: 'text-5xl text-white drop-shadow-lg' }} />
+            <Icon name="lucide:pipette" class="text-5xl text-white drop-shadow-lg" />
           </div>
-          <input
-            type="color"
-            value={rgbToHex(rgb())}
-            onInput={handleColorPick}
-            class="sr-only"
-          />
+          <input type="color" value={rgbToHex(rgb())} onInput={handleColorPick} class="sr-only" />
         </label>
 
         {/* Text Input with Clear */}
         <div class="relative">
           <Input
             value={inputValue()}
-            onInput={e => handleInputChange(e.currentTarget.value)}
+            onInput={(e) => handleInputChange(e.currentTarget.value)}
             placeholder="Enter color..."
             classes={{ input: 'font-mono' }}
           />
@@ -118,7 +113,7 @@ function ColorConverter() {
             class="rounded-1.5 size-6 translate-y--50% right-2 top-50% absolute hover:bg-background"
             onClick={() => handleInputChange('')}
           >
-            <Icon name="lucide:x" classes={{ icon: 'size-3 inline-block' }} title="clear" />
+            <Icon name="lucide:x" class="size-3 inline-block" title="clear" />
           </button>
         </div>
 
@@ -127,7 +122,12 @@ function ColorConverter() {
           <Button onClick={handleRandomize} classes={{ root: 'flex-1' }} leading="lucide:shuffle">
             Random
           </Button>
-          <Button onClick={handleSaveColor} variant="secondary" classes={{ root: 'flex-1' }} leading="lucide:save">
+          <Button
+            onClick={handleSaveColor}
+            variant="secondary"
+            classes={{ root: 'flex-1' }}
+            leading="lucide:save"
+          >
             Save
           </Button>
         </div>
@@ -166,13 +166,13 @@ function ColorConverter() {
           <Card
             title="RGB Channels"
             class="flex-1"
-            content={(
+            content={
               <div class="space-y-4">
                 <div>
                   <label class="text-sm font-medium">Red</label>
                   <Slider
                     value={[Math.round(rgb().r)]}
-                    onChange={value => updateFromSliders('r', value[0])}
+                    onChange={(value) => updateFromSliders('r', value[0])}
                     min={0}
                     max={255}
                     step={1}
@@ -182,7 +182,7 @@ function ColorConverter() {
                   <label class="text-sm font-medium">Green</label>
                   <Slider
                     value={[Math.round(rgb().g)]}
-                    onChange={value => updateFromSliders('g', value[0])}
+                    onChange={(value) => updateFromSliders('g', value[0])}
                     min={0}
                     max={255}
                     step={1}
@@ -192,26 +192,26 @@ function ColorConverter() {
                   <label class="text-sm font-medium">Blue</label>
                   <Slider
                     value={[Math.round(rgb().b)]}
-                    onChange={value => updateFromSliders('b', value[0])}
+                    onChange={(value) => updateFromSliders('b', value[0])}
                     min={0}
                     max={255}
                     step={1}
                   />
                 </div>
               </div>
-            )}
+            }
           />
 
           <Card
             title="HSL Properties"
             class="flex-1"
-            content={(
+            content={
               <div class="space-y-4">
                 <div>
                   <label class="text-sm font-medium">Hue</label>
                   <Slider
                     value={[Math.round(rgbToHsl(rgb()).h)]}
-                    onChange={value => updateFromHsl('h', value[0])}
+                    onChange={(value) => updateFromHsl('h', value[0])}
                     min={0}
                     max={360}
                     step={1}
@@ -221,7 +221,7 @@ function ColorConverter() {
                   <label class="text-sm font-medium">Saturation</label>
                   <Slider
                     value={[Math.round(rgbToHsl(rgb()).s)]}
-                    onChange={value => updateFromHsl('s', value[0])}
+                    onChange={(value) => updateFromHsl('s', value[0])}
                     min={0}
                     max={100}
                     step={1}
@@ -231,21 +231,21 @@ function ColorConverter() {
                   <label class="text-sm font-medium">Lightness</label>
                   <Slider
                     value={[Math.round(rgbToHsl(rgb()).l)]}
-                    onChange={value => updateFromHsl('l', value[0])}
+                    onChange={(value) => updateFromHsl('l', value[0])}
                     min={0}
                     max={100}
                     step={1}
                   />
                 </div>
               </div>
-            )}
+            }
           />
         </div>
 
         {/* Color Formats List */}
         <Card
           title="Color Formats"
-          content={(
+          content={
             <div class="space-y-4">
               <For each={formats}>
                 {(format) => {
@@ -258,18 +258,13 @@ function ColorConverter() {
                         </div>
                         <code class="text-sm font-mono">{value()}</code>
                       </div>
-                      <CopyButton
-                        content={value()}
-                        variant="ghost"
-                        size="sm"
-                        text={false}
-                      />
+                      <CopyButton content={value()} variant="ghost" size="sm" text={false} />
                     </div>
                   )
                 }}
               </For>
             </div>
-          )}
+          }
         />
       </div>
     </div>

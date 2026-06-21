@@ -1,9 +1,12 @@
-import type { ConversionResult } from '#/utils/json/converter'
+import { Select, Switch, Textarea } from 'moraine'
+import { createRoute } from 'solid-file-router'
+import { createEffect, createSignal } from 'solid-js'
+import { toast } from 'solid-toaster'
 
 import { ClearButton } from '#/components/clear-button'
 import { CopyButton } from '#/components/copy-button'
 import { DownloadButton } from '#/components/download-button'
-import { Select, Switch, Textarea } from 'moraine'
+import type { ConversionResult } from '#/utils/json/converter'
 import {
   jsonToJavaClass,
   jsonToJSObject,
@@ -11,9 +14,6 @@ import {
   jsonToTSDefinition,
   jsonToYAML,
 } from '#/utils/json/converter'
-import { createRoute } from 'solid-file-router'
-import { createEffect, createSignal } from 'solid-js'
-import { toast } from 'solid-toaster'
 
 export default createRoute({
   info: {
@@ -26,12 +26,7 @@ export default createRoute({
   component: JSONConverter,
 })
 
-type ConversionMode =
-  | 'yaml'
-  | 'js-object'
-  | 'ts-definition'
-  | 'java-class'
-  | 'query-params'
+type ConversionMode = 'yaml' | 'js-object' | 'ts-definition' | 'java-class' | 'query-params'
 
 function JSONConverter() {
   const [input, setInput] = createSignal('')
@@ -93,7 +88,7 @@ function JSONConverter() {
 
   const getFileExtension = () => {
     const modeToExtension: Record<ConversionMode, string> = {
-      'yaml': 'yaml',
+      yaml: 'yaml',
       'js-object': 'js',
       'ts-definition': 'ts',
       'java-class': 'java',
@@ -104,7 +99,7 @@ function JSONConverter() {
 
   const getMimeType = () => {
     const modeToMimeType: Record<ConversionMode, string> = {
-      'yaml': 'text/yaml',
+      yaml: 'text/yaml',
       'js-object': 'text/javascript',
       'ts-definition': 'text/typescript',
       'java-class': 'text/x-java',
@@ -121,11 +116,7 @@ function JSONConverter() {
   return (
     <div class="space-y-4">
       <div class="flex flex-wrap gap-4 items-center">
-        <Switch
-          checked={useRepair()}
-          onChange={setUseRepair}
-          label="Auto-repair JSON"
-        />
+        <Switch checked={useRepair()} onChange={setUseRepair} label="Auto-repair JSON" />
       </div>
 
       <div class="gap-6 grid lg:grid-cols-2">
@@ -136,14 +127,11 @@ function JSONConverter() {
               classes={{ input: 'text-sm font-mono mt-2 h-96 resize-none' }}
               placeholder="Paste your JSON here..."
               value={input()}
-              onInput={e => setInput(e.currentTarget.value)}
+              onInput={(e) => setInput(e.currentTarget.value)}
             />
           </div>
           <div>
-            <ClearButton
-              onClear={handleClear}
-              disabled={!input()}
-            />
+            <ClearButton onClear={handleClear} disabled={!input()} />
           </div>
         </div>
 
@@ -153,7 +141,6 @@ function JSONConverter() {
               value={mode()}
               onChange={setMode}
               options={conversionModes.map(({ value, label }) => ({ value, label }))}
-              disallowEmptySelection
               classes={{ root: 'w-60' }}
             />
             <Textarea
@@ -164,11 +151,7 @@ function JSONConverter() {
             />
           </div>
           <div class="flex flex-wrap gap-4">
-            <CopyButton
-              content={output()}
-              variant="secondary"
-              disabled={!output()}
-            />
+            <CopyButton content={output()} variant="secondary" disabled={!output()} />
             <DownloadButton
               content={output()}
               filename={`converted.${getFileExtension()}`}

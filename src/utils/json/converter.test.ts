@@ -8,7 +8,7 @@ describe('jsonToJSObject', () => {
     const result = jsonToJSObject(input)
 
     expect(result.success).toBe(true)
-    expect(result.output).toContain('name: \'John\'')
+    expect(result.output).toContain("name: 'John'")
     expect(result.output).toContain('age: 30')
   })
 
@@ -18,7 +18,7 @@ describe('jsonToJSObject', () => {
 
     expect(result.success).toBe(true)
     expect(result.output).toContain('user: {')
-    expect(result.output).toContain('name: \'John\'')
+    expect(result.output).toContain("name: 'John'")
   })
 
   test('handles arrays', () => {

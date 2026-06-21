@@ -1,9 +1,14 @@
-import type { DebugSession, DebugStep } from '#/utils/regex/types'
-
 import { Button, Icon } from 'moraine'
-import { useRegexContext } from '#/contexts/regex-context'
-import { generateDebugSteps, getActionBgColor, getActionColor, getActionIcon } from '#/utils/regex/debug-engine'
 import { createEffect, createMemo, createSignal, For, on, onCleanup, Show } from 'solid-js'
+
+import { useRegexContext } from '#/contexts/regex-context'
+import {
+  generateDebugSteps,
+  getActionBgColor,
+  getActionColor,
+  getActionIcon,
+} from '#/utils/regex/debug-engine'
+import type { DebugSession, DebugStep } from '#/utils/regex/types'
 
 // Highlight colors for pattern and text positions
 const PATTERN_HIGHLIGHT = 'bg-primary/30 ring-2 ring-primary'
@@ -50,7 +55,7 @@ function DebugControls(props: DebugControlsProps) {
         </Button>
         <Show
           when={props.session.isPlaying}
-          fallback={(
+          fallback={
             <Button
               variant="outline"
               size="sm"
@@ -61,7 +66,7 @@ function DebugControls(props: DebugControlsProps) {
             >
               <span class="i-lucide-play size-4" aria-hidden="true" />
             </Button>
-          )}
+          }
         >
           <Button
             variant="outline"
@@ -109,7 +114,7 @@ function PatternVisualizer(props: PatternVisualizerProps) {
       return [{ text: pattern, highlighted: false }]
     }
 
-    const segments: Array<{ text: string, highlighted: boolean }> = []
+    const segments: Array<{ text: string; highlighted: boolean }> = []
 
     if (pos > 0) {
       segments.push({ text: pattern.slice(0, pos), highlighted: false })
@@ -128,10 +133,8 @@ function PatternVisualizer(props: PatternVisualizerProps) {
   return (
     <div class="text-sm font-mono p-2 border rounded bg-muted/30 overflow-x-auto">
       <For each={segments()}>
-        {segment => (
-          <span class={segment.highlighted ? PATTERN_HIGHLIGHT : ''}>
-            {segment.text}
-          </span>
+        {(segment) => (
+          <span class={segment.highlighted ? PATTERN_HIGHLIGHT : ''}>{segment.text}</span>
         )}
       </For>
     </div>
@@ -147,7 +150,7 @@ interface TextVisualizerProps {
 
 function TextVisualizer(props: TextVisualizerProps) {
   type SegmentType = 'normal' | 'current' | 'matched'
-  type Segment = { text: string, type: SegmentType }
+  type Segment = { text: string; type: SegmentType }
 
   const segments = createMemo((): Segment[] => {
     const text = props.text
@@ -203,11 +206,7 @@ function TextVisualizer(props: TextVisualizerProps) {
   return (
     <div class="text-sm font-mono p-2 border rounded bg-muted/30 whitespace-pre-wrap break-all overflow-x-auto">
       <For each={segments()}>
-        {segment => (
-          <span class={getSegmentClass(segment.type)}>
-            {segment.text}
-          </span>
-        )}
+        {(segment) => <span class={getSegmentClass(segment.type)}>{segment.text}</span>}
       </For>
       <Show when={!props.text}>
         <span class="text-muted-foreground italic">No test text</span>
@@ -238,7 +237,7 @@ function StepList(props: StepListProps) {
 
   return (
     <div
-      ref={containerRef}
+      ref={(element) => (containerRef = element)}
       class="max-h-48 overflow-y-auto space-y-1"
       role="listbox"
       aria-label="Debug steps"
@@ -250,9 +249,7 @@ function StepList(props: StepListProps) {
             id={`step-${index()}`}
             data-step-index={index()}
             class={`text-sm p-2 rounded cursor-pointer transition-colors ${
-              index() === props.currentIndex
-                ? getActionBgColor(step.action)
-                : 'hover:bg-muted/50'
+              index() === props.currentIndex ? getActionBgColor(step.action) : 'hover:bg-muted/50'
             }`}
             onClick={() => props.onStepClick(index())}
             onKeyDown={(e) => {
@@ -266,17 +263,16 @@ function StepList(props: StepListProps) {
             tabIndex={index() === props.currentIndex ? 0 : -1}
           >
             <div class="flex gap-2 items-center">
-              <Icon name={getActionIcon(step.action).replace("lucide:", "i-lucide-") as any} classes={{ icon: getActionColor(step.action) }} />
+              <Icon
+                name={getActionIcon(step.action).replace('lucide:', 'i-lucide-') as any}
+                class={getActionColor(step.action)}
+              />
               <span class={`font-medium ${getActionColor(step.action)}`}>
                 {step.action.charAt(0).toUpperCase() + step.action.slice(1)}
               </span>
-              <span class="text-xs text-muted-foreground ml-auto">
-                #{step.stepNumber}
-              </span>
+              <span class="text-xs text-muted-foreground ml-auto">#{step.stepNumber}</span>
             </div>
-            <p class="text-xs text-muted-foreground ml-6 mt-1">
-              {step.description}
-            </p>
+            <p class="text-xs text-muted-foreground ml-6 mt-1">{step.description}</p>
           </div>
         )}
       </For>
@@ -313,16 +309,18 @@ export function DebugPanel() {
   }
 
   // Regenerate steps when pattern or text changes during debug mode
-  createEffect(on(
-    () => [store.pattern, store.testText, store.flags] as const,
-    () => {
-      if (isDebugMode() && store.pattern && store.testText) {
-        const session = generateDebugSteps(store.pattern, store.flags, store.testText)
-        setDebugSession(session)
-      }
-    },
-    { defer: true },
-  ))
+  createEffect(
+    on(
+      () => [store.pattern, store.testText, store.flags] as const,
+      () => {
+        if (isDebugMode() && store.pattern && store.testText) {
+          const session = generateDebugSteps(store.pattern, store.flags, store.testText)
+          setDebugSession(session)
+        }
+      },
+      { defer: true },
+    ),
+  )
 
   // Cleanup on unmount
   onCleanup(() => {
@@ -440,11 +438,13 @@ export function DebugPanel() {
       <div class="mb-3 flex items-center justify-between">
         <div class="flex gap-2 items-center">
           <span class="i-lucide-bug size-5" aria-hidden="true" />
-          <h3 id="debug-heading" class="font-medium">Step-by-Step Debug</h3>
+          <h3 id="debug-heading" class="font-medium">
+            Step-by-Step Debug
+          </h3>
         </div>
         <Show
           when={isDebugMode()}
-          fallback={(
+          fallback={
             <Button
               variant="outline"
               size="sm"
@@ -454,13 +454,9 @@ export function DebugPanel() {
             >
               Start Debug
             </Button>
-          )}
+          }
         >
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={stopDebug}
-          >
+          <Button variant="outline" size="sm" onClick={stopDebug}>
             Exit Debug
           </Button>
         </Show>
@@ -468,7 +464,7 @@ export function DebugPanel() {
 
       <Show
         when={isDebugMode() && debugSession()}
-        fallback={(
+        fallback={
           <p class="text-sm text-muted-foreground" id="debug-disabled-hint">
             <Show
               when={canStartDebug()}
@@ -477,9 +473,9 @@ export function DebugPanel() {
               Click "Start Debug" to step through the regex matching process.
             </Show>
           </p>
-        )}
+        }
       >
-        {session => (
+        {(session) => (
           <div class="space-y-4">
             {/* Controls */}
             <DebugControls
@@ -493,10 +489,17 @@ export function DebugPanel() {
 
             {/* Current step info */}
             <Show when={currentStep()}>
-              {step => (
-                <div class={`p-3 rounded-md ${getActionBgColor(step().action)}`} role="status" aria-live="polite">
+              {(step) => (
+                <div
+                  class={`p-3 rounded-md ${getActionBgColor(step().action)}`}
+                  role="status"
+                  aria-live="polite"
+                >
                   <div class="mb-2 flex gap-2 items-center">
-                    <Icon name={getActionIcon(step().action).replace("lucide:", "i-lucide-") as any} classes={{ icon: getActionColor(step().action) }} />
+                    <Icon
+                      name={getActionIcon(step().action).replace('lucide:', 'i-lucide-') as any}
+                      class={getActionColor(step().action)}
+                    />
                     <span class={`font-medium ${getActionColor(step().action)}`}>
                       {step().action.charAt(0).toUpperCase() + step().action.slice(1)}
                     </span>
@@ -513,7 +516,9 @@ export function DebugPanel() {
 
             {/* Pattern visualization */}
             <div>
-              <div class="text-xs text-muted-foreground mb-1" id="pattern-viz-label">Pattern</div>
+              <div class="text-xs text-muted-foreground mb-1" id="pattern-viz-label">
+                Pattern
+              </div>
               <PatternVisualizer
                 pattern={store.pattern || ' '}
                 currentPosition={currentStep()?.patternPosition ?? 0}
@@ -523,12 +528,22 @@ export function DebugPanel() {
 
             {/* Text visualization */}
             <div>
-              <div class="text-xs text-muted-foreground mb-1" id="text-viz-label">Test Text</div>
+              <div class="text-xs text-muted-foreground mb-1" id="text-viz-label">
+                Test Text
+              </div>
               <TextVisualizer
                 text={store.testText}
                 currentPosition={currentStep()?.textPosition ?? 0}
-                matchStart={session().finalResult === 'success' && currentStep()?.action === 'success' ? session().matchStart : undefined}
-                matchEnd={session().finalResult === 'success' && currentStep()?.action === 'success' ? session().matchEnd : undefined}
+                matchStart={
+                  session().finalResult === 'success' && currentStep()?.action === 'success'
+                    ? session().matchStart
+                    : undefined
+                }
+                matchEnd={
+                  session().finalResult === 'success' && currentStep()?.action === 'success'
+                    ? session().matchEnd
+                    : undefined
+                }
               />
             </div>
 
@@ -553,7 +568,10 @@ export function DebugPanel() {
                 role="status"
                 aria-live="assertive"
               >
-                <span class={`${session().finalResult === 'success' ? 'i-lucide-check-circle' : 'i-lucide-x-circle'} mx-auto mb-2 size-6`} aria-hidden="true" />
+                <span
+                  class={`${session().finalResult === 'success' ? 'i-lucide-check-circle' : 'i-lucide-x-circle'} mx-auto mb-2 size-6`}
+                  aria-hidden="true"
+                />
                 <p class="font-medium">
                   {session().finalResult === 'success' ? 'Match Found!' : 'No Match'}
                 </p>

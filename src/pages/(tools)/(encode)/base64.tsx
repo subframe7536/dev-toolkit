@@ -1,8 +1,9 @@
+import { Tabs } from 'moraine'
+import { createRoute } from 'solid-file-router'
+
 import { EncoderLayout } from '#/components/encoder-layout'
 import { FileEncoder } from '#/components/file-encoder'
-import { Tabs } from 'moraine'
 import { decodeText, encodeText, fileToBase64 } from '#/utils/base64'
-import { createRoute } from 'solid-file-router'
 
 export default createRoute({
   info: {
@@ -19,7 +20,7 @@ function Base64Encoder() {
   return (
     <Tabs
       defaultValue="text"
-      class="w-full"
+      classes={{ root: 'w-full' }}
       items={[
         {
           value: 'text',

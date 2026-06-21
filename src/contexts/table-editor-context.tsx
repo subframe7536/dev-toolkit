@@ -1,9 +1,9 @@
-import type { CellValue, ColumnDefinition, TableData } from '#/utils/table/types'
 import type { ParentProps } from 'solid-js'
-
 import { batch, createContext, createSignal, useContext } from 'solid-js'
 import { createStore, produce } from 'solid-js/store'
 import { toast } from 'solid-toaster'
+
+import type { CellValue, ColumnDefinition, TableData } from '#/utils/table/types'
 
 export interface TableEditorStore {
   tableData: TableData
@@ -64,32 +64,36 @@ export function TableEditorProvider(props: ParentProps) {
             return
           }
 
-          setTableData(produce((tb) => {
-            if (!tb.rows) {
-              return
-            }
-            tb.rows = tb.rows.slice(1)
-            const firstRow = tableData.rows[0]
-            for (const col of tb.columns || []) {
-              const cellValue = firstRow.cells[col.id]
-              col.name = col.originalName = cellValue ? String(cellValue) : col.name
-            }
-          }))
+          setTableData(
+            produce((tb) => {
+              if (!tb.rows) {
+                return
+              }
+              tb.rows = tb.rows.slice(1)
+              const firstRow = tableData.rows[0]
+              for (const col of tb.columns || []) {
+                const cellValue = firstRow.cells[col.id]
+                col.name = col.originalName = cellValue ? String(cellValue) : col.name
+              }
+            }),
+          )
         } else {
           const newRowId = crypto.randomUUID()
           const newRowCells: Record<string, CellValue> = {}
 
-          setTableData(produce((tb) => {
-            if (!tb.columns) {
-              return
-            }
-            for (let i = 0; i < tb.columns.length; i++) {
-              const col = tb.columns[i]
-              newRowCells[col.id] = col.name
-              col.name = col.originalName = `Column ${i + 1}`
-            }
-            tb.rows?.splice(0, 0, { id: newRowId, cells: newRowCells })
-          }))
+          setTableData(
+            produce((tb) => {
+              if (!tb.columns) {
+                return
+              }
+              for (let i = 0; i < tb.columns.length; i++) {
+                const col = tb.columns[i]
+                newRowCells[col.id] = col.name
+                col.name = col.originalName = `Column ${i + 1}`
+              }
+              tb.rows?.splice(0, 0, { id: newRowId, cells: newRowCells })
+            }),
+          )
         }
       })
     },
@@ -114,14 +118,12 @@ export function TableEditorProvider(props: ParentProps) {
 
     visibleColumns: () => {
       const visibility = columnVisibility()
-      return tableData.columns.filter(col => visibility[col.id] ?? true)
+      return tableData.columns.filter((col) => visibility[col.id] ?? true)
     },
 
     visibleColumnIds: () => {
       const visibility = columnVisibility()
-      return tableData.columns
-        .filter(col => visibility[col.id] ?? true)
-        .map(col => col.id)
+      return tableData.columns.filter((col) => visibility[col.id] ?? true).map((col) => col.id)
     },
   }
 
@@ -144,8 +146,6 @@ export function TableEditorProvider(props: ParentProps) {
   }
 
   return (
-    <TableEditorContext.Provider value={contextValue}>
-      {props.children}
-    </TableEditorContext.Provider>
+    <TableEditorContext.Provider value={contextValue}>{props.children}</TableEditorContext.Provider>
   )
 }

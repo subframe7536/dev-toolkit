@@ -1,6 +1,20 @@
+import { Button, Input, Select } from 'moraine'
+import { createRoute } from 'solid-file-router'
+import {
+  batch,
+  createEffect,
+  createMemo,
+  createSignal,
+  Index,
+  onCleanup,
+  onMount,
+  Show,
+} from 'solid-js'
+import { createStore } from 'solid-js/store'
+import { toast } from 'solid-toaster'
+
 import { Card } from '#/components/card'
 import { CopyButton } from '#/components/copy-button'
-import { Button, Input, Select } from 'moraine'
 import {
   commonTimeZones,
   formatDateTime,
@@ -11,10 +25,6 @@ import {
   toUnixTimestamp,
   toUnixTimestampMs,
 } from '#/utils/datetime'
-import { createRoute } from 'solid-file-router'
-import { batch, createEffect, createMemo, createSignal, Index, onCleanup, onMount, Show } from 'solid-js'
-import { createStore } from 'solid-js/store'
-import { toast } from 'solid-toaster'
 
 export default createRoute({
   info: {
@@ -145,26 +155,20 @@ function DateTimeTool() {
           <div class="space-y-4">
             {/* Real-time Display */}
             <div class="p-4 text-center border rounded-lg bg-muted/50">
-              <div class="text-3xl font-bold font-mono mb-2">
-                {formattedTime()}
-              </div>
+              <div class="text-3xl font-bold font-mono mb-2">{formattedTime()}</div>
               <div class="text-sm text-muted-foreground">
-                {selectedTimeZone()}
-                {' '}
-                •
-                {' '}
-                {selectedLocale()}
+                {selectedTimeZone()} • {selectedLocale()}
               </div>
             </div>
 
             {/* Custom Date Input */}
             <div class="space-y-2">
               <div class="flex gap-2 items-end">
-                <div class="flex-1 flex flex-col gap-1">
+                <div class="flex flex-1 flex-col gap-1">
                   <label class="text-sm font-medium">Custom Date Input</label>
                   <Input
                     value={customInput()}
-                    onInput={e => setCustomInput(e.currentTarget.value)}
+                    onInput={(e) => setCustomInput(e.currentTarget.value)}
                     placeholder="ISO, Unix timestamp, yyyy-MM-dd HH:mm:ss..."
                   />
                 </div>
@@ -173,11 +177,7 @@ function DateTimeTool() {
                 </Button>
               </div>
               <Show when={customDate()}>
-                <div class="text-sm text-muted-foreground">
-                  Using:
-                  {' '}
-                  {toISOString(customDate()!)}
-                </div>
+                <div class="text-sm text-muted-foreground">Using: {toISOString(customDate()!)}</div>
               </Show>
             </div>
 
@@ -190,7 +190,7 @@ function DateTimeTool() {
                   <Select
                     value={selectedLocale()}
                     onChange={setSelectedLocale}
-                    options={locales.map(v => ({ value: v, label: v }))}
+                    options={locales.map((v) => ({ value: v, label: v }))}
                   />
                 </div>
                 <div>
@@ -198,23 +198,23 @@ function DateTimeTool() {
                   <Select
                     value={selectedTimeZone()}
                     onChange={setSelectedTimeZone}
-                    options={commonTimeZones.map(v => ({ value: v, label: v }))}
+                    options={commonTimeZones.map((v) => ({ value: v, label: v }))}
                   />
                 </div>
                 <div>
                   <label class="text-xs text-muted-foreground mb-1.5 block">Date Style</label>
                   <Select
                     value={dateStyle()}
-                    onChange={v => v && setDateStyle(v as any)}
-                    options={[...styles].map(v => ({ value: v, label: v }))}
+                    onChange={(v) => v && setDateStyle(v as any)}
+                    options={[...styles].map((v) => ({ value: v, label: v }))}
                   />
                 </div>
                 <div>
                   <label class="text-xs text-muted-foreground mb-1.5 block">Time Style</label>
                   <Select
                     value={timeStyle()}
-                    onChange={v => v && setTimeStyle(v as any)}
-                    options={[...styles].map(v => ({ value: v, label: v }))}
+                    onChange={(v) => v && setTimeStyle(v as any)}
+                    options={[...styles].map((v) => ({ value: v, label: v }))}
                   />
                 </div>
               </div>
@@ -226,11 +226,11 @@ function DateTimeTool() {
             title="DateTime Manipulation"
             description="Units: y=years, M=months, d=days, h=hours, m=minutes, s=seconds"
             icon="lucide:calculator"
-            content={(
+            content={
               <div class="space-y-2">
                 <Input
                   value={manipulationInput()}
-                  onInput={e => setManipulationInput(e.currentTarget.value)}
+                  onInput={(e) => setManipulationInput(e.currentTarget.value)}
                   placeholder="e.g., +1h -30m +2d"
                 />
                 <Show when={manipulatedTime()}>
@@ -238,7 +238,9 @@ function DateTimeTool() {
                     <div class="flex items-center justify-between">
                       <div class="flex-1 min-w-0">
                         <div class="text-xs text-muted-foreground mb-1">Result:</div>
-                        <div class="text-sm font-mono font-semibold truncate">{manipulatedTime()}</div>
+                        <div class="text-sm font-mono font-semibold truncate">
+                          {manipulatedTime()}
+                        </div>
                       </div>
                       <CopyButton
                         content={manipulatedTime()!}
@@ -250,7 +252,7 @@ function DateTimeTool() {
                   </div>
                 </Show>
               </div>
-            )}
+            }
           />
         </div>
 
@@ -259,14 +261,14 @@ function DateTimeTool() {
         <Card
           title="Format Outputs"
           icon="lucide:list"
-          content={(
+          content={
             <div class="space-y-4">
               {/* Custom Format */}
               <div class="space-y-2">
                 <label class="text-sm font-medium">Custom Format Pattern</label>
                 <Input
                   value={customFormat()}
-                  onInput={e => setCustomFormat(e.currentTarget.value)}
+                  onInput={(e) => setCustomFormat(e.currentTarget.value)}
                   placeholder="e.g., yyyy/MM/dd or dd-MM-yyyy HH:mm"
                 />
                 <div class="text-xs text-muted-foreground space-y-1">
@@ -298,7 +300,7 @@ function DateTimeTool() {
                 <div class="text-sm font-medium">Common Formats</div>
                 <div class="space-y-2">
                   <Index each={outputFormats}>
-                    {format => (
+                    {(format) => (
                       <div class="p-3 border rounded-lg bg-muted/30 flex gap-2 items-center justify-between">
                         <div class="flex-1 min-w-0">
                           <div class="text-xs text-muted-foreground">{format().label}</div>
@@ -316,7 +318,7 @@ function DateTimeTool() {
                 </div>
               </div>
             </div>
-          )}
+          }
         />
       </div>
     </div>

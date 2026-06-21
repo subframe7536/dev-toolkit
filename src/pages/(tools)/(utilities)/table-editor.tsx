@@ -1,10 +1,11 @@
+import { createRoute } from 'solid-file-router'
+import { Show } from 'solid-js'
+
 import { DataTable } from '#/components/data-table'
 import { InputSection } from '#/components/table-editor/input-section'
 import { TableActions } from '#/components/table-editor/table-actions'
 import { useSidebar } from '#/components/ui/sidebar'
 import { TableEditorProvider, useTableEditorContext } from '#/contexts/table-editor-context'
-import { createRoute } from 'solid-file-router'
-import { Show } from 'solid-js'
 
 export default createRoute({
   info: {
@@ -22,19 +23,26 @@ export default createRoute({
 })
 
 function TableEditor() {
-  const { store, actions: { setData }, computed } = useTableEditorContext()
+  const {
+    store,
+    actions: { setData },
+    computed,
+  } = useTableEditorContext()
   const { isMobile, open } = useSidebar()
 
   return (
     <Show
       when={!computed.hasData()}
-      fallback={(
+      fallback={
         <div class="space-y-4">
           <TableActions />
           <div
             class="border rounded-lg max-w-400 overflow-x-scroll"
             style={{
-              width: !isMobile() && open() ? 'calc(100vw - 12rem - var(--sidebar-width))' : 'calc(100vw - 12rem)',
+              width:
+                !isMobile() && open()
+                  ? 'calc(100vw - 12rem - var(--sidebar-width))'
+                  : 'calc(100vw - 12rem)',
             }}
           >
             <DataTable
@@ -45,7 +53,7 @@ function TableEditor() {
             />
           </div>
         </div>
-      )}
+      }
     >
       <InputSection />
     </Show>

@@ -1,12 +1,21 @@
-import type { TableData } from './types'
-
 import { describe, expect, it } from 'bun:test'
 
-import { escapeCSVValue, escapeMarkdownValue, escapeSQLString, exportToCSV, exportToMarkdown, formatSQLValue, generateCreateTable, generateSQLInsert, generateSQLUpdate } from './export'
+import {
+  escapeCSVValue,
+  escapeMarkdownValue,
+  escapeSQLString,
+  exportToCSV,
+  exportToMarkdown,
+  formatSQLValue,
+  generateCreateTable,
+  generateSQLInsert,
+  generateSQLUpdate,
+} from './export'
+import type { TableData } from './types'
 
 describe('escapeSQLString', () => {
   it('should escape single quotes', () => {
-    expect(escapeSQLString('O\'Brien')).toBe('O\'\'Brien')
+    expect(escapeSQLString("O'Brien")).toBe("O''Brien")
   })
 
   it('should escape backslashes', () => {
@@ -18,7 +27,7 @@ describe('escapeSQLString', () => {
   })
 
   it('should handle multiple special characters', () => {
-    expect(escapeSQLString('test\'s\nvalue\\')).toBe('test\'\'s\\nvalue\\\\')
+    expect(escapeSQLString("test's\nvalue\\")).toBe("test''s\\nvalue\\\\")
   })
 })
 
@@ -28,7 +37,7 @@ describe('formatSQLValue', () => {
   })
 
   it('should format string values with quotes', () => {
-    expect(formatSQLValue('test', 'string')).toBe('\'test\'')
+    expect(formatSQLValue('test', 'string')).toBe("'test'")
   })
 
   it('should format integer values without quotes', () => {
@@ -45,7 +54,7 @@ describe('formatSQLValue', () => {
   })
 
   it('should escape special characters in strings', () => {
-    expect(formatSQLValue('O\'Brien', 'string')).toBe('\'O\'\'Brien\'')
+    expect(formatSQLValue("O'Brien", 'string')).toBe("'O''Brien'")
   })
 })
 
@@ -83,12 +92,10 @@ describe('generateSQLInsert', () => {
       columns: [
         { id: 'col1', name: 'name', originalName: 'name', dataType: 'string', isPinned: false },
       ],
-      rows: [
-        { id: 'row1', cells: { col1: 'O\'Brien' } },
-      ],
+      rows: [{ id: 'row1', cells: { col1: "O'Brien" } }],
     }
     const result = generateSQLInsert(dataWithQuotes, 'users', 'original')
-    expect(result).toContain('\'O\'\'Brien\'')
+    expect(result).toContain("'O''Brien'")
   })
 
   it('should handle NULL values', () => {
@@ -96,9 +103,7 @@ describe('generateSQLInsert', () => {
       columns: [
         { id: 'col1', name: 'name', originalName: 'name', dataType: 'string', isPinned: false },
       ],
-      rows: [
-        { id: 'row1', cells: { col1: null } },
-      ],
+      rows: [{ id: 'row1', cells: { col1: null } }],
     }
     const result = generateSQLInsert(dataWithNull, 'users', 'original')
     expect(result).toContain('NULL')
@@ -142,7 +147,7 @@ describe('generateSQLUpdate', () => {
 
   it('should handle multiple key columns', () => {
     const result = generateSQLUpdate(testData, 'users', ['col1', 'col2'], 'original')
-    expect(result).toContain('WHERE `id` = 1 AND `name` = \'Alice\'')
+    expect(result).toContain("WHERE `id` = 1 AND `name` = 'Alice'")
   })
 })
 
@@ -241,9 +246,7 @@ describe('exportToCSV', () => {
       columns: [
         { id: 'col1', name: 'name', originalName: 'name', dataType: 'string', isPinned: false },
       ],
-      rows: [
-        { id: 'row1', cells: { col1: 'Smith, John' } },
-      ],
+      rows: [{ id: 'row1', cells: { col1: 'Smith, John' } }],
     }
     const result = exportToCSV(dataWithCommas, 'original')
     const lines = result.split('\n')
@@ -255,9 +258,7 @@ describe('exportToCSV', () => {
       columns: [
         { id: 'col1', name: 'text', originalName: 'text', dataType: 'string', isPinned: false },
       ],
-      rows: [
-        { id: 'row1', cells: { col1: 'say "hello"' } },
-      ],
+      rows: [{ id: 'row1', cells: { col1: 'say "hello"' } }],
     }
     const result = exportToCSV(dataWithQuotes, 'original')
     const lines = result.split('\n')
@@ -269,9 +270,7 @@ describe('exportToCSV', () => {
       columns: [
         { id: 'col1', name: 'value', originalName: 'value', dataType: 'string', isPinned: false },
       ],
-      rows: [
-        { id: 'row1', cells: { col1: null } },
-      ],
+      rows: [{ id: 'row1', cells: { col1: null } }],
     }
     const result = exportToCSV(dataWithNull, 'original')
     const lines = result.split('\n')
@@ -281,12 +280,22 @@ describe('exportToCSV', () => {
   it('should use snake_case column names when enabled', () => {
     const dataWithSpaces: TableData = {
       columns: [
-        { id: 'col1', name: 'user_id', originalName: 'User ID', dataType: 'integer', isPinned: false },
-        { id: 'col2', name: 'full_name', originalName: 'Full Name', dataType: 'string', isPinned: false },
+        {
+          id: 'col1',
+          name: 'user_id',
+          originalName: 'User ID',
+          dataType: 'integer',
+          isPinned: false,
+        },
+        {
+          id: 'col2',
+          name: 'full_name',
+          originalName: 'Full Name',
+          dataType: 'string',
+          isPinned: false,
+        },
       ],
-      rows: [
-        { id: 'row1', cells: { col1: 1, col2: 'Alice' } },
-      ],
+      rows: [{ id: 'row1', cells: { col1: 1, col2: 'Alice' } }],
     }
     const result = exportToCSV(dataWithSpaces, 'snake_case')
     const lines = result.split('\n')
@@ -356,12 +365,22 @@ describe('exportToExcel', () => {
     const { exportToExcel } = await import('./export')
     const dataWithSpaces: TableData = {
       columns: [
-        { id: 'col1', name: 'user_id', originalName: 'User ID', dataType: 'integer', isPinned: false },
-        { id: 'col2', name: 'full_name', originalName: 'Full Name', dataType: 'string', isPinned: false },
+        {
+          id: 'col1',
+          name: 'user_id',
+          originalName: 'User ID',
+          dataType: 'integer',
+          isPinned: false,
+        },
+        {
+          id: 'col2',
+          name: 'full_name',
+          originalName: 'Full Name',
+          dataType: 'string',
+          isPinned: false,
+        },
       ],
-      rows: [
-        { id: 'row1', cells: { col1: 1, col2: 'Alice' } },
-      ],
+      rows: [{ id: 'row1', cells: { col1: 1, col2: 'Alice' } }],
     }
     const result = await exportToExcel(dataWithSpaces, 'snake_case')
     expect(result).toBeInstanceOf(Blob)
@@ -407,9 +426,7 @@ describe('exportToMarkdown', () => {
       columns: [
         { id: 'col1', name: 'text', originalName: 'text', dataType: 'string', isPinned: false },
       ],
-      rows: [
-        { id: 'row1', cells: { col1: 'a|b' } },
-      ],
+      rows: [{ id: 'row1', cells: { col1: 'a|b' } }],
     }
     const result = exportToMarkdown(dataWithPipes, 'original')
     const lines = result.split('\n')
@@ -421,9 +438,7 @@ describe('exportToMarkdown', () => {
       columns: [
         { id: 'col1', name: 'text', originalName: 'text', dataType: 'string', isPinned: false },
       ],
-      rows: [
-        { id: 'row1', cells: { col1: 'line1\nline2' } },
-      ],
+      rows: [{ id: 'row1', cells: { col1: 'line1\nline2' } }],
     }
     const result = exportToMarkdown(dataWithNewlines, 'original')
     const lines = result.split('\n')
@@ -435,9 +450,7 @@ describe('exportToMarkdown', () => {
       columns: [
         { id: 'col1', name: 'value', originalName: 'value', dataType: 'string', isPinned: false },
       ],
-      rows: [
-        { id: 'row1', cells: { col1: null } },
-      ],
+      rows: [{ id: 'row1', cells: { col1: null } }],
     }
     const result = exportToMarkdown(dataWithNull, 'original')
     const lines = result.split('\n')
@@ -447,12 +460,22 @@ describe('exportToMarkdown', () => {
   it('should use snake_case column names when enabled', () => {
     const dataWithSpaces: TableData = {
       columns: [
-        { id: 'col1', name: 'user_id', originalName: 'User ID', dataType: 'integer', isPinned: false },
-        { id: 'col2', name: 'full_name', originalName: 'Full Name', dataType: 'string', isPinned: false },
+        {
+          id: 'col1',
+          name: 'user_id',
+          originalName: 'User ID',
+          dataType: 'integer',
+          isPinned: false,
+        },
+        {
+          id: 'col2',
+          name: 'full_name',
+          originalName: 'Full Name',
+          dataType: 'string',
+          isPinned: false,
+        },
       ],
-      rows: [
-        { id: 'row1', cells: { col1: 1, col2: 'Alice' } },
-      ],
+      rows: [{ id: 'row1', cells: { col1: 1, col2: 'Alice' } }],
     }
     const result = exportToMarkdown(dataWithSpaces, 'snake_case')
     const lines = result.split('\n')

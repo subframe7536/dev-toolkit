@@ -1,15 +1,15 @@
-import type { JSONError } from '#/utils/json/formatter'
-import type { CaseStyle } from '#/utils/json/key-converter'
+import { Button, Icon, Select, Slider, Switch, Textarea } from 'moraine'
+import { createRoute } from 'solid-file-router'
+import { createEffect, createSignal, on, Show } from 'solid-js'
+import { toast } from 'solid-toaster'
 
 import { ClearButton } from '#/components/clear-button'
 import { CopyButton } from '#/components/copy-button'
 import { DownloadButton } from '#/components/download-button'
-import { Button, Icon, Select, Slider, Switch, Textarea } from 'moraine'
+import type { JSONError } from '#/utils/json/formatter'
 import { formatJSON, formatJSONWithNested, repairJSON, sortKeys } from '#/utils/json/formatter'
+import type { CaseStyle } from '#/utils/json/key-converter'
 import { convertKeys } from '#/utils/json/key-converter'
-import { createRoute } from 'solid-file-router'
-import { createEffect, createSignal, on, Show } from 'solid-js'
-import { toast } from 'solid-toaster'
 
 export default createRoute({
   info: {
@@ -17,12 +17,21 @@ export default createRoute({
     description: 'Format, minify, sort, and convert JSON keys with automatic repair',
     category: 'JSON',
     icon: 'lucide:braces',
-    tags: ['json', 'formatter', 'minify', 'beautify', 'camelCase', 'snake_case', 'kebab-case', 'naming'],
+    tags: [
+      'json',
+      'formatter',
+      'minify',
+      'beautify',
+      'camelCase',
+      'snake_case',
+      'kebab-case',
+      'naming',
+    ],
   },
   component: JSONFormatter,
 })
 
-const caseOptions: Array<{ value: CaseStyle, label: string }> = [
+const caseOptions: Array<{ value: CaseStyle; label: string }> = [
   { value: 'As is', label: 'Keep Current' },
   { value: 'camelCase', label: 'camelCase' },
   { value: 'snake_case', label: 'snake_case' },
@@ -76,8 +85,13 @@ function JSONFormatter() {
         const result = convertKeys(repairedInput, targetCase(), false)
         if (result.success && result.output) {
           const formatted = parseNested()
-            ? formatJSONWithNested(result.output, { sortKeys: shouldSortKeys(), indent: indentSize })
-            : shouldSortKeys() ? sortKeys(result.output, indentSize) : formatJSON(result.output, { indent: indentSize })
+            ? formatJSONWithNested(result.output, {
+                sortKeys: shouldSortKeys(),
+                indent: indentSize,
+              })
+            : shouldSortKeys()
+              ? sortKeys(result.output, indentSize)
+              : formatJSON(result.output, { indent: indentSize })
           setOutput(formatted)
           return
         }
@@ -85,28 +99,36 @@ function JSONFormatter() {
 
       // Apply nested parsing if enabled
       if (parseNested()) {
-        const formatted = formatJSONWithNested(repairedInput, { sortKeys: shouldSortKeys(), indent: indentSize })
+        const formatted = formatJSONWithNested(repairedInput, {
+          sortKeys: shouldSortKeys(),
+          indent: indentSize,
+        })
         setOutput(formatted)
         return
       }
 
       // Apply sort keys if enabled
-      const formatted = shouldSortKeys() ? sortKeys(repairedInput, indentSize) : formatJSON(repairedInput, { indent: indentSize })
+      const formatted = shouldSortKeys()
+        ? sortKeys(repairedInput, indentSize)
+        : formatJSON(repairedInput, { indent: indentSize })
       setOutput(formatted)
     } catch (err) {
       const error = err as JSONError
-      const message = error.line && error.column
-        ? `${error.message} (Line ${error.line}, Column ${error.column})`
-        : error.message
+      const message =
+        error.line && error.column
+          ? `${error.message} (Line ${error.line}, Column ${error.column})`
+          : error.message
       toast.error('Invalid JSON', { description: message })
       setOutput('')
     }
   }
 
   // Auto-format on input change
-  createEffect(on([input, shouldSortKeys, parseNested, targetCase, autoRepair, indent], () => {
-    processJSON()
-  }))
+  createEffect(
+    on([input, shouldSortKeys, parseNested, targetCase, autoRepair, indent], () => {
+      processJSON()
+    }),
+  )
 
   const handleClear = () => {
     setInput('')
@@ -119,7 +141,11 @@ function JSONFormatter() {
         <div class="space-y-4">
           <div class="text-sm font-medium">Options</div>
           <div class="flex flex-wrap gap-4">
-            <Switch checked={autoRepair()} onChange={setAutoRepair} label="Auto repair JSON string" />
+            <Switch
+              checked={autoRepair()}
+              onChange={setAutoRepair}
+              label="Auto repair JSON string"
+            />
             <Switch checked={shouldSortKeys()} onChange={setShouldSortKeys} label="Sort Keys" />
             <Switch checked={parseNested()} onChange={setParseNested} label="Parse Nested JSON" />
           </div>
@@ -130,7 +156,6 @@ function JSONFormatter() {
             value={targetCase()}
             onChange={setTargetCase}
             options={caseOptions}
-            disallowEmptySelection
             classes={{ root: 'w-50' }}
           />
         </div>
@@ -138,7 +163,7 @@ function JSONFormatter() {
           <label class="text-sm font-medium">Indent Size</label>
           <Slider
             value={[indent()]}
-            onChange={value => setIndent(value[0])}
+            onChange={(value) => setIndent(value[0])}
             min={2}
             max={8}
             step={2}
@@ -154,13 +179,10 @@ function JSONFormatter() {
               classes={{ input: 'text-sm font-mono h-96 resize-none' }}
               placeholder="Paste your JSON here..."
               value={input()}
-              onInput={e => setInput(e.currentTarget.value)}
+              onInput={(e) => setInput(e.currentTarget.value)}
             />
           </div>
-          <ClearButton
-            onClear={handleClear}
-            disabled={!input() && !output()}
-          />
+          <ClearButton onClear={handleClear} disabled={!input() && !output()} />
         </div>
 
         <div class="space-y-4">
@@ -168,7 +190,7 @@ function JSONFormatter() {
             <label class="text-sm font-medium">Output</label>
             <Button
               variant="secondary"
-              size="icon"
+              size="icon-md"
               classes={{ root: ['right-2 top-9 absolute', !output() && 'hidden'] }}
               onClick={() => setIsFullscreen(true)}
             >
@@ -182,11 +204,7 @@ function JSONFormatter() {
             />
           </div>
           <div class="flex gap-2">
-            <CopyButton
-              content={output()}
-              variant="secondary"
-              disabled={!output()}
-            />
+            <CopyButton content={output()} variant="secondary" disabled={!output()} />
             <DownloadButton
               content={output()}
               filename="formatted.json"
@@ -201,7 +219,10 @@ function JSONFormatter() {
         <div class="p-4 bg-background/95 flex flex-col gap-4 inset-0 fixed z-50 overflow-hidden">
           <div class="flex items-center justify-between">
             <h2 class="text-lg font-semibold">Formatted JSON (Fullscreen)</h2>
-            <button class="py-1 rounded size-7 hover:bg-primary/90" onClick={() => setIsFullscreen(false)}>
+            <button
+              class="py-1 rounded size-7 hover:bg-primary/90"
+              onClick={() => setIsFullscreen(false)}
+            >
               <Icon name="lucide:x" />
             </button>
           </div>

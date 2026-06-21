@@ -1,7 +1,7 @@
-import type { MatchResult } from '#/utils/regex/types'
+import { createMemo, For, Show } from 'solid-js'
 
 import { useRegexContext } from '#/contexts/regex-context'
-import { createMemo, For, Show } from 'solid-js'
+import type { MatchResult } from '#/utils/regex/types'
 
 // Color palette for capture groups - distinct, accessible colors
 const CAPTURE_GROUP_COLORS = [
@@ -144,9 +144,7 @@ export function TestingPanel() {
   let highlightRef: HTMLDivElement | undefined
 
   // Build highlight segments reactively
-  const segments = createMemo(() =>
-    buildHighlightSegments(store.testText, store.matches),
-  )
+  const segments = createMemo(() => buildHighlightSegments(store.testText, store.matches))
 
   // Check if there are any matches
   const hasMatches = createMemo(() => store.matches.length > 0)
@@ -215,7 +213,12 @@ export function TestingPanel() {
   return (
     <div class="space-y-2">
       <div class="flex items-center justify-between">
-        <label id="test-text-label" class="text-sm text-muted-foreground tracking-wide font-medium uppercase">Test String</label>
+        <label
+          id="test-text-label"
+          class="text-sm text-muted-foreground tracking-wide font-medium uppercase"
+        >
+          Test String
+        </label>
         <div class="text-xs text-muted-foreground">
           {/* Match count only - execution time moved to pattern header */}
           <Show when={hasInput()}>
@@ -236,16 +239,18 @@ export function TestingPanel() {
       <div class="relative">
         {/* Highlight overlay - hidden from screen readers */}
         <div
-          ref={highlightRef}
+          ref={(element) => (highlightRef = element)}
           class="text-sm leading-relaxed font-mono p-(2 3) border border-transparent rounded-md whitespace-pre-wrap break-words inset-0 absolute z-1 overflow-hidden"
           onClick={handleHighlightClick}
           aria-hidden="true"
         >
           <For each={segments()}>
-            {segment => (
+            {(segment) => (
               <span
                 class={`${getSegmentClass(segment, store.selectedMatchIndex)}  ${
-                  segment.type === 'match' ? 'cursor-pointer hover:opacity-80 transition-opacity' : ''
+                  segment.type === 'match'
+                    ? 'cursor-pointer hover:opacity-80 transition-opacity'
+                    : ''
                 }`}
                 data-match-index={segment.matchIndex}
                 data-group-index={segment.groupIndex}
@@ -258,16 +263,16 @@ export function TestingPanel() {
 
         {/* Textarea input */}
         <textarea
-          ref={textareaRef}
+          ref={(element) => (textareaRef = element)}
           placeholder="Enter text to test your regex against..."
           class="text-sm leading-relaxed font-mono p-(2 3) border border-input rounded-md h-64 w-full resize-y relative z-10 focus:(outline-none ring-2 ring-ring)"
           style={{
-            'background': store.testText ? 'transparent' : undefined,
-            'color': store.testText ? 'transparent' : undefined,
+            background: store.testText ? 'transparent' : undefined,
+            color: store.testText ? 'transparent' : undefined,
             'caret-color': 'var(--foreground)',
           }}
           value={store.testText}
-          onInput={e => actions.setTestText(e.currentTarget.value)}
+          onInput={(e) => actions.setTestText(e.currentTarget.value)}
           onScroll={handleScroll}
           onKeyDown={handleKeyDown}
           aria-label="Test text input"

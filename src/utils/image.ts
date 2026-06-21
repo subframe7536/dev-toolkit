@@ -63,7 +63,14 @@ async function convertFromSVG(
     options.maintainAspectRatio ?? true,
   )
 
-  return renderToCanvas(img, width, height, targetFormat, options.quality ?? 0.92, options.svgBackgroundColor)
+  return renderToCanvas(
+    img,
+    width,
+    height,
+    targetFormat,
+    options.quality ?? 0.92,
+    options.svgBackgroundColor,
+  )
 }
 
 /**
@@ -137,7 +144,7 @@ function calculateDimensions(
   targetWidth?: number,
   targetHeight?: number,
   maintainAspectRatio = true,
-): { width: number, height: number } {
+): { width: number; height: number } {
   if (!targetWidth && !targetHeight) {
     return { width: originalWidth, height: originalHeight }
   }
@@ -238,10 +245,14 @@ function getImageFormat(mimeType: string): ImageFormat {
  */
 export function getMimeType(format: ImageFormat): string {
   switch (format) {
-    case 'png': return 'image/png'
-    case 'jpg': return 'image/jpeg'
-    case 'webp': return 'image/webp'
-    case 'svg': return 'image/svg+xml'
+    case 'png':
+      return 'image/png'
+    case 'jpg':
+      return 'image/jpeg'
+    case 'webp':
+      return 'image/webp'
+    case 'svg':
+      return 'image/svg+xml'
   }
 }
 

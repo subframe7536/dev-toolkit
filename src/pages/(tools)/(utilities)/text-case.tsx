@@ -1,14 +1,14 @@
-import type { TextCaseStyle } from '#/utils/text-case'
+import { Textarea } from 'moraine'
+import { createRoute } from 'solid-file-router'
+import { createMemo, createSignal, For } from 'solid-js'
 
 import { Card } from '#/components/card'
 import { ClearButton } from '#/components/clear-button'
 import { CopyButton } from '#/components/copy-button'
-import { Textarea } from 'moraine'
+import type { TextCaseStyle } from '#/utils/text-case'
 import { convertTextCase } from '#/utils/text-case'
-import { createRoute } from 'solid-file-router'
-import { createMemo, createSignal, For } from 'solid-js'
 
-const CASE_STYLES: Array<{ value: TextCaseStyle, label: string, example: string }> = [
+const CASE_STYLES: Array<{ value: TextCaseStyle; label: string; example: string }> = [
   { value: 'camelCase', label: 'camelCase', example: 'helloWorld' },
   { value: 'PascalCase', label: 'PascalCase', example: 'HelloWorld' },
   { value: 'snake_case', label: 'snake_case', example: 'hello_world' },
@@ -64,8 +64,8 @@ function TextCase() {
       <div class="gap-4 grid grid-cols-1 2xl:grid-cols-4 lg:grid-cols-2 xl:grid-cols-3">
         <For each={CASE_STYLES}>
           {(style) => {
-            const converted = createMemo(
-              () => input() ? convertTextCase(input(), style.value) : '...',
+            const converted = createMemo(() =>
+              input() ? convertTextCase(input(), style.value) : '...',
             )
 
             return (
@@ -73,7 +73,7 @@ function TextCase() {
                 title={style.label}
                 class="flex flex-col relative"
                 description={`Example: ${style.example}`}
-                content={(
+                content={
                   <>
                     <div class="font-mono p-3 rounded-md bg-muted min-h-16 break-all">
                       {converted()}
@@ -87,10 +87,10 @@ function TextCase() {
                       size="sm"
                     />
                   </>
-                )}
+                }
               />
             )
-          } }
+          }}
         </For>
       </div>
     </div>

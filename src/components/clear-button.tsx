@@ -1,6 +1,5 @@
-import { Show } from 'solid-js'
-
 import { Button, Icon } from 'moraine'
+import { Show } from 'solid-js'
 
 interface ClearButtonProps {
   onClear: () => void

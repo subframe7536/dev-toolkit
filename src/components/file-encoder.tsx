@@ -1,9 +1,10 @@
-import { CopyButton } from '#/components/copy-button'
-import { DownloadButton } from '#/components/download-button'
-import { FileUpload } from '#/components/file-upload'
 import { Switch } from 'moraine'
 import { createMemo, createSignal, Show } from 'solid-js'
 import { toast } from 'solid-toaster'
+
+import { CopyButton } from '#/components/copy-button'
+import { DownloadButton } from '#/components/download-button'
+import { FileUpload } from '#/components/file-upload'
 
 import { ClearButton } from './clear-button'
 
@@ -34,7 +35,9 @@ export function FileEncoder(props: FileEncoderProps) {
       const result = await props.onEncode(file)
       setOutput(result)
     } catch (error) {
-      toast.error(`Failed to encode file: ${error instanceof Error ? error.message : 'Unknown error'}`)
+      toast.error(
+        `Failed to encode file: ${error instanceof Error ? error.message : 'Unknown error'}`,
+      )
       setOutput('')
     }
   }
@@ -62,10 +65,7 @@ export function FileEncoder(props: FileEncoderProps) {
         <Show when={file()}>
           <div class="p-4 border rounded-lg bg-input/50 flex flex-wrap gap-4 w-fit items-center">
             <span>{file()?.name}</span>
-            <ClearButton
-              onClear={clearFile}
-              disabled={!file() && !output()}
-            />
+            <ClearButton onClear={clearFile} disabled={!file() && !output()} />
           </div>
         </Show>
       </div>

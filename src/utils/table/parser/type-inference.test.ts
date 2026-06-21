@@ -103,11 +103,13 @@ describe('inferDataType', () => {
     })
 
     it('should detect long text strings', () => {
-      expect(inferDataType([
-        'This is a long text string with multiple words',
-        'Another long string for testing purposes',
-        'Yet another string to verify string detection',
-      ])).toBe('string')
+      expect(
+        inferDataType([
+          'This is a long text string with multiple words',
+          'Another long string for testing purposes',
+          'Yet another string to verify string detection',
+        ]),
+      ).toBe('string')
     })
   })
 })

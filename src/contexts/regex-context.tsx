@@ -1,9 +1,22 @@
-import type { MatchResult, ParseError, RegexFlags, ReplacementResult, TextValidationResult, ValidationMode } from '#/utils/regex/types'
 import type { ParentProps } from 'solid-js'
-
-import { findMatches, flagsToString, replaceMatches, validatePattern, validateText } from '#/utils/regex/match-engine'
 import { batch, createContext, untrack, useContext } from 'solid-js'
 import { createStore } from 'solid-js/store'
+
+import {
+  findMatches,
+  flagsToString,
+  replaceMatches,
+  validatePattern,
+  validateText,
+} from '#/utils/regex/match-engine'
+import type {
+  MatchResult,
+  ParseError,
+  RegexFlags,
+  ReplacementResult,
+  TextValidationResult,
+  ValidationMode,
+} from '#/utils/regex/types'
 
 export interface RegexStore {
   pattern: string
@@ -94,7 +107,12 @@ export function RegexProvider(props: ParentProps) {
   }
 
   // Helper function to update validation result
-  const updateValidation = (pattern: string, flags: RegexFlags, text: string, mode: ValidationMode) => {
+  const updateValidation = (
+    pattern: string,
+    flags: RegexFlags,
+    text: string,
+    mode: ValidationMode,
+  ) => {
     if (!pattern || !text) {
       setStore('validationResult', undefined)
       return
@@ -104,7 +122,12 @@ export function RegexProvider(props: ParentProps) {
   }
 
   // Helper function to update replacement result
-  const updateReplacement = (pattern: string, flags: RegexFlags, text: string, replacement: string) => {
+  const updateReplacement = (
+    pattern: string,
+    flags: RegexFlags,
+    text: string,
+    replacement: string,
+  ) => {
     if (!pattern || !text) {
       setStore('replacementResult', undefined)
       return
@@ -231,7 +254,7 @@ export function RegexProvider(props: ParentProps) {
       switch (selectedExportLanguage) {
         case 'javascript':
           if (flagString) {
-            return `const regex = new RegExp('${pattern.replace(/'/g, '\\\'')}', '${flagString}');`
+            return `const regex = new RegExp('${pattern.replace(/'/g, "\\'")}', '${flagString}');`
           }
           return `const regex = /${pattern.replace(/\//g, '\\/')}/;`
 
@@ -240,13 +263,20 @@ export function RegexProvider(props: ParentProps) {
             .split('')
             .map((flag) => {
               switch (flag) {
-                case 'g': return '' // Python doesn't have global flag
-                case 'i': return 're.IGNORECASE'
-                case 'm': return 're.MULTILINE'
-                case 's': return 're.DOTALL'
-                case 'u': return 're.UNICODE'
-                case 'y': return '' // Python doesn't have sticky flag
-                default: return ''
+                case 'g':
+                  return '' // Python doesn't have global flag
+                case 'i':
+                  return 're.IGNORECASE'
+                case 'm':
+                  return 're.MULTILINE'
+                case 's':
+                  return 're.DOTALL'
+                case 'u':
+                  return 're.UNICODE'
+                case 'y':
+                  return '' // Python doesn't have sticky flag
+                default:
+                  return ''
               }
             })
             .filter(Boolean)
@@ -263,11 +293,16 @@ export function RegexProvider(props: ParentProps) {
             .split('')
             .map((flag) => {
               switch (flag) {
-                case 'i': return 'Pattern.CASE_INSENSITIVE'
-                case 'm': return 'Pattern.MULTILINE'
-                case 's': return 'Pattern.DOTALL'
-                case 'u': return 'Pattern.UNICODE_CASE'
-                default: return ''
+                case 'i':
+                  return 'Pattern.CASE_INSENSITIVE'
+                case 'm':
+                  return 'Pattern.MULTILINE'
+                case 's':
+                  return 'Pattern.DOTALL'
+                case 'u':
+                  return 'Pattern.UNICODE_CASE'
+                default:
+                  return ''
               }
             })
             .filter(Boolean)
@@ -323,9 +358,5 @@ export function RegexProvider(props: ParentProps) {
     actions,
   }
 
-  return (
-    <RegexContext.Provider value={contextValue}>
-      {props.children}
-    </RegexContext.Provider>
-  )
+  return <RegexContext.Provider value={contextValue}>{props.children}</RegexContext.Provider>
 }

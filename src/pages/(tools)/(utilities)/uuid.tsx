@@ -1,9 +1,10 @@
-import { ClearButton } from '#/components/clear-button'
-import { CopyButton } from '#/components/copy-button'
 import { Button, Icon, InputNumber, Tabs } from 'moraine'
 import { createRoute } from 'solid-file-router'
 import { createSignal, For, onMount, Show } from 'solid-js'
 import { toast } from 'solid-toaster'
+
+import { ClearButton } from '#/components/clear-button'
+import { CopyButton } from '#/components/copy-button'
 
 const PRESET_COUNTS = [1, 5, 10, 15, 20] as const
 
@@ -94,10 +95,7 @@ function UUIDGenerator() {
         fallback={
           <div class="text-muted-foreground p-12 text-center border rounded-lg border-dashed flex items-center justify-center">
             <div>
-              <Icon
-                name="lucide:fingerprint"
-                classes={{ icon: 'mx-auto mb-4 opacity-50 size-12' }}
-              />
+              <Icon name="lucide:fingerprint" class="mx-auto mb-4 opacity-50 size-12" />
               <p>Click "Generate" to create UUIDs</p>
             </div>
           </div>

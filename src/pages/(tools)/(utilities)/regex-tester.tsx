@@ -1,3 +1,7 @@
+import { Button, Dialog, Icon, Tabs } from 'moraine'
+import { createRoute } from 'solid-file-router'
+import { ErrorBoundary, Suspense } from 'solid-js'
+
 import { DebugPanel } from '#/components/regex-tester/debug-panel'
 import { DetailsPanel } from '#/components/regex-tester/details-panel'
 import { ExplanationPanel } from '#/components/regex-tester/explanation-panel'
@@ -6,17 +10,17 @@ import { HelpPanel } from '#/components/regex-tester/help-panel'
 import { PatternLibraryDialog } from '#/components/regex-tester/pattern-library'
 import { RegexInputPanel } from '#/components/regex-tester/regex-input-panel'
 import { ReplacementPanel } from '#/components/regex-tester/replacement-panel'
-import { Button, Dialog, Icon, Tabs } from 'moraine'
 import { RegexProvider, useRegexContext } from '#/contexts'
-import { createRoute } from 'solid-file-router'
-import { ErrorBoundary, Suspense } from 'solid-js'
 
 // Error fallback component for graceful error handling
-function ErrorFallback(props: { error: Error, reset: () => void }) {
+function ErrorFallback(props: { error: Error; reset: () => void }) {
   return (
-    <div class="p-6 border border-red-200 rounded-lg bg-red-50 dark:border-red-800 dark:bg-red-950/30" role="alert">
+    <div
+      class="p-6 border border-red-200 rounded-lg bg-red-50 dark:border-red-800 dark:bg-red-950/30"
+      role="alert"
+    >
       <div class="flex gap-3 items-start">
-        <Icon name="lucide:alert-triangle" classes={{ icon: 'text-red-600 mt-0.5 size-5 dark:text-red-400' }} />
+        <Icon name="lucide:alert-triangle" class="text-red-600 mt-0.5 size-5 dark:text-red-400" />
         <div class="flex-1">
           <h3 class="text-red-800 font-medium dark:text-red-200">Something went wrong</h3>
           <p class="text-sm text-red-600 mt-1 dark:text-red-400">{props.error.message}</p>
@@ -52,7 +56,8 @@ function PanelSkeleton() {
 export default createRoute({
   info: {
     title: 'Regex Tester',
-    description: 'Test and debug regular expressions with real-time matching, detailed explanations, and code export',
+    description:
+      'Test and debug regular expressions with real-time matching, detailed explanations, and code export',
     category: 'Utilities',
     icon: 'lucide:regex',
     tags: ['regex', 'pattern', 'matching', 'testing', 'debugging'],
@@ -97,7 +102,11 @@ function RegexTester() {
 
             {/* Action buttons section */}
             <div class="mt-6 flex flex-wrap gap-3">
-              <Button variant="default" onClick={() => actions.toggleExportDialog(true)} leading="lucide:download">
+              <Button
+                variant="default"
+                onClick={() => actions.toggleExportDialog(true)}
+                leading="lucide:download"
+              >
                 Export Code
               </Button>
               <PatternLibraryDialog />
@@ -115,11 +124,13 @@ function RegexTester() {
               <Dialog
                 title="Regex Syntax Reference"
                 classes={{ content: 'max-h-[60vh] max-w-4xl overflow-y-auto' }}
-                body={<HelpPanel />}
               >
-                <Button variant="outline" leading="lucide:book-open">
-                  Reference
-                </Button>
+                <>
+                  <Button variant="outline" leading="lucide:book-open">
+                    Reference
+                  </Button>
+                  <HelpPanel />
+                </>
               </Dialog>
             </div>
           </div>

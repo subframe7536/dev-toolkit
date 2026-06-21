@@ -77,7 +77,7 @@ export function csvToJSON(input: string, hasHeaders?: boolean): ConversionResult
         success: false,
         error: {
           message: 'CSV parsing error',
-          details: parseResult.errors.map(e => e.message).join(', '),
+          details: parseResult.errors.map((e) => e.message).join(', '),
         },
       }
     }
@@ -245,8 +245,10 @@ export function detectFormat(input: string): 'json' | 'csv' | 'yaml' | 'query' |
   }
 
   // Check for JSON
-  if ((trimmed.startsWith('{') && trimmed.endsWith('}'))
-    || (trimmed.startsWith('[') && trimmed.endsWith(']'))) {
+  if (
+    (trimmed.startsWith('{') && trimmed.endsWith('}')) ||
+    (trimmed.startsWith('[') && trimmed.endsWith(']'))
+  ) {
     try {
       JSON.parse(trimmed)
       return 'json'
@@ -389,7 +391,7 @@ function formatAsJSObject(value: any, indent: number): string {
   }
 
   if (typeof value === 'string') {
-    return `'${value.replace(/'/g, '\\\'')}'`
+    return `'${value.replace(/'/g, "\\'")}'`
   }
 
   if (typeof value === 'number' || typeof value === 'boolean') {
@@ -400,7 +402,7 @@ function formatAsJSObject(value: any, indent: number): string {
     if (value.length === 0) {
       return '[]'
     }
-    const items = value.map(item => `${nextIndentStr}${formatAsJSObject(item, indent + 1)}`)
+    const items = value.map((item) => `${nextIndentStr}${formatAsJSObject(item, indent + 1)}`)
     return `[\n${items.join(',\n')}\n${indentStr}]`
   }
 
@@ -521,7 +523,9 @@ function generateJavaClass(value: any, className: string): string {
 
     fields.push(`  private ${javaType} ${fieldName};`)
     getters.push(`  public ${javaType} get${capitalizedKey}() {\n    return ${fieldName};\n  }`)
-    setters.push(`  public void set${capitalizedKey}(${javaType} ${fieldName}) {\n    this.${fieldName} = ${fieldName};\n  }`)
+    setters.push(
+      `  public void set${capitalizedKey}(${javaType} ${fieldName}) {\n    this.${fieldName} = ${fieldName};\n  }`,
+    )
   }
 
   return `public class ${className} {\n${fields.join('\n')}\n\n${getters.join('\n\n')}\n\n${setters.join('\n\n')}\n}`

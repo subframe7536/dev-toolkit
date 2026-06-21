@@ -58,7 +58,7 @@ export function convertParam(params: string): Param[] {
 
     let value = x.substring(0, valueEndIndex).trim()
     // Escape single quotes
-    value = value.replaceAll('\'', '\\\'')
+    value = value.replaceAll("'", "\\'")
 
     const typeEndIndex = x.lastIndexOf(')')
     const type = x.substring(valueEndIndex + 1, typeEndIndex < 0 ? x.length : typeEndIndex).trim()
@@ -120,7 +120,7 @@ export function fillSqlParams(sql: string, params: string): string {
 /**
  * Split MyBatis log into SQL template and parameters
  */
-export function splitSqlAndParams(input: string): { sql: string, params: string } {
+export function splitSqlAndParams(input: string): { sql: string; params: string } {
   const result = { sql: '', params: '' }
 
   // Find SQL start

@@ -1,6 +1,5 @@
-import type { Component } from 'solid-js'
-
 import { Button, Input } from 'moraine'
+import type { Component } from 'solid-js'
 import { Show } from 'solid-js'
 
 interface SvgOptionsProps {
@@ -36,7 +35,7 @@ export const SvgOptions: Component<SvgOptionsProps> = (props) => {
           <input
             type="color"
             value={props.backgroundColor || '#ffffff'}
-            onInput={e => props.onBackgroundColorChange(e.currentTarget.value)}
+            onInput={(e) => props.onBackgroundColorChange(e.currentTarget.value)}
             class="border rounded h-10 w-14 cursor-pointer"
           />
           <Input
@@ -54,7 +53,7 @@ export const SvgOptions: Component<SvgOptionsProps> = (props) => {
           <input
             type="color"
             value={props.fillColor || '#000000'}
-            onInput={e => props.onFillColorChange(e.currentTarget.value)}
+            onInput={(e) => props.onFillColorChange(e.currentTarget.value)}
             class="border rounded h-10 w-14 cursor-pointer"
           />
           <Input
@@ -72,7 +71,7 @@ export const SvgOptions: Component<SvgOptionsProps> = (props) => {
           <input
             type="color"
             value={props.strokeColor || '#000000'}
-            onInput={e => props.onStrokeColorChange(e.currentTarget.value)}
+            onInput={(e) => props.onStrokeColorChange(e.currentTarget.value)}
             class="border rounded h-10 w-14 cursor-pointer"
           />
           <Input

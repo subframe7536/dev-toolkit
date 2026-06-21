@@ -95,7 +95,7 @@ export interface RegexElement {
   type: string
   value: string
   description: string
-  position: { start: number, end: number }
+  position: { start: number; end: number }
 }
 
 export interface MatchEngine {

@@ -1,18 +1,33 @@
-import type { TableData } from '#/utils/table/types'
-
-import { CopyButton } from '#/components/copy-button'
-import { DownloadButton } from '#/components/download-button'
 import { Button, Checkbox, Dialog, Input, Select, Tabs, Textarea } from 'moraine'
-import { useTableEditorContext } from '#/contexts'
-import { downloadFile } from '#/utils/download'
-import { exportToCSV, exportToExcel, exportToJSON, exportToMarkdown, generateCreateTable, generateSQLInsert, generateSQLUpdate } from '#/utils/table/export'
 import { createEffect, createSignal, For, Show } from 'solid-js'
 import { toast } from 'solid-toaster'
 
-type ExportFormat = 'sql-insert' | 'sql-update' | 'create-table' | 'excel' | 'csv' | 'markdown' | 'json-array'
+import { CopyButton } from '#/components/copy-button'
+import { DownloadButton } from '#/components/download-button'
+import { useTableEditorContext } from '#/contexts'
+import { downloadFile } from '#/utils/download'
+import {
+  exportToCSV,
+  exportToExcel,
+  exportToJSON,
+  exportToMarkdown,
+  generateCreateTable,
+  generateSQLInsert,
+  generateSQLUpdate,
+} from '#/utils/table/export'
+import type { TableData } from '#/utils/table/types'
+
+type ExportFormat =
+  | 'sql-insert'
+  | 'sql-update'
+  | 'create-table'
+  | 'excel'
+  | 'csv'
+  | 'markdown'
+  | 'json-array'
 type NamePattern = 'snake_case' | 'camelCase' | 'original'
 
-const exportOptions: Array<{ value: ExportFormat, label: string }> = [
+const exportOptions: Array<{ value: ExportFormat; label: string }> = [
   { value: 'sql-insert', label: 'SQL INSERT' },
   { value: 'sql-update', label: 'SQL UPDATE' },
   { value: 'create-table', label: 'CREATE TABLE' },
@@ -22,7 +37,7 @@ const exportOptions: Array<{ value: ExportFormat, label: string }> = [
   { value: 'json-array', label: 'JSON Array' },
 ]
 
-const namePatternOptions: Array<{ value: NamePattern, label: string }> = [
+const namePatternOptions: Array<{ value: NamePattern; label: string }> = [
   { value: 'snake_case', label: 'snake_case' },
   { value: 'camelCase', label: 'camelCase' },
   { value: 'original', label: 'Original' },
@@ -52,17 +67,18 @@ export function ExportDialog() {
 
     const filteredData: TableData = {
       columns: visibleColumns,
-      rows: store.tableData.rows.map(row => ({
+      rows: store.tableData.rows.map((row) => ({
         ...row,
-        cells: Object.fromEntries(
-          visibleColumns.map(col => [col.id, row.cells[col.id]]),
-        ),
+        cells: Object.fromEntries(visibleColumns.map((col) => [col.id, row.cells[col.id]])),
       })),
     }
 
     const name = tableName().trim()
 
-    if (['sql-insert', 'sql-update', 'create-table'].includes(format) && (!name || !/^\w+$/.test(name))) {
+    if (
+      ['sql-insert', 'sql-update', 'create-table'].includes(format) &&
+      (!name || !/^\w+$/.test(name))
+    ) {
       setExportOutput('')
       return
     }
@@ -121,11 +137,9 @@ export function ExportDialog() {
 
     const filteredData: TableData = {
       columns: visibleColumns,
-      rows: store.tableData.rows.map(row => ({
+      rows: store.tableData.rows.map((row) => ({
         ...row,
-        cells: Object.fromEntries(
-          visibleColumns.map(col => [col.id, row.cells[col.id]]),
-        ),
+        cells: Object.fromEntries(visibleColumns.map((col) => [col.id, row.cells[col.id]])),
       })),
     }
 
@@ -182,14 +196,14 @@ export function ExportDialog() {
     <Dialog
       title="Export"
       description="Configure export settings and generate output"
-      body={(
+      body={
         <div class="space-y-6">
           <div class="gap-4 grid grid-cols-1 md:grid-cols-2">
             <div>
               <label class="text-sm font-medium">Table Name</label>
               <Input
                 value={tableName()}
-                onInput={e => setTableName(e.currentTarget.value)}
+                onInput={(e) => setTableName(e.currentTarget.value)}
                 placeholder="my_table"
                 classes={{ root: 'mt-1' }}
               />
@@ -200,7 +214,7 @@ export function ExportDialog() {
               <Select
                 value={exportFormat()}
                 onChange={setExportFormat}
-                options={exportOptions.map(o => ({ value: o.value, label: o.label }))}
+                options={exportOptions.map((o) => ({ value: o.value, label: o.label }))}
               />
             </div>
           </div>
@@ -209,17 +223,17 @@ export function ExportDialog() {
             <label class="text-muted-foreground font-500">Column Naming Pattern</label>
             <Tabs
               value={namePattern()}
-              onChange={value => setNamePattern(value as NamePattern)}
-              items={namePatternOptions.map(o => ({ value: o.value, label: o.label }))}
+              onChange={(value) => setNamePattern(value as NamePattern)}
+              items={namePatternOptions.map((o) => ({ value: o.value, label: o.label }))}
             />
           </div>
 
           <Show when={exportFormat() === 'sql-update'}>
             <div>
               <label class="text-sm font-medium">Key Columns (for UPDATE)</label>
-              <div class="p-2 border rounded-md bg-input flex flex-row flex-wrap gap-3 max-h-32 overflow-y-auto mt-1">
+              <div class="mt-1 p-2 border rounded-md bg-input flex flex-row flex-wrap gap-3 max-h-32 overflow-y-auto">
                 <For each={computed.visibleColumns()}>
-                  {col => (
+                  {(col) => (
                     <Checkbox
                       classes={{ root: 'flex gap-2 items-center' }}
                       checked={keyColumns().includes(col.id)}
@@ -227,7 +241,7 @@ export function ExportDialog() {
                         if (checked) {
                           setKeyColumns([...keyColumns(), col.id])
                         } else {
-                          setKeyColumns(keyColumns().filter(id => id !== col.id))
+                          setKeyColumns(keyColumns().filter((id) => id !== col.id))
                         }
                       }}
                       label={col.name}
@@ -243,11 +257,7 @@ export function ExportDialog() {
               <label class="text-sm font-medium">Output</label>
               <div class="flex gap-2">
                 <Show when={exportFormat() !== 'excel'}>
-                  <CopyButton
-                    content={exportOutput()}
-                    size="sm"
-                    variant="outline"
-                  />
+                  <CopyButton content={exportOutput()} size="sm" variant="outline" />
                 </Show>
                 <DownloadButton
                   content={exportOutput()}
@@ -268,11 +278,9 @@ export function ExportDialog() {
             </Show>
           </div>
         </div>
-      )}
+      }
     >
-      <Button leading="i-lucide-download">
-        Export
-      </Button>
+      <Button leading="i-lucide-download">Export</Button>
     </Dialog>
   )
 }

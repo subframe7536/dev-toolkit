@@ -1,9 +1,10 @@
-import { ClearButton } from '#/components/clear-button'
-import { CopyButton } from '#/components/copy-button'
-import { fillSqlParams, splitSqlAndParams } from '#/utils/sql'
 import { Button, Textarea } from 'moraine'
 import { createRoute } from 'solid-file-router'
 import { createEffect, createSignal } from 'solid-js'
+
+import { ClearButton } from '#/components/clear-button'
+import { CopyButton } from '#/components/copy-button'
+import { fillSqlParams, splitSqlAndParams } from '#/utils/sql'
 
 export default createRoute({
   info: {

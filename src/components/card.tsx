@@ -1,6 +1,5 @@
+import { Card as MoraineCard, cn, Icon } from 'moraine'
 import type { JSXElement } from 'solid-js'
-
-import { cn, Icon } from 'moraine'
 import { Show } from 'solid-js'
 
 type CardProps = {
@@ -14,30 +13,23 @@ type CardProps = {
 
 export function Card(props: CardProps) {
   return (
-    <div
-      class={cn('rounded-lg b-(1 border) bg-card text-card-foreground shadow-sm', props.class)}
-    >
-      <div class="p-6 flex flex-col gap-2">
+    <MoraineCard
+      title={
         <div class="flex gap-2 items-center">
           <Show when={props.icon}>
-            <Icon name={props.icon as any} classes={{ icon: 'text-muted-foreground size-6' }} />
+            <Icon name={props.icon as any} class="text-muted-foreground size-6" />
           </Show>
-          <h3 class="text-lg leading-none tracking-tight font-semibold">{props.title}</h3>
+          <span>{props.title}</span>
         </div>
-        <Show when={props.description}>
-          <p class="text-sm text-muted-foreground">
-            {props.description}
-          </p>
-        </Show>
-      </div>
-      <Show when={props.content}>
-        <div class="p-6 pt-0">{props.content}</div>
-      </Show>
-      <Show when={props.footer}>
-        <div class="p-6 pt-0 flex items-center">
-          {props.footer}
-        </div>
-      </Show>
-    </div>
+      }
+      description={props.description}
+      footer={props.footer}
+      classes={{
+        root: cn('shadow-sm', props.class),
+        title: 'text-lg leading-none tracking-tight font-semibold',
+      }}
+    >
+      {props.content}
+    </MoraineCard>
   )
 }

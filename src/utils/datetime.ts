@@ -21,10 +21,7 @@ export interface DateTimeManipulation {
 /**
  * Format date using Intl.DateTimeFormat
  */
-export function formatDateTime(
-  date: Date,
-  options: DateTimeFormat,
-): string {
+export function formatDateTime(date: Date, options: DateTimeFormat): string {
   const { locale, dateStyle, timeStyle, timeZone } = options
 
   const formatter = new Intl.DateTimeFormat(locale, {
@@ -91,10 +88,7 @@ export function parseManipulation(input: string): DateTimeManipulation {
 /**
  * Manipulate date by adding/subtracting time units
  */
-export function manipulateDateTime(
-  date: Date,
-  manipulation: DateTimeManipulation,
-): Date {
+export function manipulateDateTime(date: Date, manipulation: DateTimeManipulation): Date {
   const result = new Date(date)
 
   if (manipulation.years) {
@@ -122,10 +116,7 @@ export function manipulateDateTime(
 /**
  * Manipulate date using string notation
  */
-export function manipulateDateTimeString(
-  date: Date,
-  manipulationString: string,
-): Date {
+export function manipulateDateTimeString(date: Date, manipulationString: string): Date {
   const manipulation = parseManipulation(manipulationString)
   return manipulateDateTime(date, manipulation)
 }

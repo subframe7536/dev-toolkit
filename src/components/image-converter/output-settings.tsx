@@ -1,10 +1,10 @@
-import type { ImageFormat } from '#/utils/image'
-import type { Component } from 'solid-js'
-
 import { Input, Select, Slider, Switch } from 'moraine'
+import type { Component } from 'solid-js'
 import { Show } from 'solid-js'
 
-const FORMAT_OPTIONS: { value: ImageFormat, label: string }[] = [
+import type { ImageFormat } from '#/utils/image'
+
+const FORMAT_OPTIONS: { value: ImageFormat; label: string }[] = [
   { value: 'png', label: 'PNG' },
   { value: 'jpg', label: 'JPEG' },
   { value: 'webp', label: 'WebP' },
@@ -35,8 +35,8 @@ export const OutputSettings: Component<OutputSettingsProps> = (props) => {
         <label class="text-sm font-medium">Output Format</label>
         <Select
           value={props.targetFormat}
-          onChange={props.onFormatChange}
-          options={FORMAT_OPTIONS.map(o => ({ value: o.value, label: o.label }))}
+          onChange={(value) => value && props.onFormatChange(value)}
+          options={FORMAT_OPTIONS.map((o) => ({ value: o.value, label: o.label }))}
         />
       </div>
 
@@ -45,7 +45,7 @@ export const OutputSettings: Component<OutputSettingsProps> = (props) => {
           <label class="text-sm font-medium">{`${props.targetFormat.toUpperCase()} Quality: ${props.quality}`}</label>
           <Slider
             value={[props.quality]}
-            onChange={value => props.onQualityChange(value[0])}
+            onChange={(value) => props.onQualityChange(value[0])}
             min={1}
             max={100}
             step={1}
@@ -53,11 +53,7 @@ export const OutputSettings: Component<OutputSettingsProps> = (props) => {
         </div>
       </Show>
 
-      <Switch
-        checked={props.ratio}
-        onChange={props.onRatioChange}
-        label="Keep aspect ratio"
-      />
+      <Switch checked={props.ratio} onChange={props.onRatioChange} label="Keep aspect ratio" />
 
       <div>
         <label class="text-sm font-medium mb-2 block">Global Dimensions</label>

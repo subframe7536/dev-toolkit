@@ -1,13 +1,14 @@
+import { Button, Icon, Tabs, Textarea, cn } from 'moraine'
+import { createRoute } from 'solid-file-router'
+import { createMemo, createSignal, For, Show } from 'solid-js'
+import { toast } from 'solid-toaster'
+
 import { Card } from '#/components/card'
 import { ClearButton } from '#/components/clear-button'
 import { CopyButton } from '#/components/copy-button'
 import { FileUpload } from '#/components/file-upload'
 import type { HashAlgorithm } from '#/utils/hash'
 import { generateHash } from '#/utils/hash'
-import { Button, Icon, Tabs, Textarea, cn } from 'moraine'
-import { createRoute } from 'solid-file-router'
-import { createMemo, createSignal, For, Show } from 'solid-js'
-import { toast } from 'solid-toaster'
 
 const ALGORITHMS: HashAlgorithm[] = ['MD5', 'SHA-1', 'SHA-256', 'SHA-384', 'SHA-512']
 
@@ -142,7 +143,7 @@ function HashGenerator() {
         fallback={
           <div class="text-muted-foreground p-12 text-center border rounded-lg border-dashed flex items-center justify-center">
             <div>
-              <Icon name="lucide:hash" classes={{ icon: 'mx-auto mb-4 opacity-50 size-12' }} />
+              <Icon name="lucide:hash" class="mx-auto mb-4 opacity-50 size-12" />
               <p>Enter text or upload a file, then click "Generate"</p>
             </div>
           </div>
@@ -184,10 +185,7 @@ function HashGenerator() {
                               {result.algorithm}
                             </div>
                             <Show when={match()}>
-                              <Icon
-                                name="lucide:check"
-                                classes={{ icon: 'text-sm text-green-600' }}
-                              />
+                              <Icon name="lucide:check" class="text-sm text-green-600" />
                             </Show>
                           </div>
                           <code class="text-sm font-mono break-all">{result.hash}</code>

@@ -1,6 +1,7 @@
 import { Button, Icon, Input } from 'moraine'
-import { useRegexContext } from '#/contexts/regex-context'
 import { createMemo, Show } from 'solid-js'
+
+import { useRegexContext } from '#/contexts/regex-context'
 
 export function ReplacementPanel() {
   const { store, actions } = useRegexContext()
@@ -28,9 +29,9 @@ export function ReplacementPanel() {
         <label class="text-sm font-medium">Replacement Pattern</label>
         <Input
           placeholder="Enter replacement (e.g., $1-$2 or $<name>)"
-          class="font-mono mt-1"
+          classes={{ input: 'font-mono mt-1' }}
           value={store.replacementPattern}
-          onValueChange={v => actions.setReplacementPattern(v)}
+          onValueChange={(v) => actions.setReplacementPattern(v)}
         />
       </div>
 
@@ -38,43 +39,52 @@ export function ReplacementPanel() {
       <div class="text-xs text-muted-foreground space-y-1">
         <div class="font-medium mb-1">Replacement syntax:</div>
         <div class="gap-x-4 gap-y-1 grid grid-cols-2">
-          <span><code class="px-1 rounded bg-muted">$1, $2</code> - Capture groups</span>
-          <span><code class="px-1 rounded bg-muted">$&amp;</code> - Full match</span>
-          <span><code class="px-1 rounded bg-muted">$&lt;name&gt;</code> - Named group</span>
-          <span><code class="px-1 rounded bg-muted">$$</code> - Literal $</span>
+          <span>
+            <code class="px-1 rounded bg-muted">$1, $2</code> - Capture groups
+          </span>
+          <span>
+            <code class="px-1 rounded bg-muted">$&amp;</code> - Full match
+          </span>
+          <span>
+            <code class="px-1 rounded bg-muted">$&lt;name&gt;</code> - Named group
+          </span>
+          <span>
+            <code class="px-1 rounded bg-muted">$$</code> - Literal $
+          </span>
         </div>
       </div>
 
       {/* Result Preview */}
       <Show
         when={hasInput() && store.isValid}
-        fallback={(
+        fallback={
           <div class="text-sm text-muted-foreground py-8 text-center">
             Enter a pattern and test text to see replacements
           </div>
-        )}
+        }
       >
         <Show
           when={hasMatches()}
-          fallback={(
+          fallback={
             <div
               class="text-sm text-amber-600 p-3 border border-amber-200 rounded-md bg-amber-50 dark:text-amber-400 dark:border-amber-800 dark:bg-amber-950/30"
               role="status"
             >
-              <Icon name="i-lucide-info" classes={{ icon: 'mr-2 size-4 inline-block' }} aria-hidden="true" />
+              <Icon name="i-lucide-info" class="mr-2 size-4 inline-block" aria-hidden="true" />
               No matches to replace
             </div>
-          )}
+          }
         >
           <div class="space-y-3">
             {/* Stats */}
             <Show when={replacementResult()}>
-              {result => (
-                <div class="text-xs text-muted-foreground flex gap-2 items-center" aria-live="polite">
-                  <Icon name="i-lucide-repeat" classes={{ icon: 'size-3' }} aria-hidden="true" />
-                  {result().replacementCount}
-                  {' '}
-                  replacement
+              {(result) => (
+                <div
+                  class="text-xs text-muted-foreground flex gap-2 items-center"
+                  aria-live="polite"
+                >
+                  <Icon name="i-lucide-repeat" class="size-3" aria-hidden="true" />
+                  {result().replacementCount} replacement
                   {result().replacementCount !== 1 ? 's' : ''}
                   {store.flags.global ? ' (global)' : ' (first match only)'}
                 </div>
@@ -85,10 +95,7 @@ export function ReplacementPanel() {
             <div class="space-y-2">
               <label class="text-xs text-muted-foreground">Result Preview</label>
               <div class="border rounded-md bg-muted/50 max-h-64 overflow-auto">
-                <pre
-                  class="text-sm font-mono p-3 whitespace-pre-wrap break-words"
-                  tabIndex={0}
-                >
+                <pre class="text-sm font-mono p-3 whitespace-pre-wrap break-words" tabIndex={0}>
                   {replacementResult()?.result || store.testText}
                 </pre>
               </div>

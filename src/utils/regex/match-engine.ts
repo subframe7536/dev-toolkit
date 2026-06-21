@@ -1,4 +1,11 @@
-import type { CaptureGroup, MatchResult, RegexFlags, ReplacementResult, TextValidationResult, ValidationMode } from './types'
+import type {
+  CaptureGroup,
+  MatchResult,
+  RegexFlags,
+  ReplacementResult,
+  TextValidationResult,
+  ValidationMode,
+} from './types'
 
 /**
  * Convert RegexFlags object to flag string
@@ -84,11 +91,7 @@ function findGroupPositions(
  * Find all matches in text using the given pattern and flags
  * Properly handles global vs non-global matching
  */
-export function findMatches(
-  pattern: string,
-  flags: RegexFlags,
-  text: string,
-): MatchResult[] {
+export function findMatches(pattern: string, flags: RegexFlags, text: string): MatchResult[] {
   if (!pattern || !text) {
     return []
   }
@@ -154,7 +157,7 @@ export function findMatches(
 export function validatePattern(
   pattern: string,
   flags: RegexFlags,
-): { isValid: boolean, error?: { message: string, position: number, length: number } } {
+): { isValid: boolean; error?: { message: string; position: number; length: number } } {
   if (!pattern) {
     return { isValid: true }
   }
@@ -265,17 +268,19 @@ export function validateText(
       const partialMatch = regex.exec(text)
       if (partialMatch) {
         // Pattern matches somewhere but not the full string
-        const failPosition = partialMatch.index === 0
-          ? partialMatch[0].length // Match starts at beginning but doesn't cover all
-          : 0 // Match doesn't start at beginning
+        const failPosition =
+          partialMatch.index === 0
+            ? partialMatch[0].length // Match starts at beginning but doesn't cover all
+            : 0 // Match doesn't start at beginning
         return {
           passed: false,
           mode,
           failPosition,
           failLength: 1,
-          message: failPosition === 0
-            ? 'Pattern does not match from the start of the text'
-            : `Pattern matches only part of the text (${partialMatch[0].length} of ${text.length} characters)`,
+          message:
+            failPosition === 0
+              ? 'Pattern does not match from the start of the text'
+              : `Pattern matches only part of the text (${partialMatch[0].length} of ${text.length} characters)`,
         }
       }
 
@@ -347,7 +352,10 @@ export function replaceMatches(
       // Process the replacement string
       // args: [match, ...groups, offset, string, namedGroups?]
       const match = args[0] as string
-      const namedGroups = typeof args[args.length - 1] === 'object' ? args[args.length - 1] as Record<string, string> : undefined
+      const namedGroups =
+        typeof args[args.length - 1] === 'object'
+          ? (args[args.length - 1] as Record<string, string>)
+          : undefined
 
       let processedReplacement = replacement
 
@@ -360,10 +368,13 @@ export function replaceMatches(
       processedReplacement = processedReplacement.replace(/\$`/g, inputString.slice(0, offset))
 
       // Replace $' with text after match
-      processedReplacement = processedReplacement.replace(/\$'/g, inputString.slice(offset + match.length))
+      processedReplacement = processedReplacement.replace(
+        /\$'/g,
+        inputString.slice(offset + match.length),
+      )
 
       // Replace $$ with literal $
-      processedReplacement = processedReplacement.replace(/\$\$/g, '\0DOLLAR\0')
+      processedReplacement = processedReplacement.replace(/\$\$/g, '\u0000DOLLAR\u0000')
 
       // Replace numbered capture groups ($1, $2, etc.)
       processedReplacement = processedReplacement.replace(/\$(\d+)/g, (_, num) => {
@@ -381,7 +392,7 @@ export function replaceMatches(
       }
 
       // Restore literal $
-      processedReplacement = processedReplacement.replace(/\0DOLLAR\0/g, '$')
+      processedReplacement = processedReplacement.replaceAll('\u0000DOLLAR\u0000', '$')
 
       return processedReplacement
     })

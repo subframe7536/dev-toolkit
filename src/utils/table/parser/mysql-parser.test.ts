@@ -1,8 +1,8 @@
-import type { TableData } from '../types'
-
 import { describe, expect, it } from 'bun:test'
 
 import * as fc from 'fast-check'
+
+import type { TableData } from '../types'
 
 import { parseMySQLOutput } from './mysql-parser'
 
@@ -85,7 +85,7 @@ describe('parseMySQLOutput', () => {
     const col1Id = result.data!.columns[1].id
     const col2Id = result.data!.columns[2].id
 
-    expect(result.data!.rows[0].cells[col1Id]).toBe('O\'Brien')
+    expect(result.data!.rows[0].cells[col1Id]).toBe("O'Brien")
     expect(result.data!.rows[0].cells[col2Id]).toBe('a@b.c')
     expect(result.data!.rows[1].cells[col1Id]).toBe('Smith&Co')
   })
@@ -151,7 +151,9 @@ describe('parseMySQLOutput - Property-Based Tests', () => {
    */
   it('Property 1: should extract all column headers preserving their names exactly', () => {
     // Generator for valid column names (alphanumeric, underscores, spaces)
-    const columnNameArb = fc.string({ minLength: 1, maxLength: 20 }).filter(s => /^[a-z][\w ]*$/i.test(s))
+    const columnNameArb = fc
+      .string({ minLength: 1, maxLength: 20 })
+      .filter((s) => /^[a-z][\w ]*$/i.test(s))
 
     // Generator for a list of 1-10 column names
     const columnNamesArb = fc.array(columnNameArb, { minLength: 1, maxLength: 10 })
@@ -159,10 +161,10 @@ describe('parseMySQLOutput - Property-Based Tests', () => {
     // Generator for valid MySQL output with arbitrary column names
     const mysqlOutputArb = columnNamesArb.map((columnNames) => {
       // Calculate column widths (at least as wide as the column name + 2 for padding)
-      const columnWidths = columnNames.map(name => Math.max(name.length + 2, 4))
+      const columnWidths = columnNames.map((name) => Math.max(name.length + 2, 4))
 
       // Build separator line
-      const separatorParts = columnWidths.map(width => '-'.repeat(width))
+      const separatorParts = columnWidths.map((width) => '-'.repeat(width))
       const separator = `+${separatorParts.join('+')}+`
 
       // Build header line with proper padding
@@ -220,16 +222,18 @@ describe('parseMySQLOutput - Property-Based Tests', () => {
    */
   it('Property 2: should preserve all cell values exactly as they appear in the input', () => {
     // Generator for valid column names
-    const columnNameArb = fc.string({ minLength: 1, maxLength: 10 }).filter(s => /^[a-z]\w*$/i.test(s))
+    const columnNameArb = fc
+      .string({ minLength: 1, maxLength: 10 })
+      .filter((s) => /^[a-z]\w*$/i.test(s))
 
     // Generator for cell values that can appear in MySQL output
     // Include various types: numbers, strings with special chars, empty strings, etc.
     const cellValueArb = fc.oneof(
       fc.integer({ min: -999999, max: 999999 }).map(String), // Numbers
-      fc.string({ minLength: 0, maxLength: 30 }).filter(s => /^[a-z0-9 ]*$/i.test(s)), // Alphanumeric with spaces
-      fc.string({ minLength: 0, maxLength: 20 }).filter(s => /^[\w@.\-'&]*$/.test(s)), // Special characters common in data
+      fc.string({ minLength: 0, maxLength: 30 }).filter((s) => /^[a-z0-9 ]*$/i.test(s)), // Alphanumeric with spaces
+      fc.string({ minLength: 0, maxLength: 20 }).filter((s) => /^[\w@.\-'&]*$/.test(s)), // Special characters common in data
       fc.constant(''), // Empty strings
-      fc.string({ minLength: 2, maxLength: 15 }).filter(s => /^[a-z ]+$/i.test(s)), // Words with spaces
+      fc.string({ minLength: 2, maxLength: 15 }).filter((s) => /^[a-z ]+$/i.test(s)), // Words with spaces
     )
 
     // Generator for a table structure with columns and rows
@@ -243,10 +247,14 @@ describe('parseMySQLOutput - Property-Based Tests', () => {
       )
       .chain(([columnNames, rowsData]) => {
         // Ensure each row has the same number of cells as columns
-        const normalizedRows = rowsData.map(row =>
-          row.slice(0, columnNames.length).concat(
-            Array.from({ length: Math.max(0, columnNames.length - row.length) }).fill('') as string[],
-          ),
+        const normalizedRows = rowsData.map((row) =>
+          row
+            .slice(0, columnNames.length)
+            .concat(
+              Array.from({ length: Math.max(0, columnNames.length - row.length) }).fill(
+                '',
+              ) as string[],
+            ),
         )
         return fc.constant({ columnNames, rows: normalizedRows })
       })
@@ -255,15 +263,12 @@ describe('parseMySQLOutput - Property-Based Tests', () => {
     const mysqlOutputArb = tableStructureArb.map(({ columnNames, rows }) => {
       // Calculate column widths based on content
       const columnWidths = columnNames.map((name, colIndex) => {
-        const maxDataWidth = Math.max(
-          ...rows.map(row => row[colIndex].length),
-          name.length,
-        )
+        const maxDataWidth = Math.max(...rows.map((row) => row[colIndex].length), name.length)
         return Math.max(maxDataWidth + 2, 4) // At least 4 chars wide, +2 for padding
       })
 
       // Build separator line
-      const separatorParts = columnWidths.map(width => '-'.repeat(width))
+      const separatorParts = columnWidths.map((width) => '-'.repeat(width))
       const separator = `+${separatorParts.join('+')}+`
 
       // Build header line
@@ -355,7 +360,7 @@ Line2 |
 
     validateTable(result, 2, 2, (data) => {
       const row0 = data.rows[0]
-      const descCol = data.columns.find(c => c.name === 'description')!
+      const descCol = data.columns.find((c) => c.name === 'description')!
 
       // The cell should contain the literal newline
       expect(row0.cells[descCol.id]).toBe('Line1\nLine2')
@@ -379,7 +384,7 @@ Third line |
     const result = parseMySQLOutput(input)
 
     validateTable(result, 2, 2, (data) => {
-      const notesCol = data.columns.find(c => c.name === 'notes')!
+      const notesCol = data.columns.find((c) => c.name === 'notes')!
       const value = data.rows[0].cells[notesCol.id] as string
 
       expect(value).toBe('First line\nSecond line\nThird line')
@@ -399,7 +404,7 @@ End | 200  |
     const result = parseMySQLOutput(input)
 
     validateTable(result, 2, 2, (data) => {
-      const msgCol = data.columns.find(c => c.name === 'message')!
+      const msgCol = data.columns.find((c) => c.name === 'message')!
       expect(data.rows[0].cells[msgCol.id]).toBe('Start\nMiddle\nEnd')
       expect(data.rows[1].cells[msgCol.id]).toBe('OK')
     })
@@ -418,7 +423,7 @@ Blank line above |
     const result = parseMySQLOutput(input)
 
     validateTable(result, 2, 2, (data) => {
-      const contentCol = data.columns.find(c => c.name === 'content')!
+      const contentCol = data.columns.find((c) => c.name === 'content')!
       const value = data.rows[0].cells[contentCol.id] as string
 
       // Note: MySQL CLI usually preserves the blank line as an empty line
@@ -438,7 +443,7 @@ Blank line above |
     const result = parseMySQLOutput(input)
 
     validateTable(result, 2, 2, (data) => {
-      const col = data.columns.find(c => c.name === 'spaced')!
+      const col = data.columns.find((c) => c.name === 'spaced')!
       // Only leading/trailing spaces (from MySQL padding) are trimmed
       // Internal spaces and newlines are preserved
       expect(data.rows[0].cells[col.id]).toBe('A\n B')

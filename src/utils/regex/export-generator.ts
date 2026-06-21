@@ -40,7 +40,7 @@ function flagsToJsString(flags: RegexFlags): string {
 function escapeJsString(str: string): string {
   return str
     .replace(/\\/g, '\\\\')
-    .replace(/'/g, '\\\'')
+    .replace(/'/g, "\\'")
     .replace(/"/g, '\\"')
     .replace(/\n/g, '\\n')
     .replace(/\r/g, '\\r')
@@ -52,7 +52,7 @@ function escapeJsString(str: string): string {
  */
 function escapePythonRawString(str: string): string {
   // In raw strings, only need to escape quotes and backslash at end
-  return str.replace(/'/g, '\\\'')
+  return str.replace(/'/g, "\\'")
 }
 
 /**
@@ -211,7 +211,9 @@ function generateJava(options: ExportOptions): string {
   const javaVarName = variableName.charAt(0).toLowerCase() + variableName.slice(1)
 
   if (javaFlags.length > 0) {
-    lines.push(`Pattern ${javaVarName} = Pattern.compile("${escapedPattern}", ${javaFlags.join(' | ')});`)
+    lines.push(
+      `Pattern ${javaVarName} = Pattern.compile("${escapedPattern}", ${javaFlags.join(' | ')});`,
+    )
   } else {
     lines.push(`Pattern ${javaVarName} = Pattern.compile("${escapedPattern}");`)
   }

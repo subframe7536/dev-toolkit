@@ -1,7 +1,6 @@
 import { useColorMode } from '@solid-hooks/core/web'
-import { createMemo } from 'solid-js'
-
 import { Button } from 'moraine'
+import { createMemo } from 'solid-js'
 
 export function ThemeToggle(props: { class?: string }) {
   const [mode, setMode] = useColorMode()
@@ -19,7 +18,7 @@ export function ThemeToggle(props: { class?: string }) {
   })
 
   const handleToggle = () => {
-    setMode(m => m === 'auto' ? 'light' : m === 'light' ? 'dark' : 'auto')
+    setMode((m) => (m === 'auto' ? 'light' : m === 'light' ? 'dark' : 'auto'))
   }
 
   return (

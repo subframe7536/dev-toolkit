@@ -1,16 +1,20 @@
 import { useEventListener } from '@solid-hooks/core/web'
 import { createEffect, createSignal } from 'solid-js'
 import { toast } from 'solid-toaster'
-import { useRegisterSW } from 'virtual:pwa-register/solid'
 
 // Type definition for the non-standard event
 interface BeforeInstallPromptEvent extends Event {
   prompt: () => Promise<void>
-  userChoice: Promise<{ outcome: 'accepted' | 'dismissed', platform: string }>
+  userChoice: Promise<{ outcome: 'accepted' | 'dismissed'; platform: string }>
 }
+
+let isServiceWorkerRegistered = false
+let shouldReloadAfterActivation = false
 
 export function registPWA() {
   const [deferredPrompt, setDeferredPrompt] = createSignal<BeforeInstallPromptEvent | null>(null)
+  const [needRefresh, setNeedRefresh] = createSignal(false)
+  const [registration, setRegistration] = createSignal<ServiceWorkerRegistration | null>(null)
 
   useEventListener(window, 'beforeinstallprompt', (e) => {
     // 1. Prevent the mini-infobar from appearing on mobile
@@ -43,13 +47,17 @@ export function registPWA() {
       },
       cancel: {
         label: 'Cancel',
+        onClick: () => setDeferredPrompt(null),
       },
       onDismiss: () => setDeferredPrompt(null),
       onAutoClose: () => setDeferredPrompt(null),
     })
   })
 
-  const { needRefresh: [needRefresh, setNeedRefresh], updateServiceWorker } = useRegisterSW()
+  registerServiceWorker((nextRegistration) => {
+    setRegistration(nextRegistration)
+    setNeedRefresh(true)
+  })
 
   createEffect(() => {
     if (needRefresh()) {
@@ -58,7 +66,7 @@ export function registPWA() {
         duration: 10000, // Show for 10 seconds
         action: {
           label: 'Refresh',
-          onClick: () => updateServiceWorker(true),
+          onClick: () => activateWaitingServiceWorker(registration()),
         },
         cancel: {
           label: 'Cancel',
@@ -69,4 +77,62 @@ export function registPWA() {
   })
 
   return null
+}
+
+function registerServiceWorker(onUpdateReady: (registration: ServiceWorkerRegistration) => void) {
+  if (isServiceWorkerRegistered || !import.meta.env.PROD || !('serviceWorker' in navigator)) {
+    return
+  }
+
+  isServiceWorkerRegistered = true
+
+  navigator.serviceWorker.addEventListener('controllerchange', () => {
+    if (!shouldReloadAfterActivation) {
+      return
+    }
+
+    shouldReloadAfterActivation = false
+    window.location.reload()
+  })
+
+  window.addEventListener('load', () => {
+    void registerServiceWorkerOnLoad(onUpdateReady)
+  })
+}
+
+async function registerServiceWorkerOnLoad(
+  onUpdateReady: (registration: ServiceWorkerRegistration) => void,
+) {
+  try {
+    const baseUrl = new URL(import.meta.env.BASE_URL || '/', window.location.origin)
+    const nextRegistration = await navigator.serviceWorker.register(new URL('sw.js', baseUrl), {
+      scope: baseUrl.pathname,
+      updateViaCache: 'none',
+    })
+
+    if (nextRegistration.waiting) {
+      onUpdateReady(nextRegistration)
+    }
+
+    nextRegistration.addEventListener('updatefound', () => {
+      const installingWorker = nextRegistration.installing
+
+      if (!installingWorker) {
+        return
+      }
+
+      installingWorker.addEventListener('statechange', () => {
+        if (installingWorker.state === 'installed' && navigator.serviceWorker.controller) {
+          onUpdateReady(nextRegistration)
+        }
+      })
+    })
+  } catch (error) {
+    console.warn('Service worker registration failed.', error)
+  }
+}
+
+function activateWaitingServiceWorker(registration: ServiceWorkerRegistration | null) {
+  shouldReloadAfterActivation = true
+  registration?.waiting?.postMessage({ type: 'SKIP_WAITING' })
 }

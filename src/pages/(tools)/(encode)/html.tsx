@@ -1,5 +1,6 @@
-import { EncoderLayout } from '#/components/encoder-layout'
 import { createRoute } from 'solid-file-router'
+
+import { EncoderLayout } from '#/components/encoder-layout'
 
 export default createRoute({
   info: {
@@ -31,11 +32,5 @@ function HTMLEncoder() {
     return div.textContent || ''
   }
 
-  return (
-    <EncoderLayout
-      mode="HTML"
-      onEncode={encodeToHTML}
-      onDecode={decodeFromHTML}
-    />
-  )
+  return <EncoderLayout mode="HTML" onEncode={encodeToHTML} onDecode={decodeFromHTML} />
 }

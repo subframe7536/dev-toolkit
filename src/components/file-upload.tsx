@@ -1,43 +1,48 @@
-import type { FileFieldTriggerProps, FileRejection } from '@kobalte/core/file-field'
-
-import { FileField } from '@kobalte/core/file-field'
-import { createMemo, Show } from 'solid-js'
+import type { FileUploadProps, FileUploadT } from 'moraine'
+import { FileUpload as MoraineFileUpload } from 'moraine'
+import { createMemo } from 'solid-js'
 import { toast } from 'solid-toaster'
-
-import { Button, Icon } from 'moraine'
 
 interface SingleFileProps {
   file: File | undefined
-  setFile: (file: File | undefined) => void
+  setFile: (file: File) => void | Promise<void>
   info?: string
   accept?: string[]
   multiple?: false
-  icon?: `lucide:${string}`
+  icon?: string
 }
 
 interface MultipleFileProps {
   files: File[]
-  setFiles: (files: File[]) => void
+  setFiles: (files: File[]) => void | Promise<void>
   info?: string
   accept?: string[]
   multiple: true
-  icon?: `lucide:${string}`
+  icon?: string
 }
 
 type Props = SingleFileProps | MultipleFileProps
+type FileRejections = Parameters<NonNullable<FileUploadProps['onFileReject']>>[0]
 
 export function FileUpload(props: Props) {
-  const info = createMemo(() => props.info ?? `Supported file type: ${props.accept?.join(', ') ?? 'All'}`)
+  const info = createMemo(
+    () => props.info ?? `Supported file type: ${props.accept?.join(', ') ?? 'All'}`,
+  )
+  const accept = createMemo(() => props.accept?.join(',') ?? '*')
+  const icon = createMemo(() => normalizeIconName(props.icon))
 
-  const handleFileAccept = (files: File[]) => {
+  const handleValueChange = (value: FileUploadT.Value) => {
     if (props.multiple) {
-      props.setFiles(files)
+      void props.setFiles(Array.isArray(value) ? value : value ? [value] : [])
     } else {
-      props.setFile(files[0])
+      const file = Array.isArray(value) ? value[0] : value
+      if (file) {
+        void props.setFile(file)
+      }
     }
   }
 
-  const handleFileReject = (info: FileRejection[]) => {
+  const handleFileReject = (info: FileRejections) => {
     for (const i of info) {
       toast.error(`Failed to upload ${i.file.name}`, {
         description: i.errors.join(', '),
@@ -46,33 +51,31 @@ export function FileUpload(props: Props) {
   }
 
   return (
-    <FileField
-      class="flex flex-col gap-2 relative"
-      accept={props.accept}
-      multiple={props.multiple}
+    <MoraineFileUpload
+      accept={accept()}
+      description={info()}
+      dropzone
+      icon={icon()}
+      label="Drag or Click to upload"
       maxFiles={200}
-      onFileAccept={handleFileAccept}
+      multiple={props.multiple}
       onFileReject={handleFileReject}
-    >
-      <FileField.Dropzone
-        class="text-center b-(2 border dashed) rounded-lg bg-input flex flex-col gap-4 h-100 transition-all items-center justify-center data-[dragging=true]:bg-muted md:h-120"
-        onDrop={e => (e.target as HTMLDivElement).dataset.dragging = 'false'}
-      >
-        <Show when={props.icon}>
-          <Icon name={props.icon!.replace('lucide:', 'i-lucide-') as any} classes={{ icon: 'size-12' }} />
-        </Show>
-        <div class="xs:text-sm text-(xs muted-foreground center) px-4">
-          {info()}
-        </div>
-        <FileField.Trigger
-          as={(triggerProps: FileFieldTriggerProps) => (
-            <Button {...triggerProps} variant="secondary" classes={{ root: 'text-sm flex gap-2 w-80% items-center sm:w-unset' }} leading="i-lucide-upload">
-              Drag or Click to upload
-            </Button>
-          )}
-        />
-      </FileField.Dropzone>
-      <FileField.HiddenInput />
-    </FileField>
+      onValueChange={handleValueChange}
+      preview={false}
+      classes={{
+        root: 'flex flex-col gap-2 relative',
+        control:
+          'text-center b-(2 border dashed) rounded-lg bg-input flex flex-col gap-4 h-100 transition-all items-center justify-center data-[dragging]:bg-muted md:h-120',
+        icon: 'size-12',
+        label: 'text-sm',
+        description: 'xs:text-sm text-(xs muted-foreground center) px-4',
+      }}
+    />
   )
+}
+
+function normalizeIconName(icon: string | undefined) {
+  return icon?.startsWith('lucide:')
+    ? icon.replace('lucide:', 'i-lucide-')
+    : (icon ?? 'i-lucide-upload')
 }

@@ -1,11 +1,12 @@
-import { ClearButton } from '#/components/clear-button'
-import { CopyButton } from '#/components/copy-button'
-import { DownloadButton } from '#/components/download-button'
 import { Input, Switch, Textarea } from 'moraine'
-import { generateJsonSchema } from '#/utils/json/schema-generator'
 import { createRoute } from 'solid-file-router'
 import { createSignal } from 'solid-js'
 import { toast } from 'solid-toaster'
+
+import { ClearButton } from '#/components/clear-button'
+import { CopyButton } from '#/components/copy-button'
+import { DownloadButton } from '#/components/download-button'
+import { generateJsonSchema } from '#/utils/json/schema-generator'
 
 export default createRoute({
   info: {
@@ -63,7 +64,7 @@ function JSONSchemaGenerator() {
           <label class="text-sm font-medium">Schema Title (optional)</label>
           <Input
             value={title()}
-            onInput={e => setTitle(e.currentTarget.value)}
+            onInput={(e) => setTitle(e.currentTarget.value)}
             placeholder="My Schema"
           />
         </div>
@@ -71,7 +72,7 @@ function JSONSchemaGenerator() {
           <label class="text-sm font-medium">Schema Description (optional)</label>
           <Input
             value={description()}
-            onInput={e => setDescription(e.currentTarget.value)}
+            onInput={(e) => setDescription(e.currentTarget.value)}
             placeholder="Description of the schema"
           />
         </div>
@@ -92,10 +93,7 @@ function JSONSchemaGenerator() {
             />
           </div>
           <div class="flex flex-wrap gap-2">
-            <ClearButton
-              onClear={handleClear}
-              disabled={!input() && !output()}
-            />
+            <ClearButton onClear={handleClear} disabled={!input() && !output()} />
           </div>
         </div>
 
@@ -110,11 +108,7 @@ function JSONSchemaGenerator() {
             />
           </div>
           <div class="flex flex-wrap gap-2">
-            <CopyButton
-              content={output()}
-              disabled={!output()}
-              variant="secondary"
-            />
+            <CopyButton content={output()} disabled={!output()} variant="secondary" />
             <DownloadButton
               content={output()}
               disabled={!output()}

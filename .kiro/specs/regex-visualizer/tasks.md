@@ -18,7 +18,7 @@ This implementation plan creates a lightweight, client-side regex testing tool u
     - Include pattern validation state and error tracking
     - _Requirements: 1.1, 1.3, 4.1_
 
-  - [ ]* 2.2 Write property test for store state consistency
+  - [ ]\* 2.2 Write property test for store state consistency
     - **Property 1: State updates maintain consistency**
     - **Validates: Requirements 1.1, 4.1**
 
@@ -39,7 +39,7 @@ This implementation plan creates a lightweight, client-side regex testing tool u
     - Handle highlighting updates on pattern changes
     - _Requirements: 1.2_
 
-  - [ ]* 3.3 Write property test for syntax highlighting accuracy
+  - [ ]\* 3.3 Write property test for syntax highlighting accuracy
     - **Property 2: Syntax highlighting correctly identifies regex elements**
     - **Validates: Requirements 1.2**
 
@@ -68,7 +68,7 @@ This implementation plan creates a lightweight, client-side regex testing tool u
     - Use distinct colors for different capture groups
     - _Requirements: 2.1, 2.2, 2.4, 2.5, 2.6_
 
-  - [ ]* 5.3 Write property test for match highlighting accuracy
+  - [ ]\* 5.3 Write property test for match highlighting accuracy
     - **Property 4: Match highlighting correctly identifies all matches**
     - **Validates: Requirements 2.1, 2.4, 2.5**
 
@@ -78,7 +78,7 @@ This implementation plan creates a lightweight, client-side regex testing tool u
     - Update highlighting immediately when flags change
     - _Requirements: 2.4, 2.5, 4.2, 4.3, 4.4, 4.5_
 
-  - [ ]* 5.5 Write property test for flag behavior consistency
+  - [ ]\* 5.5 Write property test for flag behavior consistency
     - **Property 5: Flag changes immediately affect matching behavior**
     - **Validates: Requirements 2.4, 2.5, 4.1, 4.2, 4.3, 4.4, 4.5**
 
@@ -95,7 +95,7 @@ This implementation plan creates a lightweight, client-side regex testing tool u
     - Ensure proper synchronization between text and details panel
     - _Requirements: 3.5_
 
-  - [ ]* 6.3 Write property test for match information completeness
+  - [ ]\* 6.3 Write property test for match information completeness
     - **Property 6: Match details contain all required information**
     - **Validates: Requirements 3.1, 3.2, 3.3, 3.4**
 
@@ -111,7 +111,7 @@ This implementation plan creates a lightweight, client-side regex testing tool u
     - Include examples and explanations for standard regex elements
     - _Requirements: 5.5_
 
-  - [ ]* 7.3 Write property test for explanation accuracy
+  - [ ]\* 7.3 Write property test for explanation accuracy
     - **Property 7: Explanations accurately describe regex element behavior**
     - **Validates: Requirements 5.2, 5.3, 5.4**
 
@@ -128,7 +128,7 @@ This implementation plan creates a lightweight, client-side regex testing tool u
     - Display pattern descriptions when patterns are loaded
     - _Requirements: 6.3, 6.4_
 
-  - [ ]* 8.3 Write property test for pattern library functionality
+  - [ ]\* 8.3 Write property test for pattern library functionality
     - **Property 8: Pattern library patterns load correctly and demonstrate expected behavior**
     - **Validates: Requirements 6.3, 6.4**
 
@@ -146,7 +146,7 @@ This implementation plan creates a lightweight, client-side regex testing tool u
     - Ensure flag inclusion in exported code for each language
     - _Requirements: 7.2, 7.3, 7.4, 7.5_
 
-  - [ ]* 9.3 Write property test for export correctness
+  - [ ]\* 9.3 Write property test for export correctness
     - **Property 9: Exported code is syntactically correct and functionally equivalent**
     - **Validates: Requirements 7.2, 7.3, 7.4, 7.5**
 
@@ -162,7 +162,7 @@ This implementation plan creates a lightweight, client-side regex testing tool u
     - Suggest optimization strategies for problematic patterns
     - _Requirements: 8.2, 8.3, 8.4_
 
-  - [ ]* 10.3 Write property test for performance monitoring accuracy
+  - [ ]\* 10.3 Write property test for performance monitoring accuracy
     - **Property 10: Performance monitoring accurately measures execution time**
     - **Validates: Requirements 8.1, 8.5**
 
@@ -178,7 +178,7 @@ This implementation plan creates a lightweight, client-side regex testing tool u
     - Show clear final result indication (success/failure)
     - _Requirements: 9.2, 9.3, 9.4_
 
-  - [ ]* 11.3 Write property test for debug step accuracy
+  - [ ]\* 11.3 Write property test for debug step accuracy
     - **Property 11: Debug steps accurately represent matching state**
     - **Validates: Requirements 9.2, 9.3, 9.4**
 
@@ -197,11 +197,11 @@ This implementation plan creates a lightweight, client-side regex testing tool u
     - Properly escape special characters in replacement patterns
     - _Requirements: 11.1, 11.2, 11.3, 11.4, 11.5, 11.6_
 
-  - [ ]* 12.3 Write property test for validation and replacement correctness
+  - [ ]\* 12.3 Write property test for validation and replacement correctness
     - **Property 12: Validation modes correctly distinguish match types**
     - **Validates: Requirements 10.1, 10.4, 10.5**
 
-  - [ ]* 12.4 Write property test for replacement operation correctness
+  - [ ]\* 12.4 Write property test for replacement operation correctness
     - **Property 13: Replacement operations correctly substitute matches**
     - **Validates: Requirements 11.1, 11.2, 11.3, 11.4, 11.5**
 
@@ -218,7 +218,7 @@ This implementation plan creates a lightweight, client-side regex testing tool u
     - Add focus management for modal dialogs and complex interactions
     - _Requirements: All requirements_
 
-  - [ ]* 13.3 Write integration tests
+  - [ ]\* 13.3 Write integration tests
     - Test end-to-end workflows from pattern input to results
     - Verify proper state management across component boundaries
     - _Requirements: All requirements_

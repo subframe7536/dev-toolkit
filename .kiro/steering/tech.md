@@ -69,6 +69,7 @@ This project uses `solid-file-router`, a type-safe file-based routing system for
    - `pages/blog/[id].tsx` → `/blog/:id`
 
 2. **Route Definition**: All page files MUST export a default route created with `createRoute()`:
+
    ```tsx
    import { createRoute } from 'solid-file-router'
 

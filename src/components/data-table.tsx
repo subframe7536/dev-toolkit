@@ -1,4 +1,3 @@
-import type { CellValue, TableData, TableRow } from '#/utils/table/types'
 import type { ColumnDef, SortingState } from '@tanstack/solid-table'
 import {
   createSolidTable,
@@ -8,6 +7,8 @@ import {
 } from '@tanstack/solid-table'
 import { Icon, Tooltip, cn } from 'moraine'
 import { createEffect, createMemo, createSignal, For, Show } from 'solid-js'
+
+import type { CellValue, TableData, TableRow } from '#/utils/table/types'
 
 export interface DataTableProps {
   data: TableData

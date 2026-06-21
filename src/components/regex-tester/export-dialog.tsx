@@ -1,13 +1,14 @@
+import { Dialog, Icon, Input, Select, Switch, Textarea } from 'moraine'
+import { createEffect, createSignal, createUniqueId, Show } from 'solid-js'
+
 import { CopyButton } from '#/components/copy-button'
 import { DownloadButton } from '#/components/download-button'
-import { Dialog, Icon, Input, Select, Switch, Textarea } from 'moraine'
 import { useRegexContext } from '#/contexts'
 import { generateExportCode } from '#/utils/regex/export-generator'
-import { createEffect, createSignal, createUniqueId, Show } from 'solid-js'
 
 type ExportLanguage = 'javascript' | 'python' | 'java'
 
-const languageOptions: Array<{ value: ExportLanguage, label: string }> = [
+const languageOptions: Array<{ value: ExportLanguage; label: string }> = [
   { value: 'javascript', label: 'JavaScript' },
   { value: 'python', label: 'Python' },
   { value: 'java', label: 'Java' },
@@ -61,82 +62,92 @@ export function ExportDialog() {
       onOpenChange={handleClose}
       title="Export Regex Pattern"
       description="Export your regex pattern as code for different programming languages"
-      body={(
-        <div class="space-y-4">
-          {/* Language and Variable Name Row */}
-          <div class="gap-4 grid grid-cols-1 sm:grid-cols-2">
-            <div class="flex flex-col gap-2">
-              <label id={languageLabelId} class="text-sm font-medium">Language</label>
-              <Select
-                value={store.selectedExportLanguage}
-                onChange={lang => lang && actions.setExportLanguage(lang as ExportLanguage)}
-                options={languageOptions.map(o => ({ value: o.value, label: o.label }))}
-              />
-            </div>
-
-            <div>
-              <label class="text-sm font-medium">Variable Name</label>
-              <Input
-                value={variableName()}
-                onInput={e => setVariableName(e.currentTarget.value)}
-                placeholder="regex"
-                aria-describedby="variable-name-hint"
-                class="mt-1"
-              />
-              <span id="variable-name-hint" class="sr-only">
-                The name of the variable in the exported code
-              </span>
-            </div>
-          </div>
-
-          {/* Options */}
-          <div class="flex items-center">
-            <Switch
-              label="Include comments"
-              checked={includeComments()}
-              onChange={setIncludeComments}
+    >
+      <div class="space-y-4">
+        {/* Language and Variable Name Row */}
+        <div class="gap-4 grid grid-cols-1 sm:grid-cols-2">
+          <div class="flex flex-col gap-2">
+            <label id={languageLabelId} class="text-sm font-medium">
+              Language
+            </label>
+            <Select
+              value={store.selectedExportLanguage}
+              onChange={(lang) => lang && actions.setExportLanguage(lang as ExportLanguage)}
+              options={languageOptions.map((o) => ({ value: o.value, label: o.label }))}
             />
           </div>
 
-          {/* Code Output */}
-          <Show
-            when={store.pattern}
-            fallback={(
-              <div class="text-muted-foreground p-4 text-center border rounded-md bg-muted/50" role="status">
-                <Icon name="i-lucide-code" classes={{ icon: 'mx-auto mb-2 opacity-50 size-8' }} aria-hidden="true" />
-                <p>No pattern to export</p>
-              </div>
-            )}
-          >
-            <div class="space-y-2">
-              <div class="flex gap-2 items-center justify-between">
-                <label id={outputLabelId} class="text-sm font-medium">Generated Code</label>
-                <div class="flex gap-2">
-                  <CopyButton
-                    content={exportOutput()}
-                    size="sm"
-                    aria-label="Copy generated code to clipboard"
-                  />
-                  <DownloadButton
-                    content={exportOutput()}
-                    filename={getExportFilename()}
-                    mimeType="text/plain"
-                    size="sm"
-                    aria-label={`Download as ${getExportFilename()}`}
-                  />
-                </div>
-              </div>
-              <Textarea
-                classes={{ input: 'text-sm font-mono resize-none h-48' }}
-                readOnly
-                value={exportOutput()}
-                aria-labelledby={outputLabelId}
-                aria-readonly="true"
-              />
-            </div>
-          </Show>
+          <div>
+            <label class="text-sm font-medium">Variable Name</label>
+            <Input
+              value={variableName()}
+              onInput={(e) => setVariableName(e.currentTarget.value)}
+              placeholder="regex"
+              aria-describedby="variable-name-hint"
+              classes={{ input: 'mt-1' }}
+            />
+            <span id="variable-name-hint" class="sr-only">
+              The name of the variable in the exported code
+            </span>
+          </div>
         </div>
-      )}
-    />
+
+        {/* Options */}
+        <div class="flex items-center">
+          <Switch
+            label="Include comments"
+            checked={includeComments()}
+            onChange={setIncludeComments}
+          />
+        </div>
+
+        {/* Code Output */}
+        <Show
+          when={store.pattern}
+          fallback={
+            <div
+              class="text-muted-foreground p-4 text-center border rounded-md bg-muted/50"
+              role="status"
+            >
+              <Icon
+                name="i-lucide-code"
+                class="mx-auto mb-2 opacity-50 size-8"
+                aria-hidden="true"
+              />
+              <p>No pattern to export</p>
+            </div>
+          }
+        >
+          <div class="space-y-2">
+            <div class="flex gap-2 items-center justify-between">
+              <label id={outputLabelId} class="text-sm font-medium">
+                Generated Code
+              </label>
+              <div class="flex gap-2">
+                <CopyButton
+                  content={exportOutput()}
+                  size="sm"
+                  aria-label="Copy generated code to clipboard"
+                />
+                <DownloadButton
+                  content={exportOutput()}
+                  filename={getExportFilename()}
+                  mimeType="text/plain"
+                  size="sm"
+                  aria-label={`Download as ${getExportFilename()}`}
+                />
+              </div>
+            </div>
+            <Textarea
+              classes={{ input: 'text-sm font-mono resize-none h-48' }}
+              readOnly
+              value={exportOutput()}
+              aria-labelledby={outputLabelId}
+              aria-readonly="true"
+            />
+          </div>
+        </Show>
+      </div>
+    </Dialog>
   )
 }

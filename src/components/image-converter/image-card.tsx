@@ -1,6 +1,5 @@
-import type { Component } from 'solid-js'
-
 import { Button, Input } from 'moraine'
+import type { Component } from 'solid-js'
 import { createEffect, on, Show } from 'solid-js'
 
 import { ClearButton } from '../clear-button'
@@ -9,7 +8,7 @@ export interface ImageFileData {
   id: string
   file: File
   previewUrl: string
-  origin?: { width: number, height: number }
+  origin?: { width: number; height: number }
   targetWidth?: number
   targetHeight?: number
 }
@@ -50,13 +49,10 @@ export const ImageCard: Component<ImageCardProps> = (props) => {
     on(
       () => props.image.origin,
       () => {
-        props.onUpdate(
-          props.image.id,
-          {
-            targetHeight: props.image.origin?.height,
-            targetWidth: props.image.origin?.width,
-          },
-        )
+        props.onUpdate(props.image.id, {
+          targetHeight: props.image.origin?.height,
+          targetWidth: props.image.origin?.width,
+        })
       },
     ),
   )
@@ -81,17 +77,17 @@ export const ImageCard: Component<ImageCardProps> = (props) => {
         <Input
           type="number"
           placeholder="Width"
-          class="text-xs h-8"
+          classes={{ input: 'text-xs h-8' }}
           value={props.image.targetWidth ? `${props.image.targetWidth}` : ''}
-          onInput={e => handleWidthChange(e.currentTarget.value)}
+          onInput={(e) => handleWidthChange(e.currentTarget.value)}
         />
 
         <Input
           type="number"
           placeholder="Height"
-          class="text-xs h-8"
+          classes={{ input: 'text-xs h-8' }}
           value={props.image.targetHeight ? `${props.image.targetHeight}` : ''}
-          onInput={e => handleHeightChange(e.currentTarget.value)}
+          onInput={(e) => handleHeightChange(e.currentTarget.value)}
         />
       </div>
 
@@ -112,11 +108,7 @@ export const ImageCard: Component<ImageCardProps> = (props) => {
         >
           Reset
         </Button>
-        <ClearButton
-          size="sm"
-          onClear={() => props.onRemove(props.image.id)}
-          class="flex-1"
-        />
+        <ClearButton size="sm" onClear={() => props.onRemove(props.image.id)} class="flex-1" />
       </div>
     </div>
   )

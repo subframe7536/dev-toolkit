@@ -1,8 +1,9 @@
+import { Tabs } from 'moraine'
+import { createRoute } from 'solid-file-router'
+
 import { EncoderLayout } from '#/components/encoder-layout'
 import { FileEncoder } from '#/components/file-encoder'
-import { Tabs } from 'moraine'
 import { fileToHex, fromHex, toHex } from '#/utils/hex'
-import { createRoute } from 'solid-file-router'
 
 export default createRoute({
   info: {
@@ -19,7 +20,7 @@ function HexEncoder() {
   return (
     <Tabs
       defaultValue="text"
-      class="w-full"
+      classes={{ root: 'w-full' }}
       items={[
         {
           value: 'text',

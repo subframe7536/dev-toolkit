@@ -1,9 +1,9 @@
-import type { JSX } from 'solid-js'
-
-import { CopyButton } from '#/components/copy-button'
 import { Button, Icon, Textarea } from 'moraine'
+import type { JSX } from 'solid-js'
 import { batch, createSignal, onCleanup } from 'solid-js'
 import { toast } from 'solid-toaster'
+
+import { CopyButton } from '#/components/copy-button'
 
 import { ClearButton } from './clear-button'
 
@@ -49,9 +49,7 @@ export function EncoderLayout(props: EncoderLayoutProps): JSX.Element {
     }
 
     try {
-      const result = isEncode()
-        ? props.onEncode(value)
-        : props.onDecode(value)
+      const result = isEncode() ? props.onEncode(value) : props.onDecode(value)
       setOutputText(result)
       setError(null)
     } catch (err) {
@@ -82,19 +80,16 @@ export function EncoderLayout(props: EncoderLayoutProps): JSX.Element {
     })
   }
 
-  const inputLabel = () => isEncode() ? 'Plain Text' : props.mode
-  const outputLabel = () => isEncode() ? props.mode : 'Plain Text'
-  const inputPlaceholder = () => isEncode()
-    ? `Enter text to encode to ${props.mode}...`
-    : `Enter ${props.mode} to decode...`
-  const outputPlaceholder = () => isEncode()
-    ? `${props.mode} output will appear here...`
-    : 'Decoded text will appear here...'
+  const inputLabel = () => (isEncode() ? 'Plain Text' : props.mode)
+  const outputLabel = () => (isEncode() ? props.mode : 'Plain Text')
+  const inputPlaceholder = () =>
+    isEncode() ? `Enter text to encode to ${props.mode}...` : `Enter ${props.mode} to decode...`
+  const outputPlaceholder = () =>
+    isEncode() ? `${props.mode} output will appear here...` : 'Decoded text will appear here...'
 
   return (
     <div class="space-y-6 lg:space-y-0">
       <div class="gap-6 grid relative lg:grid-cols-2">
-
         {/* Left Panel (Input) */}
         <div class="space-y-4">
           <label class="text-lg font-medium">{inputLabel()}</label>
@@ -105,7 +100,7 @@ export function EncoderLayout(props: EncoderLayoutProps): JSX.Element {
             }}
             placeholder={inputPlaceholder()}
             value={inputText()}
-            onInput={e => handleInput(e.currentTarget.value)}
+            onInput={(e) => handleInput(e.currentTarget.value)}
           />
           <div class="flex gap-2 items-center justify-between lg:justify-start">
             {/* Mobile Swap Button */}
@@ -118,10 +113,7 @@ export function EncoderLayout(props: EncoderLayoutProps): JSX.Element {
             >
               <Icon name="i-lucide-arrow-up-down" />
             </Button>
-            <ClearButton
-              onClear={clear}
-              disabled={!inputText()}
-            />
+            <ClearButton onClear={clear} disabled={!inputText()} />
           </div>
         </div>
 

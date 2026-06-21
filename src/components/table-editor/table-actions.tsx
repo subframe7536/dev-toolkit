@@ -1,7 +1,9 @@
-import { Button, Select, Switch } from 'moraine'
+import { Button, MultiSelect, Switch } from 'moraine'
+
 import { useTableEditorContext } from '#/contexts/table-editor-context'
 
 import { ClearButton } from '../clear-button'
+
 import { ExportDialog } from './export-dialog'
 
 export function TableActions() {
@@ -18,11 +20,10 @@ export function TableActions() {
   return (
     <div class="flex gap-2 items-center justify-between">
       <div class="flex gap-4 items-center">
-        <Select
-          multiple
+        <MultiSelect
           value={computed.visibleColumnIds()}
           onChange={handleColumnVisibilityChange}
-          options={store.tableData.columns.map(col => ({ value: col.id, label: col.name }))}
+          options={store.tableData.columns.map((col) => ({ value: col.id, label: col.name }))}
           classes={{ root: 'w-48' }}
         />
 

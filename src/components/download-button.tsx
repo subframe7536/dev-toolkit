@@ -1,7 +1,8 @@
-import { downloadFile } from '#/utils/download'
 import { Button } from 'moraine'
 import { createMemo, Show } from 'solid-js'
 import { toast } from 'solid-toaster'
+
+import { downloadFile } from '#/utils/download'
 
 interface DownloadButtonProps {
   content: string | Blob
