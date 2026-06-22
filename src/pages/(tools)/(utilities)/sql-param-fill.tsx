@@ -11,7 +11,7 @@ export default createRoute({
     title: 'SQL Parameter Fill',
     description: 'Fill SQL template with MyBatis-style parameters',
     category: 'Utilities',
-    icon: 'lucide:database',
+    icon: 'i-lucide-database',
     tags: ['sql', 'mybatis', 'parameters', 'database'],
   },
   component: SqlParamFill,

@@ -20,7 +20,7 @@ export default createRoute({
     title: 'JSON Converter',
     description: 'Convert JSON to YAML, JS Object, TypeScript, Java, and query parameters',
     category: 'JSON',
-    icon: 'lucide:repeat',
+    icon: 'i-lucide-repeat',
     tags: ['json', 'yaml', 'typescript', 'java', 'javascript', 'converter', 'transform'],
   },
   component: JSONConverter,

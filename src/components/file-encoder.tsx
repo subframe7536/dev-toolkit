@@ -59,7 +59,7 @@ export function FileEncoder(props: FileEncoderProps) {
         <FileUpload
           file={file()}
           setFile={processFile}
-          icon="lucide:file"
+          icon="i-lucide-file"
           info={props.uploadInfo || `Upload any file to encode to ${props.mode}`}
         />
         <Show when={file()}>

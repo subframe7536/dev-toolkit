@@ -10,7 +10,7 @@ export default createRoute({
     title: 'Hex Encoder/Decoder',
     description: 'Encode and decode hexadecimal strings',
     category: 'Encoding',
-    icon: 'lucide:hash',
+    icon: 'i-lucide-hash',
     tags: ['hex', 'hexadecimal', 'encode', 'decode'],
   },
   component: HexEncoder,

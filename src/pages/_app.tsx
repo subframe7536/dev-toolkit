@@ -42,59 +42,70 @@ function App(props: RouteSectionProps) {
 
   return (
     <SidebarLayout
-      renderSidebar={() => (
-        <div class="flex flex-col gap-4 h-full">
-          <A href="/" class="hover:bg-sidebar-accent px-2 py-1 rounded-md block transition-colors">
-            <h2 class="text-sidebar-foreground text-lg font-semibold">Developer Toolkit</h2>
-            <p class="text-sidebar-foreground/70 text-xs">{count} tools available</p>
-          </A>
-          <div class="flex flex-col gap-4">
-            <For each={categories}>
-              {(category) => (
-                <section class="flex flex-col gap-1">
-                  <h3 class="text-sidebar-foreground/70 text-xs tracking-wide font-medium px-2 uppercase">
-                    {category.name}
-                  </h3>
-                  <div class="flex flex-col gap-1">
-                    <For each={category.tools}>
-                      {(tool) => (
-                        <A
-                          href={tool.path}
-                          title={tool.info.title}
-                          class={cn(
-                            'hover:bg-sidebar-accent hover:text-sidebar-accent-foreground text-sm px-2 py-2 rounded-md flex gap-2 transition-colors items-center',
-                            props.location.pathname.endsWith(tool.path) &&
-                              'bg-sidebar-accent text-sidebar-accent-foreground',
-                          )}
-                        >
-                          <Icon name={tool.info.icon} />
-                          <span>{tool.info.title}</span>
-                        </A>
-                      )}
-                    </For>
-                  </div>
-                </section>
-              )}
-            </For>
-          </div>
+      renderSidebarHeader={() => (
+        <A
+          href="/"
+          class="hover:bg-sidebar-accent px-2 py-1.5 rounded-md block transition-colors duration-150"
+        >
+          <h2 class="text-sidebar-foreground text-lg font-semibold">Developer Toolkit</h2>
+          <p class="text-sidebar-foreground/70 text-xs">{count} tools available</p>
+        </A>
+      )}
+      renderSidebarBody={(sidebar) => (
+        <div class="mt-4 flex flex-col gap-4">
+          <For each={categories}>
+            {(category) => (
+              <section class="flex flex-col gap-1">
+                <h3 class="text-sidebar-foreground/70 text-xs tracking-wide font-medium px-2 uppercase">
+                  {category.name}
+                </h3>
+                <div class="flex flex-col gap-1">
+                  <For each={category.tools}>
+                    {(tool) => (
+                      <A
+                        href={tool.path}
+                        title={tool.info.title}
+                        class={cn(
+                          'hover:bg-sidebar-accent hover:text-sidebar-accent-foreground text-sm px-2 py-2 rounded-md flex gap-2 transition-colors duration-150 items-center',
+                          props.location.pathname.endsWith(tool.path) &&
+                            'bg-sidebar-accent text-sidebar-accent-foreground',
+                        )}
+                        onClick={() => {
+                          if (sidebar.isMobile()) {
+                            sidebar.setOpen(false)
+                          }
+                        }}
+                      >
+                        <Icon
+                          name={tool.info.icon as any}
+                          class="text-sidebar-foreground/70 size-4"
+                        />
+                        <span>{tool.info.title}</span>
+                      </A>
+                    )}
+                  </For>
+                </div>
+              </section>
+            )}
+          </For>
         </div>
       )}
     >
       <div class="h-full relative">
-        <SidebarTrigger class="left-2 top-2 sticky z-50" />
-        <div class="flex flex-row-reverse right-2 top-2 absolute">
+        <SidebarTrigger class="left-3 top-3 sticky z-50" />
+        <div class="flex flex-row-reverse gap-1 right-3 top-3 absolute">
           <ThemeToggle class="w-24" />
           <Button
             variant="ghost"
             as="a"
             href="https://github.com/subframe7536/dev-toolkit"
             target="_blank"
-            leading="lucide:github"
+            leading="i-lucide-github"
           >
             GitHub
           </Button>
         </div>
-        <div class="p-12 md:(p-24 pt-12)">{props.children}</div>
+        <main class="px-6 py-12 lg:px-16 md:px-12 sm:px-8">{props.children}</main>
         <Toaster />
       </div>
     </SidebarLayout>

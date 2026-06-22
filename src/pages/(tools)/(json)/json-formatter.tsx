@@ -16,7 +16,7 @@ export default createRoute({
     title: 'JSON Formatter',
     description: 'Format, minify, sort, and convert JSON keys with automatic repair',
     category: 'JSON',
-    icon: 'lucide:braces',
+    icon: 'i-lucide-braces',
     tags: [
       'json',
       'formatter',
@@ -194,7 +194,7 @@ function JSONFormatter() {
               classes={{ root: ['right-2 top-9 absolute', !output() && 'hidden'] }}
               onClick={() => setIsFullscreen(true)}
             >
-              <Icon name="lucide:maximize-2" />
+              <Icon name="i-lucide-maximize-2" />
             </Button>
             <Textarea
               classes={{ input: 'text-sm font-mono bg-muted/50 h-96 resize-none' }}
@@ -223,7 +223,7 @@ function JSONFormatter() {
               class="py-1 rounded size-7 hover:bg-primary/90"
               onClick={() => setIsFullscreen(false)}
             >
-              <Icon name="lucide:x" />
+              <Icon name="i-lucide-x" />
             </button>
           </div>
           <div class="flex-1">

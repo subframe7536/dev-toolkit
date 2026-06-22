@@ -8,7 +8,7 @@ function NotFound() {
   return (
     <div class="px-4 text-center flex flex-col min-h-[calc(100vh-4rem)] items-center justify-center">
       <div class="mb-8">
-        <Icon name="lucide:search-x" class="text-muted-foreground h-24 w-24" />
+        <Icon name="i-lucide-search-x" class="text-muted-foreground h-24 w-24" />
       </div>
 
       <h1 class="text-4xl font-bold mb-2">404</h1>
@@ -20,10 +20,14 @@ function NotFound() {
       </p>
 
       <div class="flex gap-4">
-        <Button onClick={() => navigate('/')} leading="lucide:home">
+        <Button onClick={() => navigate('/')} leading="i-lucide-home">
           Go Home
         </Button>
-        <Button variant="outline" onClick={() => window.history.back()} leading="lucide:arrow-left">
+        <Button
+          variant="outline"
+          onClick={() => window.history.back()}
+          leading="i-lucide-arrow-left"
+        >
           Go Back
         </Button>
       </div>

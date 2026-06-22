@@ -28,7 +28,7 @@ export default createRoute({
     title: 'Text Case Converter',
     description: 'Convert text between different case styles',
     category: 'Utilities',
-    icon: 'lucide:case-sensitive',
+    icon: 'i-lucide-case-sensitive',
     tags: ['text', 'case', 'converter', 'camelCase', 'snake_case', 'kebab-case'],
   },
   component: TextCase,

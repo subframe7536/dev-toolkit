@@ -455,22 +455,22 @@ export function getActionColor(action: DebugStep['action']): string {
 /**
  * Get the action icon for visualization
  */
-export function getActionIcon(action: DebugStep['action']): `lucide:${string}` {
+export function getActionIcon(action: DebugStep['action']): `i-lucide-${string}` {
   switch (action) {
     case 'match':
-      return 'lucide:check'
+      return 'i-lucide-check'
     case 'backtrack':
-      return 'lucide:undo-2'
+      return 'i-lucide-undo-2'
     case 'advance':
-      return 'lucide:arrow-right'
+      return 'i-lucide-arrow-right'
     case 'fail':
-      return 'lucide:x'
+      return 'i-lucide-x'
     case 'success':
-      return 'lucide:check-circle'
+      return 'i-lucide-check-circle'
     case 'start':
-      return 'lucide:play'
+      return 'i-lucide-play'
     default:
-      return 'lucide:circle'
+      return 'i-lucide-circle'
   }
 }
 

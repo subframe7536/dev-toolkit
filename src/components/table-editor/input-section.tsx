@@ -270,7 +270,7 @@ export function InputSection() {
                       setTextInput(EXCEL_EXAMPLE)
                       setReplaceLineWrap(true)
                     }}
-                    leading="lucide:file-spreadsheet"
+                    leading="i-lucide-file-spreadsheet"
                   >
                     Excel Example
                   </Button>

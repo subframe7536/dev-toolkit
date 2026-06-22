@@ -20,7 +20,7 @@ function ErrorFallback(props: { error: Error; reset: () => void }) {
       role="alert"
     >
       <div class="flex gap-3 items-start">
-        <Icon name="lucide:alert-triangle" class="text-red-600 mt-0.5 size-5 dark:text-red-400" />
+        <Icon name="i-lucide-alert-triangle" class="text-red-600 mt-0.5 size-5 dark:text-red-400" />
         <div class="flex-1">
           <h3 class="text-red-800 font-medium dark:text-red-200">Something went wrong</h3>
           <p class="text-sm text-red-600 mt-1 dark:text-red-400">{props.error.message}</p>
@@ -29,7 +29,7 @@ function ErrorFallback(props: { error: Error; reset: () => void }) {
             size="sm"
             classes={{ root: 'mt-3' }}
             onClick={() => props.reset()}
-            leading="lucide:refresh-cw"
+            leading="i-lucide-refresh-cw"
           >
             Try Again
           </Button>
@@ -59,7 +59,7 @@ export default createRoute({
     description:
       'Test and debug regular expressions with real-time matching, detailed explanations, and code export',
     category: 'Utilities',
-    icon: 'lucide:regex',
+    icon: 'i-lucide-regex',
     tags: ['regex', 'pattern', 'matching', 'testing', 'debugging'],
   },
   component: () => (
@@ -105,7 +105,7 @@ function RegexTester() {
               <Button
                 variant="default"
                 onClick={() => actions.toggleExportDialog(true)}
-                leading="lucide:download"
+                leading="i-lucide-download"
               >
                 Export Code
               </Button>
@@ -116,7 +116,7 @@ function RegexTester() {
                   actions.setPattern('')
                   actions.setTestText('')
                 }}
-                leading="lucide:trash-2"
+                leading="i-lucide-trash-2"
               >
                 Clear All
               </Button>
@@ -126,7 +126,7 @@ function RegexTester() {
                 classes={{ content: 'max-h-[60vh] max-w-4xl overflow-y-auto' }}
               >
                 <>
-                  <Button variant="outline" leading="lucide:book-open">
+                  <Button variant="outline" leading="i-lucide-book-open">
                     Reference
                   </Button>
                   <HelpPanel />

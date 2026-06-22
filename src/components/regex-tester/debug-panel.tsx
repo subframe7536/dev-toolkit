@@ -264,7 +264,7 @@ function StepList(props: StepListProps) {
           >
             <div class="flex gap-2 items-center">
               <Icon
-                name={getActionIcon(step.action).replace('lucide:', 'i-lucide-') as any}
+                name={getActionIcon(step.action).replace('i-lucide-', 'i-lucide-') as any}
                 class={getActionColor(step.action)}
               />
               <span class={`font-medium ${getActionColor(step.action)}`}>
@@ -497,7 +497,7 @@ export function DebugPanel() {
                 >
                   <div class="mb-2 flex gap-2 items-center">
                     <Icon
-                      name={getActionIcon(step().action).replace('lucide:', 'i-lucide-') as any}
+                      name={getActionIcon(step().action).replace('i-lucide-', 'i-lucide-') as any}
                       class={getActionColor(step().action)}
                     />
                     <span class={`font-medium ${getActionColor(step().action)}`}>

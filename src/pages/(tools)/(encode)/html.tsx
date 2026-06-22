@@ -7,7 +7,7 @@ export default createRoute({
     title: 'HTML Entity Encoder/Decoder',
     description: 'Encode and decode HTML entities',
     category: 'Encoding',
-    icon: 'lucide:code',
+    icon: 'i-lucide-code',
     tags: ['html', 'entities', 'encode', 'decode', 'escape'],
   },
   component: HTMLEncoder,

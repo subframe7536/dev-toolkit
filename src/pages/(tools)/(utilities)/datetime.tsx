@@ -31,7 +31,7 @@ export default createRoute({
     title: 'DateTime Tool',
     description: 'Real-time clock, formatter, and datetime manipulation',
     category: 'Utilities',
-    icon: 'lucide:clock',
+    icon: 'i-lucide-clock',
     tags: ['datetime', 'time', 'date', 'format', 'timezone', 'manipulation'],
   },
   component: DateTimeTool,
@@ -225,7 +225,7 @@ function DateTimeTool() {
           <Card
             title="DateTime Manipulation"
             description="Units: y=years, M=months, d=days, h=hours, m=minutes, s=seconds"
-            icon="lucide:calculator"
+            icon="i-lucide-calculator"
             content={
               <div class="space-y-2">
                 <Input
@@ -260,7 +260,7 @@ function DateTimeTool() {
         {/* Custom Format + Output Formats */}
         <Card
           title="Format Outputs"
-          icon="lucide:list"
+          icon="i-lucide-list"
           content={
             <div class="space-y-4">
               {/* Custom Format */}

@@ -22,7 +22,7 @@ export default createRoute({
     title: 'Hash Generator',
     description: 'Generate hash strings using various algorithms',
     category: 'Utilities',
-    icon: 'lucide:hash',
+    icon: 'i-lucide-hash',
     tags: ['hash', 'sha', 'md5', 'checksum', 'digest'],
   },
   component: HashGenerator,
@@ -126,7 +126,7 @@ function HashGenerator() {
             classes={{ root: 'flex-1' }}
             onClick={handleGenerate}
             disabled={isGenerating()}
-            leading="lucide:refresh-cw"
+            leading="i-lucide-refresh-cw"
           >
             {isGenerating() ? 'Generating...' : 'Generate'}
           </Button>
@@ -143,7 +143,7 @@ function HashGenerator() {
         fallback={
           <div class="text-muted-foreground p-12 text-center border rounded-lg border-dashed flex items-center justify-center">
             <div>
-              <Icon name="lucide:hash" class="mx-auto mb-4 opacity-50 size-12" />
+              <Icon name="i-lucide-hash" class="mx-auto mb-4 opacity-50 size-12" />
               <p>Enter text or upload a file, then click "Generate"</p>
             </div>
           </div>
@@ -185,7 +185,7 @@ function HashGenerator() {
                               {result.algorithm}
                             </div>
                             <Show when={match()}>
-                              <Icon name="lucide:check" class="text-sm text-green-600" />
+                              <Icon name="i-lucide-check" class="text-sm text-green-600" />
                             </Show>
                           </div>
                           <code class="text-sm font-mono break-all">{result.hash}</code>

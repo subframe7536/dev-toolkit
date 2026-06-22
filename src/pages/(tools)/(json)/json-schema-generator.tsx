@@ -13,7 +13,7 @@ export default createRoute({
     title: 'JSON Schema Generator',
     description: 'Generate JSON Schema from JSON data',
     category: 'JSON',
-    icon: 'lucide:file-json-2',
+    icon: 'i-lucide-file-json-2',
     tags: ['json', 'schema', 'generator', 'validation'],
   },
   component: JSONSchemaGenerator,

@@ -10,7 +10,7 @@ export default createRoute({
     title: 'Base64 Encoder/Decoder',
     description: 'Encode and decode Base64 strings',
     category: 'Encoding',
-    icon: 'lucide:binary',
+    icon: 'i-lucide-binary',
     tags: ['base64', 'encode', 'decode', 'binary'],
   },
   component: Base64Encoder,

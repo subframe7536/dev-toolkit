@@ -12,30 +12,31 @@ export default createRoute({
 function Index() {
   const { categories, count } = getCategories()
   return (
-    <div class="flex flex-col gap-8 items-center">
-      <div class="text-center">
-        <h1 class="text-4xl text-foreground tracking-tight font-bold sm:text-5xl">
-          Developer Toolkit
-        </h1>
-        <p class="text-lg text-muted-foreground mt-4">
+    <div class="mx-a flex flex-col gap-10 max-w-7xl w-full">
+      <div class="max-w-3xl">
+        <h1 class="text-4xl text-foreground tracking-tight font-bold">Developer Toolkit</h1>
+        <p class="text-base text-muted-foreground leading-7 mt-3">
           A collection of {count} essential tools for developers
         </p>
       </div>
 
-      <div class="flex flex-col gap-12 max-w-7xl w-full">
+      <div class="flex flex-col gap-10">
         <For each={categories}>
           {(category) => (
-            <div class="flex flex-col gap-4">
-              <h2 class="text-2xl text-foreground font-semibold">{category.name}</h2>
-              <div class="gap-4 grid lg:grid-cols-2 xl:grid-cols-3">
+            <section class="flex flex-col gap-4">
+              <h2 class="text-xl text-foreground font-semibold">{category.name}</h2>
+              <div class="gap-4 grid md:grid-cols-2 xl:grid-cols-3">
                 <For each={category.tools}>
                   {(tool) => (
-                    <A href={tool.path}>
+                    <A
+                      href={tool.path}
+                      class="outline-none rounded-lg block transition-transform focus-visible:effect-fv"
+                    >
                       <Card
                         title={tool.info.title}
                         icon={tool.info.icon}
                         description={tool.info.description}
-                        class="h-full cursor-pointer transition-all hover:shadow-md"
+                        class="h-full min-h-38 cursor-pointer"
                         content={
                           <Show when={tool.info.tags?.length}>
                             <div class="flex flex-wrap gap-1.5">
@@ -54,7 +55,7 @@ function Index() {
                   )}
                 </For>
               </div>
-            </div>
+            </section>
           )}
         </For>
       </div>

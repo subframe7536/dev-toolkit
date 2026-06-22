@@ -10,7 +10,7 @@ export default createRoute({
   component: ToolsLayout,
   loadingComponent: () => (
     <div class="py-12 flex flex-row items-center justify-center">
-      <Icon name="lucide:loader-circle" class="mr-2 animate-spin" />
+      <Icon name="i-lucide-loader-circle" class="mr-2 animate-spin" />
       loading...
     </div>
   ),
@@ -60,7 +60,7 @@ function ToolsLayout(props: ParentProps) {
       <div class="mx-a max-w-400 space-y-2">
         <div class="flex gap-3 items-end">
           <div class="border border-border rounded-lg bg-muted/50 size-8">
-            <Icon name={currentTool.icon} class="text-foreground m-1.5" />
+            <Icon name={currentTool.icon as any} class="text-foreground m-1.5" />
           </div>
           <h1 class="text-3xl text-foreground leading-none font-bold">{currentTool.title}</h1>
         </div>

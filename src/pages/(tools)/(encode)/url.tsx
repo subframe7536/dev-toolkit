@@ -9,7 +9,7 @@ export default createRoute({
     title: 'URL Encoder/Decoder',
     description: 'Encode and decode URL strings',
     category: 'Encoding',
-    icon: 'lucide:link',
+    icon: 'i-lucide-link',
     tags: ['url', 'encode', 'decode', 'percent-encoding'],
   },
   component: URLEncoder,

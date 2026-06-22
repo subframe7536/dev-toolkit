@@ -7,7 +7,7 @@ export default createRoute({
     title: 'Unicode Encoder/Decoder',
     description: 'Encode and decode Unicode escape sequences',
     category: 'Encoding',
-    icon: 'lucide:globe',
+    icon: 'i-lucide-globe',
     tags: ['unicode', 'encode', 'decode', 'escape'],
   },
   component: UnicodeEncoder,

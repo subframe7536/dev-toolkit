@@ -19,7 +19,7 @@ export default createRoute({
     title: 'Image Converter',
     description: 'Convert images between SVG, PNG, JPG, and WebP formats with quality control',
     category: 'Utilities',
-    icon: 'lucide:image',
+    icon: 'i-lucide-image',
     tags: ['image', 'convert', 'svg', 'png', 'jpg', 'webp', 'format'],
   },
   component: ImageConverter,
@@ -256,7 +256,7 @@ function ImageConverter() {
               accept={['image/*']}
               multiple
               info="Supports JPEG, PNG, WebP, GIF, AVIF, TIFF, SVG"
-              icon="lucide:image"
+              icon="i-lucide-image"
             />
             <Show when={images.length > 0}>
               <div class="mt-6 flex flex-wrap gap-4 justify-evenly">
@@ -324,7 +324,11 @@ function ImageConverter() {
           size="lg"
           classes={{ root: 'w-full' }}
           leading={
-            converting() ? <Icon name="lucide:loader-2" class="animate-spin" /> : 'lucide:download'
+            converting() ? (
+              <Icon name="i-lucide-loader-2" class="animate-spin" />
+            ) : (
+              'i-lucide-download'
+            )
           }
         >
           {converting()

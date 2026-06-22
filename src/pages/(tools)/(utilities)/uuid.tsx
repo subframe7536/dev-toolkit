@@ -13,7 +13,7 @@ export default createRoute({
     title: 'UUID Generator',
     description: 'Generate unique identifiers (UUIDs)',
     category: 'Utilities',
-    icon: 'lucide:fingerprint',
+    icon: 'i-lucide-fingerprint',
     tags: ['uuid', 'generator', 'unique', 'identifier'],
   },
   component: UUIDGenerator,
@@ -83,7 +83,11 @@ function UUIDGenerator() {
         </div>
 
         <div class="flex gap-2">
-          <Button classes={{ root: 'flex-1' }} onClick={generateUUIDs} leading="lucide:refresh-cw">
+          <Button
+            classes={{ root: 'flex-1' }}
+            onClick={generateUUIDs}
+            leading="i-lucide-refresh-cw"
+          >
             Generate
           </Button>
           <ClearButton class="flex-1" onClear={handleClear} disabled={uuids().length === 0} />
@@ -95,7 +99,7 @@ function UUIDGenerator() {
         fallback={
           <div class="text-muted-foreground p-12 text-center border rounded-lg border-dashed flex items-center justify-center">
             <div>
-              <Icon name="lucide:fingerprint" class="mx-auto mb-4 opacity-50 size-12" />
+              <Icon name="i-lucide-fingerprint" class="mx-auto mb-4 opacity-50 size-12" />
               <p>Click "Generate" to create UUIDs</p>
             </div>
           </div>

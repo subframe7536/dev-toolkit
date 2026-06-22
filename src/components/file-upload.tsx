@@ -75,7 +75,7 @@ export function FileUpload(props: Props) {
 }
 
 function normalizeIconName(icon: string | undefined) {
-  return icon?.startsWith('lucide:')
-    ? icon.replace('lucide:', 'i-lucide-')
+  return icon?.startsWith('i-lucide-')
+    ? icon.replace('i-lucide-', 'i-lucide-')
     : (icon ?? 'i-lucide-upload')
 }

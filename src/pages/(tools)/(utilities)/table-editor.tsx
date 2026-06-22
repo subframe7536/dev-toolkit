@@ -12,7 +12,7 @@ export default createRoute({
     title: 'Table Editor',
     description: 'Parse, edit, and export tabular data from MySQL output, CSV or Excel files',
     category: 'Utilities',
-    icon: 'lucide:table',
+    icon: 'i-lucide-table',
     tags: ['table', 'editor', 'mysql', 'excel', 'csv', 'sql', 'markdown'],
   },
   component: () => (

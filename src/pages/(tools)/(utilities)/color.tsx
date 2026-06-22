@@ -21,7 +21,7 @@ export default createRoute({
     title: 'Color Converter',
     description: 'Convert colors between formats and adjust properties',
     category: 'Utilities',
-    icon: 'lucide:palette',
+    icon: 'i-lucide-palette',
     tags: ['color', 'converter', 'hex', 'rgb', 'hsl', 'hwb', 'oklch'],
   },
   component: ColorConverter,
@@ -96,7 +96,7 @@ function ColorConverter() {
             style={{ 'background-color': rgbToHex(rgb()) }}
           />
           <div class="opacity-0 flex transition-opacity items-center inset-0 justify-center absolute group-hover:opacity-100">
-            <Icon name="lucide:pipette" class="text-5xl text-white drop-shadow-lg" />
+            <Icon name="i-lucide-pipette" class="text-5xl text-white drop-shadow-lg" />
           </div>
           <input type="color" value={rgbToHex(rgb())} onInput={handleColorPick} class="sr-only" />
         </label>
@@ -113,20 +113,20 @@ function ColorConverter() {
             class="rounded-1.5 size-6 translate-y--50% right-2 top-50% absolute hover:bg-background"
             onClick={() => handleInputChange('')}
           >
-            <Icon name="lucide:x" class="size-3 inline-block" title="clear" />
+            <Icon name="i-lucide-x" class="size-3 inline-block" title="clear" />
           </button>
         </div>
 
         {/* Action Buttons */}
         <div class="flex gap-2">
-          <Button onClick={handleRandomize} classes={{ root: 'flex-1' }} leading="lucide:shuffle">
+          <Button onClick={handleRandomize} classes={{ root: 'flex-1' }} leading="i-lucide-shuffle">
             Random
           </Button>
           <Button
             onClick={handleSaveColor}
             variant="secondary"
             classes={{ root: 'flex-1' }}
-            leading="lucide:save"
+            leading="i-lucide-save"
           >
             Save
           </Button>

@@ -17,7 +17,9 @@ export function Card(props: CardProps) {
       title={
         <div class="flex gap-2 items-center">
           <Show when={props.icon}>
-            <Icon name={props.icon as any} class="text-muted-foreground size-6" />
+            <span class="border border-border rounded-md bg-muted/40 grid size-8 transition-colors place-items-center group-hover:text-primary group-hover:bg-primary/10">
+              <Icon name={props.icon as any} class="size-4.5" />
+            </span>
           </Show>
           <span>{props.title}</span>
         </div>
@@ -25,8 +27,13 @@ export function Card(props: CardProps) {
       description={props.description}
       footer={props.footer}
       classes={{
-        root: cn('shadow-sm', props.class),
-        title: 'text-lg leading-none tracking-tight font-semibold',
+        root: cn(
+          'group border border-border/80 shadow-sm transition-(colors shadow transform) duration-180 ease-out hover:(border-primary/35 bg-card/95 shadow-md -translate-y-0.5)',
+          props.class,
+        ),
+        title: 'text-lg leading-tight tracking-tight font-semibold',
+        description: 'text-sm leading-6',
+        body: 'pt-4',
       }}
     >
       {props.content}
