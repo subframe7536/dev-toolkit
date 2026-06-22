@@ -66,9 +66,9 @@ function App(props: RouteSectionProps) {
                         href={tool.path}
                         title={tool.info.title}
                         class={cn(
-                          'hover:bg-sidebar-accent hover:text-sidebar-accent-foreground text-sm px-2 py-2 rounded-md flex gap-2 transition-colors duration-150 items-center',
+                          'group hover:text-sidebar-accent-foreground dark:hover:bg-sidebar-accent text-sm px-2 py-2 rounded-md flex gap-2 transition-[background-color,color,box-shadow] duration-200 ease-out items-center hover:(bg-primary/12 shadow-xs)',
                           props.location.pathname.endsWith(tool.path) &&
-                            'bg-sidebar-accent text-sidebar-accent-foreground',
+                            'text-sidebar-accent-foreground dark:bg-sidebar-accent bg-primary/14 shadow-xs',
                         )}
                         onClick={() => {
                           if (sidebar.isMobile()) {
@@ -78,7 +78,7 @@ function App(props: RouteSectionProps) {
                       >
                         <Icon
                           name={tool.info.icon as any}
-                          class="text-sidebar-foreground/70 size-4"
+                          class="text-sidebar-foreground/70 group-hover:text-sidebar-accent-foreground size-4 transition-colors duration-200"
                         />
                         <span>{tool.info.title}</span>
                       </A>

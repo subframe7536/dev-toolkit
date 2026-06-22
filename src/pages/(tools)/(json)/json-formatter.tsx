@@ -50,6 +50,7 @@ function JSONFormatter() {
   const [parseNested, setParseNested] = createSignal(false)
   const [targetCase, setTargetCase] = createSignal<CaseStyle>('As is')
   const [indent, setIndent] = createSignal(2)
+  const [displayIndent, setDisplayIndent] = createSignal(2)
   const [isFullscreen, setIsFullscreen] = createSignal(false)
 
   const tryRepairIfEnabled = (inputValue: string): string => {
@@ -135,9 +136,15 @@ function JSONFormatter() {
     setOutput('')
   }
 
+  const updateIndent = (value: number | number[]) => {
+    const nextIndent = Array.isArray(value) ? value[0] : value
+    setDisplayIndent(nextIndent)
+    setIndent(nextIndent)
+  }
+
   return (
     <div class="space-y-6">
-      <div class="flex flex-wrap gap-8">
+      <div class="gap-6 grid items-start xl:grid-cols-[minmax(0,1fr)_18rem_minmax(20rem,30rem)]">
         <div class="space-y-4">
           <div class="text-sm font-medium">Options</div>
           <div class="flex flex-wrap gap-4">
@@ -156,14 +163,15 @@ function JSONFormatter() {
             value={targetCase()}
             onChange={setTargetCase}
             options={caseOptions}
-            classes={{ root: 'w-50' }}
+            classes={{ root: 'w-72 max-w-full' }}
           />
         </div>
-        <div class="max-w-120 min-w-80">
+        <div class="min-w-80 space-y-4">
           <label class="text-sm font-medium">Indent Size</label>
           <Slider
-            value={[indent()]}
-            onChange={(value) => setIndent(value[0])}
+            value={[displayIndent()]}
+            onValueChange={(value) => setDisplayIndent(value[0])}
+            onChange={updateIndent}
             min={2}
             max={8}
             step={2}

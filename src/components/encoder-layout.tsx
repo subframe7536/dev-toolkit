@@ -88,14 +88,14 @@ export function EncoderLayout(props: EncoderLayoutProps): JSX.Element {
     isEncode() ? `${props.mode} output will appear here...` : 'Decoded text will appear here...'
 
   return (
-    <div class="space-y-6 lg:space-y-0">
-      <div class="gap-6 grid relative lg:grid-cols-2">
+    <div>
+      <div class="gap-6 grid relative lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
         {/* Left Panel (Input) */}
-        <div class="space-y-4">
-          <label class="text-lg font-medium">{inputLabel()}</label>
+        <div class="gap-3 grid">
+          <label class="text-lg leading-8 font-medium">{inputLabel()}</label>
           <Textarea
             classes={{
-              root: 'h-80 md:h-100',
+              root: 'h-80 w-full md:h-100',
               input: 'text-sm font-mono resize-none',
             }}
             placeholder={inputPlaceholder()}
@@ -118,7 +118,7 @@ export function EncoderLayout(props: EncoderLayoutProps): JSX.Element {
         </div>
 
         {/* Desktop Swap Button */}
-        <div class="hidden left-1/2 top-1/3 absolute z-10 lg:block -translate-x-1/2 -translate-y-1/2">
+        <div class="hidden left-1/2 top-[calc(2rem+12.5rem)] absolute z-10 lg:block -translate-x-1/2 -translate-y-1/2">
           <Button
             onClick={toggleMode}
             size="icon-md"
@@ -131,8 +131,8 @@ export function EncoderLayout(props: EncoderLayoutProps): JSX.Element {
         </div>
 
         {/* Right Panel (Output) */}
-        <div class="flex flex-col gap-4 items-end lg:items-start">
-          <label class="text-lg font-medium">{outputLabel()}</label>
+        <div class="gap-3 grid">
+          <label class="text-lg leading-8 font-medium">{outputLabel()}</label>
           <Textarea
             classes={{
               root: ['w-full h-80 md:h-100', error() && 'border-destructive'],
@@ -145,12 +145,14 @@ export function EncoderLayout(props: EncoderLayoutProps): JSX.Element {
             placeholder={outputPlaceholder()}
             value={error() || outputText()}
           />
-          <CopyButton
-            class="w-fit"
-            content={outputText()}
-            disabled={!outputText()}
-            variant="secondary"
-          />
+          <div class="flex justify-end lg:justify-start">
+            <CopyButton
+              class="w-fit"
+              content={outputText()}
+              disabled={!outputText()}
+              variant="secondary"
+            />
+          </div>
         </div>
       </div>
     </div>
