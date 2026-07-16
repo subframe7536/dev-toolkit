@@ -31,6 +31,7 @@ A privacy-first web-based developer toolset providing 14+ essential utilities. A
 
 ### Todo
 
+- [ ] jwt analyze
 - [ ] regex input misalign and redudant scrollbar
 - [ ] regex tester page scrollbar eliminate
 - [ ] json object to python/java class
