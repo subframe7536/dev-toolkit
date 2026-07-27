@@ -4,6 +4,6 @@
     "paths": {
       "#/*": ["./src/*"]
     },
-    "types": ["vite/client", "solid-file-router/client", "@types/bun"]
+    "types": ["vite/client", "solid-file-router/client", "bun"]
   }
 }

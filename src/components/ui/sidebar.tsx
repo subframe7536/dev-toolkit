@@ -1,7 +1,7 @@
 import type { SidebarFrameT } from 'moraine'
 import { Button, SidebarFrame, SidebarFrameSheetOnlyRender, cn } from 'moraine'
 import type { JSX, ParentProps } from 'solid-js'
-import { Show, createContext, createSignal, useContext } from 'solid-js'
+import { createContext, useContext } from 'solid-js'
 
 export interface SidebarContextValue {
   isMobile: () => boolean
@@ -29,8 +29,6 @@ interface SidebarLayoutProps {
 }
 
 export function SidebarLayout(props: SidebarLayoutProps) {
-  const [desktopOpen, setDesktopOpen] = createSignal(true)
-
   return (
     <SidebarFrame
       variant="inset"
@@ -41,67 +39,27 @@ export function SidebarLayout(props: SidebarLayoutProps) {
         sidebarBody: 'px-2 pb-2',
         main: 'bg-background',
       }}
-      renderFrame={(frameContext) => {
-        return (
-          <Show
-            when={frameContext.isMobile()}
-            fallback={
-              <div class="p-2 flex gap-2 h-full min-h-0">
-                <div
-                  class={cn(
-                    'min-h-0 transition-[width,opacity,transform] duration-200 ease-out overflow-hidden',
-                    desktopOpen()
-                      ? 'opacity-100 w-[clamp(14rem,20vw,20rem)] translate-x-0'
-                      : 'opacity-0 w-0 pointer-events-none -translate-x-2',
-                  )}
-                  aria-hidden={!desktopOpen()}
-                >
-                  <frameContext.sidebar />
-                </div>
-                <frameContext.main />
-              </div>
-            }
-          >
-            <SidebarFrameSheetOnlyRender {...frameContext} />
-          </Show>
-        )
-      }}
-      renderSidebarHeader={
-        props.renderSidebarHeader
-          ? (frameContext) => {
-              const context = toSidebarContext(frameContext, desktopOpen, setDesktopOpen)
-              return (
-                <SidebarContext.Provider value={context}>
-                  {props.renderSidebarHeader?.(context)}
-                </SidebarContext.Provider>
-              )
-            }
-          : undefined
-      }
-      renderSidebarBody={(frameContext) => {
-        const context = toSidebarContext(frameContext, desktopOpen, setDesktopOpen)
+      frameRender={(frameContext) => {
+        const context = toSidebarContext(frameContext)
+
         return (
           <SidebarContext.Provider value={context}>
-            {props.renderSidebarBody(context)}
+            <SidebarFrameSheetOnlyRender {...frameContext} />
           </SidebarContext.Provider>
         )
       }}
-      renderSidebarFooter={
-        props.renderSidebarFooter
-          ? (frameContext) => {
-              const context = toSidebarContext(frameContext, desktopOpen, setDesktopOpen)
-              return (
-                <SidebarContext.Provider value={context}>
-                  {props.renderSidebarFooter?.(context)}
-                </SidebarContext.Provider>
-              )
-            }
+      sidebarHeaderRender={
+        props.renderSidebarHeader
+          ? (frameContext) => props.renderSidebarHeader?.(toSidebarContext(frameContext))
           : undefined
       }
-      renderMain={(frameContext) => {
-        const context = toSidebarContext(frameContext, desktopOpen, setDesktopOpen)
-        return <SidebarContext.Provider value={context}>{props.children}</SidebarContext.Provider>
-      }}
+      sidebarBodyRender={(frameContext) => props.renderSidebarBody(toSidebarContext(frameContext))}
+      sidebarFooterRender={
+        props.renderSidebarFooter
+          ? (frameContext) => props.renderSidebarFooter?.(toSidebarContext(frameContext))
+          : undefined
+      }
+      mainRender={() => props.children}
     />
   )
 }
@@ -128,29 +86,11 @@ export function SidebarTrigger(props: ParentProps<{ class?: string }>) {
   )
 }
 
-function toSidebarContext(
-  context: SidebarFrameT.Context,
-  desktopOpen: () => boolean,
-  setDesktopOpen: (open: boolean | ((open: boolean) => boolean)) => void,
-): SidebarContextValue {
+function toSidebarContext(context: SidebarFrameT.BaseContext): SidebarContextValue {
   return {
     isMobile: context.isMobile,
-    open: () => (context.isMobile() ? context.isOpen() : desktopOpen()),
-    setOpen: (open) => {
-      if (context.isMobile()) {
-        context.setOpen(open)
-        return
-      }
-
-      setDesktopOpen(open)
-    },
-    toggleSidebar: () => {
-      if (context.isMobile()) {
-        context.toggle()
-        return
-      }
-
-      setDesktopOpen((open) => !open)
-    },
+    open: context.isOpen,
+    setOpen: context.setOpen,
+    toggleSidebar: context.toggle,
   }
 }
