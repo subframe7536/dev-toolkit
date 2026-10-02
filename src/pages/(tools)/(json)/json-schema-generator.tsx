@@ -1,6 +1,6 @@
 import { Input, Switch, Textarea } from 'moraine'
 import { createRoute } from 'solid-file-router'
-import { createEffect, createSignal } from 'solid-js'
+import { createEffect, createSignal, on } from 'solid-js'
 import { toast } from 'solid-toaster'
 
 import { ClearButton } from '#/components/clear-button'
@@ -27,24 +27,26 @@ function JSONSchemaGenerator() {
   const [title, setTitle] = createSignal('')
   const [description, setDescription] = createSignal('')
 
-  createEffect(() => {
-    if (!input().trim()) {
-      setOutput('')
-      return
-    }
-    try {
-      const schema = generateJsonSchema(input(), {
-        required: required(),
-        additionalProperties: additionalProperties(),
-        title: title() || undefined,
-        description: description() || undefined,
-      })
-      setOutput(schema)
-    } catch {
-      setOutput('')
-      toast.error('Invalid JSON input')
-    }
-  })
+  createEffect(
+    on([input, required, additionalProperties, title, description], () => {
+      if (!input().trim()) {
+        setOutput('')
+        return
+      }
+      try {
+        const schema = generateJsonSchema(input(), {
+          required: required(),
+          additionalProperties: additionalProperties(),
+          title: title() || undefined,
+          description: description() || undefined,
+        })
+        setOutput(schema)
+      } catch {
+        setOutput('')
+        toast.error('Invalid JSON input')
+      }
+    }),
+  )
 
   const handleClear = () => {
     setInput('')

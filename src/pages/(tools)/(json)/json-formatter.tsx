@@ -175,7 +175,7 @@ function JSONFormatter() {
           <Slider
             aria-label="Indent Size"
             value={[indent()]}
-            onValueCommit={(value) => setIndent(value[0])}
+            onValueChange={(value) => setIndent(value[0])}
             min={2}
             max={8}
             step={2}

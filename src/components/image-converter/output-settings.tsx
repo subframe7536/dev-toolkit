@@ -45,7 +45,7 @@ export const OutputSettings: Component<OutputSettingsProps> = (props) => {
           <Slider
             aria-label="Image Quality"
             value={[props.quality]}
-            onValueCommit={(value) => props.onQualityChange(value[0])}
+            onValueChange={(value) => props.onQualityChange(value[0])}
             min={1}
             max={100}
             step={1}

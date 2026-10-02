@@ -31,7 +31,11 @@ const formats: ColorFormat[] = ['hex', 'rgb', 'hsl', 'hwb', 'oklch']
 const MAX_COLORS = 24
 
 function ColorConverter() {
-  const [rgb, setRgb] = createSignal<RGB>(randomColor())
+  const initialRgb = randomColor()
+  const [color, setColor] = createSignal({ rgb: initialRgb, hsl: rgbToHsl(initialRgb) })
+  const rgb = () => color().rgb
+  const hsl = () => color().hsl
+  const setRgb = (value: RGB) => setColor({ rgb: value, hsl: rgbToHsl(value) })
   const [savedColors, setSavedColors] = createSignal<string[]>([])
   const [inputValue, setInputValue] = createSignal('')
 
@@ -76,13 +80,13 @@ function ColorConverter() {
   }
 
   const updateFromSliders = (component: 'r' | 'g' | 'b', value: number) => {
-    setRgb((prev) => ({ ...prev, [component]: value }))
+    setRgb({ ...rgb(), [component]: value })
   }
 
   const updateFromHsl = (component: 'h' | 's' | 'l', value: number) => {
-    const hsl = rgbToHsl(rgb())
-    hsl[component] = value
-    setRgb(hslToRgb(hsl))
+    // Preserve hue and saturation while editing achromatic colors.
+    const next = { ...hsl(), [component]: value }
+    setColor({ rgb: hslToRgb(next), hsl: next })
   }
 
   return (
@@ -181,7 +185,7 @@ function ColorConverter() {
                   <Slider
                     aria-label="Red"
                     value={[Math.round(rgb().r)]}
-                    onValueCommit={(value) => updateFromSliders('r', value[0])}
+                    onValueChange={(value) => updateFromSliders('r', value[0])}
                     min={0}
                     max={255}
                     step={1}
@@ -192,7 +196,7 @@ function ColorConverter() {
                   <Slider
                     aria-label="Green"
                     value={[Math.round(rgb().g)]}
-                    onValueCommit={(value) => updateFromSliders('g', value[0])}
+                    onValueChange={(value) => updateFromSliders('g', value[0])}
                     min={0}
                     max={255}
                     step={1}
@@ -203,7 +207,7 @@ function ColorConverter() {
                   <Slider
                     aria-label="Blue"
                     value={[Math.round(rgb().b)]}
-                    onValueCommit={(value) => updateFromSliders('b', value[0])}
+                    onValueChange={(value) => updateFromSliders('b', value[0])}
                     min={0}
                     max={255}
                     step={1}
@@ -222,8 +226,8 @@ function ColorConverter() {
                   <label class="font-medium text-sm">Hue</label>
                   <Slider
                     aria-label="Hue"
-                    value={[Math.round(rgbToHsl(rgb()).h)]}
-                    onValueCommit={(value) => updateFromHsl('h', value[0])}
+                    value={[Math.round(hsl().h)]}
+                    onValueChange={(value) => updateFromHsl('h', value[0])}
                     min={0}
                     max={360}
                     step={1}
@@ -233,8 +237,8 @@ function ColorConverter() {
                   <label class="font-medium text-sm">Saturation</label>
                   <Slider
                     aria-label="Saturation"
-                    value={[Math.round(rgbToHsl(rgb()).s)]}
-                    onValueCommit={(value) => updateFromHsl('s', value[0])}
+                    value={[Math.round(hsl().s)]}
+                    onValueChange={(value) => updateFromHsl('s', value[0])}
                     min={0}
                     max={100}
                     step={1}
@@ -244,8 +248,8 @@ function ColorConverter() {
                   <label class="font-medium text-sm">Lightness</label>
                   <Slider
                     aria-label="Lightness"
-                    value={[Math.round(rgbToHsl(rgb()).l)]}
-                    onValueCommit={(value) => updateFromHsl('l', value[0])}
+                    value={[Math.round(hsl().l)]}
+                    onValueChange={(value) => updateFromHsl('l', value[0])}
                     min={0}
                     max={100}
                     step={1}

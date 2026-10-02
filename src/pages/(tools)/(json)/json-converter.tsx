@@ -1,6 +1,6 @@
 import { Field, Select, Switch, Textarea } from 'moraine'
 import { createRoute } from 'solid-file-router'
-import { createEffect, createSignal } from 'solid-js'
+import { createEffect, createSignal, on } from 'solid-js'
 import { toast } from 'solid-toaster'
 
 import { ClearButton } from '#/components/clear-button'
@@ -52,7 +52,7 @@ function JSONConverter() {
 
     switch (conversionMode) {
       case 'yaml':
-        result = jsonToYAML(inputValue)
+        result = jsonToYAML(inputValue, repair)
         break
       case 'js-object':
         result = jsonToJSObject(inputValue, repair)
@@ -64,7 +64,7 @@ function JSONConverter() {
         result = jsonToJavaClass(inputValue, repair)
         break
       case 'query-params':
-        result = jsonToQueryParams(inputValue)
+        result = jsonToQueryParams(inputValue, repair)
         break
       default:
         result = { success: false, error: { message: 'Unknown conversion mode' } }
@@ -82,9 +82,11 @@ function JSONConverter() {
   }
 
   // Auto-convert on input or mode change
-  createEffect(() => {
-    convert(input(), mode(), useRepair())
-  })
+  createEffect(
+    on([input, mode, useRepair], ([value, conversionMode, repair]) => {
+      convert(value, conversionMode, repair)
+    }),
+  )
 
   const getFileExtension = () => {
     const modeToExtension: Record<ConversionMode, string> = {

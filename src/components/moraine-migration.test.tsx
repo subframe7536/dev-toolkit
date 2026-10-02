@@ -6,6 +6,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { RegexProvider, useRegexContext } from '#/contexts/regex-context'
 import { TableEditorProvider, useTableEditorContext } from '#/contexts/table-editor-context'
+import ColorRoute from '#/pages/(tools)/(utilities)/color'
 import TextCaseRoute from '#/pages/(tools)/(utilities)/text-case'
 import UUIDRoute from '#/pages/(tools)/(utilities)/uuid'
 
@@ -85,7 +86,7 @@ describe('tool UI integrations', () => {
     expect(screen.getByRole('heading', { name: 'Generated UUIDs (11)' })).toBeTruthy()
   })
 
-  it('delivers image format, quality, and aspect ratio changes as domain values', async () => {
+  it('delivers image settings as domain values and quality changes before release', async () => {
     const onFormatChange = vi.fn()
     const onQualityChange = vi.fn()
     const onRatioChange = vi.fn()
@@ -109,9 +110,36 @@ describe('tool UI integrations', () => {
     expect(onRatioChange).toHaveBeenCalledWith(false)
     const slider = screen.getByRole('slider', { name: 'Thumb' })
     fireEvent.keyDown(slider, { key: 'ArrowRight' })
-    expect(onQualityChange).not.toHaveBeenCalled()
-    fireEvent.keyUp(slider, { key: 'ArrowRight' })
     expect(onQualityChange).toHaveBeenCalledWith(81)
+    fireEvent.keyUp(slider, { key: 'ArrowRight' })
+    expect(onQualityChange).toHaveBeenCalledTimes(1)
+  })
+
+  it('preserves the selected hue of a gray color when saturation is increased', () => {
+    render(() => (
+      <MemoryRouter>
+        <Route path="/" component={ColorRoute.component} />
+      </MemoryRouter>
+    ))
+
+    fireEvent.input(screen.getByRole('textbox', { name: 'Color value' }), {
+      target: { value: '#808080' },
+    })
+    const hue = within(screen.getByRole('group', { name: 'Hue' })).getByRole('slider', {
+      name: 'Thumb',
+    })
+    fireEvent.keyDown(hue, { key: 'ArrowRight' })
+    fireEvent.keyUp(hue, { key: 'ArrowRight' })
+    expect(hue.getAttribute('aria-valuenow')).toBe('1')
+
+    const saturation = within(screen.getByRole('group', { name: 'Saturation' })).getByRole(
+      'slider',
+      { name: 'Thumb' },
+    )
+    fireEvent.keyDown(saturation, { key: 'End' })
+    fireEvent.keyUp(saturation, { key: 'End' })
+    expect(hue.getAttribute('aria-valuenow')).toBe('1')
+    expect(screen.getByText('hsl(1, 100%, 50%)')).toBeTruthy()
   })
 
   it('opens table export and updates SQL when key columns are checked and unchecked', async () => {

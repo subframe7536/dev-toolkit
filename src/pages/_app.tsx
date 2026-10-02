@@ -46,28 +46,28 @@ function App(props: RouteSectionProps) {
       renderSidebarHeader={() => (
         <A
           href="/"
-          class="px-2 py-1.5 block transition-colors duration-150 rounded-md hover:bg-sidebar-accent"
+          class="px-2 py-2 block transition-colors duration-150 rounded-md hover:bg-sidebar-accent"
         >
-          <h2 class="text-sidebar-foreground font-semibold text-lg">Developer Toolkit</h2>
-          <p class="text-sidebar-muted-foreground text-sm">{count} tools available</p>
+          <h2 class="text-sidebar-foreground font-semibold text-base">Dev Toolkit</h2>
+          <p class="text-sidebar-muted-foreground text-xs">{count} tools available</p>
         </A>
       )}
       renderSidebarBody={(sidebar) => (
-        <div class="mt-4 flex flex-col gap-4">
+        <div class="mt-2 flex flex-col gap-3">
           <For each={categories}>
             {(category) => (
               <section class="flex flex-col gap-1">
-                <h3 class="text-sidebar-muted-foreground tracking-wide font-semibold px-2 uppercase text-xs">
+                <h3 class="text-[11px] text-sidebar-muted-foreground tracking-wide font-semibold px-2 uppercase">
                   {category.name}
                 </h3>
-                <div class="flex flex-col gap-1">
+                <div class="flex flex-col gap-0.5">
                   <For each={category.tools}>
                     {(tool) => (
                       <A
                         href={tool.path}
                         title={tool.info.title}
                         class={cn(
-                          'group text-sidebar-foreground leading-5 px-2 py-2 flex gap-2 transition-colors duration-200 ease-out items-center text-sm rounded-md hover:(text-sidebar-accent-foreground bg-sidebar-accent) focus-visible:effect-fv',
+                          'group text-[13px] text-sidebar-foreground leading-5 px-2 py-1 flex gap-2 min-h-11 transition-colors duration-200 ease-out items-center rounded-md hover:(text-sidebar-accent-foreground bg-sidebar-accent) focus-visible:effect-fv md:min-h-8',
                           props.location.pathname.endsWith(tool.path) &&
                             'text-sidebar-accent-foreground font-semibold bg-sidebar-accent',
                         )}
@@ -81,7 +81,7 @@ function App(props: RouteSectionProps) {
                           name={tool.info.icon as any}
                           class="text-sidebar-muted-foreground shrink-0 size-4 transition-colors duration-200 group-hover:text-sidebar-accent-foreground"
                         />
-                        <span>{tool.info.title}</span>
+                        <span class="truncate">{tool.info.title}</span>
                       </A>
                     )}
                   </For>
@@ -93,7 +93,7 @@ function App(props: RouteSectionProps) {
       )}
     >
       <div class="flex flex-col min-h-full min-w-0">
-        <header class="px-4 py-3 border-b border-border/60 flex gap-3 items-center justify-between sm:px-6">
+        <header class="px-4 py-3 border-b border-border/60 bg-background flex gap-3 items-center top-0 justify-between sticky z-20 sm:px-6">
           <SidebarTrigger />
           <div class="flex gap-2 items-center">
             <ThemeToggle class="min-w-22" />
