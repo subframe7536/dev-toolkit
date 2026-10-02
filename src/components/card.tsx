@@ -17,7 +17,7 @@ export function Card(props: CardProps) {
       title={
         <div class="flex gap-2 items-center">
           <Show when={props.icon}>
-            <span class="border border-border rounded-md bg-muted/40 grid size-8 transition-colors place-items-center group-hover:text-primary group-hover:bg-primary/10">
+            <span class="border border-border bg-muted/40 grid size-8 transition-colors place-items-center rounded-md group-hover:text-primary group-hover:bg-primary/10">
               <Icon name={props.icon as any} class="size-4.5" />
             </span>
           </Show>

@@ -92,7 +92,7 @@ export function EncoderLayout(props: EncoderLayoutProps): JSX.Element {
       <div class="gap-6 grid relative lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
         {/* Left Panel (Input) */}
         <div class="gap-3 grid">
-          <label class="text-lg leading-8 font-medium">{inputLabel()}</label>
+          <label class="leading-8 font-medium text-lg">{inputLabel()}</label>
           <Textarea
             classes={{
               root: 'h-80 w-full md:h-100',
@@ -132,7 +132,7 @@ export function EncoderLayout(props: EncoderLayoutProps): JSX.Element {
 
         {/* Right Panel (Output) */}
         <div class="gap-3 grid">
-          <label class="text-lg leading-8 font-medium">{outputLabel()}</label>
+          <label class="leading-8 font-medium text-lg">{outputLabel()}</label>
           <Textarea
             classes={{
               root: ['w-full h-80 md:h-100', error() && 'border-destructive'],

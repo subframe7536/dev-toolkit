@@ -3,8 +3,8 @@
  * Provides functions for converting JSON to/from various formats
  */
 
-import * as yaml from 'js-yaml'
 import Papa from 'papaparse'
+import { stringify, parse } from 'yaml'
 
 import { repairJSON } from './formatter'
 
@@ -103,10 +103,10 @@ export function csvToJSON(input: string, hasHeaders?: boolean): ConversionResult
 export function jsonToYAML(input: string): ConversionResult {
   try {
     const parsed = JSON.parse(input)
-    const yamlOutput = yaml.dump(parsed, {
+    const yamlOutput = stringify(parsed, {
       indent: 2,
-      lineWidth: -1, // No line wrapping
-      noRefs: true, // Don't use references
+      lineWidth: 0, // No line wrapping
+      aliasDuplicateObjects: false, // Don't use references
     })
     return { success: true, output: yamlOutput }
   } catch (error) {
@@ -127,7 +127,7 @@ export function jsonToYAML(input: string): ConversionResult {
  */
 export function yamlToJSON(input: string): ConversionResult {
   try {
-    const parsed = yaml.load(input)
+    const parsed = parse(input)
     const json = JSON.stringify(parsed, null, 2)
     return { success: true, output: json }
   } catch (error) {
@@ -270,7 +270,7 @@ export function detectFormat(input: string): 'json' | 'csv' | 'yaml' | 'query' |
   // Check for YAML (simple heuristic)
   if (trimmed.includes(':') && (trimmed.includes('\n') || trimmed.includes('- '))) {
     try {
-      yaml.load(trimmed)
+      parse(trimmed)
       return 'yaml'
     } catch {
       // Not valid YAML

@@ -18,8 +18,8 @@ export const SvgOptions: Component<SvgOptionsProps> = (props) => {
     <div class="space-y-4">
       <Show when={props.previewUrl}>
         <div>
-          <label class="text-sm font-medium mb-2 block">Preview</label>
-          <div class="p-4 border rounded-lg bg-muted/30 flex items-center justify-center">
+          <label class="font-medium mb-2 block text-sm">Preview</label>
+          <div class="p-4 border bg-muted/30 flex items-center justify-center rounded-lg">
             <img
               src={props.previewUrl}
               alt="SVG Preview"
@@ -30,7 +30,7 @@ export const SvgOptions: Component<SvgOptionsProps> = (props) => {
       </Show>
 
       <div>
-        <label class="text-sm font-medium">Background Color (optional)</label>
+        <label class="font-medium text-sm">Background Color (optional)</label>
         <div class="flex gap-2">
           <input
             type="color"
@@ -48,7 +48,7 @@ export const SvgOptions: Component<SvgOptionsProps> = (props) => {
       </div>
 
       <div>
-        <label class="text-sm font-medium">Fill Color (optional)</label>
+        <label class="font-medium text-sm">Fill Color (optional)</label>
         <div class="flex gap-2">
           <input
             type="color"
@@ -66,7 +66,7 @@ export const SvgOptions: Component<SvgOptionsProps> = (props) => {
       </div>
 
       <div>
-        <label class="text-sm font-medium">Stroke Color (optional)</label>
+        <label class="font-medium text-sm">Stroke Color (optional)</label>
         <div class="flex gap-2">
           <input
             type="color"

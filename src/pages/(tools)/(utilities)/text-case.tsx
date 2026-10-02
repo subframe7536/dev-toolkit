@@ -45,7 +45,7 @@ function TextCase() {
     <div class="flex flex-col gap-6">
       <div class="relative">
         <div>
-          <label class="text-sm font-medium">Input Text</label>
+          <label class="font-medium text-sm">Input Text</label>
           <Textarea
             value={input()}
             onChange={setInput}
@@ -75,7 +75,7 @@ function TextCase() {
                 description={`Example: ${style.example}`}
                 content={
                   <>
-                    <div class="font-mono p-3 rounded-md bg-muted min-h-16 break-all">
+                    <div class="font-mono p-3 bg-muted min-h-16 break-all rounded-md">
                       {converted()}
                     </div>
                     <CopyButton

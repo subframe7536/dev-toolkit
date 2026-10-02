@@ -55,7 +55,6 @@ export function parseManipulation(input: string): DateTimeManipulation {
   const regex = /([+-]?\d+)([yMdhms])/g
   let match: RegExpExecArray | null
 
-  // eslint-disable-next-line no-cond-assign
   while ((match = regex.exec(input)) !== null) {
     const value = Number.parseInt(match[1], 10)
     const unit = match[2]

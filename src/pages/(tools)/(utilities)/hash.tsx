@@ -111,7 +111,7 @@ function HashGenerator() {
                 <div class="mt-4">
                   <FileUpload file={file()} setFile={setFile} multiple={false} />
                   <Show when={file()}>
-                    <div class="text-sm text-muted-foreground mt-2">
+                    <div class="text-muted-foreground mt-2 text-sm">
                       Selected: {file()!.name} ({(file()!.size / 1024).toFixed(2)} KB)
                     </div>
                   </Show>
@@ -141,7 +141,7 @@ function HashGenerator() {
       <Show
         when={results().length > 0}
         fallback={
-          <div class="text-muted-foreground p-12 text-center border rounded-lg border-dashed flex items-center justify-center">
+          <div class="text-muted-foreground p-12 text-center border border-dashed flex items-center justify-center rounded-lg">
             <div>
               <Icon name="i-lucide-hash" class="mx-auto mb-4 opacity-50 size-12" />
               <p>Enter text or upload a file, then click "Generate"</p>
@@ -154,7 +154,7 @@ function HashGenerator() {
           content={
             <div class="flex flex-col gap-4">
               <div>
-                <label class="text-sm font-medium">Verify Hash (Optional)</label>
+                <label class="font-medium text-sm">Verify Hash (Optional)</label>
                 <Textarea
                   value={verifyHash()}
                   onInput={(e) => setVerifyHash((e.target as HTMLTextAreaElement).value)}
@@ -171,7 +171,7 @@ function HashGenerator() {
                     return (
                       <div
                         class={cn(
-                          'p-2 border rounded-lg flex gap-2 items-center',
+                          'p-2 border flex gap-2 items-center rounded-lg',
                           match() === true
                             ? 'border-green-500/50 bg-green-500/10'
                             : match() === false
@@ -181,14 +181,14 @@ function HashGenerator() {
                       >
                         <div class="flex-1">
                           <div class="mb-0.5 flex gap-1 items-center">
-                            <div class="text-sm text-muted-foreground font-medium select-none uppercase">
+                            <div class="text-muted-foreground font-medium select-none uppercase text-sm">
                               {result.algorithm}
                             </div>
                             <Show when={match()}>
-                              <Icon name="i-lucide-check" class="text-sm text-green-600" />
+                              <Icon name="i-lucide-check" class="text-green-600 text-sm" />
                             </Show>
                           </div>
-                          <code class="text-sm font-mono break-all">{result.hash}</code>
+                          <code class="font-mono break-all text-sm">{result.hash}</code>
                         </div>
                         <CopyButton content={result.hash} variant="ghost" size="sm" text={false} />
                       </div>

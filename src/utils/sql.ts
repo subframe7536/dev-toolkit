@@ -88,7 +88,7 @@ export function fillSqlParams(sql: string, params: string): string {
       }
 
       const param = paramList[paramIndex]
-      let tempParamStr = ''
+      let tempParamStr: string
 
       switch (param.type) {
         case TYPE_STR[0]: // String

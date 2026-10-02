@@ -61,7 +61,7 @@ function JSONSchemaGenerator() {
       </div>
       <div class="flex flex-wrap gap-6 items-center">
         <div class="flex-1 min-w-60">
-          <label class="text-sm font-medium">Schema Title (optional)</label>
+          <label class="font-medium text-sm">Schema Title (optional)</label>
           <Input
             value={title()}
             onInput={(e) => setTitle(e.currentTarget.value)}
@@ -69,7 +69,7 @@ function JSONSchemaGenerator() {
           />
         </div>
         <div class="flex-1 min-w-60">
-          <label class="text-sm font-medium">Schema Description (optional)</label>
+          <label class="font-medium text-sm">Schema Description (optional)</label>
           <Input
             value={description()}
             onInput={(e) => setDescription(e.currentTarget.value)}
@@ -81,7 +81,7 @@ function JSONSchemaGenerator() {
       <div class="gap-6 grid lg:grid-cols-2">
         <div class="space-y-4">
           <div>
-            <label class="text-sm font-medium">Input JSON</label>
+            <label class="font-medium text-sm">Input JSON</label>
             <Textarea
               classes={{ input: 'text-sm font-mono h-96' }}
               placeholder='{"name": "John", "age": 30}'
@@ -99,7 +99,7 @@ function JSONSchemaGenerator() {
 
         <div class="space-y-4">
           <div>
-            <label class="text-sm font-medium">JSON Schema Output</label>
+            <label class="font-medium text-sm">JSON Schema Output</label>
             <Textarea
               classes={{ input: 'text-sm font-mono bg-muted/50 h-96' }}
               readOnly

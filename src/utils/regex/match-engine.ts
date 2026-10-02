@@ -21,7 +21,7 @@ export function flagsToString(flags: RegexFlags): string {
   }
 
   return Object.entries(flags)
-    .filter(([_, enabled]) => enabled)
+    .filter(([, enabled]) => enabled)
     .map(([key]) => flagMap[key as keyof RegexFlags])
     .join('')
 }

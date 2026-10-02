@@ -37,7 +37,7 @@ function TableEditor() {
         <div class="space-y-4">
           <TableActions />
           <div
-            class="border rounded-lg max-w-400 overflow-x-scroll"
+            class="border max-w-400 overflow-x-scroll rounded-lg"
             style={{
               width:
                 !isMobile() && open()

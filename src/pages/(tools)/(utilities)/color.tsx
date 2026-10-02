@@ -90,13 +90,13 @@ function ColorConverter() {
       {/* Left Column */}
       <div class="flex-1 w-full space-y-6 lg:max-w-80">
         {/* Color Preview with Picker */}
-        <label class="group b-(2 border) rounded-lg h-48 w-full block cursor-pointer shadow-lg transition-all relative overflow-hidden focus-within:(shadow-xl scale-[1.02]) hover:(shadow-xl scale-[1.02])">
+        <label class="group b-(2 border) h-48 w-full block cursor-pointer shadow-lg transition-all relative overflow-hidden rounded-lg focus-within:(shadow-xl scale-[1.02]) hover:(shadow-xl scale-[1.02])">
           <div
             class="h-full w-full transition-opacity group-hover:opacity-90"
             style={{ 'background-color': rgbToHex(rgb()) }}
           />
           <div class="opacity-0 flex transition-opacity items-center inset-0 justify-center absolute group-hover:opacity-100">
-            <Icon name="i-lucide-pipette" class="text-5xl text-white drop-shadow-lg" />
+            <Icon name="i-lucide-pipette" class="text-white drop-shadow-lg text-5xl" />
           </div>
           <input type="color" value={rgbToHex(rgb())} onInput={handleColorPick} class="sr-only" />
         </label>
@@ -134,7 +134,7 @@ function ColorConverter() {
 
         {/* Saved Colors */}
         <div class="space-y-2">
-          <h3 class="text-sm text-muted-foreground font-medium select-none">Saved Colors</h3>
+          <h3 class="text-muted-foreground font-medium select-none text-sm">Saved Colors</h3>
           <div class="gap-2 grid grid-cols-[repeat(auto-fill,minmax(2.5rem,1fr))]">
             <For each={Array.from({ length: MAX_COLORS })}>
               {(_, i) => {
@@ -169,7 +169,7 @@ function ColorConverter() {
             content={
               <div class="space-y-4">
                 <div>
-                  <label class="text-sm font-medium">Red</label>
+                  <label class="font-medium text-sm">Red</label>
                   <Slider
                     value={[Math.round(rgb().r)]}
                     onChange={(value) => updateFromSliders('r', value[0])}
@@ -179,7 +179,7 @@ function ColorConverter() {
                   />
                 </div>
                 <div>
-                  <label class="text-sm font-medium">Green</label>
+                  <label class="font-medium text-sm">Green</label>
                   <Slider
                     value={[Math.round(rgb().g)]}
                     onChange={(value) => updateFromSliders('g', value[0])}
@@ -189,7 +189,7 @@ function ColorConverter() {
                   />
                 </div>
                 <div>
-                  <label class="text-sm font-medium">Blue</label>
+                  <label class="font-medium text-sm">Blue</label>
                   <Slider
                     value={[Math.round(rgb().b)]}
                     onChange={(value) => updateFromSliders('b', value[0])}
@@ -208,7 +208,7 @@ function ColorConverter() {
             content={
               <div class="space-y-4">
                 <div>
-                  <label class="text-sm font-medium">Hue</label>
+                  <label class="font-medium text-sm">Hue</label>
                   <Slider
                     value={[Math.round(rgbToHsl(rgb()).h)]}
                     onChange={(value) => updateFromHsl('h', value[0])}
@@ -218,7 +218,7 @@ function ColorConverter() {
                   />
                 </div>
                 <div>
-                  <label class="text-sm font-medium">Saturation</label>
+                  <label class="font-medium text-sm">Saturation</label>
                   <Slider
                     value={[Math.round(rgbToHsl(rgb()).s)]}
                     onChange={(value) => updateFromHsl('s', value[0])}
@@ -228,7 +228,7 @@ function ColorConverter() {
                   />
                 </div>
                 <div>
-                  <label class="text-sm font-medium">Lightness</label>
+                  <label class="font-medium text-sm">Lightness</label>
                   <Slider
                     value={[Math.round(rgbToHsl(rgb()).l)]}
                     onChange={(value) => updateFromHsl('l', value[0])}
@@ -251,12 +251,12 @@ function ColorConverter() {
                 {(format) => {
                   const value = () => formatColor(rgb(), format)
                   return (
-                    <div class="p-2 border rounded-lg bg-muted/30 flex gap-2 items-center">
+                    <div class="p-2 border bg-muted/30 flex gap-2 items-center rounded-lg">
                       <div class="flex-1">
-                        <div class="text-xs text-muted-foreground font-medium mb-0.5 select-none uppercase">
+                        <div class="text-muted-foreground font-medium mb-0.5 select-none uppercase text-xs">
                           {format}
                         </div>
-                        <code class="text-sm font-mono">{value()}</code>
+                        <code class="font-mono text-sm">{value()}</code>
                       </div>
                       <CopyButton content={value()} variant="ghost" size="sm" text={false} />
                     </div>

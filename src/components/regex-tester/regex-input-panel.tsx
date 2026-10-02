@@ -276,8 +276,8 @@ export function RegexInputPanel() {
       <div class="space-y-3">
         {/* Header with stats */}
         <div class="flex items-center justify-between">
-          <label class="text-sm font-medium">Pattern</label>
-          <div class="text-xs text-muted-foreground flex gap-3 items-center">
+          <label class="font-medium text-sm">Pattern</label>
+          <div class="text-muted-foreground flex gap-3 items-center text-xs">
             <Show when={hasInput() && store.executionTime > 0}>
               <span class="flex gap-1 items-center">
                 <Icon name="i-lucide-clock" class="size-3" />
@@ -304,7 +304,7 @@ export function RegexInputPanel() {
             {/* Mirror div for syntax highlighting */}
             <div
               ref={(element) => (patternMirrorRef = element)}
-              class="text-sm leading-relaxed font-mono p-2 b-(1 transparent) pointer-events-none whitespace-pre-wrap break-all inset-0 absolute z-10 overflow-hidden"
+              class="leading-relaxed font-mono p-2 b-(1 transparent) pointer-events-none whitespace-pre-wrap break-all inset-0 absolute z-10 overflow-hidden text-sm"
               aria-hidden="true"
             >
               <Suspense fallback={<span>{store.pattern || ' '}</span>}>
@@ -323,7 +323,7 @@ export function RegexInputPanel() {
             <textarea
               ref={(element) => (patternRef = element)}
               placeholder="Enter regex pattern..."
-              class="text-sm c-transparent leading-relaxed font-mono caret-foreground border rounded-md bg-transparent w-full resize-none break-all overflow-hidden !p-2 !min-h-10"
+              class="c-transparent leading-relaxed font-mono caret-foreground border bg-transparent w-full resize-none break-all overflow-hidden text-sm rounded-md !p-2 !min-h-10"
               rows={1}
               value={store.pattern}
               onInput={(e) => handlePatternChange(e.currentTarget.value)}
@@ -347,7 +347,7 @@ export function RegexInputPanel() {
           {(error) => (
             <div
               id={errorId}
-              class="text-sm text-red-600 flex gap-2 items-start dark:text-red-400"
+              class="text-red-600 flex gap-2 items-start text-sm dark:text-red-400"
               role="alert"
             >
               <Icon name="i-lucide-alert-circle" class="mt-0.5 flex-shrink-0 size-4" />
@@ -359,12 +359,12 @@ export function RegexInputPanel() {
 
       {/* Test Text Section - fixed 400px height with scroll */}
       <div>
-        <label class="text-sm font-medium">Test String</label>
-        <div class="mt-1 b-(1 transparent) rounded-lg h-100 relative overflow-hidden">
+        <label class="font-medium text-sm">Test String</label>
+        <div class="mt-1 b-(1 transparent) h-100 relative overflow-hidden rounded-lg">
           {/* Highlight layer */}
           <div
             ref={(element) => (testMirrorRef = element)}
-            class="text-sm leading-relaxed font-mono p-(x-3 y-2) h-full pointer-events-none whitespace-pre-wrap break-words inset-0 absolute z-0 overflow-auto"
+            class="leading-relaxed font-mono p-(x-3 y-2) h-full pointer-events-none whitespace-pre-wrap break-words inset-0 absolute z-0 overflow-auto text-sm"
             aria-hidden="true"
           >
             <For each={segments()}>
@@ -382,7 +382,7 @@ export function RegexInputPanel() {
           <textarea
             ref={(element) => (testRef = element)}
             placeholder="Enter text to test your regex..."
-            class="c-transparent leading-relaxed font-mono p-2 caret-foreground border rounded-md bg-transparent h-full w-full resize-none break-all"
+            class="c-transparent leading-relaxed font-mono p-2 caret-foreground border bg-transparent h-full w-full resize-none break-all rounded-md"
             value={store.testText}
             onInput={(e) => actions.setTestText(e.currentTarget.value)}
             onScroll={syncTestScroll}
@@ -400,7 +400,7 @@ export function RegexInputPanel() {
 
       {/* No matches hint */}
       <Show when={hasInput() && matchCount() === 0 && store.isValid}>
-        <div class="text-sm text-amber-600 p-3 border border-amber-200 rounded-lg bg-amber-50 flex gap-2 items-center dark:text-amber-400 dark:border-amber-800 dark:bg-amber-950/30">
+        <div class="text-amber-600 p-3 border border-amber-200 bg-amber-50 flex gap-2 items-center text-sm rounded-lg dark:text-amber-400 dark:border-amber-800 dark:bg-amber-950/30">
           <Icon name="i-lucide-info" class="size-4" />
           <span>No matches found. Try adjusting your pattern.</span>
         </div>

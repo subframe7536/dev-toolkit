@@ -337,13 +337,13 @@ const SYNTAX_REFERENCE: SyntaxCategory[] = [
 function SyntaxItemRow(props: { item: SyntaxItem }) {
   return (
     <div class="py-2 border-b border-border/50 flex gap-3 last:border-b-0">
-      <code class="text-sm text-primary font-mono font-semibold shrink-0 min-w-16">
+      <code class="text-primary font-mono font-semibold shrink-0 min-w-16 text-sm">
         {props.item.syntax}
       </code>
       <div class="flex-1 min-w-0">
-        <div class="text-sm text-foreground">{props.item.description}</div>
+        <div class="text-foreground text-sm">{props.item.description}</div>
         <Show when={props.item.example}>
-          <div class="text-xs text-muted-foreground mt-0.5">
+          <div class="text-muted-foreground mt-0.5 text-xs">
             <code class="px-1 rounded bg-muted/50">{props.item.example}</code>
             <Show when={props.item.exampleMatch}>
               <span class="ml-1">→ {props.item.exampleMatch}</span>
@@ -367,10 +367,10 @@ export function HelpPanel() {
         <For each={SYNTAX_REFERENCE}>
           {(category) => (
             <div class="space-y-3">
-              <h4 class="text-sm text-foreground font-semibold flex gap-2 items-center">
+              <h4 class="text-foreground font-semibold flex gap-2 items-center text-sm">
                 <Icon name={category.icon} class="text-muted-foreground size-4" />
                 {category.title}
-                <span class="text-xs text-muted-foreground font-normal">
+                <span class="text-muted-foreground font-normal text-xs">
                   ({category.items.length})
                 </span>
               </h4>
@@ -383,7 +383,7 @@ export function HelpPanel() {
         </For>
       </div>
 
-      <div class="text-xs text-muted-foreground mt-6 p-3 border border-border rounded-md bg-muted/20">
+      <div class="text-muted-foreground mt-6 p-3 border border-border bg-muted/20 text-xs rounded-md">
         <div class="font-medium mb-1 flex gap-1 items-center">
           <Icon name="i-lucide-lightbulb" class="size-3" />
           Tips

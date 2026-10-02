@@ -216,7 +216,7 @@ export function InputSection() {
             content: (
               <div class="mt-4 flex flex-col gap-3">
                 <div class="flex gap-4 justify-between">
-                  <p class="text-sm text-muted-foreground">
+                  <p class="text-muted-foreground text-sm">
                     Paste MySQL CLI output (starts with +-), CSV text, or Excel table data here.
                   </p>
                   <Switch
@@ -284,7 +284,7 @@ export function InputSection() {
             label: 'File Upload',
             content: (
               <div class="mt-4 flex flex-col gap-3">
-                <p class="text-sm text-muted-foreground">{getFileDescription()}</p>
+                <p class="text-muted-foreground text-sm">{getFileDescription()}</p>
                 <FileUpload
                   file={uploadedFile()}
                   setFile={handleFileSelect}
@@ -294,7 +294,7 @@ export function InputSection() {
 
                 <Show when={sheetNames().length > 1}>
                   <div class="flex flex-col gap-2">
-                    <label class="text-sm font-medium">Select Sheet</label>
+                    <label class="font-medium text-sm">Select Sheet</label>
                     <Select
                       value={selectedSheet()}
                       onChange={setSelectedSheet}

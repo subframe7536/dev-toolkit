@@ -87,7 +87,7 @@ function SqlParamFill() {
 
       <div class="flex-1 gap-4 grid grid-cols-1 lg:gap-6 lg:grid-cols-2">
         <div>
-          <label class="text-sm font-medium">SQL Template</label>
+          <label class="font-medium text-sm">SQL Template</label>
           <Textarea
             value={sqlInput()}
             onInput={(e) => setSqlInput(e.currentTarget.value)}
@@ -97,7 +97,7 @@ function SqlParamFill() {
         </div>
 
         <div>
-          <label class="text-sm font-medium">Parameters</label>
+          <label class="font-medium text-sm">Parameters</label>
           <Textarea
             value={paramsInput()}
             onInput={(e) => setParamsInput(e.currentTarget.value)}
@@ -109,7 +109,7 @@ function SqlParamFill() {
 
       <div class="relative">
         <div>
-          <label class="text-sm font-medium">Output</label>
+          <label class="font-medium text-sm">Output</label>
           <Textarea
             value={error() || output()}
             readOnly
@@ -123,7 +123,7 @@ function SqlParamFill() {
         </div>
       </div>
 
-      <div class="text-muted-foreground p-4 rounded-lg bg-muted space-y-3">
+      <div class="text-muted-foreground p-4 bg-muted space-y-3 rounded-lg">
         <div>
           <strong>How to use:</strong>
           <ul class="mt-1 list-disc list-inside space-y-0.5">
@@ -136,12 +136,12 @@ function SqlParamFill() {
         </div>
         <div>
           <strong>Parameter format:</strong>
-          <code class="text-xs px-1.5 py-0.5 rounded bg-muted">value(Type), value(Type), ...</code>
+          <code class="px-1.5 py-0.5 rounded bg-muted text-xs">value(Type), value(Type), ...</code>
           <div class="mt-1">
-            Supported types: <code class="text-xs px-1 rounded bg-muted">String</code>,{' '}
-            <code class="text-xs px-1 rounded bg-muted">Integer</code>,{' '}
-            <code class="text-xs px-1 rounded bg-muted">Long</code>,{' '}
-            <code class="text-xs px-1 rounded bg-muted">Timestamp</code>
+            Supported types: <code class="px-1 rounded bg-muted text-xs">String</code>,{' '}
+            <code class="px-1 rounded bg-muted text-xs">Integer</code>,{' '}
+            <code class="px-1 rounded bg-muted text-xs">Long</code>,{' '}
+            <code class="px-1 rounded bg-muted text-xs">Timestamp</code>
           </div>
         </div>
       </div>

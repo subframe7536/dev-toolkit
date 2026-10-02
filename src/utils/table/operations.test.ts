@@ -1,6 +1,5 @@
-import { describe, expect, test } from 'bun:test'
-
 import * as fc from 'fast-check'
+import { describe, expect, test } from 'vitest'
 
 import {
   applySnakeCaseToColumns,
@@ -371,7 +370,7 @@ describe('sortByColumn', () => {
             const nextValue = nonNullRows[i + 1].cells[columnToSort.id]
 
             if (currentValue !== null && nextValue !== null) {
-              let comparison = 0
+              let comparison: number
               if (typeof currentValue === 'number' && typeof nextValue === 'number') {
                 comparison = currentValue - nextValue
               } else if (typeof currentValue === 'boolean' && typeof nextValue === 'boolean') {

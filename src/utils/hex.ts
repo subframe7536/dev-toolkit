@@ -45,7 +45,6 @@ export function toHex(input: string | Uint8Array): string {
   // 2. Map bytes to hex strings
   // Pre-allocating the array size helps V8/SpiderMonkey optimization
   const len = bytes.length
-  // eslint-disable-next-line unicorn/no-new-array
   const hexArr = new Array(len)
 
   for (let i = 0; i < len; i++) {

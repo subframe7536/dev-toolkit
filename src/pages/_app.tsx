@@ -45,9 +45,9 @@ function App(props: RouteSectionProps) {
       renderSidebarHeader={() => (
         <A
           href="/"
-          class="hover:bg-sidebar-accent px-2 py-1.5 rounded-md block transition-colors duration-150"
+          class="hover:bg-sidebar-accent px-2 py-1.5 block transition-colors duration-150 rounded-md"
         >
-          <h2 class="text-sidebar-foreground text-lg font-semibold">Developer Toolkit</h2>
+          <h2 class="text-sidebar-foreground font-semibold text-lg">Developer Toolkit</h2>
           <p class="text-sidebar-foreground/70 text-xs">{count} tools available</p>
         </A>
       )}
@@ -56,7 +56,7 @@ function App(props: RouteSectionProps) {
           <For each={categories}>
             {(category) => (
               <section class="flex flex-col gap-1">
-                <h3 class="text-sidebar-foreground/70 text-xs tracking-wide font-medium px-2 uppercase">
+                <h3 class="text-sidebar-foreground/70 tracking-wide font-medium px-2 uppercase text-xs">
                   {category.name}
                 </h3>
                 <div class="flex flex-col gap-1">
@@ -66,7 +66,7 @@ function App(props: RouteSectionProps) {
                         href={tool.path}
                         title={tool.info.title}
                         class={cn(
-                          'group hover:text-sidebar-accent-foreground dark:hover:bg-sidebar-accent text-sm px-2 py-2 rounded-md flex gap-2 transition-[background-color,color,box-shadow] duration-200 ease-out items-center hover:(bg-primary/12 shadow-xs)',
+                          'group hover:text-sidebar-accent-foreground dark:hover:bg-sidebar-accent px-2 py-2 flex gap-2 transition-[background-color,color,box-shadow] duration-200 ease-out items-center text-sm rounded-md hover:(bg-primary/12 shadow-xs)',
                           props.location.pathname.endsWith(tool.path) &&
                             'text-sidebar-accent-foreground dark:bg-sidebar-accent bg-primary/14 shadow-xs',
                         )}

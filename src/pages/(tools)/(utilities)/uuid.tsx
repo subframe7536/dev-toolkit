@@ -60,7 +60,7 @@ function UUIDGenerator() {
     <div class="gap-6 grid grid-cols-1 lg:grid-cols-[auto_1fr]">
       <div class="flex flex-col gap-6 lg:w-80">
         <div>
-          <div class="text-lg font-semibold mb-4">Quick Select</div>
+          <div class="font-semibold mb-4 text-lg">Quick Select</div>
           <Tabs
             value={selectedTab()}
             onChange={handleTabChange}
@@ -72,7 +72,7 @@ function UUIDGenerator() {
         </div>
 
         <div>
-          <label class="text-sm font-medium">Custom Count</label>
+          <label class="font-medium text-sm">Custom Count</label>
           <InputNumber
             minValue={1}
             maxValue={100}
@@ -97,7 +97,7 @@ function UUIDGenerator() {
       <Show
         when={uuids().length > 0}
         fallback={
-          <div class="text-muted-foreground p-12 text-center border rounded-lg border-dashed flex items-center justify-center">
+          <div class="text-muted-foreground p-12 text-center border border-dashed flex items-center justify-center rounded-lg">
             <div>
               <Icon name="i-lucide-fingerprint" class="mx-auto mb-4 opacity-50 size-12" />
               <p>Click "Generate" to create UUIDs</p>
@@ -107,7 +107,7 @@ function UUIDGenerator() {
       >
         <div class="flex flex-col gap-4">
           <div class="flex items-center justify-between">
-            <h3 class="text-lg text-foreground font-semibold">
+            <h3 class="text-foreground font-semibold text-lg">
               Generated UUIDs ({uuids().length})
             </h3>
             <CopyButton
@@ -121,7 +121,7 @@ function UUIDGenerator() {
           <div class="flex flex-col gap-2">
             <For each={uuids()}>
               {(uuid) => (
-                <div class="text-sm font-mono p-3 border rounded-md bg-muted/50 flex gap-2 items-center">
+                <div class="font-mono p-3 border bg-muted/50 flex gap-2 items-center text-sm rounded-md">
                   <span class="flex-1 truncate">{uuid}</span>
                   <CopyButton content={uuid} variant="ghost" size="sm" text={false} />
                 </div>

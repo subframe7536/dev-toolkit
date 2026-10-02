@@ -4,7 +4,8 @@
 /* oxfmt-ignore */
 /* oxlint-disable */
 
-export {}
+
+import type { AnchorProps, NavigateOptions, RouterResponseInit, CustomResponse } from '@solidjs/router'
 
 declare module 'solid-file-router' {
   interface FileRoutePath {
@@ -31,20 +32,13 @@ declare module 'solid-file-router' {
   interface FileRouteInfo {
     title: string
     description: string
-    category: 'Encoding' | 'JSON' | 'Utilities'
-    icon: `i-lucide-${string}`
+    category: "Encoding" | "JSON" | "Utilities"
+    icon: `lucide:${string}`
     tags: string[]
   }
 }
 
 declare module '@solidjs/router' {
-  import type {
-    AnchorProps,
-    NavigateOptions,
-    RouterResponseInit,
-    CustomResponse,
-  } from '@solidjs/router'
-
   type Paths =
     | '/'
     | '/base64'
@@ -66,13 +60,10 @@ declare module '@solidjs/router' {
     | '/uuid'
     | '/404'
 
-  export declare function A(props: Omit<AnchorProps, 'href'> & { href: Paths }): JSX.Element
+  export function A(props: Omit<AnchorProps, 'href'> & { href: Paths }): JSX.Element
   export interface Navigator {
-    (to: Paths, options?: Partial<NavigateOptions>): void
-    (delta: number): void
+    (to: Paths, options?: Partial<NavigateOptions>): void;
+    (delta: number): void;
   }
-  export declare function redirect(
-    url: Paths,
-    init?: number | RouterResponseInit,
-  ): CustomResponse<never>
+  export function redirect(url: Paths, init?: number | RouterResponseInit): CustomResponse<never>
 }

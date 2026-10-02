@@ -215,11 +215,11 @@ export function TestingPanel() {
       <div class="flex items-center justify-between">
         <label
           id="test-text-label"
-          class="text-sm text-muted-foreground tracking-wide font-medium uppercase"
+          class="text-muted-foreground tracking-wide font-medium uppercase text-sm"
         >
           Test String
         </label>
-        <div class="text-xs text-muted-foreground">
+        <div class="text-muted-foreground text-xs">
           {/* Match count only - execution time moved to pattern header */}
           <Show when={hasInput()}>
             <div aria-live="polite">
@@ -240,7 +240,7 @@ export function TestingPanel() {
         {/* Highlight overlay - hidden from screen readers */}
         <div
           ref={(element) => (highlightRef = element)}
-          class="text-sm leading-relaxed font-mono p-(2 3) border border-transparent rounded-md whitespace-pre-wrap break-words inset-0 absolute z-1 overflow-hidden"
+          class="leading-relaxed font-mono p-(2 3) border border-transparent whitespace-pre-wrap break-words inset-0 absolute z-1 overflow-hidden text-sm rounded-md"
           onClick={handleHighlightClick}
           aria-hidden="true"
         >
@@ -265,7 +265,7 @@ export function TestingPanel() {
         <textarea
           ref={(element) => (textareaRef = element)}
           placeholder="Enter text to test your regex against..."
-          class="text-sm leading-relaxed font-mono p-(2 3) border border-input rounded-md h-64 w-full resize-y relative z-10 focus:(outline-none ring-2 ring-ring)"
+          class="leading-relaxed font-mono p-(2 3) border border-input h-64 w-full resize-y relative z-10 text-sm rounded-md focus:(outline-none ring-2 ring-ring)"
           style={{
             background: store.testText ? 'transparent' : undefined,
             color: store.testText ? 'transparent' : undefined,
@@ -288,7 +288,7 @@ export function TestingPanel() {
 
       {/* Hint for clickable matches */}
       <Show when={hasMatches()}>
-        <div id="test-text-hint" class="text-xs text-muted-foreground">
+        <div id="test-text-hint" class="text-muted-foreground text-xs">
           <span class="i-lucide-mouse-pointer-click mr-1 size-3 inline-block" aria-hidden="true" />
           Click on highlighted matches to view details. Use Alt+↑/↓ to navigate matches.
         </div>
@@ -297,7 +297,7 @@ export function TestingPanel() {
       {/* No matches indicator when pattern and text exist but no matches */}
       <Show when={hasInput() && !hasMatches() && store.isValid}>
         <div
-          class="text-sm text-amber-600 p-2 border border-amber-200 rounded-md bg-amber-50 flex gap-2 items-center dark:text-amber-400 dark:border-amber-800 dark:bg-amber-950/30"
+          class="text-amber-600 p-2 border border-amber-200 bg-amber-50 flex gap-2 items-center text-sm rounded-md dark:text-amber-400 dark:border-amber-800 dark:bg-amber-950/30"
           role="status"
         >
           <span class="i-lucide-info size-4" aria-hidden="true" />

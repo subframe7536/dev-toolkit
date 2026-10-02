@@ -1,4 +1,4 @@
-import { resolve } from 'node:path'
+import path from 'node:path'
 
 import unocss from '@subf/unocss/vite'
 import { fileRouter } from 'solid-file-router/plugin'
@@ -6,7 +6,7 @@ import { defineConfig } from 'vite'
 import { meta } from 'vite-plugin-meta-tags'
 import solid from 'vite-plugin-solid'
 
-import { manualPwa } from './vite.pwa'
+import { manualPwa } from './vite.pwa.ts'
 
 // const base = '/dev-toolkit'
 const base = ''
@@ -18,11 +18,11 @@ export default defineConfig({
   base,
   resolve: {
     alias: {
-      '#': resolve(__dirname, 'src'),
+      '#': path.join(import.meta.dirname, 'src'),
     },
   },
   plugins: [
-    unocss({ inspector: false }),
+    unocss(),
     solid(),
     fileRouter({
       infoDts: {

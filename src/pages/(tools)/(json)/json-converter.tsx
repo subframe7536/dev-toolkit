@@ -122,7 +122,7 @@ function JSONConverter() {
       <div class="gap-6 grid lg:grid-cols-2">
         <div class="flex flex-col gap-4">
           <div class="mt-3 flex-1">
-            <label class="text-sm font-medium">JSON Input</label>
+            <label class="font-medium text-sm">JSON Input</label>
             <Textarea
               classes={{ input: 'text-sm font-mono mt-2 h-96 resize-none' }}
               placeholder="Paste your JSON here..."

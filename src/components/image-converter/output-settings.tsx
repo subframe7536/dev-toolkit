@@ -32,7 +32,7 @@ export const OutputSettings: Component<OutputSettingsProps> = (props) => {
   return (
     <div class="flex flex-col gap-6">
       <div>
-        <label class="text-sm font-medium">Output Format</label>
+        <label class="font-medium text-sm">Output Format</label>
         <Select
           value={props.targetFormat}
           onChange={(value) => value && props.onFormatChange(value)}
@@ -42,7 +42,7 @@ export const OutputSettings: Component<OutputSettingsProps> = (props) => {
 
       <Show when={showQualitySlider()}>
         <div>
-          <label class="text-sm font-medium">{`${props.targetFormat.toUpperCase()} Quality: ${props.quality}`}</label>
+          <label class="font-medium text-sm">{`${props.targetFormat.toUpperCase()} Quality: ${props.quality}`}</label>
           <Slider
             value={[props.quality]}
             onChange={(value) => props.onQualityChange(value[0])}
@@ -56,8 +56,8 @@ export const OutputSettings: Component<OutputSettingsProps> = (props) => {
       <Switch checked={props.ratio} onChange={props.onRatioChange} label="Keep aspect ratio" />
 
       <div>
-        <label class="text-sm font-medium mb-2 block">Global Dimensions</label>
-        <p class="text-xs text-muted-foreground mb-3">
+        <label class="font-medium mb-2 block text-sm">Global Dimensions</label>
+        <p class="text-muted-foreground mb-3 text-xs">
           Apply to all images without individual settings
         </p>
         <div class="flex gap-2">

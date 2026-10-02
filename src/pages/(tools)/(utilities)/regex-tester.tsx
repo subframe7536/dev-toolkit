@@ -16,14 +16,14 @@ import { RegexProvider, useRegexContext } from '#/contexts'
 function ErrorFallback(props: { error: Error; reset: () => void }) {
   return (
     <div
-      class="p-6 border border-red-200 rounded-lg bg-red-50 dark:border-red-800 dark:bg-red-950/30"
+      class="p-6 border border-red-200 bg-red-50 rounded-lg dark:border-red-800 dark:bg-red-950/30"
       role="alert"
     >
       <div class="flex gap-3 items-start">
         <Icon name="i-lucide-alert-triangle" class="text-red-600 mt-0.5 size-5 dark:text-red-400" />
         <div class="flex-1">
           <h3 class="text-red-800 font-medium dark:text-red-200">Something went wrong</h3>
-          <p class="text-sm text-red-600 mt-1 dark:text-red-400">{props.error.message}</p>
+          <p class="text-red-600 mt-1 text-sm dark:text-red-400">{props.error.message}</p>
           <Button
             variant="outline"
             size="sm"
@@ -42,7 +42,7 @@ function ErrorFallback(props: { error: Error; reset: () => void }) {
 // Loading skeleton for panels
 function PanelSkeleton() {
   return (
-    <div class="p-4 border rounded-lg bg-card animate-pulse">
+    <div class="p-4 border bg-card animate-pulse rounded-lg">
       <div class="mb-3 rounded bg-muted h-5 w-32" />
       <div class="space-y-2">
         <div class="rounded bg-muted h-4 w-full" />
@@ -97,7 +97,7 @@ function RegexTester() {
         {/* Left column - Input with integrated replacement */}
         <div class="space-y-6">
           {/* Regex Input Panel with integrated Find & Replace */}
-          <div class="text-card-foreground p-6 border rounded-lg bg-card shadow-sm">
+          <div class="text-card-foreground p-6 border bg-card shadow-sm rounded-lg">
             <RegexInputPanel />
 
             {/* Action buttons section */}
@@ -139,7 +139,7 @@ function RegexTester() {
         {/* Right column - Analysis and results */}
         <div class="space-y-6">
           {/* Explanation and Debug Panels */}
-          <div class="text-card-foreground border rounded-lg bg-card shadow-sm">
+          <div class="text-card-foreground border bg-card shadow-sm rounded-lg">
             <Tabs
               defaultValue="matches"
               classes={{ list: 'm-4 mb-0 p-1' }}

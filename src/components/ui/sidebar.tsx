@@ -41,7 +41,7 @@ export function SidebarLayout(props: SidebarLayoutProps) {
         sidebarBody: 'px-2 pb-2',
         main: 'bg-background',
       }}
-      renderFrame={(frameContext) => {
+      frameRender={(frameContext) => {
         return (
           <Show
             when={frameContext.isMobile()}
@@ -66,7 +66,7 @@ export function SidebarLayout(props: SidebarLayoutProps) {
           </Show>
         )
       }}
-      renderSidebarHeader={
+      sidebarHeaderRender={
         props.renderSidebarHeader
           ? (frameContext) => {
               const context = toSidebarContext(frameContext, desktopOpen, setDesktopOpen)
@@ -78,7 +78,7 @@ export function SidebarLayout(props: SidebarLayoutProps) {
             }
           : undefined
       }
-      renderSidebarBody={(frameContext) => {
+      sidebarBodyRender={(frameContext) => {
         const context = toSidebarContext(frameContext, desktopOpen, setDesktopOpen)
         return (
           <SidebarContext.Provider value={context}>
@@ -86,7 +86,7 @@ export function SidebarLayout(props: SidebarLayoutProps) {
           </SidebarContext.Provider>
         )
       }}
-      renderSidebarFooter={
+      sidebarFooterRender={
         props.renderSidebarFooter
           ? (frameContext) => {
               const context = toSidebarContext(frameContext, desktopOpen, setDesktopOpen)
@@ -98,7 +98,7 @@ export function SidebarLayout(props: SidebarLayoutProps) {
             }
           : undefined
       }
-      renderMain={(frameContext) => {
+      mainRender={(frameContext) => {
         const context = toSidebarContext(frameContext, desktopOpen, setDesktopOpen)
         return <SidebarContext.Provider value={context}>{props.children}</SidebarContext.Provider>
       }}
@@ -129,7 +129,7 @@ export function SidebarTrigger(props: ParentProps<{ class?: string }>) {
 }
 
 function toSidebarContext(
-  context: SidebarFrameT.Context,
+  context: SidebarFrameT.BaseContext,
   desktopOpen: () => boolean,
   setDesktopOpen: (open: boolean | ((open: boolean) => boolean)) => void,
 ): SidebarContextValue {

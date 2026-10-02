@@ -67,7 +67,7 @@ export function ExportDialog() {
         {/* Language and Variable Name Row */}
         <div class="gap-4 grid grid-cols-1 sm:grid-cols-2">
           <div class="flex flex-col gap-2">
-            <label id={languageLabelId} class="text-sm font-medium">
+            <label id={languageLabelId} class="font-medium text-sm">
               Language
             </label>
             <Select
@@ -78,7 +78,7 @@ export function ExportDialog() {
           </div>
 
           <div>
-            <label class="text-sm font-medium">Variable Name</label>
+            <label class="font-medium text-sm">Variable Name</label>
             <Input
               value={variableName()}
               onInput={(e) => setVariableName(e.currentTarget.value)}
@@ -106,7 +106,7 @@ export function ExportDialog() {
           when={store.pattern}
           fallback={
             <div
-              class="text-muted-foreground p-4 text-center border rounded-md bg-muted/50"
+              class="text-muted-foreground p-4 text-center border bg-muted/50 rounded-md"
               role="status"
             >
               <Icon
@@ -120,7 +120,7 @@ export function ExportDialog() {
         >
           <div class="space-y-2">
             <div class="flex gap-2 items-center justify-between">
-              <label id={outputLabelId} class="text-sm font-medium">
+              <label id={outputLabelId} class="font-medium text-sm">
                 Generated Code
               </label>
               <div class="flex gap-2">

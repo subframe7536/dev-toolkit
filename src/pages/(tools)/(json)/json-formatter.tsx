@@ -146,7 +146,7 @@ function JSONFormatter() {
     <div class="space-y-6">
       <div class="gap-6 grid items-start xl:grid-cols-[minmax(0,1fr)_18rem_minmax(20rem,30rem)]">
         <div class="space-y-4">
-          <div class="text-sm font-medium">Options</div>
+          <div class="font-medium text-sm">Options</div>
           <div class="flex flex-wrap gap-4">
             <Switch
               checked={autoRepair()}
@@ -158,7 +158,7 @@ function JSONFormatter() {
           </div>
         </div>
         <div class="space-y-4">
-          <div class="text-sm font-medium">Key Case</div>
+          <div class="font-medium text-sm">Key Case</div>
           <Select
             value={targetCase()}
             onChange={setTargetCase}
@@ -167,7 +167,7 @@ function JSONFormatter() {
           />
         </div>
         <div class="min-w-80 space-y-4">
-          <label class="text-sm font-medium">Indent Size</label>
+          <label class="font-medium text-sm">Indent Size</label>
           <Slider
             value={[displayIndent()]}
             onValueChange={(value) => setDisplayIndent(value[0])}
@@ -182,7 +182,7 @@ function JSONFormatter() {
       <div class="gap-6 grid lg:grid-cols-2">
         <div class="space-y-4">
           <div>
-            <label class="text-sm font-medium">Input JSON</label>
+            <label class="font-medium text-sm">Input JSON</label>
             <Textarea
               classes={{ input: 'text-sm font-mono h-96 resize-none' }}
               placeholder="Paste your JSON here..."
@@ -195,7 +195,7 @@ function JSONFormatter() {
 
         <div class="space-y-4">
           <div class="flex-1 relative">
-            <label class="text-sm font-medium">Output</label>
+            <label class="font-medium text-sm">Output</label>
             <Button
               variant="secondary"
               size="icon-md"
@@ -226,7 +226,7 @@ function JSONFormatter() {
       <Show when={isFullscreen()}>
         <div class="p-4 bg-background/95 flex flex-col gap-4 inset-0 fixed z-50 overflow-hidden">
           <div class="flex items-center justify-between">
-            <h2 class="text-lg font-semibold">Formatted JSON (Fullscreen)</h2>
+            <h2 class="font-semibold text-lg">Formatted JSON (Fullscreen)</h2>
             <button
               class="py-1 rounded size-7 hover:bg-primary/90"
               onClick={() => setIsFullscreen(false)}
@@ -235,7 +235,7 @@ function JSONFormatter() {
             </button>
           </div>
           <div class="flex-1">
-            <label class="text-sm font-medium">Output</label>
+            <label class="font-medium text-sm">Output</label>
             <Textarea
               classes={{ input: 'text-sm font-mono bg-muted/50 h-full resize-none' }}
               readOnly

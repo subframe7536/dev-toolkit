@@ -168,7 +168,6 @@ export function findMatchesWithPerformance(
 
   // Execute with timing
   const flagString = flagsToString(flags)
-  let matches: MatchResult[] = []
   let steps = 0
 
   const { result, timedOut, executionTime } = executeWithTimeout(() => {
@@ -231,14 +230,12 @@ export function findMatchesWithPerformance(
     })
   }
 
-  matches = result || []
-
   // Estimate backtracking based on execution time vs input size
   const expectedTime = text.length * 0.001 // ~1ms per 1000 chars baseline
   const backtrackingDetected = executionTime > expectedTime * 10 && executionTime > 10
 
   return {
-    matches,
+    matches: result || [],
     performance: {
       executionTime,
       steps,

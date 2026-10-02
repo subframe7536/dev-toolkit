@@ -63,7 +63,7 @@ export function FileEncoder(props: FileEncoderProps) {
           info={props.uploadInfo || `Upload any file to encode to ${props.mode}`}
         />
         <Show when={file()}>
-          <div class="p-4 border rounded-lg bg-input/50 flex flex-wrap gap-4 w-fit items-center">
+          <div class="p-4 border bg-input/50 flex flex-wrap gap-4 w-fit items-center rounded-lg">
             <span>{file()?.name}</span>
             <ClearButton onClear={clearFile} disabled={!file() && !output()} />
           </div>
@@ -73,7 +73,7 @@ export function FileEncoder(props: FileEncoderProps) {
       <Show when={output()}>
         <div class="space-y-4">
           <div class="flex items-center justify-between">
-            <h3 class="text-lg text-foreground font-semibold">
+            <h3 class="text-foreground font-semibold text-lg">
               {props.outputTitle || `${props.mode} Output`}
             </h3>
             <div class="flex gap-4">
@@ -93,7 +93,7 @@ export function FileEncoder(props: FileEncoderProps) {
               />
             </div>
           </div>
-          <div class="text-sm font-mono p-4 border rounded-md bg-muted/50 max-h-96 break-all of-y-auto">
+          <div class="font-mono p-4 border bg-muted/50 max-h-96 break-all of-y-auto text-sm rounded-md">
             {targetOutput()}
           </div>
         </div>

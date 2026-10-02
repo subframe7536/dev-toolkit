@@ -58,17 +58,17 @@ export const ImageCard: Component<ImageCardProps> = (props) => {
   )
 
   return (
-    <div class="p-3 border rounded-lg flex flex-col gap-2 max-w-50 min-w-30 w-30%">
+    <div class="p-3 border flex flex-col gap-2 max-w-50 min-w-30 w-30% rounded-lg">
       <img
         src={props.image.previewUrl}
         alt={props.image.file.name}
         class="border rounded w-full aspect-square object-cover"
       />
-      <div class="text-xs font-medium truncate" title={props.image.file.name}>
+      <div class="font-medium truncate text-xs" title={props.image.file.name}>
         {props.image.file.name}
       </div>
       <Show when={props.image.origin}>
-        <div class="text-xs text-muted-foreground">
+        <div class="text-muted-foreground text-xs">
           {props.image.origin!.width} × {props.image.origin!.height}
         </div>
       </Show>

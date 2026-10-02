@@ -154,9 +154,9 @@ function DateTimeTool() {
           {/* Real-time Clock + Custom Date Input + Format Options */}
           <div class="space-y-4">
             {/* Real-time Display */}
-            <div class="p-4 text-center border rounded-lg bg-muted/50">
-              <div class="text-3xl font-bold font-mono mb-2">{formattedTime()}</div>
-              <div class="text-sm text-muted-foreground">
+            <div class="p-4 text-center border bg-muted/50 rounded-lg">
+              <div class="font-bold font-mono mb-2 text-3xl">{formattedTime()}</div>
+              <div class="text-muted-foreground text-sm">
                 {selectedTimeZone()} • {selectedLocale()}
               </div>
             </div>
@@ -165,7 +165,7 @@ function DateTimeTool() {
             <div class="space-y-2">
               <div class="flex gap-2 items-end">
                 <div class="flex flex-1 flex-col gap-1">
-                  <label class="text-sm font-medium">Custom Date Input</label>
+                  <label class="font-medium text-sm">Custom Date Input</label>
                   <Input
                     value={customInput()}
                     onInput={(e) => setCustomInput(e.currentTarget.value)}
@@ -177,7 +177,7 @@ function DateTimeTool() {
                 </Button>
               </div>
               <Show when={customDate()}>
-                <div class="text-sm text-muted-foreground">Using: {toISOString(customDate()!)}</div>
+                <div class="text-muted-foreground text-sm">Using: {toISOString(customDate()!)}</div>
               </Show>
             </div>
 
@@ -186,7 +186,7 @@ function DateTimeTool() {
               <div class="font-medium">Format Options</div>
               <div class="gap-4 grid grid-cols-2">
                 <div>
-                  <label class="text-xs text-muted-foreground mb-1.5 block">Locale</label>
+                  <label class="text-muted-foreground mb-1.5 block text-xs">Locale</label>
                   <Select
                     value={selectedLocale()}
                     onChange={setSelectedLocale}
@@ -194,7 +194,7 @@ function DateTimeTool() {
                   />
                 </div>
                 <div>
-                  <label class="text-xs text-muted-foreground mb-1.5 block">Time Zone</label>
+                  <label class="text-muted-foreground mb-1.5 block text-xs">Time Zone</label>
                   <Select
                     value={selectedTimeZone()}
                     onChange={setSelectedTimeZone}
@@ -202,7 +202,7 @@ function DateTimeTool() {
                   />
                 </div>
                 <div>
-                  <label class="text-xs text-muted-foreground mb-1.5 block">Date Style</label>
+                  <label class="text-muted-foreground mb-1.5 block text-xs">Date Style</label>
                   <Select
                     value={dateStyle()}
                     onChange={(v) => v && setDateStyle(v as any)}
@@ -210,7 +210,7 @@ function DateTimeTool() {
                   />
                 </div>
                 <div>
-                  <label class="text-xs text-muted-foreground mb-1.5 block">Time Style</label>
+                  <label class="text-muted-foreground mb-1.5 block text-xs">Time Style</label>
                   <Select
                     value={timeStyle()}
                     onChange={(v) => v && setTimeStyle(v as any)}
@@ -234,11 +234,11 @@ function DateTimeTool() {
                   placeholder="e.g., +1h -30m +2d"
                 />
                 <Show when={manipulatedTime()}>
-                  <div class="p-3 border rounded-lg bg-muted/50">
+                  <div class="p-3 border bg-muted/50 rounded-lg">
                     <div class="flex items-center justify-between">
                       <div class="flex-1 min-w-0">
-                        <div class="text-xs text-muted-foreground mb-1">Result:</div>
-                        <div class="text-sm font-mono font-semibold truncate">
+                        <div class="text-muted-foreground mb-1 text-xs">Result:</div>
+                        <div class="font-mono font-semibold truncate text-sm">
                           {manipulatedTime()}
                         </div>
                       </div>
@@ -265,22 +265,22 @@ function DateTimeTool() {
             <div class="space-y-4">
               {/* Custom Format */}
               <div class="space-y-2">
-                <label class="text-sm font-medium">Custom Format Pattern</label>
+                <label class="font-medium text-sm">Custom Format Pattern</label>
                 <Input
                   value={customFormat()}
                   onInput={(e) => setCustomFormat(e.currentTarget.value)}
                   placeholder="e.g., yyyy/MM/dd or dd-MM-yyyy HH:mm"
                 />
-                <div class="text-xs text-muted-foreground space-y-1">
+                <div class="text-muted-foreground space-y-1 text-xs">
                   <div>Tokens: yyyy (year), MM (month), dd (day)</div>
                   <div>HH/hh (hours), mm (minutes), ss (seconds), SSS (ms)</div>
                 </div>
                 <Show when={customFormat().trim()}>
-                  <div class="p-3 border rounded-lg bg-muted/50">
+                  <div class="p-3 border bg-muted/50 rounded-lg">
                     <div class="flex items-center justify-between">
                       <div class="flex-1 min-w-0">
-                        <div class="text-xs text-muted-foreground mb-1">Preview:</div>
-                        <div class="text-sm font-mono font-semibold truncate">
+                        <div class="text-muted-foreground mb-1 text-xs">Preview:</div>
+                        <div class="font-mono font-semibold truncate text-sm">
                           {formatWithPattern(customDate() || currentTime(), customFormat())}
                         </div>
                       </div>
@@ -297,14 +297,14 @@ function DateTimeTool() {
 
               {/* Common Formats */}
               <div class="space-y-2">
-                <div class="text-sm font-medium">Common Formats</div>
+                <div class="font-medium text-sm">Common Formats</div>
                 <div class="space-y-2">
                   <Index each={outputFormats}>
                     {(format) => (
-                      <div class="p-3 border rounded-lg bg-muted/30 flex gap-2 items-center justify-between">
+                      <div class="p-3 border bg-muted/30 flex gap-2 items-center justify-between rounded-lg">
                         <div class="flex-1 min-w-0">
-                          <div class="text-xs text-muted-foreground">{format().label}</div>
-                          <div class="text-sm font-mono truncate">{format().value}</div>
+                          <div class="text-muted-foreground text-xs">{format().label}</div>
+                          <div class="font-mono truncate text-sm">{format().value}</div>
                         </div>
                         <CopyButton
                           content={format().value}

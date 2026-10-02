@@ -387,7 +387,7 @@ Property-based tests validate universal correctness properties across randomized
 
 ### Testing Tools
 
-- **Bun Test Runner**: Primary testing framework
+- **Vitest**: Primary testing framework
 - **@solidjs/testing-library**: Component testing utilities
 - **fast-check**: Property-based testing library
 - **jsdom**: DOM environment for component tests

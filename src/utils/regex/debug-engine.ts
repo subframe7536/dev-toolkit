@@ -157,7 +157,7 @@ function tokenizePattern(pattern: string): PatternToken[] {
       const match = pattern.slice(i).match(/^\{(\d+)(,(\d*))?\}\??/)
       if (match) {
         const isLazy = match[0].endsWith('?')
-        let desc = ''
+        let desc: string
         if (match[2] === undefined) {
           desc = `exactly ${match[1]} times`
         } else if (match[3] === '') {

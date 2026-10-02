@@ -200,7 +200,7 @@ export function ExportDialog() {
         <div class="space-y-6">
           <div class="gap-4 grid grid-cols-1 md:grid-cols-2">
             <div>
-              <label class="text-sm font-medium">Table Name</label>
+              <label class="font-medium text-sm">Table Name</label>
               <Input
                 value={tableName()}
                 onInput={(e) => setTableName(e.currentTarget.value)}
@@ -230,8 +230,8 @@ export function ExportDialog() {
 
           <Show when={exportFormat() === 'sql-update'}>
             <div>
-              <label class="text-sm font-medium">Key Columns (for UPDATE)</label>
-              <div class="mt-1 p-2 border rounded-md bg-input flex flex-row flex-wrap gap-3 max-h-32 overflow-y-auto">
+              <label class="font-medium text-sm">Key Columns (for UPDATE)</label>
+              <div class="mt-1 p-2 border bg-input flex flex-row flex-wrap gap-3 max-h-32 overflow-y-auto rounded-md">
                 <For each={computed.visibleColumns()}>
                   {(col) => (
                     <Checkbox
@@ -254,7 +254,7 @@ export function ExportDialog() {
 
           <div class="space-y-3">
             <div class="flex gap-2 items-center justify-between">
-              <label class="text-sm font-medium">Output</label>
+              <label class="font-medium text-sm">Output</label>
               <div class="flex gap-2">
                 <Show when={exportFormat() !== 'excel'}>
                   <CopyButton content={exportOutput()} size="sm" variant="outline" />

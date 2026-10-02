@@ -14,8 +14,8 @@ function Index() {
   return (
     <div class="mx-a flex flex-col gap-10 max-w-7xl w-full">
       <div class="max-w-3xl">
-        <h1 class="text-4xl text-foreground tracking-tight font-bold">Developer Toolkit</h1>
-        <p class="text-base text-muted-foreground leading-7 mt-3">
+        <h1 class="text-foreground tracking-tight font-bold text-4xl">Developer Toolkit</h1>
+        <p class="text-muted-foreground leading-7 mt-3 text-base">
           A collection of {count} essential tools for developers
         </p>
       </div>
@@ -24,13 +24,13 @@ function Index() {
         <For each={categories}>
           {(category) => (
             <section class="flex flex-col gap-4">
-              <h2 class="text-xl text-foreground font-semibold">{category.name}</h2>
+              <h2 class="text-foreground font-semibold text-xl">{category.name}</h2>
               <div class="gap-4 grid md:grid-cols-2 xl:grid-cols-3">
                 <For each={category.tools}>
                   {(tool) => (
                     <A
                       href={tool.path}
-                      class="outline-none rounded-lg block transition-transform focus-visible:effect-fv"
+                      class="outline-none block transition-transform rounded-lg focus-visible:effect-fv"
                     >
                       <Card
                         title={tool.info.title}
@@ -42,7 +42,7 @@ function Index() {
                             <div class="flex flex-wrap gap-1.5">
                               <For each={tool.info.tags}>
                                 {(tag) => (
-                                  <span class="text-xs text-muted-foreground px-1.5 py-0.5 border border-border/50 rounded bg-muted/20">
+                                  <span class="text-muted-foreground px-1.5 py-0.5 border border-border/50 rounded bg-muted/20 text-xs">
                                     {tag}
                                   </span>
                                 )}
@@ -60,7 +60,7 @@ function Index() {
         </For>
       </div>
 
-      <div class="text-lg text-muted-foreground m-(b-12 t-12)">More tools coming soon</div>
+      <div class="text-muted-foreground m-(b-12 t-12) text-lg">More tools coming soon</div>
     </div>
   )
 }

@@ -76,11 +76,6 @@ export interface ExportConfig {
 }
 
 // Business logic interfaces
-export interface ValidationResult {
-  isValid: boolean
-  error?: ParseError
-}
-
 export interface RegexParser {
   validate: (pattern: string) => ValidationResult
   getExplanation: (pattern: string) => ExplanationResult
