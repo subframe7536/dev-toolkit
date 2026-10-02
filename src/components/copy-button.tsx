@@ -1,6 +1,7 @@
-import { useCopy } from '@solid-hooks/core/web'
+import { writeClipboard } from '@solid-primitives/clipboard'
+import { debounce } from '@solid-primitives/scheduled'
 import { Button, Icon } from 'moraine'
-import { createMemo, Show } from 'solid-js'
+import { createMemo, createSignal, Show } from 'solid-js'
 import { toast } from 'solid-toaster'
 
 interface CopyButtonProps {
@@ -13,11 +14,14 @@ interface CopyButtonProps {
 }
 
 export function CopyButton(props: CopyButtonProps) {
-  const { copy, isCopied } = useCopy()
+  const [isCopied, setCopied] = createSignal(false)
+  const resetCopied = debounce(() => setCopied(false), 1500)
 
   const handleCopy = async () => {
     try {
-      await copy(props.content)
+      await writeClipboard(props.content)
+      setCopied(true)
+      resetCopied()
       toast.success('Copied to clipboard')
     } catch {
       toast.error('Failed to copy to clipboard')

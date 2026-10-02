@@ -1,9 +1,10 @@
-import { useColorMode } from '@solid-hooks/core/web'
 import { Button } from 'moraine'
 import { createMemo } from 'solid-js'
 
+import { useTheme } from '#/utils/theme'
+
 export function ThemeToggle(props: { class?: string }) {
-  const [mode, setMode] = useColorMode()
+  const { mode, setMode } = useTheme()
 
   const themeIcon = createMemo(() => {
     const current = mode()

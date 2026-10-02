@@ -17,6 +17,9 @@
     "release": "pnpm run format && pnpm run test && pnpm run build && bumpp --all"
   },
   "dependencies": {
+    "@solid-primitives/clipboard": "^1.6.6",
+    "@solid-primitives/rootless": "^1.5.4",
+    "@solid-primitives/scheduled": "^1.5.3",
     "@tanstack/solid-table": "^9.2.4",
     "moraine": "^0.6.0-beta.1",
     "papaparse": "^5.7.0",
@@ -28,7 +31,6 @@
   },
   "devDependencies": {
     "@iconify-json/lucide": "^1.2.138",
-    "@solid-hooks/core": "^0.6.0",
     "@solidjs/router": "^1.0.0",
     "@solidjs/testing-library": "^0.8.10",
     "@subf/config": "^0.4.0",

@@ -16,11 +16,11 @@ export function Card(props: CardProps) {
     <MoraineCard
       classes={{
         root: [
-          'group border border-border/80 shadow-sm transition-(colors shadow transform) duration-180 ease-out hover:(border-primary/35 bg-card/95 shadow-md -translate-y-0.5)',
+          'group border border-border transition-colors duration-180 ease-out hover:(border-primary bg-card-hover)',
           props.class,
         ],
-        title: 'text-lg leading-tight tracking-tight font-semibold',
-        description: 'text-sm leading-6',
+        title: 'text-lg leading-snug font-semibold',
+        description: 'text-muted-foreground text-sm leading-6 max-w-68ch',
         body: 'pt-4',
       }}
     >
@@ -28,7 +28,7 @@ export function Card(props: CardProps) {
         <MoraineCard.Title>
           <div class="flex gap-2 items-center">
             <Show when={props.icon}>
-              <span class="border border-border bg-muted/40 grid size-8 transition-colors place-items-center rounded-md group-hover:text-primary group-hover:bg-primary/10">
+              <span class="text-muted-foreground bg-muted shrink-0 grid size-8 transition-colors place-items-center rounded-md group-hover:text-primary">
                 <Icon name={props.icon as any} class="size-4.5" />
               </span>
             </Show>

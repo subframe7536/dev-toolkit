@@ -1,4 +1,3 @@
-import { useColorMode } from '@solid-hooks/core/web'
 import { Icon, MultiSelect } from 'moraine'
 import type { HighlighterCore } from 'shiki'
 import {
@@ -14,6 +13,7 @@ import {
 
 import { useRegexContext } from '#/contexts/regex-context'
 import type { MatchResult } from '#/utils/regex/types'
+import { useTheme } from '#/utils/theme'
 
 const FLAG_OPTIONS = [
   { flag: 'g', label: 'Global', key: 'global', description: 'Find all matches' },
@@ -204,7 +204,7 @@ export function RegexInputPanel() {
   const [highlighter] = createResource(loadHighlighter)
   const errorId = createUniqueId()
 
-  const [, , isDark] = useColorMode()
+  const { isDark } = useTheme()
 
   const matchCount = createMemo(() => store.matches.length)
   const hasInput = createMemo(() => store.pattern && store.testText)

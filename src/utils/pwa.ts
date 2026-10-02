@@ -1,4 +1,4 @@
-import { useEventListener } from '@solid-hooks/core/web'
+import { createEventListener } from 'moraine/utils'
 import { createEffect, createSignal } from 'solid-js'
 import { toast } from 'solid-toaster'
 
@@ -16,7 +16,7 @@ export function registPWA() {
   const [needRefresh, setNeedRefresh] = createSignal(false)
   const [registration, setRegistration] = createSignal<ServiceWorkerRegistration | null>(null)
 
-  useEventListener(window, 'beforeinstallprompt', (e) => {
+  createEventListener<EventTarget, 'beforeinstallprompt'>(window, 'beforeinstallprompt', (e) => {
     // 1. Prevent the mini-infobar from appearing on mobile
     e.preventDefault()
 

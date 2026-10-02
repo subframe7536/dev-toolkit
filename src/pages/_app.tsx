@@ -45,10 +45,10 @@ function App(props: RouteSectionProps) {
       renderSidebarHeader={() => (
         <A
           href="/"
-          class="hover:bg-sidebar-accent px-2 py-1.5 block transition-colors duration-150 rounded-md"
+          class="px-2 py-1.5 block transition-colors duration-150 rounded-md hover:bg-sidebar-accent"
         >
           <h2 class="text-sidebar-foreground font-semibold text-lg">Developer Toolkit</h2>
-          <p class="text-sidebar-foreground/70 text-xs">{count} tools available</p>
+          <p class="text-sidebar-muted-foreground text-sm">{count} tools available</p>
         </A>
       )}
       renderSidebarBody={(sidebar) => (
@@ -56,7 +56,7 @@ function App(props: RouteSectionProps) {
           <For each={categories}>
             {(category) => (
               <section class="flex flex-col gap-1">
-                <h3 class="text-sidebar-foreground/70 tracking-wide font-medium px-2 uppercase text-xs">
+                <h3 class="text-sidebar-muted-foreground tracking-wide font-semibold px-2 uppercase text-xs">
                   {category.name}
                 </h3>
                 <div class="flex flex-col gap-1">
@@ -66,9 +66,9 @@ function App(props: RouteSectionProps) {
                         href={tool.path}
                         title={tool.info.title}
                         class={cn(
-                          'group hover:text-sidebar-accent-foreground dark:hover:bg-sidebar-accent px-2 py-2 flex gap-2 transition-[background-color,color,box-shadow] duration-200 ease-out items-center text-sm rounded-md hover:(bg-primary/12 shadow-xs)',
+                          'group text-sidebar-foreground leading-5 px-2 py-2 flex gap-2 transition-colors duration-200 ease-out items-center text-sm rounded-md hover:(text-sidebar-accent-foreground bg-sidebar-accent) focus-visible:effect-fv',
                           props.location.pathname.endsWith(tool.path) &&
-                            'text-sidebar-accent-foreground dark:bg-sidebar-accent bg-primary/14 shadow-xs',
+                            'text-sidebar-accent-foreground font-semibold bg-sidebar-accent',
                         )}
                         onClick={() => {
                           if (sidebar.isMobile()) {
@@ -78,7 +78,7 @@ function App(props: RouteSectionProps) {
                       >
                         <Icon
                           name={tool.info.icon as any}
-                          class="text-sidebar-foreground/70 group-hover:text-sidebar-accent-foreground size-4 transition-colors duration-200"
+                          class="text-sidebar-muted-foreground shrink-0 size-4 transition-colors duration-200 group-hover:text-sidebar-accent-foreground"
                         />
                         <span>{tool.info.title}</span>
                       </A>

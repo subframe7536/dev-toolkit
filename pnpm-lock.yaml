@@ -166,6 +166,15 @@ importers:
 
   .:
     dependencies:
+      '@solid-primitives/clipboard':
+        specifier: ^1.6.6
+        version: 1.6.6(solid-js@1.9.15)
+      '@solid-primitives/rootless':
+        specifier: ^1.5.4
+        version: 1.5.4(solid-js@1.9.15)
+      '@solid-primitives/scheduled':
+        specifier: ^1.5.3
+        version: 1.5.3(solid-js@1.9.15)
       '@tanstack/solid-table':
         specifier: ^9.2.4
         version: 9.2.4(solid-js@1.9.15)
@@ -194,9 +203,6 @@ importers:
       '@iconify-json/lucide':
         specifier: ^1.2.138
         version: 1.2.138
-      '@solid-hooks/core':
-        specifier: ^0.6.0
-        version: 0.6.0(solid-js@1.9.15)
       '@solidjs/router':
         specifier: ^1.0.0
         version: 1.0.0(solid-js@1.9.15)
@@ -833,13 +839,18 @@ packages:
   '@shikijs/vscode-textmate@10.0.2':
     resolution: {integrity: sha512-83yeghZ2xxin3Nj8z1NMd/NCuca+gsYXswywDy5bHvwlWL8tpTQmzGeUuHd9FC3E/SBEMvzJRwWEOz5gGes9Qg==}
 
-  '@solid-hooks/core@0.6.0':
-    resolution: {integrity: sha512-mLcI/5CSfcu+OchRE7XGa/2n9DdcIs8AE5AD+PaabWTJ8R01Fx/1sP/DOExhw7xknSghpOkTMaDEgy3Ei/fVGw==}
+  '@solid-primitives/clipboard@1.6.6':
+    resolution: {integrity: sha512-dw7ela8hidoiSFiZiDsJeVfwR15Z/vuePrIj9UJclR9PS6DNYuRd06PV5ppo5blvLXvvdDF6GJj9Eo7cwJBa8w==}
     peerDependencies:
-      solid-js: ^1.6
+      solid-js: ^1.6.12
 
-  '@solid-primitives/event-listener@2.4.6':
-    resolution: {integrity: sha512-5I0YJcTVYIWoMmgBSROBZGcz+ymhew/pGTg2dHW74BUjFKsV8Li4bOZYl0YAGP4mHw5o4UBd9/BEesqBci3wxw==}
+  '@solid-primitives/rootless@1.5.4':
+    resolution: {integrity: sha512-TOIZa1VUfVJ+9nkCcRajw3U4t9vBOP1HxX1WHNTbXq32mXwlqTvUnC4CRIilohcryBkT9u2ZkhUDSHRTaGp55g==}
+    peerDependencies:
+      solid-js: ^1.6.12
+
+  '@solid-primitives/scheduled@1.5.3':
+    resolution: {integrity: sha512-oNwLE6E6lxJAWrc8QXuwM0k2oU1BnANnkChwMw82aK1j3+mWGJkG1IFe5gCwbV+afYmjI76t9JJV3md/8tLw+g==}
     peerDependencies:
       solid-js: ^1.6.12
 
@@ -879,9 +890,6 @@ packages:
     peerDependencies:
       magic-string: '*'
       vite: ^8.2.2
-
-  '@subframe7536/type-utils@0.2.0':
-    resolution: {integrity: sha512-5OmY4NfRPBVcsVReZLU1sh7bZppZUWFnnN2ybjOQS7i2suOR1ds3qsFJmZNLpWV5gLmL0RVAmHgMQU0salMJOw==}
 
   '@tanstack/solid-table@9.2.4':
     resolution: {integrity: sha512-fPveX8c3TJp63Bt9hQkrgd2Lm7Cfsm6/s6lh1Vmp2jcX90+RP+UHr3VO8/GPtVOSSroik9ZVSzC3Gobi17SqSA==}
@@ -2386,16 +2394,18 @@ snapshots:
 
   '@shikijs/vscode-textmate@10.0.2': {}
 
-  '@solid-hooks/core@0.6.0(solid-js@1.9.15)':
+  '@solid-primitives/clipboard@1.6.6(solid-js@1.9.15)':
     dependencies:
-      '@solid-primitives/event-listener': 2.4.6(solid-js@1.9.15)
       '@solid-primitives/utils': 6.4.1(solid-js@1.9.15)
-      '@subframe7536/type-utils': 0.2.0
       solid-js: 1.9.15
 
-  '@solid-primitives/event-listener@2.4.6(solid-js@1.9.15)':
+  '@solid-primitives/rootless@1.5.4(solid-js@1.9.15)':
     dependencies:
       '@solid-primitives/utils': 6.4.1(solid-js@1.9.15)
+      solid-js: 1.9.15
+
+  '@solid-primitives/scheduled@1.5.3(solid-js@1.9.15)':
+    dependencies:
       solid-js: 1.9.15
 
   '@solid-primitives/utils@6.4.1(solid-js@1.9.15)':
@@ -2440,8 +2450,6 @@ snapshots:
       tinyglobby: 0.2.17
       unocss-preset-completion: 0.4.2(@unocss/core@66.10.5)
       vite: 8.3.1(@types/node@24.19.0)(jiti@2.7.0)(yaml@2.9.1)
-
-  '@subframe7536/type-utils@0.2.0': {}
 
   '@tanstack/solid-table@9.2.4(solid-js@1.9.15)':
     dependencies:
