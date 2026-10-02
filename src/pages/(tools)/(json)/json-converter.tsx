@@ -116,7 +116,7 @@ function JSONConverter() {
   return (
     <div class="space-y-4">
       <div class="flex flex-wrap gap-4 items-center">
-        <Switch checked={useRepair()} onChange={setUseRepair} label="Auto-repair JSON" />
+        <Switch checked={useRepair()} onCheckedChange={setUseRepair} label="Auto-repair JSON" />
       </div>
 
       <div class="gap-6 grid lg:grid-cols-2">
@@ -124,10 +124,10 @@ function JSONConverter() {
           <div class="mt-3 flex-1">
             <label class="font-medium text-sm">JSON Input</label>
             <Textarea
-              classes={{ input: 'text-sm font-mono mt-2 h-96 resize-none' }}
+              classes={{ root: 'text-sm font-mono mt-2 h-96 resize-none' }}
               placeholder="Paste your JSON here..."
               value={input()}
-              onInput={(e) => setInput(e.currentTarget.value)}
+              onValueChange={setInput}
             />
           </div>
           <div>
@@ -139,12 +139,16 @@ function JSONConverter() {
           <div class="flex-1">
             <Select
               value={mode()}
-              onChange={setMode}
-              options={conversionModes.map(({ value, label }) => ({ value, label }))}
-              classes={{ root: 'w-60' }}
+              onValueChange={(value) => {
+                if (value !== null) {
+                  setMode(value)
+                }
+              }}
+              items={conversionModes.map(({ value, label }) => ({ value, label }))}
+              classes={{ control: 'w-60' }}
             />
             <Textarea
-              classes={{ input: 'text-sm font-mono mt-2 bg-muted/50 h-96 resize-none' }}
+              classes={{ root: 'text-sm font-mono mt-2 bg-muted/50 h-96 resize-none' }}
               readOnly
               placeholder="Converted output will appear here..."
               value={output()}

@@ -94,13 +94,10 @@ export function EncoderLayout(props: EncoderLayoutProps): JSX.Element {
         <div class="gap-3 grid">
           <label class="leading-8 font-medium text-lg">{inputLabel()}</label>
           <Textarea
-            classes={{
-              root: 'h-80 w-full md:h-100',
-              input: 'text-sm font-mono resize-none',
-            }}
+            classes={{ root: ['h-80 w-full md:h-100', 'text-sm font-mono resize-none'] }}
             placeholder={inputPlaceholder()}
             value={inputText()}
-            onInput={(e) => handleInput(e.currentTarget.value)}
+            onValueChange={handleInput}
           />
           <div class="flex gap-2 items-center justify-between lg:justify-start">
             {/* Mobile Swap Button */}
@@ -135,9 +132,9 @@ export function EncoderLayout(props: EncoderLayoutProps): JSX.Element {
           <label class="leading-8 font-medium text-lg">{outputLabel()}</label>
           <Textarea
             classes={{
-              root: ['w-full h-80 md:h-100', error() && 'border-destructive'],
-              input: [
-                'text-sm font-mono resize-none focus-visible:ring-0',
+              root: [
+                'text-sm font-mono w-full h-80 resize-none focus-visible:ring-0 md:h-100',
+                error() && 'border-destructive',
                 error() ? 'text-destructive' : !outputText() && 'text-muted-foreground',
               ],
             }}

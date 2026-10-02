@@ -168,7 +168,7 @@ function DateTimeTool() {
                   <label class="font-medium text-sm">Custom Date Input</label>
                   <Input
                     value={customInput()}
-                    onInput={(e) => setCustomInput(e.currentTarget.value)}
+                    onValueChange={setCustomInput}
                     placeholder="ISO, Unix timestamp, yyyy-MM-dd HH:mm:ss..."
                   />
                 </div>
@@ -189,32 +189,40 @@ function DateTimeTool() {
                   <label class="text-muted-foreground mb-1.5 block text-xs">Locale</label>
                   <Select
                     value={selectedLocale()}
-                    onChange={setSelectedLocale}
-                    options={locales.map((v) => ({ value: v, label: v }))}
+                    onValueChange={(value) => {
+                      if (value !== null) {
+                        setSelectedLocale(value)
+                      }
+                    }}
+                    items={locales.map((v) => ({ value: v, label: v }))}
                   />
                 </div>
                 <div>
                   <label class="text-muted-foreground mb-1.5 block text-xs">Time Zone</label>
                   <Select
                     value={selectedTimeZone()}
-                    onChange={setSelectedTimeZone}
-                    options={commonTimeZones.map((v) => ({ value: v, label: v }))}
+                    onValueChange={(value) => {
+                      if (value !== null) {
+                        setSelectedTimeZone(value)
+                      }
+                    }}
+                    items={commonTimeZones.map((v) => ({ value: v, label: v }))}
                   />
                 </div>
                 <div>
                   <label class="text-muted-foreground mb-1.5 block text-xs">Date Style</label>
                   <Select
                     value={dateStyle()}
-                    onChange={(v) => v && setDateStyle(v as any)}
-                    options={[...styles].map((v) => ({ value: v, label: v }))}
+                    onValueChange={(v) => v && setDateStyle(v as any)}
+                    items={[...styles].map((v) => ({ value: v, label: v }))}
                   />
                 </div>
                 <div>
                   <label class="text-muted-foreground mb-1.5 block text-xs">Time Style</label>
                   <Select
                     value={timeStyle()}
-                    onChange={(v) => v && setTimeStyle(v as any)}
-                    options={[...styles].map((v) => ({ value: v, label: v }))}
+                    onValueChange={(v) => v && setTimeStyle(v as any)}
+                    items={[...styles].map((v) => ({ value: v, label: v }))}
                   />
                 </div>
               </div>
@@ -230,7 +238,7 @@ function DateTimeTool() {
               <div class="space-y-2">
                 <Input
                   value={manipulationInput()}
-                  onInput={(e) => setManipulationInput(e.currentTarget.value)}
+                  onValueChange={setManipulationInput}
                   placeholder="e.g., +1h -30m +2d"
                 />
                 <Show when={manipulatedTime()}>
@@ -268,7 +276,7 @@ function DateTimeTool() {
                 <label class="font-medium text-sm">Custom Format Pattern</label>
                 <Input
                   value={customFormat()}
-                  onInput={(e) => setCustomFormat(e.currentTarget.value)}
+                  onValueChange={setCustomFormat}
                   placeholder="e.g., yyyy/MM/dd or dd-MM-yyyy HH:mm"
                 />
                 <div class="text-muted-foreground space-y-1 text-xs">

@@ -1,7 +1,6 @@
-import type { SidebarFrameT } from 'moraine'
-import { Button, SidebarFrame, SidebarFrameSheetOnlyRender, cn } from 'moraine'
-import type { JSX, ParentProps } from 'solid-js'
-import { Show, createContext, createSignal, useContext } from 'solid-js'
+import { Button, Icon, SidebarFrame, useSidebarFrame } from 'moraine'
+import type { JSX } from 'solid-js'
+import { Show, createContext, useContext } from 'solid-js'
 
 export interface SidebarContextValue {
   isMobile: () => boolean
@@ -29,128 +28,67 @@ interface SidebarLayoutProps {
 }
 
 export function SidebarLayout(props: SidebarLayoutProps) {
-  const [desktopOpen, setDesktopOpen] = createSignal(true)
-
   return (
     <SidebarFrame
       variant="inset"
       classes={{
-        root: 'bg-sidebar',
-        sidebar: 'bg-sidebar text-sidebar-foreground',
+        root: 'bg-sidebar gap-2',
+        sidebar:
+          'bg-sidebar text-sidebar-foreground w-[clamp(14rem,20vw,20rem)] duration-200 ease-out',
         sidebarHeader: 'p-2',
         sidebarBody: 'px-2 pb-2',
         main: 'bg-background',
       }}
-      frameRender={(frameContext) => {
-        return (
-          <Show
-            when={frameContext.isMobile()}
-            fallback={
-              <div class="p-2 flex gap-2 h-full min-h-0">
-                <div
-                  class={cn(
-                    'min-h-0 transition-[width,opacity,transform] duration-200 ease-out overflow-hidden',
-                    desktopOpen()
-                      ? 'opacity-100 w-[clamp(14rem,20vw,20rem)] translate-x-0'
-                      : 'opacity-0 w-0 pointer-events-none -translate-x-2',
-                  )}
-                  aria-hidden={!desktopOpen()}
-                >
-                  <frameContext.sidebar />
-                </div>
-                <frameContext.main />
-              </div>
-            }
-          >
-            <SidebarFrameSheetOnlyRender {...frameContext} />
-          </Show>
-        )
-      }}
-      sidebarHeaderRender={
-        props.renderSidebarHeader
-          ? (frameContext) => {
-              const context = toSidebarContext(frameContext, desktopOpen, setDesktopOpen)
-              return (
-                <SidebarContext.Provider value={context}>
-                  {props.renderSidebarHeader?.(context)}
-                </SidebarContext.Provider>
-              )
-            }
-          : undefined
-      }
-      sidebarBodyRender={(frameContext) => {
-        const context = toSidebarContext(frameContext, desktopOpen, setDesktopOpen)
-        return (
-          <SidebarContext.Provider value={context}>
-            {props.renderSidebarBody(context)}
-          </SidebarContext.Provider>
-        )
-      }}
-      sidebarFooterRender={
-        props.renderSidebarFooter
-          ? (frameContext) => {
-              const context = toSidebarContext(frameContext, desktopOpen, setDesktopOpen)
-              return (
-                <SidebarContext.Provider value={context}>
-                  {props.renderSidebarFooter?.(context)}
-                </SidebarContext.Provider>
-              )
-            }
-          : undefined
-      }
-      mainRender={(frameContext) => {
-        const context = toSidebarContext(frameContext, desktopOpen, setDesktopOpen)
-        return <SidebarContext.Provider value={context}>{props.children}</SidebarContext.Provider>
-      }}
-    />
+    >
+      <SidebarLayoutContent {...props} />
+    </SidebarFrame>
   )
 }
 
-export function SidebarTrigger(props: ParentProps<{ class?: string }>) {
-  const { toggleSidebar } = useSidebar()
+function SidebarLayoutContent(props: SidebarLayoutProps) {
+  const frame = useSidebarFrame()
+  const context: SidebarContextValue = {
+    isMobile: frame.isMobile,
+    open: frame.isOpen,
+    setOpen: frame.setOpen,
+    toggleSidebar: frame.toggle,
+  }
 
   return (
-    <Button
+    <SidebarContext.Provider value={context}>
+      <SidebarFrame.Sidebar>
+        <Show when={props.renderSidebarHeader}>
+          <SidebarFrame.SidebarHeader>
+            {props.renderSidebarHeader?.(context)}
+          </SidebarFrame.SidebarHeader>
+        </Show>
+        <SidebarFrame.SidebarBody>{props.renderSidebarBody(context)}</SidebarFrame.SidebarBody>
+        <Show when={props.renderSidebarFooter}>
+          <SidebarFrame.SidebarFooter>
+            {props.renderSidebarFooter?.(context)}
+          </SidebarFrame.SidebarFooter>
+        </Show>
+      </SidebarFrame.Sidebar>
+      <SidebarFrame.Main>{props.children}</SidebarFrame.Main>
+    </SidebarContext.Provider>
+  )
+}
+
+export function SidebarTrigger(props: { class?: string }) {
+  return (
+    <SidebarFrame.Trigger
+      as={Button}
       variant="ghost"
       size="icon-md"
       classes={{
-        root: cn(
+        root: [
           'border border-border/70 bg-background/90 size-8 shadow-sm transition-colors hover:(text-foreground bg-muted) focus-visible:effect-fv',
           props.class,
-        ),
+        ],
       }}
-      leading="i-lucide-panel-left"
-      onClick={toggleSidebar}
     >
+      <Icon name="i-lucide-panel-left" />
       <span class="sr-only">Toggle Sidebar</span>
-      {props.children}
-    </Button>
+    </SidebarFrame.Trigger>
   )
-}
-
-function toSidebarContext(
-  context: SidebarFrameT.BaseContext,
-  desktopOpen: () => boolean,
-  setDesktopOpen: (open: boolean | ((open: boolean) => boolean)) => void,
-): SidebarContextValue {
-  return {
-    isMobile: context.isMobile,
-    open: () => (context.isMobile() ? context.isOpen() : desktopOpen()),
-    setOpen: (open) => {
-      if (context.isMobile()) {
-        context.setOpen(open)
-        return
-      }
-
-      setDesktopOpen(open)
-    },
-    toggleSidebar: () => {
-      if (context.isMobile()) {
-        context.toggle()
-        return
-      }
-
-      setDesktopOpen((open) => !open)
-    },
-  }
 }

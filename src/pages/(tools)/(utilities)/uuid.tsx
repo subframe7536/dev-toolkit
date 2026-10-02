@@ -43,12 +43,12 @@ function UUIDGenerator() {
     }
   }
 
-  const handleCustomInput = (value: string) => {
-    const newCount = Number.parseInt(value) || 1
+  const handleCustomInput = (value: number) => {
+    const newCount = Math.trunc(value) || 1
     setCount(newCount)
     // Update tab selection if it matches a preset
     if (PRESET_COUNTS.includes(newCount as any)) {
-      setSelectedTab(value)
+      setSelectedTab(String(newCount))
     }
   }
 
@@ -76,8 +76,8 @@ function UUIDGenerator() {
           <InputNumber
             minValue={1}
             maxValue={100}
-            value={count()}
-            onChange={(val) => handleCustomInput(val)}
+            rawValue={count()}
+            onRawValueChange={(val) => handleCustomInput(val)}
             classes={{ input: 'text-center h-9' }}
           />
         </div>

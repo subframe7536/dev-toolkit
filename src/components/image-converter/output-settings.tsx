@@ -35,8 +35,8 @@ export const OutputSettings: Component<OutputSettingsProps> = (props) => {
         <label class="font-medium text-sm">Output Format</label>
         <Select
           value={props.targetFormat}
-          onChange={(value) => value && props.onFormatChange(value)}
-          options={FORMAT_OPTIONS.map((o) => ({ value: o.value, label: o.label }))}
+          onValueChange={(value) => value && props.onFormatChange(value)}
+          items={FORMAT_OPTIONS.map((o) => ({ value: o.value, label: o.label }))}
         />
       </div>
 
@@ -45,7 +45,7 @@ export const OutputSettings: Component<OutputSettingsProps> = (props) => {
           <label class="font-medium text-sm">{`${props.targetFormat.toUpperCase()} Quality: ${props.quality}`}</label>
           <Slider
             value={[props.quality]}
-            onChange={(value) => props.onQualityChange(value[0])}
+            onValueCommit={(value) => props.onQualityChange(value[0])}
             min={1}
             max={100}
             step={1}
@@ -53,7 +53,11 @@ export const OutputSettings: Component<OutputSettingsProps> = (props) => {
         </div>
       </Show>
 
-      <Switch checked={props.ratio} onChange={props.onRatioChange} label="Keep aspect ratio" />
+      <Switch
+        checked={props.ratio}
+        onCheckedChange={props.onRatioChange}
+        label="Keep aspect ratio"
+      />
 
       <div>
         <label class="font-medium mb-2 block text-sm">Global Dimensions</label>
@@ -66,20 +70,18 @@ export const OutputSettings: Component<OutputSettingsProps> = (props) => {
             type="number"
             placeholder="Width"
             value={props.globalWidth ? `${props.globalWidth}` : ''}
-            onInput={(e) => {
-              const val = e.currentTarget.value
-              props.onGlobalWidthChange(val ? Number.parseInt(val) : undefined)
-            }}
+            onValueChange={(value) =>
+              props.onGlobalWidthChange(value ? Number.parseInt(value) : undefined)
+            }
           />
           <Input
             classes={{ root: 'flex-1' }}
             type="number"
             placeholder="Height"
             value={props.globalHeight ? `${props.globalHeight}` : ''}
-            onInput={(e) => {
-              const val = e.currentTarget.value
-              props.onGlobalHeightChange(val ? Number.parseInt(val) : undefined)
-            }}
+            onValueChange={(value) =>
+              props.onGlobalHeightChange(value ? Number.parseInt(value) : undefined)
+            }
           />
         </div>
       </div>

@@ -134,31 +134,38 @@ export function PatternLibraryDialog(props: PatternLibraryDialogProps) {
     <Dialog
       open={isOpen()}
       onOpenChange={setIsOpen}
-      title={
-        (
-          <span class="flex gap-2 items-center">
-            <Icon name="i-lucide-library" class="size-5" />
-            Pattern Library
-          </span>
-        ) as any
-      }
-      description="Browse and load common regex patterns for validation, parsing, and more. Click any pattern to load it directly."
       classes={{ content: 'max-h-[80vh] max-w-6xl overflow-y-auto' }}
     >
-      <div class="mt-6">
-        <For each={categories}>
-          {(category) => (
-            <CategorySection category={category} onSelectPattern={handleSelectPattern} />
-          )}
-        </For>
-        <div class="text-muted-foreground pt-4 text-center border-t border-border text-xs">
-          {categories.reduce((sum, cat) => sum + cat.patterns.length, 0)} patterns across{' '}
-          {categories.length} categories
-        </div>
-      </div>
-      <Button variant="secondary" leading="i-lucide-library">
+      <Dialog.Trigger as={Button} variant="secondary" leading="i-lucide-library">
         Load Example
-      </Button>
+      </Dialog.Trigger>
+      <Dialog.Content>
+        <Dialog.Header>
+          <Dialog.Title>
+            <span class="flex gap-2 items-center">
+              <Icon name="i-lucide-library" class="size-5" />
+              Pattern Library
+            </span>
+          </Dialog.Title>
+          <Dialog.Description>
+            Browse and load common regex patterns for validation, parsing, and more. Click any
+            pattern to load it directly.
+          </Dialog.Description>
+        </Dialog.Header>
+        <Dialog.Body>
+          <div class="mt-6">
+            <For each={categories}>
+              {(category) => (
+                <CategorySection category={category} onSelectPattern={handleSelectPattern} />
+              )}
+            </For>
+            <div class="text-muted-foreground pt-4 text-center border-t border-border text-xs">
+              {categories.reduce((sum, cat) => sum + cat.patterns.length, 0)} patterns across{' '}
+              {categories.length} categories
+            </div>
+          </div>
+        </Dialog.Body>
+      </Dialog.Content>
     </Dialog>
   )
 }

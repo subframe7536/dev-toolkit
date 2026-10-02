@@ -52,27 +52,27 @@ function JSONSchemaGenerator() {
   return (
     <div class="space-y-6">
       <div class="flex flex-wrap gap-6">
-        <Switch checked={required()} onChange={setRequired} label="Mark fields as required" />
+        <Switch
+          checked={required()}
+          onCheckedChange={setRequired}
+          label="Mark fields as required"
+        />
         <Switch
           checked={additionalProperties()}
-          onChange={setAdditionalProperties}
+          onCheckedChange={setAdditionalProperties}
           label="Allow additional properties"
         />
       </div>
       <div class="flex flex-wrap gap-6 items-center">
         <div class="flex-1 min-w-60">
           <label class="font-medium text-sm">Schema Title (optional)</label>
-          <Input
-            value={title()}
-            onInput={(e) => setTitle(e.currentTarget.value)}
-            placeholder="My Schema"
-          />
+          <Input value={title()} onValueChange={setTitle} placeholder="My Schema" />
         </div>
         <div class="flex-1 min-w-60">
           <label class="font-medium text-sm">Schema Description (optional)</label>
           <Input
             value={description()}
-            onInput={(e) => setDescription(e.currentTarget.value)}
+            onValueChange={setDescription}
             placeholder="Description of the schema"
           />
         </div>
@@ -83,11 +83,11 @@ function JSONSchemaGenerator() {
           <div>
             <label class="font-medium text-sm">Input JSON</label>
             <Textarea
-              classes={{ input: 'text-sm font-mono h-96' }}
+              classes={{ root: 'text-sm font-mono h-96' }}
               placeholder='{"name": "John", "age": 30}'
               value={input()}
-              onInput={(e) => {
-                setInput(e.currentTarget.value)
+              onValueChange={(value) => {
+                setInput(value)
                 handleGenerate()
               }}
             />
@@ -101,7 +101,7 @@ function JSONSchemaGenerator() {
           <div>
             <label class="font-medium text-sm">JSON Schema Output</label>
             <Textarea
-              classes={{ input: 'text-sm font-mono bg-muted/50 h-96' }}
+              classes={{ root: 'text-sm font-mono bg-muted/50 h-96' }}
               readOnly
               placeholder="Generated schema will appear here"
               value={output()}

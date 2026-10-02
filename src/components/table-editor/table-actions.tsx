@@ -22,15 +22,15 @@ export function TableActions() {
       <div class="flex gap-4 items-center">
         <MultiSelect
           value={computed.visibleColumnIds()}
-          onChange={handleColumnVisibilityChange}
-          options={store.tableData.columns.map((col) => ({ value: col.id, label: col.name }))}
-          classes={{ root: 'w-48' }}
+          onValueChange={handleColumnVisibilityChange}
+          items={store.tableData.columns.map((col) => ({ value: col.id, label: col.name }))}
+          classes={{ control: 'w-48' }}
         />
 
         <Switch
           label="First row is header"
           checked={store.hasHeaders}
-          onChange={actions.toggleHeaders}
+          onCheckedChange={actions.toggleHeaders}
         />
       </div>
 

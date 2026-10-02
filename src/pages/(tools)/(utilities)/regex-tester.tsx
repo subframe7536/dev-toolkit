@@ -121,16 +121,15 @@ function RegexTester() {
                 Clear All
               </Button>
               {/* Reference Dialog */}
-              <Dialog
-                title="Regex Syntax Reference"
-                classes={{ content: 'max-h-[60vh] max-w-4xl overflow-y-auto' }}
-              >
-                <>
-                  <Button variant="outline" leading="i-lucide-book-open">
-                    Reference
-                  </Button>
-                  <HelpPanel />
-                </>
+              <Dialog classes={{ content: 'max-h-[60vh] max-w-4xl overflow-y-auto' }}>
+                <Dialog.Trigger as={Button} variant="outline" leading="i-lucide-book-open">
+                  Reference
+                </Dialog.Trigger>
+                <Dialog.Content title="Regex Syntax Reference">
+                  <Dialog.Body>
+                    <HelpPanel />
+                  </Dialog.Body>
+                </Dialog.Content>
               </Dialog>
             </div>
           </div>

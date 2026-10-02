@@ -33,7 +33,7 @@ declare module 'solid-file-router' {
     title: string
     description: string
     category: "Encoding" | "JSON" | "Utilities"
-    icon: `lucide:${string}`
+    icon: `i-lucide-${string}`
     tags: string[]
   }
 }

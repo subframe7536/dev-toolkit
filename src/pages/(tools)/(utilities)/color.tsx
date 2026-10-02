@@ -105,9 +105,9 @@ function ColorConverter() {
         <div class="relative">
           <Input
             value={inputValue()}
-            onInput={(e) => handleInputChange(e.currentTarget.value)}
+            onValueChange={handleInputChange}
             placeholder="Enter color..."
-            classes={{ input: 'font-mono' }}
+            classes={{ root: 'font-mono' }}
           />
           <button
             class="rounded-1.5 size-6 translate-y--50% right-2 top-50% absolute hover:bg-background"
@@ -172,7 +172,7 @@ function ColorConverter() {
                   <label class="font-medium text-sm">Red</label>
                   <Slider
                     value={[Math.round(rgb().r)]}
-                    onChange={(value) => updateFromSliders('r', value[0])}
+                    onValueCommit={(value) => updateFromSliders('r', value[0])}
                     min={0}
                     max={255}
                     step={1}
@@ -182,7 +182,7 @@ function ColorConverter() {
                   <label class="font-medium text-sm">Green</label>
                   <Slider
                     value={[Math.round(rgb().g)]}
-                    onChange={(value) => updateFromSliders('g', value[0])}
+                    onValueCommit={(value) => updateFromSliders('g', value[0])}
                     min={0}
                     max={255}
                     step={1}
@@ -192,7 +192,7 @@ function ColorConverter() {
                   <label class="font-medium text-sm">Blue</label>
                   <Slider
                     value={[Math.round(rgb().b)]}
-                    onChange={(value) => updateFromSliders('b', value[0])}
+                    onValueCommit={(value) => updateFromSliders('b', value[0])}
                     min={0}
                     max={255}
                     step={1}
@@ -211,7 +211,7 @@ function ColorConverter() {
                   <label class="font-medium text-sm">Hue</label>
                   <Slider
                     value={[Math.round(rgbToHsl(rgb()).h)]}
-                    onChange={(value) => updateFromHsl('h', value[0])}
+                    onValueCommit={(value) => updateFromHsl('h', value[0])}
                     min={0}
                     max={360}
                     step={1}
@@ -221,7 +221,7 @@ function ColorConverter() {
                   <label class="font-medium text-sm">Saturation</label>
                   <Slider
                     value={[Math.round(rgbToHsl(rgb()).s)]}
-                    onChange={(value) => updateFromHsl('s', value[0])}
+                    onValueCommit={(value) => updateFromHsl('s', value[0])}
                     min={0}
                     max={100}
                     step={1}
@@ -231,7 +231,7 @@ function ColorConverter() {
                   <label class="font-medium text-sm">Lightness</label>
                   <Slider
                     value={[Math.round(rgbToHsl(rgb()).l)]}
-                    onChange={(value) => updateFromHsl('l', value[0])}
+                    onValueCommit={(value) => updateFromHsl('l', value[0])}
                     min={0}
                     max={100}
                     step={1}

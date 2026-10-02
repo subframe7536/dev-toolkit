@@ -90,9 +90,9 @@ function SqlParamFill() {
           <label class="font-medium text-sm">SQL Template</label>
           <Textarea
             value={sqlInput()}
-            onInput={(e) => setSqlInput(e.currentTarget.value)}
+            onValueChange={setSqlInput}
             placeholder={`All Mybatis logs\n\nor\n\nSELECT * FROM T WHERE id = ? AND name = ?`}
-            classes={{ input: 'font-mono h-48 resize-none' }}
+            classes={{ root: 'font-mono h-48 resize-none' }}
           />
         </div>
 
@@ -100,9 +100,9 @@ function SqlParamFill() {
           <label class="font-medium text-sm">Parameters</label>
           <Textarea
             value={paramsInput()}
-            onInput={(e) => setParamsInput(e.currentTarget.value)}
+            onValueChange={setParamsInput}
             placeholder="1(Integer), zhangshan(String)"
-            classes={{ input: 'font-mono h-48 resize-none' }}
+            classes={{ root: 'font-mono h-48 resize-none' }}
           />
         </div>
       </div>
@@ -114,7 +114,7 @@ function SqlParamFill() {
             value={error() || output()}
             readOnly
             placeholder="SELECT * FROM T WHERE id=1 AND name='zhangshan'"
-            classes={{ root: error() && 'text-red-500', input: 'font-mono h-48 resize-none' }}
+            classes={{ root: [error() && 'text-red-500', 'font-mono h-48 resize-none'] }}
           />
         </div>
         <div class="mt-4 flex gap-4 justify-end">

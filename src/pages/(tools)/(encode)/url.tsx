@@ -28,7 +28,11 @@ function URLEncoder() {
 
   return (
     <div class="flex flex-col gap-4">
-      <Switch checked={useComponent()} onChange={setUseComponent} label="Regard as URL component" />
+      <Switch
+        checked={useComponent()}
+        onCheckedChange={setUseComponent}
+        label="Regard as URL component"
+      />
       <EncoderLayout mode="URL" onEncode={encode} onDecode={decode} />
     </div>
   )

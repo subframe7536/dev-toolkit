@@ -336,9 +336,9 @@ export function RegexInputPanel() {
           {/* Flag Select */}
           <MultiSelect
             value={selectedFlags()}
-            onChange={handleFlagsChange}
-            options={FLAG_OPTIONS.map((o) => ({ value: o.flag, label: `${o.flag} - ${o.label}` }))}
-            classes={{ root: 'pt-1 shrink-0 w-32' }}
+            onValueChange={handleFlagsChange}
+            items={FLAG_OPTIONS.map((o) => ({ value: o.flag, label: `${o.flag} - ${o.label}` }))}
+            classes={{ control: 'pt-1 shrink-0 w-32' }}
           />
         </div>
 

@@ -340,8 +340,8 @@ export function DataTable(props: DataTableProps) {
                               </Show>
                             </div>
 
-                            <Tooltip text={isPinned() ? 'Unpin column' : 'Pin column'}>
-                              <button
+                            <Tooltip>
+                              <Tooltip.Trigger
                                 class="px-1 rounded hover:bg-accent"
                                 onClick={() => handlePinToggle(columnId)}
                                 aria-label={
@@ -352,10 +352,11 @@ export function DataTable(props: DataTableProps) {
                               >
                                 <Icon
                                   name={isPinned() ? 'i-lucide-pin-off' : 'i-lucide-pin'}
-                                  class={cn('mt-1', isPinned() && 'text-primary')}
+                                  class={['mt-1', isPinned() && 'text-primary']}
                                   title=""
                                 />
-                              </button>
+                              </Tooltip.Trigger>
+                              <Tooltip.Content text={isPinned() ? 'Unpin column' : 'Pin column'} />
                             </Tooltip>
                           </div>
                         </th>

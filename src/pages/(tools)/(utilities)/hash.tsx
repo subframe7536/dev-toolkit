@@ -96,10 +96,10 @@ function HashGenerator() {
                 <div class="mt-4">
                   <Textarea
                     value={textInput()}
-                    onInput={(e) => setTextInput((e.target as HTMLTextAreaElement).value)}
+                    onValueChange={setTextInput}
                     placeholder="Enter text to generate hash..."
                     rows={10}
-                    classes={{ input: 'text-sm font-mono h-120 resize-y' }}
+                    classes={{ root: 'text-sm font-mono h-120 resize-y' }}
                   />
                 </div>
               ),
@@ -157,10 +157,10 @@ function HashGenerator() {
                 <label class="font-medium text-sm">Verify Hash (Optional)</label>
                 <Textarea
                   value={verifyHash()}
-                  onInput={(e) => setVerifyHash((e.target as HTMLTextAreaElement).value)}
+                  onValueChange={setVerifyHash}
                   placeholder="Paste a hash to verify against generated hashes..."
                   rows={2}
-                  classes={{ input: 'text-sm font-mono resize-y' }}
+                  classes={{ root: 'text-sm font-mono resize-y' }}
                 />
               </div>
 

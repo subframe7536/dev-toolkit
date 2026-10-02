@@ -80,7 +80,7 @@ export function FileEncoder(props: FileEncoderProps) {
               <Show when={props.showDataURLSwitch}>
                 <Switch
                   checked={includeDataURL()}
-                  onChange={setIncludeDataURL}
+                  onCheckedChange={setIncludeDataURL}
                   label="Include Data URL prefix"
                 />
               </Show>

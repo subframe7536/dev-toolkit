@@ -48,8 +48,9 @@ function TextCase() {
           <label class="font-medium text-sm">Input Text</label>
           <Textarea
             value={input()}
-            onChange={setInput}
-            classes={{ input: 'font-mono h-36 resize-none' }}
+            modelModifiers={{ lazy: true }}
+            onValueChange={setInput}
+            classes={{ root: 'font-mono h-36 resize-none' }}
             placeholder="Enter text to convert..."
           />
         </div>

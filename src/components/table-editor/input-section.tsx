@@ -223,13 +223,12 @@ export function InputSection() {
                     classes={{ root: 'whitespace-nowrap' }}
                     label="Replace \n"
                     checked={replaceLineWrap()}
-                    onChange={handleReplaceLineWrap}
+                    onCheckedChange={handleReplaceLineWrap}
                   />
                 </div>
                 <Textarea
                   classes={{
-                    input:
-                      'text-sm font-mono h-120 resize-none whitespace-nowrap overflow-x-scroll placeholder:whitespace-pre-wrap',
+                    root: 'text-sm font-mono h-120 resize-none whitespace-nowrap overflow-x-scroll placeholder:whitespace-pre-wrap',
                   }}
                   placeholder={PLACEHOLDER}
                   value={textInput()}
@@ -297,8 +296,12 @@ export function InputSection() {
                     <label class="font-medium text-sm">Select Sheet</label>
                     <Select
                       value={selectedSheet()}
-                      onChange={setSelectedSheet}
-                      options={sheetNames().map((s) => ({ value: s, label: s }))}
+                      onValueChange={(value) => {
+                        if (value !== null) {
+                          setSelectedSheet(value)
+                        }
+                      }}
+                      items={sheetNames().map((s) => ({ value: s, label: s }))}
                     />
                   </div>
                 </Show>

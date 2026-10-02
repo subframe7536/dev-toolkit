@@ -19,9 +19,14 @@ export default defineConfig<PresetWind4Theme>({
     }),
     presetCompletion(),
     presetMoraine({
-      enableComponentLayer: true,
+      themeDefaults: false,
     }),
   ],
+  content: {
+    pipeline: {
+      include: [/\.(?:mjs|js|ts|jsx|tsx|mdx?|html)(?:\?|$)/],
+    },
+  },
   shortcuts: [
     ['effect-fv', 'outline-none ring-1.5 ring-ring ring-offset-(2 background)'],
     ['effect-dis', 'pointer-events-none opacity-70 cursor-not-allowed'],

@@ -30,7 +30,7 @@ export default defineConfig({
         description: 'string',
         category: '"Encoding" | "JSON" | "Utilities"',
         // oxlint-disable-next-line no-template-curly-in-string
-        icon: '`lucide:${string}`',
+        icon: '`i-lucide-${string}`',
         tags: 'string[]',
       },
     }),

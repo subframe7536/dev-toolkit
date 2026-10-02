@@ -77,17 +77,17 @@ export const ImageCard: Component<ImageCardProps> = (props) => {
         <Input
           type="number"
           placeholder="Width"
-          classes={{ input: 'text-xs h-8' }}
+          classes={{ root: 'text-xs h-8' }}
           value={props.image.targetWidth ? `${props.image.targetWidth}` : ''}
-          onInput={(e) => handleWidthChange(e.currentTarget.value)}
+          onValueChange={handleWidthChange}
         />
 
         <Input
           type="number"
           placeholder="Height"
-          classes={{ input: 'text-xs h-8' }}
+          classes={{ root: 'text-xs h-8' }}
           value={props.image.targetHeight ? `${props.image.targetHeight}` : ''}
-          onInput={(e) => handleHeightChange(e.currentTarget.value)}
+          onValueChange={handleHeightChange}
         />
       </div>
 

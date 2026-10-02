@@ -29,7 +29,7 @@ export function ReplacementPanel() {
         <label class="font-medium text-sm">Replacement Pattern</label>
         <Input
           placeholder="Enter replacement (e.g., $1-$2 or $<name>)"
-          classes={{ input: 'font-mono mt-1' }}
+          classes={{ root: 'font-mono mt-1' }}
           value={store.replacementPattern}
           onValueChange={(v) => actions.setReplacementPattern(v)}
         />

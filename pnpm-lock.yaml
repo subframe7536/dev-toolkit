@@ -170,8 +170,8 @@ importers:
         specifier: ^9.2.4
         version: 9.2.4(solid-js@1.9.15)
       moraine:
-        specifier: ^0.5.0
-        version: 0.5.0(@subf/unocss@0.3.1(magic-string@1.4.2)(vite@8.3.1(@types/node@24.19.0)(jiti@2.7.0)(yaml@2.9.1)))(solid-js@1.9.15)(typescript@7.0.2)(valibot@1.5.0(typescript@7.0.2))
+        specifier: ^0.6.0-beta.1
+        version: 0.6.0-beta.1(@subf/unocss@0.3.1(magic-string@1.4.2)(vite@8.3.1(@types/node@24.19.0)(jiti@2.7.0)(yaml@2.9.1)))(solid-js@1.9.15)(typescript@7.0.2)(valibot@1.5.0(typescript@7.0.2))
       papaparse:
         specifier: ^5.7.0
         version: 5.7.0
@@ -414,12 +414,12 @@ packages:
   '@floating-ui/utils@0.2.12':
     resolution: {integrity: sha512-HpCo8tmWzLVad5s2d19EhAz5zqrrQ6s69qd6moPMQvkOuSwDT1YgRfWSVuc4ennqrgv3OHppiOGMQ7oC13yIww==}
 
-  '@formisch/solid@1.0.0-rc.0':
-    resolution: {integrity: sha512-GNxLq59iC0qN2zlHIfQ8V1rSMrRVyadpxW7j8wQHReOxbicEaguLF2fYxZW+22tyBEVRAKiv/E63xzdl46yJPA==}
+  '@formisch/solid@1.1.0':
+    resolution: {integrity: sha512-US/EQTQ2SwO74o5BD7oTMjtkz1riX+cCrWV1rleHJJRAhvlSgViVSJ7578vvZue7VnmZDf9i2stUUPUba6BTsw==}
     peerDependencies:
-      solid-js: ^1.6.0
-      typescript: '>=5'
-      valibot: ^1.4.1
+      solid-js: '>=1.6 <2'
+      typescript: '>=5 <8'
+      valibot: '>=1.4.1 <2'
     peerDependenciesMeta:
       typescript:
         optional: true
@@ -1196,8 +1196,10 @@ packages:
   character-entities-legacy@3.0.0:
     resolution: {integrity: sha512-RpPp0asT/6ufRm//AJVwpViZbGM/MkjQFxJccQRHmISF/22NBtsHqAWmL+/pmkPWoIUJdWyeVleTl1wydHATVQ==}
 
-  cls-variant@1.2.0:
-    resolution: {integrity: sha512-lqm6rqQfzXKvjqhU4BafCAZknHOGTiQx7ovem4w2TDqxFiJOWvUw6GKezUCsTLgNXeFPLPghvuYWCUsDeSaTHA==}
+  cn@0.4.0:
+    resolution: {integrity: sha512-qOAeUhPwPzBxx6jaeQdo646XIKliKHc2j1ZF7Ngb1o0pJZKH5gq8FkA0aVdUdPFUDXNXyUCXpCtoJISo6dhizg==}
+    engines: {node: '>=20'}
+    hasBin: true
 
   codepage@1.15.0:
     resolution: {integrity: sha512-3g6NUTPd/YtuuGrhMnOMRjFc+LJw/bnMp3+0r/Wcz3IXUuCosKRJvMphm5+Q+bvTVGcJJuRvVLuYba+WojaFaA==}
@@ -1487,14 +1489,14 @@ packages:
   micromark-util-types@2.0.3:
     resolution: {integrity: sha512-oxB2Ik03hI0gv+VNn9tnh1t1YEe9MDPptViAEgfdf3YQHsn0pzGTgCdlSCJXcwhqm8phaEuM7zeEu3QQzVBrPg==}
 
-  moraine@0.5.0:
-    resolution: {integrity: sha512-C/r7Cr+C02YaRjJxWi4129wMMHjJRxYK46OVnQkSl9EvcOvF1b/Ys83PJtW/mlTROqglo+G810CtFSfQ0Gokyw==}
+  moraine@0.6.0-beta.1:
+    resolution: {integrity: sha512-CzGpiTwRlNnJO3c2bxEIPKqEK8SvIrKUfSTD4z/VAJK+0GIoGQgHxy7qWXbLASrPOB1BjFoUzF9YPGZnKtguIQ==}
     peerDependencies:
       '@iconify/tailwind': 1.2.0
       '@subf/unocss': ^0.3.0
       '@tanstack/virtual-core': ^3.17.4
-      solid-js: ^1.9.14
-      tailwindcss: '>=3.0.0'
+      solid-js: ^1.9.15
+      tailwindcss: ^4.0.0
     peerDependenciesMeta:
       '@iconify/tailwind':
         optional: true
@@ -2137,7 +2139,7 @@ snapshots:
 
   '@floating-ui/utils@0.2.12': {}
 
-  '@formisch/solid@1.0.0-rc.0(solid-js@1.9.15)(typescript@7.0.2)(valibot@1.5.0(typescript@7.0.2))':
+  '@formisch/solid@1.1.0(solid-js@1.9.15)(typescript@7.0.2)(valibot@1.5.0(typescript@7.0.2))':
     dependencies:
       solid-js: 1.9.15
       valibot: 1.5.0(typescript@7.0.2)
@@ -2725,7 +2727,7 @@ snapshots:
 
   character-entities-legacy@3.0.0: {}
 
-  cls-variant@1.2.0: {}
+  cn@0.4.0: {}
 
   codepage@1.15.0: {}
 
@@ -2971,11 +2973,11 @@ snapshots:
 
   micromark-util-types@2.0.3: {}
 
-  moraine@0.5.0(@subf/unocss@0.3.1(magic-string@1.4.2)(vite@8.3.1(@types/node@24.19.0)(jiti@2.7.0)(yaml@2.9.1)))(solid-js@1.9.15)(typescript@7.0.2)(valibot@1.5.0(typescript@7.0.2)):
+  moraine@0.6.0-beta.1(@subf/unocss@0.3.1(magic-string@1.4.2)(vite@8.3.1(@types/node@24.19.0)(jiti@2.7.0)(yaml@2.9.1)))(solid-js@1.9.15)(typescript@7.0.2)(valibot@1.5.0(typescript@7.0.2)):
     dependencies:
       '@floating-ui/dom': 1.8.0
-      '@formisch/solid': 1.0.0-rc.0(solid-js@1.9.15)(typescript@7.0.2)(valibot@1.5.0(typescript@7.0.2))
-      cls-variant: 1.2.0
+      '@formisch/solid': 1.1.0(solid-js@1.9.15)(typescript@7.0.2)(valibot@1.5.0(typescript@7.0.2))
+      cn: 0.4.0
       solid-js: 1.9.15
     optionalDependencies:
       '@subf/unocss': 0.3.1(magic-string@1.4.2)(vite@8.3.1(@types/node@24.19.0)(jiti@2.7.0)(yaml@2.9.1))

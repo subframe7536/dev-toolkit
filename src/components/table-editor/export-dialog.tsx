@@ -193,94 +193,99 @@ export function ExportDialog() {
   }
 
   return (
-    <Dialog
-      title="Export"
-      description="Configure export settings and generate output"
-      body={
-        <div class="space-y-6">
-          <div class="gap-4 grid grid-cols-1 md:grid-cols-2">
-            <div>
-              <label class="font-medium text-sm">Table Name</label>
-              <Input
-                value={tableName()}
-                onInput={(e) => setTableName(e.currentTarget.value)}
-                placeholder="my_table"
-                classes={{ root: 'mt-1' }}
-              />
-            </div>
-
-            <div class="flex flex-col gap-2">
-              <label class="text-muted-foreground font-500">Export Format</label>
-              <Select
-                value={exportFormat()}
-                onChange={setExportFormat}
-                options={exportOptions.map((o) => ({ value: o.value, label: o.label }))}
-              />
-            </div>
-          </div>
-
-          <div class="flex flex-col gap-2">
-            <label class="text-muted-foreground font-500">Column Naming Pattern</label>
-            <Tabs
-              value={namePattern()}
-              onChange={(value) => setNamePattern(value as NamePattern)}
-              items={namePatternOptions.map((o) => ({ value: o.value, label: o.label }))}
-            />
-          </div>
-
-          <Show when={exportFormat() === 'sql-update'}>
-            <div>
-              <label class="font-medium text-sm">Key Columns (for UPDATE)</label>
-              <div class="mt-1 p-2 border bg-input flex flex-row flex-wrap gap-3 max-h-32 overflow-y-auto rounded-md">
-                <For each={computed.visibleColumns()}>
-                  {(col) => (
-                    <Checkbox
-                      classes={{ root: 'flex gap-2 items-center' }}
-                      checked={keyColumns().includes(col.id)}
-                      onChange={(checked) => {
-                        if (checked) {
-                          setKeyColumns([...keyColumns(), col.id])
-                        } else {
-                          setKeyColumns(keyColumns().filter((id) => id !== col.id))
-                        }
-                      }}
-                      label={col.name}
-                    />
-                  )}
-                </For>
+    <Dialog>
+      <Dialog.Trigger as={Button} leading="i-lucide-download">
+        Export
+      </Dialog.Trigger>
+      <Dialog.Content title="Export" description="Configure export settings and generate output">
+        <Dialog.Body>
+          <div class="space-y-6">
+            <div class="gap-4 grid grid-cols-1 md:grid-cols-2">
+              <div>
+                <label class="font-medium text-sm">Table Name</label>
+                <Input
+                  value={tableName()}
+                  onValueChange={setTableName}
+                  placeholder="my_table"
+                  classes={{ root: 'mt-1' }}
+                />
               </div>
-            </div>
-          </Show>
 
-          <div class="space-y-3">
-            <div class="flex gap-2 items-center justify-between">
-              <label class="font-medium text-sm">Output</label>
-              <div class="flex gap-2">
-                <Show when={exportFormat() !== 'excel'}>
-                  <CopyButton content={exportOutput()} size="sm" variant="outline" />
-                </Show>
-                <DownloadButton
-                  content={exportOutput()}
-                  filename={getExportFilename()}
-                  mimeType={getExportMimeType()}
-                  size="sm"
-                  variant={exportFormat() === 'excel' ? 'default' : 'outline'}
-                  onClick={handleExcelExport}
+              <div class="flex flex-col gap-2">
+                <label class="text-muted-foreground font-500">Export Format</label>
+                <Select
+                  value={exportFormat()}
+                  onValueChange={(value) => {
+                    if (value !== null) {
+                      setExportFormat(value)
+                    }
+                  }}
+                  items={exportOptions.map((o) => ({ value: o.value, label: o.label }))}
                 />
               </div>
             </div>
-            <Show when={exportFormat() !== 'excel'}>
-              <Textarea
-                classes={{ root: 'flex-1', input: 'text-sm font-mono resize-none h-80' }}
-                readOnly
-                value={exportOutput()}
+
+            <div class="flex flex-col gap-2">
+              <label class="text-muted-foreground font-500">Column Naming Pattern</label>
+              <Tabs
+                value={namePattern()}
+                onChange={(value) => setNamePattern(value as NamePattern)}
+                items={namePatternOptions.map((o) => ({ value: o.value, label: o.label }))}
               />
+            </div>
+
+            <Show when={exportFormat() === 'sql-update'}>
+              <div>
+                <label class="font-medium text-sm">Key Columns (for UPDATE)</label>
+                <div class="mt-1 p-2 border bg-input flex flex-row flex-wrap gap-3 max-h-32 overflow-y-auto rounded-md">
+                  <For each={computed.visibleColumns()}>
+                    {(col) => (
+                      <Checkbox
+                        classes={{ root: 'flex gap-2 items-center' }}
+                        checked={keyColumns().includes(col.id)}
+                        onCheckedChange={(checked) => {
+                          if (checked) {
+                            setKeyColumns([...keyColumns(), col.id])
+                          } else {
+                            setKeyColumns(keyColumns().filter((id) => id !== col.id))
+                          }
+                        }}
+                        label={col.name}
+                      />
+                    )}
+                  </For>
+                </div>
+              </div>
             </Show>
+
+            <div class="space-y-3">
+              <div class="flex gap-2 items-center justify-between">
+                <label class="font-medium text-sm">Output</label>
+                <div class="flex gap-2">
+                  <Show when={exportFormat() !== 'excel'}>
+                    <CopyButton content={exportOutput()} size="sm" variant="outline" />
+                  </Show>
+                  <DownloadButton
+                    content={exportOutput()}
+                    filename={getExportFilename()}
+                    mimeType={getExportMimeType()}
+                    size="sm"
+                    variant={exportFormat() === 'excel' ? 'default' : 'outline'}
+                    onClick={handleExcelExport}
+                  />
+                </div>
+              </div>
+              <Show when={exportFormat() !== 'excel'}>
+                <Textarea
+                  classes={{ root: ['flex-1', 'text-sm font-mono resize-none h-80'] }}
+                  readOnly
+                  value={exportOutput()}
+                />
+              </Show>
+            </div>
           </div>
-        </div>
-      }
-    >
-      <Button leading="i-lucide-download">Export</Button>
+        </Dialog.Body>
+      </Dialog.Content>
     </Dialog>
   )
 }

@@ -150,20 +150,32 @@ function JSONFormatter() {
           <div class="flex flex-wrap gap-4">
             <Switch
               checked={autoRepair()}
-              onChange={setAutoRepair}
+              onCheckedChange={setAutoRepair}
               label="Auto repair JSON string"
             />
-            <Switch checked={shouldSortKeys()} onChange={setShouldSortKeys} label="Sort Keys" />
-            <Switch checked={parseNested()} onChange={setParseNested} label="Parse Nested JSON" />
+            <Switch
+              checked={shouldSortKeys()}
+              onCheckedChange={setShouldSortKeys}
+              label="Sort Keys"
+            />
+            <Switch
+              checked={parseNested()}
+              onCheckedChange={setParseNested}
+              label="Parse Nested JSON"
+            />
           </div>
         </div>
         <div class="space-y-4">
           <div class="font-medium text-sm">Key Case</div>
           <Select
             value={targetCase()}
-            onChange={setTargetCase}
-            options={caseOptions}
-            classes={{ root: 'w-72 max-w-full' }}
+            onValueChange={(value) => {
+              if (value !== null) {
+                setTargetCase(value)
+              }
+            }}
+            items={caseOptions}
+            classes={{ control: 'w-72 max-w-full' }}
           />
         </div>
         <div class="min-w-80 space-y-4">
@@ -171,7 +183,7 @@ function JSONFormatter() {
           <Slider
             value={[displayIndent()]}
             onValueChange={(value) => setDisplayIndent(value[0])}
-            onChange={updateIndent}
+            onValueCommit={updateIndent}
             min={2}
             max={8}
             step={2}
@@ -184,10 +196,10 @@ function JSONFormatter() {
           <div>
             <label class="font-medium text-sm">Input JSON</label>
             <Textarea
-              classes={{ input: 'text-sm font-mono h-96 resize-none' }}
+              classes={{ root: 'text-sm font-mono h-96 resize-none' }}
               placeholder="Paste your JSON here..."
               value={input()}
-              onInput={(e) => setInput(e.currentTarget.value)}
+              onValueChange={setInput}
             />
           </div>
           <ClearButton onClear={handleClear} disabled={!input() && !output()} />
@@ -205,7 +217,7 @@ function JSONFormatter() {
               <Icon name="i-lucide-maximize-2" />
             </Button>
             <Textarea
-              classes={{ input: 'text-sm font-mono bg-muted/50 h-96 resize-none' }}
+              classes={{ root: 'text-sm font-mono bg-muted/50 h-96 resize-none' }}
               readOnly
               placeholder="Formatted JSON will appear here..."
               value={output()}
@@ -237,7 +249,7 @@ function JSONFormatter() {
           <div class="flex-1">
             <label class="font-medium text-sm">Output</label>
             <Textarea
-              classes={{ input: 'text-sm font-mono bg-muted/50 h-full resize-none' }}
+              classes={{ root: 'text-sm font-mono bg-muted/50 h-full resize-none' }}
               readOnly
               value={output()}
             />
