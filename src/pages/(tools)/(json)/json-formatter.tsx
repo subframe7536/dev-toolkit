@@ -141,21 +141,36 @@ function JSONFormatter() {
         <div class="space-y-4">
           <div class="font-medium text-sm">Options</div>
           <div class="flex flex-col gap-3">
-            <Switch
-              checked={autoRepair()}
-              onCheckedChange={setAutoRepair}
+            <Field
               label="Auto repair JSON string"
-            />
-            <Switch
-              checked={shouldSortKeys()}
-              onCheckedChange={setShouldSortKeys}
+              classes={{
+                root: 'flex flex-row-reverse gap-2 w-fit min-w-0 items-center',
+                label: 'font-normal',
+                container: 'mt-0! shrink-0',
+              }}
+            >
+              <Switch checked={autoRepair()} onCheckedChange={setAutoRepair} />
+            </Field>
+            <Field
               label="Sort Keys"
-            />
-            <Switch
-              checked={parseNested()}
-              onCheckedChange={setParseNested}
+              classes={{
+                root: 'flex flex-row-reverse gap-2 w-fit min-w-0 items-center',
+                label: 'font-normal',
+                container: 'mt-0! shrink-0',
+              }}
+            >
+              <Switch checked={shouldSortKeys()} onCheckedChange={setShouldSortKeys} />
+            </Field>
+            <Field
               label="Parse Nested JSON"
-            />
+              classes={{
+                root: 'flex flex-row-reverse gap-2 w-fit min-w-0 items-center',
+                label: 'font-normal',
+                container: 'mt-0! shrink-0',
+              }}
+            >
+              <Switch checked={parseNested()} onCheckedChange={setParseNested} />
+            </Field>
           </div>
         </div>
         <Field label="Key Case" classes={{ root: 'min-w-0', label: 'font-medium text-sm' }}>
@@ -170,38 +185,39 @@ function JSONFormatter() {
             classes={{ control: 'w-full' }}
           />
         </Field>
-        <div class="min-w-0 space-y-4">
-          <label class="font-medium text-sm">Indent Size</label>
+        <Field label="Indent Size" classes={{ root: 'min-w-0', label: 'font-medium text-sm' }}>
           <Slider
-            aria-label="Indent Size"
             value={[indent()]}
             onValueChange={(value) => setIndent(value[0])}
             min={2}
             max={8}
             step={2}
           />
-        </div>
+        </Field>
       </div>
 
       <div class="tool-grid">
         <div class="space-y-4">
-          <div class="tool-field">
-            <label class="font-medium tool-panel-heading text-sm">Input JSON</label>
+          <Field label="Input JSON" classes={{ root: 'min-w-0', label: 'font-medium text-sm' }}>
             <Textarea
               classes={{ root: 'tool-editor' }}
-              aria-label="Input JSON"
               placeholder="Paste your JSON here..."
               value={input()}
               onValueChange={setInput}
             />
-          </div>
+          </Field>
           <ClearButton onClear={handleClear} disabled={!input() && !output()} />
         </div>
 
         <div class="space-y-4">
-          <div class="tool-field">
-            <div class="tool-panel-heading">
-              <label class="font-medium text-sm">Output</label>
+          <Field
+            label="Output"
+            classes={{
+              root: 'min-w-0',
+              label: 'font-medium text-sm',
+              labelWrapper: 'tool-panel-heading',
+            }}
+            hint={
               <Button
                 variant="ghost"
                 size="sm"
@@ -211,15 +227,15 @@ function JSONFormatter() {
               >
                 Expand
               </Button>
-            </div>
+            }
+          >
             <Textarea
               classes={{ root: 'tool-editor bg-muted/30' }}
-              aria-label="Output"
               readOnly
               placeholder="Formatted JSON will appear here..."
               value={output()}
             />
-          </div>
+          </Field>
           <div class="tool-actions">
             <CopyButton content={output()} variant="secondary" disabled={!output()} />
             <DownloadButton
@@ -242,14 +258,22 @@ function JSONFormatter() {
       >
         <Dialog.Content title="Formatted JSON (Fullscreen)">
           <Dialog.Body>
-            <Textarea
-              aria-label="Expanded JSON output"
+            <Field
+              label="Expanded JSON output"
               classes={{
-                root: 'text-sm leading-relaxed font-mono bg-muted/30 min-h-0 flex-1 resize-none',
+                root: 'min-h-0 flex-1 flex flex-col',
+                label: 'sr-only',
+                container: 'mt-0! min-h-0 flex-1',
               }}
-              readOnly
-              value={output()}
-            />
+            >
+              <Textarea
+                classes={{
+                  root: 'text-sm leading-relaxed font-mono bg-muted/30 min-h-0 flex-1 resize-none',
+                }}
+                readOnly
+                value={output()}
+              />
+            </Field>
           </Dialog.Body>
         </Dialog.Content>
       </Dialog>

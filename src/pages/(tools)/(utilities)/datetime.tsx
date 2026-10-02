@@ -166,15 +166,16 @@ function DateTimeTool() {
             {/* Custom Date Input */}
             <div class="space-y-2">
               <div class="flex gap-2 items-end">
-                <div class="tool-field flex-1">
-                  <label class="font-medium text-sm">Custom Date Input</label>
+                <Field
+                  label="Custom Date Input"
+                  classes={{ root: 'min-w-0 flex-1', label: 'font-medium text-sm' }}
+                >
                   <Input
-                    aria-label="Custom Date Input"
                     value={customInput()}
                     onValueChange={setCustomInput}
                     placeholder="ISO, Unix timestamp, yyyy-MM-dd HH:mm:ss..."
                   />
-                </div>
+                </Field>
                 <Button onClick={handleParseCustomDate} classes={{ root: 'shrink-0' }}>
                   {customDate() ? 'Reset' : 'Parse'}
                 </Button>
@@ -244,12 +245,16 @@ function DateTimeTool() {
             icon="i-lucide-calculator"
             content={
               <div class="space-y-2">
-                <Input
-                  aria-label="DateTime Manipulation"
-                  value={manipulationInput()}
-                  onValueChange={setManipulationInput}
-                  placeholder="e.g., +1h -30m +2d"
-                />
+                <Field
+                  label="DateTime Manipulation"
+                  classes={{ root: 'min-w-0', label: 'sr-only', container: 'mt-0!' }}
+                >
+                  <Input
+                    value={manipulationInput()}
+                    onValueChange={setManipulationInput}
+                    placeholder="e.g., +1h -30m +2d"
+                  />
+                </Field>
                 <Show when={manipulatedTime()}>
                   <div class="p-3 border bg-muted/50 rounded-lg">
                     <div class="flex items-center justify-between">
@@ -281,10 +286,11 @@ function DateTimeTool() {
           content={
             <div class="space-y-4">
               {/* Custom Format */}
-              <div class="space-y-2">
-                <label class="font-medium text-sm">Custom Format Pattern</label>
+              <Field
+                label="Custom Format Pattern"
+                classes={{ root: 'min-w-0', label: 'font-medium text-sm' }}
+              >
                 <Input
-                  aria-label="Custom Format Pattern"
                   value={customFormat()}
                   onValueChange={setCustomFormat}
                   placeholder="e.g., yyyy/MM/dd or dd-MM-yyyy HH:mm"
@@ -311,7 +317,7 @@ function DateTimeTool() {
                     </div>
                   </div>
                 </Show>
-              </div>
+              </Field>
 
               {/* Common Formats */}
               <div class="space-y-2">

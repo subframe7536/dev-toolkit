@@ -32,11 +32,16 @@ export function TableActions() {
           />
         </Field>
 
-        <Switch
+        <Field
           label="First row is header"
-          checked={store.hasHeaders}
-          onCheckedChange={actions.toggleHeaders}
-        />
+          classes={{
+            root: 'flex flex-row-reverse gap-2 w-fit min-w-0 items-center',
+            label: 'font-normal',
+            container: 'mt-0! shrink-0',
+          }}
+        >
+          <Switch checked={store.hasHeaders} onCheckedChange={actions.toggleHeaders} />
+        </Field>
       </div>
 
       <div class="tool-actions">

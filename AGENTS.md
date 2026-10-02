@@ -31,7 +31,9 @@ Use kebab-case filenames, PascalCase components and types, and camelCase functio
 
 ## Testing Guidelines
 
-Use Vitest and colocated `*.test.ts` or `*.test.tsx` files. Utility tests default to Node; component tests opt into jsdom with `// @vitest-environment jsdom` and use Solid Testing Library. Existing property tests use fast-check. Cover changed behavior and relevant edge cases; no numeric coverage threshold is configured.
+NEVER write unit test for components.
+
+Use Vitest and colocated `*.test.ts` files. Utility tests default to Node; component tests opt into jsdom with `// @vitest-environment jsdom` and use Solid Testing Library. Existing property tests use fast-check. Cover changed behavior and relevant edge cases; no numeric coverage threshold is configured.
 
 ## Commit & Pull Request Guidelines
 

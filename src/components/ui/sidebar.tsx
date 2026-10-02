@@ -34,7 +34,7 @@ export function SidebarLayout(props: SidebarLayoutProps) {
       classes={{
         root: 'bg-sidebar h-[100dvh]',
         sidebar: 'bg-sidebar text-sidebar-foreground w-60 duration-200 ease-out',
-        sidebarHeader: 'p-2',
+        sidebarHeader: 'px-3 py-3 flex-col gap-3',
         sidebarBody: 'px-2 pb-2',
         main: 'bg-background min-w-0',
       }}
@@ -49,8 +49,16 @@ function SidebarLayoutContent(props: SidebarLayoutProps) {
   const context: SidebarContextValue = {
     isMobile: frame.isMobile,
     open: frame.isOpen,
-    setOpen: frame.setOpen,
-    toggleSidebar: frame.toggle,
+    setOpen: (open) => {
+      if (frame.isMobile()) {
+        frame.setOpen(open)
+      }
+    },
+    toggleSidebar: () => {
+      if (frame.isMobile()) {
+        frame.toggle()
+      }
+    },
   }
 
   return (
@@ -74,20 +82,23 @@ function SidebarLayoutContent(props: SidebarLayoutProps) {
 }
 
 export function SidebarTrigger(props: { class?: string }) {
+  const sidebar = useSidebar()
   return (
-    <SidebarFrame.Trigger
-      as={Button}
-      variant="ghost"
-      size="icon-md"
-      classes={{
-        root: [
-          'border border-border/70 bg-background/90 size-8 shadow-sm transition-colors hover:(text-foreground bg-muted)',
-          props.class,
-        ],
-      }}
-    >
-      <Icon name="i-lucide-panel-left" />
-      <span class="sr-only">Toggle Sidebar</span>
-    </SidebarFrame.Trigger>
+    <Show when={sidebar.isMobile()}>
+      <SidebarFrame.Trigger
+        as={Button}
+        variant="ghost"
+        size="icon-md"
+        classes={{
+          root: [
+            'size-11 md:size-8 shrink-0 transition-colors hover:(text-foreground bg-muted)',
+            props.class,
+          ],
+        }}
+      >
+        <Icon name="i-lucide-panel-left" />
+        <span class="sr-only">Toggle Sidebar</span>
+      </SidebarFrame.Trigger>
+    </Show>
   )
 }

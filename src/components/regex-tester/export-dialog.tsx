@@ -1,5 +1,5 @@
 import { Field, Dialog, Icon, Input, Select, Switch, Textarea } from 'moraine'
-import { createEffect, createSignal, createUniqueId, Show } from 'solid-js'
+import { createEffect, createSignal, Show } from 'solid-js'
 
 import { CopyButton } from '#/components/copy-button'
 import { DownloadButton } from '#/components/download-button'
@@ -20,8 +20,6 @@ export function ExportDialog() {
   const [variableName, setVariableName] = createSignal('regex')
   const [includeComments, setIncludeComments] = createSignal(true)
   const [exportOutput, setExportOutput] = createSignal('')
-
-  const outputLabelId = createUniqueId()
 
   // Generate export code when dialog opens or settings change
   createEffect(() => {
@@ -75,28 +73,27 @@ export function ExportDialog() {
                 />
               </Field>
 
-              <div>
-                <label class="font-medium text-sm">Variable Name</label>
-                <Input
-                  value={variableName()}
-                  onValueChange={setVariableName}
-                  placeholder="regex"
-                  aria-describedby="variable-name-hint"
-                  classes={{ root: 'mt-1' }}
-                />
-                <span id="variable-name-hint" class="sr-only">
-                  The name of the variable in the exported code
-                </span>
-              </div>
+              <Field
+                label="Variable Name"
+                help="The name of the variable in the exported code"
+                classes={{ root: 'min-w-0', label: 'font-medium text-sm', help: 'sr-only' }}
+              >
+                <Input value={variableName()} onValueChange={setVariableName} placeholder="regex" />
+              </Field>
             </div>
 
             {/* Options */}
             <div class="flex items-center">
-              <Switch
+              <Field
                 label="Include comments"
-                checked={includeComments()}
-                onCheckedChange={setIncludeComments}
-              />
+                classes={{
+                  root: 'flex flex-row-reverse gap-2 w-fit min-w-0 items-center',
+                  label: 'font-normal',
+                  container: 'mt-0! shrink-0',
+                }}
+              >
+                <Switch checked={includeComments()} onCheckedChange={setIncludeComments} />
+              </Field>
             </div>
 
             {/* Code Output */}
@@ -116,12 +113,15 @@ export function ExportDialog() {
                 </div>
               }
             >
-              <div class="space-y-2">
-                <div class="flex gap-2 items-center justify-between">
-                  <label id={outputLabelId} class="font-medium text-sm">
-                    Generated Code
-                  </label>
-                  <div class="flex gap-2">
+              <Field
+                label="Generated Code"
+                classes={{
+                  root: 'min-w-0',
+                  label: 'font-medium text-sm',
+                  labelWrapper: 'tool-panel-heading',
+                }}
+                hint={
+                  <span class="tool-actions">
                     <CopyButton
                       content={exportOutput()}
                       size="sm"
@@ -134,16 +134,15 @@ export function ExportDialog() {
                       size="sm"
                       aria-label={`Download as ${getExportFilename()}`}
                     />
-                  </div>
-                </div>
+                  </span>
+                }
+              >
                 <Textarea
                   classes={{ root: 'text-sm font-mono resize-none h-48' }}
                   readOnly
                   value={exportOutput()}
-                  aria-labelledby={outputLabelId}
-                  aria-readonly="true"
                 />
-              </div>
+              </Field>
             </Show>
           </div>
         </Dialog.Body>

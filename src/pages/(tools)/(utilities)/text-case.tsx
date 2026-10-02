@@ -1,4 +1,4 @@
-import { Textarea } from 'moraine'
+import { Field, Textarea } from 'moraine'
 import { createRoute } from 'solid-file-router'
 import { createMemo, createSignal, For } from 'solid-js'
 
@@ -43,20 +43,23 @@ function TextCase() {
 
   return (
     <div class="flex flex-col gap-6">
-      <div class="tool-field">
-        <div class="tool-panel-heading">
-          <label class="font-medium text-sm">Input Text</label>
-          <ClearButton onClear={handleClear} disabled={!input()} size="sm" />
-        </div>
+      <Field
+        label="Input Text"
+        classes={{
+          root: 'min-w-0',
+          label: 'font-medium text-sm',
+          labelWrapper: 'tool-panel-heading',
+        }}
+        hint={<ClearButton onClear={handleClear} disabled={!input()} size="sm" />}
+      >
         <Textarea
-          aria-label="Input Text"
           value={input()}
           modelModifiers={{ lazy: true }}
           onValueChange={setInput}
           classes={{ root: 'text-sm leading-relaxed font-mono h-36 resize-y' }}
           placeholder="Enter text to convert..."
         />
-      </div>
+      </Field>
 
       <div class="gap-4 grid grid-cols-1 2xl:grid-cols-3 lg:grid-cols-2">
         <For each={CASE_STYLES}>

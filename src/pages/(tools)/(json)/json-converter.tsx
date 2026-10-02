@@ -118,30 +118,42 @@ function JSONConverter() {
   return (
     <div class="space-y-6">
       <div class="flex flex-wrap gap-4 items-center">
-        <Switch checked={useRepair()} onCheckedChange={setUseRepair} label="Auto-repair JSON" />
+        <Field
+          label="Auto-repair JSON"
+          classes={{
+            root: 'flex flex-row-reverse gap-2 w-fit min-w-0 items-center',
+            label: 'font-normal',
+            container: 'mt-0! shrink-0',
+          }}
+        >
+          <Switch checked={useRepair()} onCheckedChange={setUseRepair} />
+        </Field>
       </div>
 
       <div class="tool-grid">
         <div class="flex flex-col gap-4">
-          <div class="tool-field">
-            <label class="font-medium tool-panel-heading text-sm">JSON Input</label>
+          <Field label="JSON Input" classes={{ root: 'min-w-0', label: 'font-medium text-sm' }}>
             <Textarea
               classes={{ root: 'tool-editor' }}
-              aria-label="Input JSON"
               placeholder="Paste your JSON here..."
               value={input()}
               onValueChange={setInput}
             />
-          </div>
+          </Field>
           <div>
             <ClearButton onClear={handleClear} disabled={!input()} />
           </div>
         </div>
 
         <div class="flex flex-col gap-4">
-          <div class="tool-field">
-            <div class="tool-panel-heading">
-              <label class="font-medium text-sm">Output</label>
+          <Field
+            label="Output"
+            classes={{
+              root: 'min-w-0',
+              label: 'font-medium text-sm',
+              labelWrapper: 'tool-panel-heading',
+            }}
+            hint={
               <Field
                 label="Output format"
                 classes={{ root: 'min-w-0', label: 'sr-only', container: 'mt-0!' }}
@@ -157,15 +169,15 @@ function JSONConverter() {
                   classes={{ control: 'w-52 max-w-full' }}
                 />
               </Field>
-            </div>
+            }
+          >
             <Textarea
               classes={{ root: 'tool-editor bg-muted/30' }}
-              aria-label="Output"
               readOnly
               placeholder="Converted output will appear here..."
               value={output()}
             />
-          </div>
+          </Field>
           <div class="tool-actions">
             <CopyButton content={output()} variant="secondary" disabled={!output()} />
             <DownloadButton

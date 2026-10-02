@@ -1,4 +1,4 @@
-import { Button, Icon, Input, Slider, cn } from 'moraine'
+import { Field, Button, Icon, Input, Slider, cn } from 'moraine'
 import { createRoute } from 'solid-file-router'
 import { createMemo, createSignal, For } from 'solid-js'
 import { toast } from 'solid-toaster'
@@ -39,8 +39,7 @@ function ColorConverter() {
   const [savedColors, setSavedColors] = createSignal<string[]>([])
   const [inputValue, setInputValue] = createSignal('')
 
-  const handleColorPick = (e: Event) => {
-    const hex = (e.target as HTMLInputElement).value
+  const handleColorPick = (hex: string) => {
     setRgb(hexToRgb(hex))
     setInputValue(hex)
   }
@@ -94,7 +93,14 @@ function ColorConverter() {
       {/* Left Column */}
       <div class="min-w-0 space-y-6">
         {/* Color Preview with Picker */}
-        <label class="group border h-48 w-full block cursor-pointer relative overflow-hidden rounded-xl focus-within:effect-fv">
+        <Field
+          label="Pick color"
+          classes={{
+            root: 'group border h-48 w-full cursor-pointer relative overflow-hidden rounded-xl focus-within:effect-fv',
+            label: 'sr-only',
+            container: 'mt-0! h-full',
+          }}
+        >
           <div
             class="h-full w-full transition-opacity group-hover:opacity-90"
             style={{ 'background-color': rgbToHex(rgb()) }}
@@ -102,21 +108,22 @@ function ColorConverter() {
           <div class="opacity-0 flex transition-opacity items-center inset-0 justify-center absolute group-hover:opacity-100">
             <Icon name="i-lucide-pipette" class="text-white drop-shadow-lg text-5xl" />
           </div>
-          <input
+          <Input
             type="color"
-            aria-label="Pick color"
             value={rgbToHex(rgb())}
-            onInput={handleColorPick}
-            class="sr-only"
+            onValueChange={handleColorPick}
+            classes={{ root: 'opacity-0 h-full w-full inset-0 absolute cursor-pointer' }}
           />
-        </label>
+        </Field>
 
         {/* Text Input with Clear */}
-        <div class="relative">
+        <Field
+          label="Color value"
+          classes={{ root: 'min-w-0', label: 'sr-only', container: 'mt-0! relative' }}
+        >
           <Input
             value={inputValue()}
             onValueChange={handleInputChange}
-            aria-label="Color value"
             placeholder="Enter color..."
             classes={{ root: 'font-mono pr-10' }}
           />
@@ -127,7 +134,7 @@ function ColorConverter() {
           >
             <Icon name="i-lucide-x" class="size-3 inline-block" title="clear" />
           </button>
-        </div>
+        </Field>
 
         {/* Action Buttons */}
         <div class="flex gap-2">
@@ -180,39 +187,33 @@ function ColorConverter() {
             class="flex-1"
             content={
               <div class="space-y-4">
-                <div class="tool-field">
-                  <label class="font-medium text-sm">Red</label>
+                <Field label="Red" classes={{ root: 'min-w-0', label: 'font-medium text-sm' }}>
                   <Slider
-                    aria-label="Red"
                     value={[Math.round(rgb().r)]}
                     onValueChange={(value) => updateFromSliders('r', value[0])}
                     min={0}
                     max={255}
                     step={1}
                   />
-                </div>
-                <div class="tool-field">
-                  <label class="font-medium text-sm">Green</label>
+                </Field>
+                <Field label="Green" classes={{ root: 'min-w-0', label: 'font-medium text-sm' }}>
                   <Slider
-                    aria-label="Green"
                     value={[Math.round(rgb().g)]}
                     onValueChange={(value) => updateFromSliders('g', value[0])}
                     min={0}
                     max={255}
                     step={1}
                   />
-                </div>
-                <div class="tool-field">
-                  <label class="font-medium text-sm">Blue</label>
+                </Field>
+                <Field label="Blue" classes={{ root: 'min-w-0', label: 'font-medium text-sm' }}>
                   <Slider
-                    aria-label="Blue"
                     value={[Math.round(rgb().b)]}
                     onValueChange={(value) => updateFromSliders('b', value[0])}
                     min={0}
                     max={255}
                     step={1}
                   />
-                </div>
+                </Field>
               </div>
             }
           />
@@ -222,39 +223,39 @@ function ColorConverter() {
             class="flex-1"
             content={
               <div class="space-y-4">
-                <div class="tool-field">
-                  <label class="font-medium text-sm">Hue</label>
+                <Field label="Hue" classes={{ root: 'min-w-0', label: 'font-medium text-sm' }}>
                   <Slider
-                    aria-label="Hue"
                     value={[Math.round(hsl().h)]}
                     onValueChange={(value) => updateFromHsl('h', value[0])}
                     min={0}
                     max={360}
                     step={1}
                   />
-                </div>
-                <div class="tool-field">
-                  <label class="font-medium text-sm">Saturation</label>
+                </Field>
+                <Field
+                  label="Saturation"
+                  classes={{ root: 'min-w-0', label: 'font-medium text-sm' }}
+                >
                   <Slider
-                    aria-label="Saturation"
                     value={[Math.round(hsl().s)]}
                     onValueChange={(value) => updateFromHsl('s', value[0])}
                     min={0}
                     max={100}
                     step={1}
                   />
-                </div>
-                <div class="tool-field">
-                  <label class="font-medium text-sm">Lightness</label>
+                </Field>
+                <Field
+                  label="Lightness"
+                  classes={{ root: 'min-w-0', label: 'font-medium text-sm' }}
+                >
                   <Slider
-                    aria-label="Lightness"
                     value={[Math.round(hsl().l)]}
                     onValueChange={(value) => updateFromHsl('l', value[0])}
                     min={0}
                     max={100}
                     step={1}
                   />
-                </div>
+                </Field>
               </div>
             }
           />

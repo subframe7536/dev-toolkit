@@ -1,4 +1,4 @@
-import { Button, Icon, Tabs, Textarea, cn } from 'moraine'
+import { Field, Button, Icon, Tabs, Textarea, cn } from 'moraine'
 import { createRoute } from 'solid-file-router'
 import { createMemo, createSignal, For, Show } from 'solid-js'
 import { toast } from 'solid-toaster'
@@ -94,13 +94,18 @@ function HashGenerator() {
               label: 'Text Input',
               content: (
                 <div class="mt-4">
-                  <Textarea
-                    value={textInput()}
-                    onValueChange={setTextInput}
-                    placeholder="Enter text to generate hash..."
-                    rows={10}
-                    classes={{ root: 'tool-editor' }}
-                  />
+                  <Field
+                    label="Text Input"
+                    classes={{ root: 'min-w-0', label: 'sr-only', container: 'mt-0!' }}
+                  >
+                    <Textarea
+                      value={textInput()}
+                      onValueChange={setTextInput}
+                      placeholder="Enter text to generate hash..."
+                      rows={10}
+                      classes={{ root: 'tool-editor' }}
+                    />
+                  </Field>
                 </div>
               ),
             },
@@ -153,8 +158,10 @@ function HashGenerator() {
           title="Generated Hashes"
           content={
             <div class="flex flex-col gap-4">
-              <div>
-                <label class="font-medium mb-2 block text-sm">Verify Hash (Optional)</label>
+              <Field
+                label="Verify Hash (Optional)"
+                classes={{ root: 'min-w-0', label: 'font-medium text-sm' }}
+              >
                 <Textarea
                   value={verifyHash()}
                   onValueChange={setVerifyHash}
@@ -162,7 +169,7 @@ function HashGenerator() {
                   rows={2}
                   classes={{ root: 'text-sm font-mono resize-y' }}
                 />
-              </div>
+              </Field>
 
               <div class="flex flex-col gap-3">
                 <For each={results()}>

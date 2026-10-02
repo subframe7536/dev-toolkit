@@ -1,4 +1,4 @@
-import { Button, Icon, Input } from 'moraine'
+import { Field, Button, Icon, Input } from 'moraine'
 import { createMemo, Show } from 'solid-js'
 
 import { useRegexContext } from '#/contexts/regex-context'
@@ -25,15 +25,17 @@ export function ReplacementPanel() {
   return (
     <div class="p-4 space-y-4">
       {/* Replacement Pattern Input */}
-      <div>
-        <label class="font-medium text-sm">Replacement Pattern</label>
+      <Field
+        label="Replacement Pattern"
+        classes={{ root: 'min-w-0', label: 'font-medium text-sm' }}
+      >
         <Input
           placeholder="Enter replacement (e.g., $1-$2 or $<name>)"
-          classes={{ root: 'font-mono mt-1' }}
+          classes={{ root: 'font-mono' }}
           value={store.replacementPattern}
           onValueChange={(v) => actions.setReplacementPattern(v)}
         />
-      </div>
+      </Field>
 
       {/* Syntax Help */}
       <div class="text-muted-foreground space-y-1 text-xs">
@@ -93,7 +95,7 @@ export function ReplacementPanel() {
 
             {/* Preview Output */}
             <div class="space-y-2">
-              <label class="text-muted-foreground text-xs">Result Preview</label>
+              <h3 class="text-muted-foreground text-xs">Result Preview</h3>
               <div class="border bg-muted/50 max-h-64 overflow-auto rounded-md">
                 <pre class="font-mono p-3 whitespace-pre-wrap break-words text-sm" tabIndex={0}>
                   {replacementResult()?.result || store.testText}

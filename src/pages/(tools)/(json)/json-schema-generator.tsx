@@ -1,4 +1,4 @@
-import { Input, Switch, Textarea } from 'moraine'
+import { Field, Input, Switch, Textarea } from 'moraine'
 import { createRoute } from 'solid-file-router'
 import { createEffect, createSignal, on } from 'solid-js'
 import { toast } from 'solid-toaster'
@@ -58,60 +58,73 @@ function JSONSchemaGenerator() {
   return (
     <div class="space-y-6">
       <div class="flex flex-wrap gap-6">
-        <Switch
-          checked={required()}
-          onCheckedChange={setRequired}
+        <Field
           label="Mark fields as required"
-        />
-        <Switch
-          checked={additionalProperties()}
-          onCheckedChange={setAdditionalProperties}
+          classes={{
+            root: 'flex flex-row-reverse gap-2 w-fit min-w-0 items-center',
+            label: 'font-normal',
+            container: 'mt-0! shrink-0',
+          }}
+        >
+          <Switch checked={required()} onCheckedChange={setRequired} />
+        </Field>
+        <Field
           label="Allow additional properties"
-        />
+          classes={{
+            root: 'flex flex-row-reverse gap-2 w-fit min-w-0 items-center',
+            label: 'font-normal',
+            container: 'mt-0! shrink-0',
+          }}
+        >
+          <Switch checked={additionalProperties()} onCheckedChange={setAdditionalProperties} />
+        </Field>
       </div>
       <div class="gap-4 grid sm:grid-cols-2">
-        <div class="tool-field">
-          <label class="font-medium text-sm">Schema Title (optional)</label>
+        <Field
+          label="Schema Title (optional)"
+          classes={{ root: 'min-w-0', label: 'font-medium text-sm' }}
+        >
           <Input value={title()} onValueChange={setTitle} placeholder="My Schema" />
-        </div>
-        <div class="tool-field">
-          <label class="font-medium text-sm">Schema Description (optional)</label>
+        </Field>
+        <Field
+          label="Schema Description (optional)"
+          classes={{ root: 'min-w-0', label: 'font-medium text-sm' }}
+        >
           <Input
             value={description()}
             onValueChange={setDescription}
             placeholder="Description of the schema"
           />
-        </div>
+        </Field>
       </div>
 
       <div class="tool-grid">
         <div class="space-y-4">
-          <div class="tool-field">
-            <label class="font-medium tool-panel-heading text-sm">Input JSON</label>
+          <Field label="Input JSON" classes={{ root: 'min-w-0', label: 'font-medium text-sm' }}>
             <Textarea
               classes={{ root: 'tool-editor' }}
-              aria-label="Input JSON"
               placeholder='{"name": "John", "age": 30}'
               value={input()}
               onValueChange={setInput}
             />
-          </div>
+          </Field>
           <div class="flex flex-wrap gap-2">
             <ClearButton onClear={handleClear} disabled={!input() && !output()} />
           </div>
         </div>
 
         <div class="space-y-4">
-          <div class="tool-field">
-            <label class="font-medium tool-panel-heading text-sm">JSON Schema Output</label>
+          <Field
+            label="JSON Schema Output"
+            classes={{ root: 'min-w-0', label: 'font-medium text-sm' }}
+          >
             <Textarea
               classes={{ root: 'tool-editor bg-muted/30' }}
-              aria-label="Output"
               readOnly
               placeholder="Generated schema will appear here"
               value={output()}
             />
-          </div>
+          </Field>
           <div class="flex flex-wrap gap-2">
             <CopyButton content={output()} disabled={!output()} variant="secondary" />
             <DownloadButton

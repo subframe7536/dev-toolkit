@@ -40,51 +40,65 @@ export const OutputSettings: Component<OutputSettingsProps> = (props) => {
       </Field>
 
       <Show when={showQualitySlider()}>
-        <div class="tool-field">
-          <label class="font-medium text-sm">{`${props.targetFormat.toUpperCase()} Quality: ${props.quality}`}</label>
+        <Field
+          label={`${props.targetFormat.toUpperCase()} Quality: ${props.quality}`}
+          classes={{ root: 'min-w-0', label: 'font-medium text-sm' }}
+        >
           <Slider
-            aria-label="Image Quality"
             value={[props.quality]}
             onValueChange={(value) => props.onQualityChange(value[0])}
             min={1}
             max={100}
             step={1}
           />
-        </div>
+        </Field>
       </Show>
 
-      <Switch
-        checked={props.ratio}
-        onCheckedChange={props.onRatioChange}
+      <Field
         label="Keep aspect ratio"
-      />
+        classes={{
+          root: 'flex flex-row-reverse gap-2 w-fit min-w-0 items-center',
+          label: 'font-normal',
+          container: 'mt-0! shrink-0',
+        }}
+      >
+        <Switch checked={props.ratio} onCheckedChange={props.onRatioChange} />
+      </Field>
 
       <div>
-        <label class="font-medium mb-2 block text-sm">Global Dimensions</label>
+        <h3 class="font-medium mb-2 text-sm">Global Dimensions</h3>
         <p class="text-muted-foreground mb-3 text-xs">
           Apply to all images without individual settings
         </p>
         <div class="flex gap-2">
-          <Input
-            classes={{ root: 'min-w-0 flex-1' }}
-            type="number"
-            aria-label="Global Width"
-            placeholder="Width"
-            value={props.globalWidth ? `${props.globalWidth}` : ''}
-            onValueChange={(value) =>
-              props.onGlobalWidthChange(value ? Number.parseInt(value) : undefined)
-            }
-          />
-          <Input
-            classes={{ root: 'min-w-0 flex-1' }}
-            type="number"
-            aria-label="Global Height"
-            placeholder="Height"
-            value={props.globalHeight ? `${props.globalHeight}` : ''}
-            onValueChange={(value) =>
-              props.onGlobalHeightChange(value ? Number.parseInt(value) : undefined)
-            }
-          />
+          <Field
+            label="Global Width"
+            classes={{ root: 'min-w-0 flex-1', label: 'sr-only', container: 'mt-0!' }}
+          >
+            <Input
+              classes={{ root: 'min-w-0 flex-1' }}
+              type="number"
+              placeholder="Width"
+              value={props.globalWidth ? `${props.globalWidth}` : ''}
+              onValueChange={(value) =>
+                props.onGlobalWidthChange(value ? Number.parseInt(value) : undefined)
+              }
+            />
+          </Field>
+          <Field
+            label="Global Height"
+            classes={{ root: 'min-w-0 flex-1', label: 'sr-only', container: 'mt-0!' }}
+          >
+            <Input
+              classes={{ root: 'min-w-0 flex-1' }}
+              type="number"
+              placeholder="Height"
+              value={props.globalHeight ? `${props.globalHeight}` : ''}
+              onValueChange={(value) =>
+                props.onGlobalHeightChange(value ? Number.parseInt(value) : undefined)
+              }
+            />
+          </Field>
         </div>
       </div>
     </div>

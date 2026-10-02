@@ -1,58 +1,55 @@
 import { A } from '@solidjs/router'
+import { Icon } from 'moraine'
 import { createRoute } from 'solid-file-router'
-import { For, Show } from 'solid-js'
+import { For } from 'solid-js'
 
-import { Card } from '#/components/card'
+import { ToolSearchTrigger } from '#/components/tool-search'
 import { getCategories } from '#/utils/routes'
 
-export default createRoute({
-  component: Index,
-})
+export default createRoute({ component: Index })
 
 function Index() {
   const { categories, count } = getCategories()
   return (
-    <div class="mx-a flex flex-col gap-10 max-w-7xl w-full">
-      <div class="max-w-3xl">
-        <h1 class="text-foreground leading-tight tracking-tight font-semibold text-3xl sm:text-4xl">
-          Developer Toolkit
-        </h1>
-        <p class="text-muted-foreground leading-7 mt-3 text-base">
-          A collection of {count} essential tools for developers
-        </p>
+    <div class="flex flex-col gap-4 min-w-0 w-full">
+      <div class="flex flex-col gap-3">
+        <div>
+          <h1 class="text-foreground tracking-tight font-semibold text-xl sm:text-2xl">
+            Developer Toolkit
+          </h1>
+          <p class="text-muted-foreground mt-1 text-sm">
+            Fast, local utilities for everyday development.
+          </p>
+        </div>
+        <ToolSearchTrigger prominent />
       </div>
-
-      <div class="flex flex-col gap-10">
+      <div class="flex flex-col gap-4">
+        <div class="text-muted-foreground flex items-center justify-between text-xs">
+          <span>All tools</span>
+          <span>{count} tools · In your browser</span>
+        </div>
         <For each={categories}>
           {(category) => (
-            <section class="flex flex-col gap-4">
-              <h2 class="text-foreground font-semibold text-xl">{category.name}</h2>
-              <div class="gap-4 grid 2xl:grid-cols-3 lg:grid-cols-2">
+            <section class="flex flex-col gap-2">
+              <h2 class="text-foreground font-semibold text-sm">{category.name}</h2>
+              <div class="gap-2 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3">
                 <For each={category.tools}>
                   {(tool) => (
                     <A
                       href={tool.path}
-                      class="outline-none block transition-transform rounded-lg focus-visible:effect-fv"
+                      class="group p-4 border border-border bg-card flex gap-2.5 min-w-0 transition-colors items-center rounded-lg focus-visible:effect-fv hover:(border-primary/50 bg-muted/40)"
                     >
-                      <Card
-                        title={tool.info.title}
-                        icon={tool.info.icon}
-                        description={tool.info.description}
-                        class="h-full min-h-38 cursor-pointer transition-colors hover:border-primary"
-                        content={
-                          <Show when={tool.info.tags?.length}>
-                            <div class="flex flex-wrap gap-1.5">
-                              <For each={tool.info.tags}>
-                                {(tag) => (
-                                  <span class="text-muted-foreground px-1.5 py-0.5 border border-border/50 rounded bg-muted/20 text-xs">
-                                    {tag}
-                                  </span>
-                                )}
-                              </For>
-                            </div>
-                          </Show>
-                        }
-                      />
+                      <span class="text-muted-foreground bg-muted/60 shrink-0 grid size-7 place-items-center rounded-md group-hover:text-primary">
+                        <Icon name={tool.info.icon} class="size-4" />
+                      </span>
+                      <div class="min-w-0">
+                        <h3 class="text-foreground leading-5 font-medium text-sm">
+                          {tool.info.title}
+                        </h3>
+                        <p class="text-muted-foreground leading-4 mt-0.5 line-clamp-2 text-xs">
+                          {tool.info.description}
+                        </p>
+                      </div>
                     </A>
                   )}
                 </For>
@@ -61,8 +58,6 @@ function Index() {
           )}
         </For>
       </div>
-
-      <p class="text-muted-foreground text-sm">More tools coming soon</p>
     </div>
   )
 }

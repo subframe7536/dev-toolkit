@@ -1,4 +1,4 @@
-import { Button, Input } from 'moraine'
+import { Field, Button, Input } from 'moraine'
 import type { Component } from 'solid-js'
 import { createEffect, on, Show } from 'solid-js'
 
@@ -74,23 +74,31 @@ export const ImageCard: Component<ImageCardProps> = (props) => {
       </Show>
 
       <div class="mt-2 space-y-2">
-        <Input
-          type="number"
-          aria-label={`Width for ${props.image.file.name}`}
-          placeholder="Width"
-          classes={{ root: 'text-xs h-8' }}
-          value={props.image.targetWidth ? `${props.image.targetWidth}` : ''}
-          onValueChange={handleWidthChange}
-        />
+        <Field
+          label={`Width for ${props.image.file.name}`}
+          classes={{ root: 'min-w-0', label: 'sr-only', container: 'mt-0!' }}
+        >
+          <Input
+            type="number"
+            placeholder="Width"
+            classes={{ root: 'text-xs h-8' }}
+            value={props.image.targetWidth ? `${props.image.targetWidth}` : ''}
+            onValueChange={handleWidthChange}
+          />
+        </Field>
 
-        <Input
-          type="number"
-          aria-label={`Height for ${props.image.file.name}`}
-          placeholder="Height"
-          classes={{ root: 'text-xs h-8' }}
-          value={props.image.targetHeight ? `${props.image.targetHeight}` : ''}
-          onValueChange={handleHeightChange}
-        />
+        <Field
+          label={`Height for ${props.image.file.name}`}
+          classes={{ root: 'min-w-0', label: 'sr-only', container: 'mt-0!' }}
+        >
+          <Input
+            type="number"
+            placeholder="Height"
+            classes={{ root: 'text-xs h-8' }}
+            value={props.image.targetHeight ? `${props.image.targetHeight}` : ''}
+            onValueChange={handleHeightChange}
+          />
+        </Field>
       </div>
 
       <div class="mt-2 flex gap-2">

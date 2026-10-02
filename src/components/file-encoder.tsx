@@ -1,4 +1,4 @@
-import { Switch } from 'moraine'
+import { Field, Switch } from 'moraine'
 import { createMemo, createSignal, Show } from 'solid-js'
 import { toast } from 'solid-toaster'
 
@@ -78,11 +78,16 @@ export function FileEncoder(props: FileEncoderProps) {
             </h3>
             <div class="tool-actions">
               <Show when={props.showDataURLSwitch}>
-                <Switch
-                  checked={includeDataURL()}
-                  onCheckedChange={setIncludeDataURL}
+                <Field
                   label="Include Data URL prefix"
-                />
+                  classes={{
+                    root: 'flex flex-row-reverse gap-2 w-fit min-w-0 items-center',
+                    label: 'font-normal',
+                    container: 'mt-0! shrink-0',
+                  }}
+                >
+                  <Switch checked={includeDataURL()} onCheckedChange={setIncludeDataURL} />
+                </Field>
               </Show>
               <CopyButton content={targetOutput()} variant="secondary" size="sm" />
               <DownloadButton

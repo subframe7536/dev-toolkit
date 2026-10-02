@@ -1,4 +1,4 @@
-import { Button, Icon, Select, Switch, Tabs, Textarea } from 'moraine'
+import { Field, Button, Icon, Select, Switch, Tabs, Textarea } from 'moraine'
 import { createSignal, Show } from 'solid-js'
 import { toast } from 'solid-toaster'
 
@@ -219,22 +219,34 @@ export function InputSection() {
                   <p class="text-muted-foreground text-sm">
                     Paste MySQL CLI output (starts with +-), CSV text, or Excel table data here.
                   </p>
-                  <Switch
-                    classes={{ root: 'whitespace-nowrap' }}
+                  <Field
                     label="Replace \n"
-                    checked={replaceLineWrap()}
-                    onCheckedChange={handleReplaceLineWrap}
-                  />
+                    classes={{
+                      root: 'flex flex-row-reverse gap-2 w-fit min-w-0 items-center',
+                      label: 'font-normal',
+                      container: 'mt-0! shrink-0',
+                    }}
+                  >
+                    <Switch
+                      classes={{ root: 'whitespace-nowrap' }}
+                      checked={replaceLineWrap()}
+                      onCheckedChange={handleReplaceLineWrap}
+                    />
+                  </Field>
                 </div>
-                <Textarea
-                  classes={{
-                    root: 'tool-editor whitespace-nowrap overflow-x-auto placeholder:whitespace-pre-wrap',
-                  }}
-                  aria-label="Table input"
-                  placeholder={PLACEHOLDER}
-                  value={textInput()}
-                  onValueChange={setTextInput}
-                />
+                <Field
+                  label="Table input"
+                  classes={{ root: 'min-w-0', label: 'sr-only', container: 'mt-0!' }}
+                >
+                  <Textarea
+                    classes={{
+                      root: 'tool-editor whitespace-nowrap overflow-x-auto placeholder:whitespace-pre-wrap',
+                    }}
+                    placeholder={PLACEHOLDER}
+                    value={textInput()}
+                    onValueChange={setTextInput}
+                  />
+                </Field>
                 <div class="flex flex-wrap gap-2 items-center">
                   <Button
                     onClick={handleParseText}
@@ -293,8 +305,10 @@ export function InputSection() {
                 />
 
                 <Show when={sheetNames().length > 1}>
-                  <div class="flex flex-col gap-2">
-                    <label class="font-medium text-sm">Select Sheet</label>
+                  <Field
+                    label="Select Sheet"
+                    classes={{ root: 'min-w-0', label: 'font-medium text-sm' }}
+                  >
                     <Select
                       value={selectedSheet()}
                       onValueChange={(value) => {
@@ -304,7 +318,7 @@ export function InputSection() {
                       }}
                       items={sheetNames().map((s) => ({ value: s, label: s }))}
                     />
-                  </div>
+                  </Field>
                 </Show>
 
                 <div class="flex gap-2 items-center">

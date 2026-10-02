@@ -1,15 +1,6 @@
-import { Field, Icon, MultiSelect } from 'moraine'
+import { Field, Icon, MultiSelect, Textarea } from 'moraine'
 import type { HighlighterCore } from 'shiki'
-import {
-  createEffect,
-  createMemo,
-  createResource,
-  createUniqueId,
-  For,
-  on,
-  Show,
-  Suspense,
-} from 'solid-js'
+import { createEffect, createMemo, createResource, For, on, Show, Suspense } from 'solid-js'
 
 import { useRegexContext } from '#/contexts/regex-context'
 import type { MatchResult } from '#/utils/regex/types'
@@ -202,7 +193,6 @@ export function RegexInputPanel() {
   let testMirrorRef!: HTMLDivElement
 
   const [highlighter] = createResource(loadHighlighter)
-  const errorId = createUniqueId()
 
   const { isDark } = useTheme()
 
@@ -273,11 +263,17 @@ export function RegexInputPanel() {
   return (
     <div class="flex flex-col gap-4">
       {/* Pattern Input Section */}
-      <div class="space-y-3">
-        {/* Header with stats */}
-        <div class="flex items-center justify-between">
-          <label class="font-medium text-sm">Pattern</label>
-          <div class="text-muted-foreground flex gap-3 items-center text-xs">
+      <Field
+        label="Pattern"
+        error={store.parseError ? <span role="alert">{store.parseError.message}</span> : undefined}
+        classes={{
+          root: 'min-w-0',
+          label: 'font-medium text-sm',
+          labelWrapper: 'tool-panel-heading',
+          container: 'gap-3',
+        }}
+        hint={
+          <span class="text-muted-foreground flex gap-3 items-center text-xs">
             <Show when={hasInput() && store.executionTime > 0}>
               <span class="flex gap-1 items-center">
                 <Icon name="i-lucide-clock" class="size-3" />
@@ -295,9 +291,9 @@ export function RegexInputPanel() {
                 {matchCount()} match{matchCount() !== 1 ? 'es' : ''}
               </span>
             </Show>
-          </div>
-        </div>
-
+          </span>
+        }
+      >
         {/* Pattern Input with Shiki highlighting + Flag Select */}
         <div class="flex flex-col gap-2 items-stretch sm:flex-row sm:items-start">
           <div class="flex-1 min-w-0 relative">
@@ -320,15 +316,15 @@ export function RegexInputPanel() {
               </Suspense>
             </div>
             {/* Textarea - auto height based on content */}
-            <textarea
+            <Textarea
               ref={(element) => (patternRef = element)}
               placeholder="Enter regex pattern..."
-              class="c-transparent leading-relaxed font-mono caret-foreground border bg-transparent w-full resize-none break-all overflow-hidden text-sm rounded-md !p-2 focus-visible:effect-fv !min-h-10"
+              classes={{
+                root: 'c-transparent leading-relaxed font-mono caret-foreground bg-transparent w-full resize-none break-all overflow-hidden text-sm !p-2 !min-h-10',
+              }}
               rows={1}
               value={store.pattern}
-              onInput={(e) => handlePatternChange(e.currentTarget.value)}
-              aria-label="Regular expression pattern"
-              aria-describedby={store.parseError ? errorId : undefined}
+              onValueChange={handlePatternChange}
               aria-invalid={!store.isValid}
             />
           </div>
@@ -346,26 +342,11 @@ export function RegexInputPanel() {
             />
           </Field>
         </div>
-
-        {/* Error display */}
-        <Show when={store.parseError}>
-          {(error) => (
-            <div
-              id={errorId}
-              class="text-red-600 flex gap-2 items-start text-sm dark:text-red-400"
-              role="alert"
-            >
-              <Icon name="i-lucide-alert-circle" class="mt-0.5 flex-shrink-0 size-4" />
-              <span>{error().message}</span>
-            </div>
-          )}
-        </Show>
-      </div>
+      </Field>
 
       {/* Both layers share the same text geometry so highlights follow the caret. */}
-      <div>
-        <label class="font-medium text-sm">Test String</label>
-        <div class="mt-2 h-64 relative overflow-hidden rounded-lg sm:h-88">
+      <Field label="Test String" classes={{ root: 'min-w-0', label: 'font-medium text-sm' }}>
+        <div class="h-64 relative overflow-hidden rounded-lg sm:h-88">
           {/* Highlight layer */}
           <div
             ref={(element) => (testMirrorRef = element)}
@@ -384,12 +365,14 @@ export function RegexInputPanel() {
             </For>
           </div>
           {/* Textarea - fixed height with scroll */}
-          <textarea
+          <Textarea
             ref={(element) => (testRef = element)}
             placeholder="Enter text to test your regex..."
-            class="c-transparent leading-relaxed font-mono p-2 caret-foreground border bg-transparent h-full w-full resize-none break-all rounded-md focus-visible:(outline-none border-primary)"
+            classes={{
+              root: 'c-transparent leading-relaxed font-mono p-2 caret-foreground bg-transparent h-full w-full resize-none break-all',
+            }}
             value={store.testText}
-            onInput={(e) => actions.setTestText(e.currentTarget.value)}
+            onValueChange={actions.setTestText}
             onScroll={syncTestScroll}
             onClick={(e: MouseEvent) => {
               const target = e.target as HTMLElement
@@ -398,10 +381,9 @@ export function RegexInputPanel() {
                 handleMatchClick(Number.parseInt(idx, 10))
               }
             }}
-            aria-label="Test text"
           />
         </div>
-      </div>
+      </Field>
 
       {/* No matches hint */}
       <Show when={hasInput() && matchCount() === 0 && store.isValid}>

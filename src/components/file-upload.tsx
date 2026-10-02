@@ -1,5 +1,5 @@
 import type { FileUploadProps, FileUploadT } from 'moraine'
-import { FileUpload as MoraineFileUpload } from 'moraine'
+import { Field, FileUpload as MoraineFileUpload } from 'moraine'
 import { createMemo } from 'solid-js'
 import { toast } from 'solid-toaster'
 
@@ -51,26 +51,23 @@ export function FileUpload(props: Props) {
   }
 
   return (
-    <MoraineFileUpload
-      accept={accept()}
-      description={info()}
-      dropzone
-      icon={icon()}
-      label="Drag or Click to upload"
-      maxFiles={200}
-      multiple={props.multiple}
-      onFileReject={handleFileReject}
-      onValueChange={handleValueChange}
-      preview={false}
-      classes={{
-        root: 'flex flex-col gap-2 relative',
-        control:
-          'text-center border border-dashed rounded-lg bg-input/30 flex flex-col gap-3 min-h-56 px-4 py-8 transition-colors items-center justify-center data-[dragging]:bg-muted sm:min-h-72',
-        icon: 'size-12',
-        label: 'text-sm',
-        description: 'xs:text-sm text-(xs muted-foreground center) px-4',
-      }}
-    />
+    <Field label="Upload files" classes={{ root: 'min-w-0', label: 'sr-only', container: 'mt-0!' }}>
+      <MoraineFileUpload
+        accept={accept()}
+        description={info()}
+        dropzone
+        icon={icon()}
+        label="Drag or Click to upload"
+        maxFiles={200}
+        multiple={props.multiple}
+        onFileReject={handleFileReject}
+        onValueChange={handleValueChange}
+        preview={false}
+        classes={{
+          control: 'min-h-56! sm:min-h-72!',
+        }}
+      />
+    </Field>
   )
 }
 

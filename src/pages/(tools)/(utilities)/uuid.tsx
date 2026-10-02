@@ -1,4 +1,4 @@
-import { Button, Icon, InputNumber, Tabs } from 'moraine'
+import { Field, Button, Icon, InputNumber, Tabs } from 'moraine'
 import { createRoute } from 'solid-file-router'
 import { createSignal, For, onMount, Show } from 'solid-js'
 import { toast } from 'solid-toaster'
@@ -71,17 +71,15 @@ function UUIDGenerator() {
           />
         </div>
 
-        <div>
-          <label class="font-medium mb-2 block text-sm">Custom Count</label>
+        <Field label="Custom Count" classes={{ root: 'min-w-0', label: 'font-medium text-sm' }}>
           <InputNumber
-            aria-label="Custom Count"
             minValue={1}
             maxValue={100}
             rawValue={count()}
             onRawValueChange={(val) => handleCustomInput(val)}
             classes={{ input: 'text-center h-9' }}
           />
-        </div>
+        </Field>
 
         <div class="flex gap-2">
           <Button

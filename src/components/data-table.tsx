@@ -11,7 +11,7 @@ import {
   sortFn_text,
   tableFeatures,
 } from '@tanstack/solid-table'
-import { Icon, Tooltip, cn } from 'moraine'
+import { Field, Icon, Textarea, Tooltip, cn } from 'moraine'
 import { createEffect, createMemo, createSignal, For, onCleanup, onMount, Show } from 'solid-js'
 
 import type { CellValue, TableData, TableRow } from '#/utils/table/types'
@@ -198,21 +198,26 @@ export function DataTable(props: DataTableProps) {
               </div>
             }
           >
-            <textarea
-              class="px-3 py-2 border-2 border-primary rounded bg-input w-full focus:outline-none"
-              value={editValue()}
-              aria-label={`Editing ${col.name}`}
-              ref={(r) => setTimeout(() => r.focus(), 0)}
-              onInput={(e) => setEditValue(e.currentTarget.value)}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter') {
-                  handleCellSave(rowId, columnId, editValue())
-                } else if (e.key === 'Escape') {
-                  setEditingCell(null)
-                }
-              }}
-              onBlur={() => handleCellSave(rowId, columnId, editValue())}
-            />
+            <Field
+              label={`Editing ${col.name}`}
+              classes={{ root: 'min-w-0', label: 'sr-only', container: 'mt-0!' }}
+            >
+              <Textarea
+                classes={{ root: 'px-3 py-2 border-2 border-primary bg-input min-h-0 w-full' }}
+                rows={2}
+                value={editValue()}
+                ref={(r) => setTimeout(() => r.focus(), 0)}
+                onValueChange={setEditValue}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    handleCellSave(rowId, columnId, editValue())
+                  } else if (e.key === 'Escape') {
+                    setEditingCell(null)
+                  }
+                }}
+                onBlur={() => handleCellSave(rowId, columnId, editValue())}
+              />
+            </Field>
           </Show>
         )
       },

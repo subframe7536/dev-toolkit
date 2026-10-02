@@ -1,4 +1,4 @@
-import { Button, Textarea } from 'moraine'
+import { Field, Button, Textarea } from 'moraine'
 import type { JSX } from 'solid-js'
 import { batch, createEffect, createSignal, onCleanup } from 'solid-js'
 import { toast } from 'solid-toaster'
@@ -101,23 +101,19 @@ export function EncoderLayout(props: EncoderLayoutProps): JSX.Element {
       </div>
       <div class="tool-grid">
         <div class="space-y-4">
-          <div class="tool-field">
-            <label class="font-medium tool-panel-heading text-sm">{inputLabel()}</label>
+          <Field label={inputLabel()} classes={{ root: 'min-w-0', label: 'font-medium text-sm' }}>
             <Textarea
-              aria-label={inputLabel()}
               classes={{ root: 'tool-editor' }}
               placeholder={inputPlaceholder()}
               value={inputText()}
               onValueChange={setInputText}
             />
-          </div>
+          </Field>
           <ClearButton onClear={clear} disabled={!inputText()} />
         </div>
         <div class="space-y-4">
-          <div class="tool-field">
-            <label class="font-medium tool-panel-heading text-sm">{outputLabel()}</label>
+          <Field label={outputLabel()} classes={{ root: 'min-w-0', label: 'font-medium text-sm' }}>
             <Textarea
-              aria-label={outputLabel()}
               aria-invalid={!!error()}
               classes={{
                 root: ['tool-editor bg-muted/30', error() && 'border-destructive text-destructive'],
@@ -126,7 +122,7 @@ export function EncoderLayout(props: EncoderLayoutProps): JSX.Element {
               placeholder={outputPlaceholder()}
               value={error() || outputText()}
             />
-          </div>
+          </Field>
           <CopyButton content={outputText()} disabled={!outputText()} variant="secondary" />
         </div>
       </div>

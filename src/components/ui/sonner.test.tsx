@@ -40,11 +40,11 @@ it('updates an existing toast when the application theme changes', async () => {
   const theme = () => notification.closest('[data-sonner-theme]')?.getAttribute('data-sonner-theme')
   expect(theme()).toBe('light')
 
-  fireEvent.click(screen.getByRole('button', { name: 'Toggle theme' }))
+  fireEvent.click(screen.getByRole('button', { name: /^Theme:/ }))
   await waitFor(() => expect(theme()).toBe('dark'))
   expect(document.documentElement.classList.contains('dark')).toBe(true)
 
-  fireEvent.click(screen.getByRole('button', { name: 'Toggle theme' }))
+  fireEvent.click(screen.getByRole('button', { name: /^Theme:/ }))
   await waitFor(() => expect(theme()).toBe('light'))
   expect(document.documentElement.classList.contains('dark')).toBe(false)
 })

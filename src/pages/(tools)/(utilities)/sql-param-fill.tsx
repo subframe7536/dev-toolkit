@@ -1,4 +1,4 @@
-import { Button, Textarea } from 'moraine'
+import { Field, Button, Textarea } from 'moraine'
 import { createRoute } from 'solid-file-router'
 import { createEffect, createSignal } from 'solid-js'
 
@@ -83,34 +83,28 @@ function SqlParamFill() {
       </div>
 
       <div class="tool-grid">
-        <div class="tool-field">
-          <label class="font-medium text-sm">SQL Template</label>
+        <Field label="SQL Template" classes={{ root: 'min-w-0', label: 'font-medium text-sm' }}>
           <Textarea
-            aria-label="SQL Template"
             value={sqlInput()}
             onValueChange={setSqlInput}
             placeholder={`All Mybatis logs\n\nor\n\nSELECT * FROM T WHERE id = ? AND name = ?`}
             classes={{ root: 'text-sm leading-relaxed font-mono h-48 resize-y' }}
           />
-        </div>
+        </Field>
 
-        <div class="tool-field">
-          <label class="font-medium text-sm">Parameters</label>
+        <Field label="Parameters" classes={{ root: 'min-w-0', label: 'font-medium text-sm' }}>
           <Textarea
-            aria-label="Parameters"
             value={paramsInput()}
             onValueChange={setParamsInput}
             placeholder="1(Integer), zhangshan(String)"
             classes={{ root: 'text-sm leading-relaxed font-mono h-48 resize-y' }}
           />
-        </div>
+        </Field>
       </div>
 
       <div class="relative">
-        <div class="tool-field">
-          <label class="font-medium text-sm">Output</label>
+        <Field label="Output" classes={{ root: 'min-w-0', label: 'font-medium text-sm' }}>
           <Textarea
-            aria-label="Output"
             aria-invalid={!!error()}
             value={error() || output()}
             readOnly
@@ -122,7 +116,7 @@ function SqlParamFill() {
               ],
             }}
           />
-        </div>
+        </Field>
         <div class="mt-4 tool-actions">
           <CopyButton content={output()} disabled={!output() || !!error()} variant="secondary" />
           <ClearButton onClear={handleClear} disabled={!sqlInput() && !paramsInput()} />
