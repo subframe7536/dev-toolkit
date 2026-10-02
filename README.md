@@ -41,6 +41,7 @@ pnpm test text-case    # Run tests matching a file name
 
 ### Todo
 
+- [ ] jwt analyze
 - [ ] regex input misalign and redudant scrollbar
 - [ ] regex tester page scrollbar eliminate
 - [ ] json object to python/java class
