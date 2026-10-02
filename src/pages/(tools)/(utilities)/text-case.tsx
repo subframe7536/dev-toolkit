@@ -43,26 +43,22 @@ function TextCase() {
 
   return (
     <div class="flex flex-col gap-6">
-      <div class="relative">
-        <div>
+      <div class="tool-field">
+        <div class="tool-panel-heading">
           <label class="font-medium text-sm">Input Text</label>
-          <Textarea
-            value={input()}
-            modelModifiers={{ lazy: true }}
-            onValueChange={setInput}
-            classes={{ root: 'font-mono h-36 resize-none' }}
-            placeholder="Enter text to convert..."
-          />
+          <ClearButton onClear={handleClear} disabled={!input()} size="sm" />
         </div>
-        <ClearButton
-          onClear={handleClear}
-          disabled={!input()}
-          size="sm"
-          class="right-0 top--2 absolute"
+        <Textarea
+          aria-label="Input Text"
+          value={input()}
+          modelModifiers={{ lazy: true }}
+          onValueChange={setInput}
+          classes={{ root: 'text-sm leading-relaxed font-mono h-36 resize-y' }}
+          placeholder="Enter text to convert..."
         />
       </div>
 
-      <div class="gap-4 grid grid-cols-1 2xl:grid-cols-4 lg:grid-cols-2 xl:grid-cols-3">
+      <div class="gap-4 grid grid-cols-1 2xl:grid-cols-3 lg:grid-cols-2">
         <For each={CASE_STYLES}>
           {(style) => {
             const converted = createMemo(() =>
@@ -72,22 +68,22 @@ function TextCase() {
             return (
               <Card
                 title={style.label}
-                class="flex flex-col relative"
+                class="flex flex-col"
                 description={`Example: ${style.example}`}
                 content={
-                  <>
-                    <div class="font-mono p-3 bg-muted min-h-16 break-all rounded-md">
+                  <div class="p-3 bg-muted flex gap-2 min-h-16 items-start rounded-md">
+                    <div class="leading-relaxed font-mono flex-1 min-w-0 break-all text-sm">
                       {converted()}
                     </div>
                     <CopyButton
-                      class="right-6 top-7 absolute"
+                      class="shrink-0"
                       content={converted()}
-                      disabled={converted() !== '...'}
+                      disabled={!input()}
                       text={false}
                       variant="ghost"
                       size="sm"
                     />
-                  </>
+                  </div>
                 }
               />
             )

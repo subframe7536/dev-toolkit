@@ -20,7 +20,7 @@ function HexEncoder() {
   return (
     <Tabs
       defaultValue="text"
-      classes={{ root: 'w-full' }}
+      classes={{ root: 'w-full', content: 'pt-4' }}
       items={[
         {
           value: 'text',

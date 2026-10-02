@@ -65,7 +65,7 @@ export function FileUpload(props: Props) {
       classes={{
         root: 'flex flex-col gap-2 relative',
         control:
-          'text-center b-(2 border dashed) rounded-lg bg-input flex flex-col gap-4 h-100 transition-all items-center justify-center data-[dragging]:bg-muted md:h-120',
+          'text-center border border-dashed rounded-lg bg-input/30 flex flex-col gap-3 min-h-56 px-4 py-8 transition-colors items-center justify-center data-[dragging]:bg-muted sm:min-h-72',
         icon: 'size-12',
         label: 'text-sm',
         description: 'xs:text-sm text-(xs muted-foreground center) px-4',

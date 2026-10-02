@@ -244,7 +244,7 @@ function ImageConverter() {
   }
 
   return (
-    <div class="gap-6 grid grid-cols-1 xl:grid-cols-[1fr_450px]">
+    <div class="gap-6 grid grid-cols-1 items-start xl:grid-cols-[minmax(0,1fr)_20rem] [&>*]:min-w-0">
       {/* Left side - Images */}
       <Card
         title="Upload Images"
@@ -259,7 +259,7 @@ function ImageConverter() {
               icon="i-lucide-image"
             />
             <Show when={images.length > 0}>
-              <div class="mt-6 flex flex-wrap gap-4 justify-evenly">
+              <div class="mt-6 gap-4 grid grid-cols-[repeat(auto-fill,minmax(min(100%,14rem),1fr))]">
                 <For each={images}>
                   {(img) => (
                     <ImageCard

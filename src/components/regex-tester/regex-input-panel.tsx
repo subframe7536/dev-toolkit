@@ -1,4 +1,4 @@
-import { Icon, MultiSelect } from 'moraine'
+import { Field, Icon, MultiSelect } from 'moraine'
 import type { HighlighterCore } from 'shiki'
 import {
   createEffect,
@@ -299,8 +299,8 @@ export function RegexInputPanel() {
         </div>
 
         {/* Pattern Input with Shiki highlighting + Flag Select */}
-        <div class="flex gap-2 items-start">
-          <div class="flex-1 relative">
+        <div class="flex flex-col gap-2 items-stretch sm:flex-row sm:items-start">
+          <div class="flex-1 min-w-0 relative">
             {/* Mirror div for syntax highlighting */}
             <div
               ref={(element) => (patternMirrorRef = element)}
@@ -323,7 +323,7 @@ export function RegexInputPanel() {
             <textarea
               ref={(element) => (patternRef = element)}
               placeholder="Enter regex pattern..."
-              class="c-transparent leading-relaxed font-mono caret-foreground border bg-transparent w-full resize-none break-all overflow-hidden text-sm rounded-md !p-2 !min-h-10"
+              class="c-transparent leading-relaxed font-mono caret-foreground border bg-transparent w-full resize-none break-all overflow-hidden text-sm rounded-md !p-2 focus-visible:effect-fv !min-h-10"
               rows={1}
               value={store.pattern}
               onInput={(e) => handlePatternChange(e.currentTarget.value)}
@@ -334,12 +334,17 @@ export function RegexInputPanel() {
           </div>
 
           {/* Flag Select */}
-          <MultiSelect
-            value={selectedFlags()}
-            onValueChange={handleFlagsChange}
-            items={FLAG_OPTIONS.map((o) => ({ value: o.flag, label: `${o.flag} - ${o.label}` }))}
-            classes={{ control: 'pt-1 shrink-0 w-32' }}
-          />
+          <Field
+            label="Regex flags"
+            classes={{ root: 'min-w-0 w-full sm:w-auto', label: 'sr-only', container: 'mt-0!' }}
+          >
+            <MultiSelect
+              value={selectedFlags()}
+              onValueChange={handleFlagsChange}
+              items={FLAG_OPTIONS.map((o) => ({ value: o.flag, label: `${o.flag} - ${o.label}` }))}
+              classes={{ control: 'shrink-0 w-full sm:w-40' }}
+            />
+          </Field>
         </div>
 
         {/* Error display */}
@@ -357,14 +362,14 @@ export function RegexInputPanel() {
         </Show>
       </div>
 
-      {/* Test Text Section - fixed 400px height with scroll */}
+      {/* Both layers share the same text geometry so highlights follow the caret. */}
       <div>
         <label class="font-medium text-sm">Test String</label>
-        <div class="mt-1 b-(1 transparent) h-100 relative overflow-hidden rounded-lg">
+        <div class="mt-2 h-64 relative overflow-hidden rounded-lg sm:h-88">
           {/* Highlight layer */}
           <div
             ref={(element) => (testMirrorRef = element)}
-            class="leading-relaxed font-mono p-(x-3 y-2) h-full pointer-events-none whitespace-pre-wrap break-words inset-0 absolute z-0 overflow-auto text-sm"
+            class="leading-relaxed font-mono p-2 b-(1 transparent) h-full pointer-events-none whitespace-pre-wrap break-all inset-0 absolute z-0 overflow-auto text-sm"
             aria-hidden="true"
           >
             <For each={segments()}>
@@ -382,7 +387,7 @@ export function RegexInputPanel() {
           <textarea
             ref={(element) => (testRef = element)}
             placeholder="Enter text to test your regex..."
-            class="c-transparent leading-relaxed font-mono p-2 caret-foreground border bg-transparent h-full w-full resize-none break-all rounded-md"
+            class="c-transparent leading-relaxed font-mono p-2 caret-foreground border bg-transparent h-full w-full resize-none break-all rounded-md focus-visible:(outline-none border-primary)"
             value={store.testText}
             onInput={(e) => actions.setTestText(e.currentTarget.value)}
             onScroll={syncTestScroll}

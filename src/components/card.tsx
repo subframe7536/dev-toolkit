@@ -15,13 +15,12 @@ export function Card(props: CardProps) {
   return (
     <MoraineCard
       classes={{
-        root: [
-          'group border border-border transition-colors duration-180 ease-out hover:(border-primary bg-card-hover)',
-          props.class,
-        ],
+        root: ['group min-w-0 border border-border rounded-xl', props.class],
         title: 'text-lg leading-snug font-semibold',
         description: 'text-muted-foreground text-sm leading-6 max-w-68ch',
-        body: 'pt-4',
+        header: 'p-4 pb-0 sm:p-5 sm:pb-0',
+        body: 'p-4 pt-4 sm:p-5 sm:pt-4',
+        footer: 'p-4 pt-0 sm:p-5 sm:pt-0',
       }}
     >
       <MoraineCard.Header>

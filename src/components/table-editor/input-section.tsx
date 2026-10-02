@@ -215,7 +215,7 @@ export function InputSection() {
             label: 'Text Input',
             content: (
               <div class="mt-4 flex flex-col gap-3">
-                <div class="flex gap-4 justify-between">
+                <div class="flex flex-wrap gap-3 items-start justify-between">
                   <p class="text-muted-foreground text-sm">
                     Paste MySQL CLI output (starts with +-), CSV text, or Excel table data here.
                   </p>
@@ -228,8 +228,9 @@ export function InputSection() {
                 </div>
                 <Textarea
                   classes={{
-                    root: 'text-sm font-mono h-120 resize-none whitespace-nowrap overflow-x-scroll placeholder:whitespace-pre-wrap',
+                    root: 'tool-editor whitespace-nowrap overflow-x-auto placeholder:whitespace-pre-wrap',
                   }}
+                  aria-label="Table input"
                   placeholder={PLACEHOLDER}
                   value={textInput()}
                   onValueChange={setTextInput}

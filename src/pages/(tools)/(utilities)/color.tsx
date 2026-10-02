@@ -86,11 +86,11 @@ function ColorConverter() {
   }
 
   return (
-    <div class="flex flex-col gap-6 w-full lg:flex-row">
+    <div class="gap-6 grid grid-cols-1 xl:grid-cols-[18rem_minmax(0,1fr)]">
       {/* Left Column */}
-      <div class="flex-1 w-full space-y-6 lg:max-w-80">
+      <div class="min-w-0 space-y-6">
         {/* Color Preview with Picker */}
-        <label class="group b-(2 border) h-48 w-full block cursor-pointer shadow-lg transition-all relative overflow-hidden rounded-lg focus-within:(shadow-xl scale-[1.02]) hover:(shadow-xl scale-[1.02])">
+        <label class="group border h-48 w-full block cursor-pointer relative overflow-hidden rounded-xl focus-within:effect-fv">
           <div
             class="h-full w-full transition-opacity group-hover:opacity-90"
             style={{ 'background-color': rgbToHex(rgb()) }}
@@ -98,7 +98,13 @@ function ColorConverter() {
           <div class="opacity-0 flex transition-opacity items-center inset-0 justify-center absolute group-hover:opacity-100">
             <Icon name="i-lucide-pipette" class="text-white drop-shadow-lg text-5xl" />
           </div>
-          <input type="color" value={rgbToHex(rgb())} onInput={handleColorPick} class="sr-only" />
+          <input
+            type="color"
+            aria-label="Pick color"
+            value={rgbToHex(rgb())}
+            onInput={handleColorPick}
+            class="sr-only"
+          />
         </label>
 
         {/* Text Input with Clear */}
@@ -106,11 +112,13 @@ function ColorConverter() {
           <Input
             value={inputValue()}
             onValueChange={handleInputChange}
+            aria-label="Color value"
             placeholder="Enter color..."
-            classes={{ root: 'font-mono' }}
+            classes={{ root: 'font-mono pr-10' }}
           />
           <button
-            class="rounded-1.5 size-6 translate-y--50% right-2 top-50% absolute hover:bg-background"
+            aria-label="Clear color input"
+            class="rounded-1.5 size-8 translate-y--50% right-2 top-50% absolute hover:bg-background"
             onClick={() => handleInputChange('')}
           >
             <Icon name="i-lucide-x" class="size-3 inline-block" title="clear" />
@@ -135,7 +143,7 @@ function ColorConverter() {
         {/* Saved Colors */}
         <div class="space-y-2">
           <h3 class="text-muted-foreground font-medium select-none text-sm">Saved Colors</h3>
-          <div class="gap-2 grid grid-cols-[repeat(auto-fill,minmax(2.5rem,1fr))]">
+          <div class="gap-2 grid grid-cols-6">
             <For each={Array.from({ length: MAX_COLORS })}>
               {(_, i) => {
                 const color = createMemo(() => savedColors()[i()])
@@ -143,7 +151,7 @@ function ColorConverter() {
                   <button
                     onClick={() => color() && applySavedColor(color()!)}
                     class={cn(
-                      'b-(2 border) rounded h-10 w-10 transition-all',
+                      'b-(2 border) rounded h-10 w-full transition-colors focus-visible:effect-fv',
                       color()
                         ? 'cursor-pointer hover:(shadow-md scale-110)'
                         : 'bg-muted/30 cursor-default',
@@ -160,17 +168,18 @@ function ColorConverter() {
       </div>
 
       {/* Right Column */}
-      <div class="flex-1 space-y-4">
+      <div class="min-w-0 space-y-4">
         {/* RGB & HSL Sliders */}
-        <div class="flex flex-col gap-4 lg:flex-row">
+        <div class="gap-4 grid 2xl:grid-cols-2">
           <Card
             title="RGB Channels"
             class="flex-1"
             content={
               <div class="space-y-4">
-                <div>
+                <div class="tool-field">
                   <label class="font-medium text-sm">Red</label>
                   <Slider
+                    aria-label="Red"
                     value={[Math.round(rgb().r)]}
                     onValueCommit={(value) => updateFromSliders('r', value[0])}
                     min={0}
@@ -178,9 +187,10 @@ function ColorConverter() {
                     step={1}
                   />
                 </div>
-                <div>
+                <div class="tool-field">
                   <label class="font-medium text-sm">Green</label>
                   <Slider
+                    aria-label="Green"
                     value={[Math.round(rgb().g)]}
                     onValueCommit={(value) => updateFromSliders('g', value[0])}
                     min={0}
@@ -188,9 +198,10 @@ function ColorConverter() {
                     step={1}
                   />
                 </div>
-                <div>
+                <div class="tool-field">
                   <label class="font-medium text-sm">Blue</label>
                   <Slider
+                    aria-label="Blue"
                     value={[Math.round(rgb().b)]}
                     onValueCommit={(value) => updateFromSliders('b', value[0])}
                     min={0}
@@ -207,9 +218,10 @@ function ColorConverter() {
             class="flex-1"
             content={
               <div class="space-y-4">
-                <div>
+                <div class="tool-field">
                   <label class="font-medium text-sm">Hue</label>
                   <Slider
+                    aria-label="Hue"
                     value={[Math.round(rgbToHsl(rgb()).h)]}
                     onValueCommit={(value) => updateFromHsl('h', value[0])}
                     min={0}
@@ -217,9 +229,10 @@ function ColorConverter() {
                     step={1}
                   />
                 </div>
-                <div>
+                <div class="tool-field">
                   <label class="font-medium text-sm">Saturation</label>
                   <Slider
+                    aria-label="Saturation"
                     value={[Math.round(rgbToHsl(rgb()).s)]}
                     onValueCommit={(value) => updateFromHsl('s', value[0])}
                     min={0}
@@ -227,9 +240,10 @@ function ColorConverter() {
                     step={1}
                   />
                 </div>
-                <div>
+                <div class="tool-field">
                   <label class="font-medium text-sm">Lightness</label>
                   <Slider
+                    aria-label="Lightness"
                     value={[Math.round(rgbToHsl(rgb()).l)]}
                     onValueCommit={(value) => updateFromHsl('l', value[0])}
                     min={0}
@@ -252,11 +266,11 @@ function ColorConverter() {
                   const value = () => formatColor(rgb(), format)
                   return (
                     <div class="p-2 border bg-muted/30 flex gap-2 items-center rounded-lg">
-                      <div class="flex-1">
+                      <div class="flex-1 min-w-0">
                         <div class="text-muted-foreground font-medium mb-0.5 select-none uppercase text-xs">
                           {format}
                         </div>
-                        <code class="font-mono text-sm">{value()}</code>
+                        <code class="font-mono break-all text-sm">{value()}</code>
                       </div>
                       <CopyButton content={value()} variant="ghost" size="sm" text={false} />
                     </div>

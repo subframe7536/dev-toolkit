@@ -29,14 +29,14 @@ export const SvgOptions: Component<SvgOptionsProps> = (props) => {
         </div>
       </Show>
 
-      <div>
+      <div class="tool-field">
         <label class="font-medium text-sm">Background Color (optional)</label>
         <div class="flex gap-2">
           <input
             type="color"
             value={props.backgroundColor || '#ffffff'}
             onInput={(e) => props.onBackgroundColorChange(e.currentTarget.value)}
-            class="border rounded h-10 w-14 cursor-pointer"
+            class="border rounded shrink-0 h-9 w-12 cursor-pointer"
           />
           <Input
             type="text"
@@ -47,14 +47,14 @@ export const SvgOptions: Component<SvgOptionsProps> = (props) => {
         </div>
       </div>
 
-      <div>
+      <div class="tool-field">
         <label class="font-medium text-sm">Fill Color (optional)</label>
         <div class="flex gap-2">
           <input
             type="color"
             value={props.fillColor || '#000000'}
             onInput={(e) => props.onFillColorChange(e.currentTarget.value)}
-            class="border rounded h-10 w-14 cursor-pointer"
+            class="border rounded shrink-0 h-9 w-12 cursor-pointer"
           />
           <Input
             type="text"
@@ -65,14 +65,14 @@ export const SvgOptions: Component<SvgOptionsProps> = (props) => {
         </div>
       </div>
 
-      <div>
+      <div class="tool-field">
         <label class="font-medium text-sm">Stroke Color (optional)</label>
         <div class="flex gap-2">
           <input
             type="color"
             value={props.strokeColor || '#000000'}
             onInput={(e) => props.onStrokeColorChange(e.currentTarget.value)}
-            class="border rounded h-10 w-14 cursor-pointer"
+            class="border rounded shrink-0 h-9 w-12 cursor-pointer"
           />
           <Input
             type="text"

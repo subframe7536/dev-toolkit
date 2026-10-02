@@ -1,4 +1,4 @@
-import { Button, Checkbox, Dialog, Input, Select, Tabs, Textarea } from 'moraine'
+import { Field, Button, Checkbox, Dialog, Input, Select, Tabs, Textarea } from 'moraine'
 import { createEffect, createSignal, For, Show } from 'solid-js'
 import { toast } from 'solid-toaster'
 
@@ -193,7 +193,7 @@ export function ExportDialog() {
   }
 
   return (
-    <Dialog>
+    <Dialog classes={{ content: 'max-h-[calc(100dvh-2rem)] overflow-y-auto' }}>
       <Dialog.Trigger as={Button} leading="i-lucide-download">
         Export
       </Dialog.Trigger>
@@ -204,6 +204,7 @@ export function ExportDialog() {
               <div>
                 <label class="font-medium text-sm">Table Name</label>
                 <Input
+                  aria-label="Table Name"
                   value={tableName()}
                   onValueChange={setTableName}
                   placeholder="my_table"
@@ -211,8 +212,10 @@ export function ExportDialog() {
                 />
               </div>
 
-              <div class="flex flex-col gap-2">
-                <label class="text-muted-foreground font-500">Export Format</label>
+              <Field
+                label="Export Format"
+                classes={{ root: 'min-w-0', label: 'font-medium text-sm' }}
+              >
                 <Select
                   value={exportFormat()}
                   onValueChange={(value) => {
@@ -222,7 +225,7 @@ export function ExportDialog() {
                   }}
                   items={exportOptions.map((o) => ({ value: o.value, label: o.label }))}
                 />
-              </div>
+              </Field>
             </div>
 
             <div class="flex flex-col gap-2">
@@ -259,9 +262,9 @@ export function ExportDialog() {
             </Show>
 
             <div class="space-y-3">
-              <div class="flex gap-2 items-center justify-between">
+              <div class="tool-panel-heading">
                 <label class="font-medium text-sm">Output</label>
-                <div class="flex gap-2">
+                <div class="tool-actions">
                   <Show when={exportFormat() !== 'excel'}>
                     <CopyButton content={exportOutput()} size="sm" variant="outline" />
                   </Show>
@@ -271,12 +274,13 @@ export function ExportDialog() {
                     mimeType={getExportMimeType()}
                     size="sm"
                     variant={exportFormat() === 'excel' ? 'default' : 'outline'}
-                    onClick={handleExcelExport}
+                    onClick={exportFormat() === 'excel' ? handleExcelExport : undefined}
                   />
                 </div>
               </div>
               <Show when={exportFormat() !== 'excel'}>
                 <Textarea
+                  aria-label="Export output"
                   classes={{ root: ['flex-1', 'text-sm font-mono resize-none h-80'] }}
                   readOnly
                   value={exportOutput()}

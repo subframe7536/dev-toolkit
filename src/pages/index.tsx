@@ -14,7 +14,9 @@ function Index() {
   return (
     <div class="mx-a flex flex-col gap-10 max-w-7xl w-full">
       <div class="max-w-3xl">
-        <h1 class="text-foreground tracking-tight font-bold text-4xl">Developer Toolkit</h1>
+        <h1 class="text-foreground leading-tight tracking-tight font-semibold text-3xl sm:text-4xl">
+          Developer Toolkit
+        </h1>
         <p class="text-muted-foreground leading-7 mt-3 text-base">
           A collection of {count} essential tools for developers
         </p>
@@ -25,7 +27,7 @@ function Index() {
           {(category) => (
             <section class="flex flex-col gap-4">
               <h2 class="text-foreground font-semibold text-xl">{category.name}</h2>
-              <div class="gap-4 grid md:grid-cols-2 xl:grid-cols-3">
+              <div class="gap-4 grid 2xl:grid-cols-3 lg:grid-cols-2">
                 <For each={category.tools}>
                   {(tool) => (
                     <A
@@ -36,7 +38,7 @@ function Index() {
                         title={tool.info.title}
                         icon={tool.info.icon}
                         description={tool.info.description}
-                        class="h-full min-h-38 cursor-pointer"
+                        class="h-full min-h-38 cursor-pointer transition-colors hover:border-primary"
                         content={
                           <Show when={tool.info.tags?.length}>
                             <div class="flex flex-wrap gap-1.5">
@@ -60,7 +62,7 @@ function Index() {
         </For>
       </div>
 
-      <div class="text-muted-foreground m-(b-12 t-12) text-lg">More tools coming soon</div>
+      <p class="text-muted-foreground text-sm">More tools coming soon</p>
     </div>
   )
 }

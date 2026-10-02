@@ -5,6 +5,7 @@ import { createRoute } from 'solid-file-router'
 import { For } from 'solid-js'
 
 import { ThemeToggle } from '#/components/theme-toggle'
+import { ToolLayout } from '#/components/tool-layout'
 import { SidebarLayout, SidebarTrigger } from '#/components/ui/sidebar'
 import { Toaster } from '#/components/ui/sonner'
 import { registPWA } from '#/utils/pwa'
@@ -91,21 +92,25 @@ function App(props: RouteSectionProps) {
         </div>
       )}
     >
-      <div class="h-full relative">
-        <SidebarTrigger class="left-3 top-3 sticky z-50" />
-        <div class="flex flex-row-reverse gap-1 right-3 top-3 absolute">
-          <ThemeToggle class="w-24" />
-          <Button
-            variant="ghost"
-            as="a"
-            href="https://github.com/subframe7536/dev-toolkit"
-            target="_blank"
-            leading="i-lucide-github"
-          >
-            GitHub
-          </Button>
-        </div>
-        <main class="px-6 py-12 lg:px-16 md:px-12 sm:px-8">{props.children}</main>
+      <div class="flex flex-col min-h-full min-w-0">
+        <header class="px-4 py-3 border-b border-border/60 flex gap-3 items-center justify-between sm:px-6">
+          <SidebarTrigger />
+          <div class="flex gap-2 items-center">
+            <ThemeToggle class="min-w-22" />
+            <Button
+              variant="ghost"
+              as="a"
+              href="https://github.com/subframe7536/dev-toolkit"
+              target="_blank"
+              leading="i-lucide-github"
+            >
+              GitHub
+            </Button>
+          </div>
+        </header>
+        <main class="px-4 py-6 flex-1 min-w-0 lg:px-8 sm:px-6 sm:py-8 xl:px-10">
+          <ToolLayout>{props.children}</ToolLayout>
+        </main>
         <Toaster />
       </div>
     </SidebarLayout>

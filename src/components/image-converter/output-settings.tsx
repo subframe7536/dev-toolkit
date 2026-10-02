@@ -1,4 +1,4 @@
-import { Input, Select, Slider, Switch } from 'moraine'
+import { Field, Input, Select, Slider, Switch } from 'moraine'
 import type { Component } from 'solid-js'
 import { Show } from 'solid-js'
 
@@ -31,19 +31,19 @@ export const OutputSettings: Component<OutputSettingsProps> = (props) => {
 
   return (
     <div class="flex flex-col gap-6">
-      <div>
-        <label class="font-medium text-sm">Output Format</label>
+      <Field label="Output Format" classes={{ root: 'min-w-0', label: 'font-medium text-sm' }}>
         <Select
           value={props.targetFormat}
           onValueChange={(value) => value && props.onFormatChange(value)}
           items={FORMAT_OPTIONS.map((o) => ({ value: o.value, label: o.label }))}
         />
-      </div>
+      </Field>
 
       <Show when={showQualitySlider()}>
-        <div>
+        <div class="tool-field">
           <label class="font-medium text-sm">{`${props.targetFormat.toUpperCase()} Quality: ${props.quality}`}</label>
           <Slider
+            aria-label="Image Quality"
             value={[props.quality]}
             onValueCommit={(value) => props.onQualityChange(value[0])}
             min={1}
@@ -66,8 +66,9 @@ export const OutputSettings: Component<OutputSettingsProps> = (props) => {
         </p>
         <div class="flex gap-2">
           <Input
-            classes={{ root: 'flex-1' }}
+            classes={{ root: 'min-w-0 flex-1' }}
             type="number"
+            aria-label="Global Width"
             placeholder="Width"
             value={props.globalWidth ? `${props.globalWidth}` : ''}
             onValueChange={(value) =>
@@ -75,8 +76,9 @@ export const OutputSettings: Component<OutputSettingsProps> = (props) => {
             }
           />
           <Input
-            classes={{ root: 'flex-1' }}
+            classes={{ root: 'min-w-0 flex-1' }}
             type="number"
+            aria-label="Global Height"
             placeholder="Height"
             value={props.globalHeight ? `${props.globalHeight}` : ''}
             onValueChange={(value) =>

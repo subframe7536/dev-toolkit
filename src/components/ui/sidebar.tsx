@@ -37,7 +37,7 @@ export function SidebarLayout(props: SidebarLayoutProps) {
           'bg-sidebar text-sidebar-foreground w-[clamp(14rem,20vw,20rem)] duration-200 ease-out',
         sidebarHeader: 'p-2',
         sidebarBody: 'px-2 pb-2',
-        main: 'bg-background',
+        main: 'bg-background min-w-0',
       }}
     >
       <SidebarLayoutContent {...props} />

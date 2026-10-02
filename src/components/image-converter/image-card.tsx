@@ -58,7 +58,7 @@ export const ImageCard: Component<ImageCardProps> = (props) => {
   )
 
   return (
-    <div class="p-3 border flex flex-col gap-2 max-w-50 min-w-30 w-30% rounded-lg">
+    <div class="flex flex-col gap-2 min-w-0">
       <img
         src={props.image.previewUrl}
         alt={props.image.file.name}
@@ -76,6 +76,7 @@ export const ImageCard: Component<ImageCardProps> = (props) => {
       <div class="mt-2 space-y-2">
         <Input
           type="number"
+          aria-label={`Width for ${props.image.file.name}`}
           placeholder="Width"
           classes={{ root: 'text-xs h-8' }}
           value={props.image.targetWidth ? `${props.image.targetWidth}` : ''}
@@ -84,6 +85,7 @@ export const ImageCard: Component<ImageCardProps> = (props) => {
 
         <Input
           type="number"
+          aria-label={`Height for ${props.image.file.name}`}
           placeholder="Height"
           classes={{ root: 'text-xs h-8' }}
           value={props.image.targetHeight ? `${props.image.targetHeight}` : ''}

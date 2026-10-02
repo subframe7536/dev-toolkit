@@ -64,7 +64,7 @@ export function FileEncoder(props: FileEncoderProps) {
         />
         <Show when={file()}>
           <div class="p-4 border bg-input/50 flex flex-wrap gap-4 w-fit items-center rounded-lg">
-            <span>{file()?.name}</span>
+            <span class="min-w-0 break-all">{file()?.name}</span>
             <ClearButton onClear={clearFile} disabled={!file() && !output()} />
           </div>
         </Show>
@@ -72,11 +72,11 @@ export function FileEncoder(props: FileEncoderProps) {
 
       <Show when={output()}>
         <div class="space-y-4">
-          <div class="flex items-center justify-between">
+          <div class="tool-panel-heading">
             <h3 class="text-foreground font-semibold text-lg">
               {props.outputTitle || `${props.mode} Output`}
             </h3>
-            <div class="flex gap-4">
+            <div class="tool-actions">
               <Show when={props.showDataURLSwitch}>
                 <Switch
                   checked={includeDataURL()}

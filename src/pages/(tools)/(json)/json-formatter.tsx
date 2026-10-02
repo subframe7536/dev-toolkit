@@ -1,6 +1,6 @@
-import { Button, Icon, Select, Slider, Switch, Textarea } from 'moraine'
+import { Field, Button, Dialog, Select, Slider, Switch, Textarea } from 'moraine'
 import { createRoute } from 'solid-file-router'
-import { createEffect, createSignal, on, Show } from 'solid-js'
+import { createEffect, createSignal, on } from 'solid-js'
 import { toast } from 'solid-toaster'
 
 import { ClearButton } from '#/components/clear-button'
@@ -50,7 +50,6 @@ function JSONFormatter() {
   const [parseNested, setParseNested] = createSignal(false)
   const [targetCase, setTargetCase] = createSignal<CaseStyle>('As is')
   const [indent, setIndent] = createSignal(2)
-  const [displayIndent, setDisplayIndent] = createSignal(2)
   const [isFullscreen, setIsFullscreen] = createSignal(false)
 
   const tryRepairIfEnabled = (inputValue: string): string => {
@@ -136,18 +135,12 @@ function JSONFormatter() {
     setOutput('')
   }
 
-  const updateIndent = (value: number | number[]) => {
-    const nextIndent = Array.isArray(value) ? value[0] : value
-    setDisplayIndent(nextIndent)
-    setIndent(nextIndent)
-  }
-
   return (
     <div class="space-y-6">
-      <div class="gap-6 grid items-start xl:grid-cols-[minmax(0,1fr)_18rem_minmax(20rem,30rem)]">
+      <div class="p-4 border bg-muted/30 gap-6 grid rounded-lg xl:grid-cols-[minmax(0,2fr)_minmax(0,1fr)_minmax(0,1fr)]">
         <div class="space-y-4">
           <div class="font-medium text-sm">Options</div>
-          <div class="flex flex-wrap gap-4">
+          <div class="flex flex-col gap-3">
             <Switch
               checked={autoRepair()}
               onCheckedChange={setAutoRepair}
@@ -165,8 +158,7 @@ function JSONFormatter() {
             />
           </div>
         </div>
-        <div class="space-y-4">
-          <div class="font-medium text-sm">Key Case</div>
+        <Field label="Key Case" classes={{ root: 'min-w-0', label: 'font-medium text-sm' }}>
           <Select
             value={targetCase()}
             onValueChange={(value) => {
@@ -175,15 +167,15 @@ function JSONFormatter() {
               }
             }}
             items={caseOptions}
-            classes={{ control: 'w-72 max-w-full' }}
+            classes={{ control: 'w-full' }}
           />
-        </div>
-        <div class="min-w-80 space-y-4">
+        </Field>
+        <div class="min-w-0 space-y-4">
           <label class="font-medium text-sm">Indent Size</label>
           <Slider
-            value={[displayIndent()]}
-            onValueChange={(value) => setDisplayIndent(value[0])}
-            onValueCommit={updateIndent}
+            aria-label="Indent Size"
+            value={[indent()]}
+            onValueCommit={(value) => setIndent(value[0])}
             min={2}
             max={8}
             step={2}
@@ -191,12 +183,13 @@ function JSONFormatter() {
         </div>
       </div>
 
-      <div class="gap-6 grid lg:grid-cols-2">
+      <div class="tool-grid">
         <div class="space-y-4">
-          <div>
-            <label class="font-medium text-sm">Input JSON</label>
+          <div class="tool-field">
+            <label class="font-medium tool-panel-heading text-sm">Input JSON</label>
             <Textarea
-              classes={{ root: 'text-sm font-mono h-96 resize-none' }}
+              classes={{ root: 'tool-editor' }}
+              aria-label="Input JSON"
               placeholder="Paste your JSON here..."
               value={input()}
               onValueChange={setInput}
@@ -206,24 +199,28 @@ function JSONFormatter() {
         </div>
 
         <div class="space-y-4">
-          <div class="flex-1 relative">
-            <label class="font-medium text-sm">Output</label>
-            <Button
-              variant="secondary"
-              size="icon-md"
-              classes={{ root: ['right-2 top-9 absolute', !output() && 'hidden'] }}
-              onClick={() => setIsFullscreen(true)}
-            >
-              <Icon name="i-lucide-maximize-2" />
-            </Button>
+          <div class="tool-field">
+            <div class="tool-panel-heading">
+              <label class="font-medium text-sm">Output</label>
+              <Button
+                variant="ghost"
+                size="sm"
+                disabled={!output()}
+                leading="i-lucide-maximize-2"
+                onClick={() => setIsFullscreen(true)}
+              >
+                Expand
+              </Button>
+            </div>
             <Textarea
-              classes={{ root: 'text-sm font-mono bg-muted/50 h-96 resize-none' }}
+              classes={{ root: 'tool-editor bg-muted/30' }}
+              aria-label="Output"
               readOnly
               placeholder="Formatted JSON will appear here..."
               value={output()}
             />
           </div>
-          <div class="flex gap-2">
+          <div class="tool-actions">
             <CopyButton content={output()} variant="secondary" disabled={!output()} />
             <DownloadButton
               content={output()}
@@ -235,27 +232,27 @@ function JSONFormatter() {
           </div>
         </div>
       </div>
-      <Show when={isFullscreen()}>
-        <div class="p-4 bg-background/95 flex flex-col gap-4 inset-0 fixed z-50 overflow-hidden">
-          <div class="flex items-center justify-between">
-            <h2 class="font-semibold text-lg">Formatted JSON (Fullscreen)</h2>
-            <button
-              class="py-1 rounded size-7 hover:bg-primary/90"
-              onClick={() => setIsFullscreen(false)}
-            >
-              <Icon name="i-lucide-x" />
-            </button>
-          </div>
-          <div class="flex-1">
-            <label class="font-medium text-sm">Output</label>
+      <Dialog
+        open={isFullscreen()}
+        onOpenChange={setIsFullscreen}
+        classes={{
+          content: 'flex flex-col max-w-none w-[calc(100vw-2rem)] h-[calc(100dvh-2rem)] max-h-none',
+          body: 'min-h-0 flex-1 flex flex-col',
+        }}
+      >
+        <Dialog.Content title="Formatted JSON (Fullscreen)">
+          <Dialog.Body>
             <Textarea
-              classes={{ root: 'text-sm font-mono bg-muted/50 h-full resize-none' }}
+              aria-label="Expanded JSON output"
+              classes={{
+                root: 'text-sm leading-relaxed font-mono bg-muted/30 min-h-0 flex-1 resize-none',
+              }}
               readOnly
               value={output()}
             />
-          </div>
-        </div>
-      </Show>
+          </Dialog.Body>
+        </Dialog.Content>
+      </Dialog>
     </div>
   )
 }

@@ -1,4 +1,4 @@
-import { Button, MultiSelect, Switch } from 'moraine'
+import { Field, Button, MultiSelect, Switch } from 'moraine'
 
 import { useTableEditorContext } from '#/contexts/table-editor-context'
 
@@ -18,14 +18,19 @@ export function TableActions() {
   }
 
   return (
-    <div class="flex gap-2 items-center justify-between">
-      <div class="flex gap-4 items-center">
-        <MultiSelect
-          value={computed.visibleColumnIds()}
-          onValueChange={handleColumnVisibilityChange}
-          items={store.tableData.columns.map((col) => ({ value: col.id, label: col.name }))}
-          classes={{ control: 'w-48' }}
-        />
+    <div class="flex flex-wrap gap-4 items-center justify-between">
+      <div class="flex flex-wrap gap-4 items-center">
+        <Field
+          label="Visible columns"
+          classes={{ root: 'min-w-0', label: 'sr-only', container: 'mt-0!' }}
+        >
+          <MultiSelect
+            value={computed.visibleColumnIds()}
+            onValueChange={handleColumnVisibilityChange}
+            items={store.tableData.columns.map((col) => ({ value: col.id, label: col.name }))}
+            classes={{ control: 'w-48' }}
+          />
+        </Field>
 
         <Switch
           label="First row is header"
@@ -34,7 +39,7 @@ export function TableActions() {
         />
       </div>
 
-      <div class="flex gap-2">
+      <div class="tool-actions">
         <ExportDialog />
 
         <Button variant="secondary" onClick={actions.reset} leading="i-lucide-rotate-ccw">

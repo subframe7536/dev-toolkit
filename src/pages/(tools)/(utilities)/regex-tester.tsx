@@ -93,11 +93,11 @@ function RegexTester() {
   return (
     <div class="space-y-6">
       {/* Main content area - responsive layout */}
-      <div class="gap-6 grid grid-cols-1 xl:grid-cols-2">
+      <div class="tool-grid">
         {/* Left column - Input with integrated replacement */}
         <div class="space-y-6">
           {/* Regex Input Panel with integrated Find & Replace */}
-          <div class="text-card-foreground p-6 border bg-card shadow-sm rounded-lg">
+          <div class="text-card-foreground p-4 border bg-card rounded-xl sm:p-5">
             <RegexInputPanel />
 
             {/* Action buttons section */}
@@ -138,10 +138,10 @@ function RegexTester() {
         {/* Right column - Analysis and results */}
         <div class="space-y-6">
           {/* Explanation and Debug Panels */}
-          <div class="text-card-foreground border bg-card shadow-sm rounded-lg">
+          <div class="text-card-foreground border bg-card min-w-0 rounded-xl">
             <Tabs
               defaultValue="matches"
-              classes={{ list: 'm-4 mb-0 p-1' }}
+              classes={{ list: 'm-4 mb-0 p-1 w-auto! flex-wrap' }}
               items={[
                 { value: 'matches', label: 'Matches', content: <DetailsPanel /> },
                 { value: 'replace', label: 'Replace', content: <ReplacementPanel /> },

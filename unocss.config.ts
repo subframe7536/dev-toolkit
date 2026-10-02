@@ -36,6 +36,11 @@ export default defineConfig<PresetWind4Theme>({
     ['effect-dis', 'pointer-events-none opacity-70 cursor-not-allowed'],
     [/activor:(.*)/, ([, cls]) => `hover:${cls} active:${cls}`],
     ['border', 'b-1 b-border'],
+    ['tool-grid', 'gap-6 grid grid-cols-1 items-start xl:grid-cols-2 [&>*]:min-w-0'],
+    ['tool-field', 'flex min-w-0 flex-col gap-2'],
+    ['tool-panel-heading', 'flex min-h-9 flex-wrap gap-2 items-center justify-between'],
+    ['tool-editor', 'text-sm leading-relaxed font-mono h-64 w-full resize-y sm:h-88'],
+    ['tool-actions', 'flex flex-wrap gap-2 items-center'],
   ],
   theme: {
     colors: {

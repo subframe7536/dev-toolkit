@@ -1,4 +1,4 @@
-import { Dialog, Icon, Input, Select, Switch, Textarea } from 'moraine'
+import { Field, Dialog, Icon, Input, Select, Switch, Textarea } from 'moraine'
 import { createEffect, createSignal, createUniqueId, Show } from 'solid-js'
 
 import { CopyButton } from '#/components/copy-button'
@@ -21,7 +21,6 @@ export function ExportDialog() {
   const [includeComments, setIncludeComments] = createSignal(true)
   const [exportOutput, setExportOutput] = createSignal('')
 
-  const languageLabelId = createUniqueId()
   const outputLabelId = createUniqueId()
 
   // Generate export code when dialog opens or settings change
@@ -66,10 +65,7 @@ export function ExportDialog() {
           <div class="space-y-4">
             {/* Language and Variable Name Row */}
             <div class="gap-4 grid grid-cols-1 sm:grid-cols-2">
-              <div class="flex flex-col gap-2">
-                <label id={languageLabelId} class="font-medium text-sm">
-                  Language
-                </label>
+              <Field label="Language" classes={{ root: 'min-w-0', label: 'font-medium text-sm' }}>
                 <Select
                   value={store.selectedExportLanguage}
                   onValueChange={(lang) =>
@@ -77,7 +73,7 @@ export function ExportDialog() {
                   }
                   items={languageOptions.map((o) => ({ value: o.value, label: o.label }))}
                 />
-              </div>
+              </Field>
 
               <div>
                 <label class="font-medium text-sm">Variable Name</label>

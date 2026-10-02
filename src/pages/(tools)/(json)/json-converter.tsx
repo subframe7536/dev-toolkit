@@ -1,4 +1,4 @@
-import { Select, Switch, Textarea } from 'moraine'
+import { Field, Select, Switch, Textarea } from 'moraine'
 import { createRoute } from 'solid-file-router'
 import { createEffect, createSignal } from 'solid-js'
 import { toast } from 'solid-toaster'
@@ -114,17 +114,18 @@ function JSONConverter() {
   }
 
   return (
-    <div class="space-y-4">
+    <div class="space-y-6">
       <div class="flex flex-wrap gap-4 items-center">
         <Switch checked={useRepair()} onCheckedChange={setUseRepair} label="Auto-repair JSON" />
       </div>
 
-      <div class="gap-6 grid lg:grid-cols-2">
+      <div class="tool-grid">
         <div class="flex flex-col gap-4">
-          <div class="mt-3 flex-1">
-            <label class="font-medium text-sm">JSON Input</label>
+          <div class="tool-field">
+            <label class="font-medium tool-panel-heading text-sm">JSON Input</label>
             <Textarea
-              classes={{ root: 'text-sm font-mono mt-2 h-96 resize-none' }}
+              classes={{ root: 'tool-editor' }}
+              aria-label="Input JSON"
               placeholder="Paste your JSON here..."
               value={input()}
               onValueChange={setInput}
@@ -136,25 +137,34 @@ function JSONConverter() {
         </div>
 
         <div class="flex flex-col gap-4">
-          <div class="flex-1">
-            <Select
-              value={mode()}
-              onValueChange={(value) => {
-                if (value !== null) {
-                  setMode(value)
-                }
-              }}
-              items={conversionModes.map(({ value, label }) => ({ value, label }))}
-              classes={{ control: 'w-60' }}
-            />
+          <div class="tool-field">
+            <div class="tool-panel-heading">
+              <label class="font-medium text-sm">Output</label>
+              <Field
+                label="Output format"
+                classes={{ root: 'min-w-0', label: 'sr-only', container: 'mt-0!' }}
+              >
+                <Select
+                  value={mode()}
+                  onValueChange={(value) => {
+                    if (value !== null) {
+                      setMode(value)
+                    }
+                  }}
+                  items={conversionModes.map(({ value, label }) => ({ value, label }))}
+                  classes={{ control: 'w-52 max-w-full' }}
+                />
+              </Field>
+            </div>
             <Textarea
-              classes={{ root: 'text-sm font-mono mt-2 bg-muted/50 h-96 resize-none' }}
+              classes={{ root: 'tool-editor bg-muted/30' }}
+              aria-label="Output"
               readOnly
               placeholder="Converted output will appear here..."
               value={output()}
             />
           </div>
-          <div class="flex flex-wrap gap-4">
+          <div class="tool-actions">
             <CopyButton content={output()} variant="secondary" disabled={!output()} />
             <DownloadButton
               content={output()}

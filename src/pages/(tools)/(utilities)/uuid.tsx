@@ -57,8 +57,8 @@ function UUIDGenerator() {
   })
 
   return (
-    <div class="gap-6 grid grid-cols-1 lg:grid-cols-[auto_1fr]">
-      <div class="flex flex-col gap-6 lg:w-80">
+    <div class="gap-6 grid grid-cols-1 items-start xl:grid-cols-[18rem_minmax(0,1fr)] [&>*]:min-w-0">
+      <div class="flex flex-col gap-6">
         <div>
           <div class="font-semibold mb-4 text-lg">Quick Select</div>
           <Tabs
@@ -72,8 +72,9 @@ function UUIDGenerator() {
         </div>
 
         <div>
-          <label class="font-medium text-sm">Custom Count</label>
+          <label class="font-medium mb-2 block text-sm">Custom Count</label>
           <InputNumber
+            aria-label="Custom Count"
             minValue={1}
             maxValue={100}
             rawValue={count()}
@@ -90,14 +91,18 @@ function UUIDGenerator() {
           >
             Generate
           </Button>
-          <ClearButton class="flex-1" onClear={handleClear} disabled={uuids().length === 0} />
+          <ClearButton
+            class="flex-1 min-w-0"
+            onClear={handleClear}
+            disabled={uuids().length === 0}
+          />
         </div>
       </div>
 
       <Show
         when={uuids().length > 0}
         fallback={
-          <div class="text-muted-foreground p-12 text-center border border-dashed flex items-center justify-center rounded-lg">
+          <div class="text-muted-foreground p-6 text-center border border-dashed flex min-h-48 items-center justify-center rounded-lg">
             <div>
               <Icon name="i-lucide-fingerprint" class="mx-auto mb-4 opacity-50 size-12" />
               <p>Click "Generate" to create UUIDs</p>
@@ -106,7 +111,7 @@ function UUIDGenerator() {
         }
       >
         <div class="flex flex-col gap-4">
-          <div class="flex items-center justify-between">
+          <div class="tool-panel-heading">
             <h3 class="text-foreground font-semibold text-lg">
               Generated UUIDs ({uuids().length})
             </h3>
@@ -122,7 +127,7 @@ function UUIDGenerator() {
             <For each={uuids()}>
               {(uuid) => (
                 <div class="font-mono p-3 border bg-muted/50 flex gap-2 items-center text-sm rounded-md">
-                  <span class="flex-1 truncate">{uuid}</span>
+                  <span class="flex-1 min-w-0 break-all">{uuid}</span>
                   <CopyButton content={uuid} variant="ghost" size="sm" text={false} />
                 </div>
               )}

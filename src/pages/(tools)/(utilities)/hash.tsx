@@ -83,8 +83,8 @@ function HashGenerator() {
   }
 
   return (
-    <div class="gap-6 grid grid-cols-1 lg:grid-cols-[auto_1fr]">
-      <div class="flex flex-col gap-3 lg:w-96">
+    <div class="gap-6 grid grid-cols-1 items-start xl:grid-cols-[18rem_minmax(0,1fr)] [&>*]:min-w-0">
+      <div class="flex flex-col gap-4">
         <Tabs
           value={inputMode()}
           onChange={handleInputModeChange}
@@ -99,7 +99,7 @@ function HashGenerator() {
                     onValueChange={setTextInput}
                     placeholder="Enter text to generate hash..."
                     rows={10}
-                    classes={{ root: 'text-sm font-mono h-120 resize-y' }}
+                    classes={{ root: 'tool-editor' }}
                   />
                 </div>
               ),
@@ -131,7 +131,7 @@ function HashGenerator() {
             {isGenerating() ? 'Generating...' : 'Generate'}
           </Button>
           <ClearButton
-            class="flex-1"
+            class="flex-1 min-w-0"
             onClear={handleClear}
             disabled={results().length === 0 && !textInput() && !file()}
           />
@@ -141,7 +141,7 @@ function HashGenerator() {
       <Show
         when={results().length > 0}
         fallback={
-          <div class="text-muted-foreground p-12 text-center border border-dashed flex items-center justify-center rounded-lg">
+          <div class="text-muted-foreground p-6 text-center border border-dashed flex min-h-48 items-center justify-center rounded-lg">
             <div>
               <Icon name="i-lucide-hash" class="mx-auto mb-4 opacity-50 size-12" />
               <p>Enter text or upload a file, then click "Generate"</p>
@@ -154,7 +154,7 @@ function HashGenerator() {
           content={
             <div class="flex flex-col gap-4">
               <div>
-                <label class="font-medium text-sm">Verify Hash (Optional)</label>
+                <label class="font-medium mb-2 block text-sm">Verify Hash (Optional)</label>
                 <Textarea
                   value={verifyHash()}
                   onValueChange={setVerifyHash}
@@ -179,7 +179,7 @@ function HashGenerator() {
                               : 'bg-muted/30',
                         )}
                       >
-                        <div class="flex-1">
+                        <div class="flex-1 min-w-0">
                           <div class="mb-0.5 flex gap-1 items-center">
                             <div class="text-muted-foreground font-medium select-none uppercase text-sm">
                               {result.algorithm}

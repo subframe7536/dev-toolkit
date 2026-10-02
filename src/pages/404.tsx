@@ -6,7 +6,7 @@ function NotFound() {
   const navigate = useNavigate()
 
   return (
-    <div class="px-4 text-center flex flex-col min-h-[calc(100vh-4rem)] items-center justify-center">
+    <div class="px-4 py-12 text-center flex flex-col min-h-[60dvh] items-center justify-center">
       <div class="mb-8">
         <Icon name="i-lucide-search-x" class="text-muted-foreground h-24 w-24" />
       </div>
@@ -19,7 +19,7 @@ function NotFound() {
         toolkit.
       </p>
 
-      <div class="flex gap-4">
+      <div class="flex flex-wrap gap-3 items-center justify-center">
         <Button onClick={() => navigate('/')} leading="i-lucide-home">
           Go Home
         </Button>
