@@ -9,17 +9,30 @@ import {
 import { presetMoraine } from 'moraine/unocss'
 // import { presetAnimations } from 'unocss-preset-animations'
 
+const windPreset = presetWind4({
+  preflights: { theme: 'on-demand' },
+})
+
 export default defineConfig<PresetWind4Theme>({
   presets: [
-    presetWind4({
-      preflights: { theme: 'on-demand' },
-    }),
+    windPreset,
     presetIcons({
       scale: 1.2,
     }),
     presetCompletion(),
     presetMoraine({
       themeDefaults: false,
+      override: {
+        light: {
+          // Moraine's shadow tokens must resolve for the composed focus ring to render.
+          shadows: Object.fromEntries(
+            Object.entries(windPreset.theme?.shadow ?? {}).map(([name, value]) => [
+              name === 'DEFAULT' ? 'base' : name,
+              Array.isArray(value) ? value.join(', ') : value,
+            ]),
+          ),
+        },
+      },
     }),
   ],
   content: {
@@ -32,7 +45,7 @@ export default defineConfig<PresetWind4Theme>({
     ['bg-input/30', { 'background-color': 'var(--input-background)' }],
   ],
   shortcuts: [
-    ['effect-fv', 'outline-none ring-1.5 ring-ring ring-offset-(2 background)'],
+    ['effect-fv', 'outline-none border-ring ring-3 ring-ring/50'],
     ['effect-dis', 'pointer-events-none opacity-70 cursor-not-allowed'],
     [/activor:(.*)/, ([, cls]) => `hover:${cls} active:${cls}`],
     ['border', 'b-1 b-border'],

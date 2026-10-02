@@ -81,7 +81,7 @@ export function SidebarTrigger(props: { class?: string }) {
       size="icon-md"
       classes={{
         root: [
-          'border border-border/70 bg-background/90 size-8 shadow-sm transition-colors hover:(text-foreground bg-muted) focus-visible:effect-fv',
+          'border border-border/70 bg-background/90 size-8 shadow-sm transition-colors hover:(text-foreground bg-muted)',
           props.class,
         ],
       }}
