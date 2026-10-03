@@ -1,4 +1,4 @@
-import { Field, Button, Input } from 'moraine'
+import { Field, Button, InputNumber } from 'moraine'
 import type { Component } from 'solid-js'
 import { createEffect, on, Show } from 'solid-js'
 
@@ -78,12 +78,17 @@ export const ImageCard: Component<ImageCardProps> = (props) => {
           label={`Width for ${props.image.file.name}`}
           classes={{ root: 'min-w-0', label: 'sr-only', container: 'mt-0!' }}
         >
-          <Input
-            type="number"
+          <InputNumber
+            orientation="vertical"
             placeholder="Width"
-            classes={{ root: 'text-xs h-8' }}
+            classes={{ root: 'h-8', input: 'text-xs' }}
             value={props.image.targetWidth ? `${props.image.targetWidth}` : ''}
             onValueChange={handleWidthChange}
+            onInput={(event) => {
+              if (event.target instanceof HTMLInputElement && event.target.value === '') {
+                handleWidthChange('')
+              }
+            }}
           />
         </Field>
 
@@ -91,12 +96,17 @@ export const ImageCard: Component<ImageCardProps> = (props) => {
           label={`Height for ${props.image.file.name}`}
           classes={{ root: 'min-w-0', label: 'sr-only', container: 'mt-0!' }}
         >
-          <Input
-            type="number"
+          <InputNumber
+            orientation="vertical"
             placeholder="Height"
-            classes={{ root: 'text-xs h-8' }}
+            classes={{ root: 'h-8', input: 'text-xs' }}
             value={props.image.targetHeight ? `${props.image.targetHeight}` : ''}
             onValueChange={handleHeightChange}
+            onInput={(event) => {
+              if (event.target instanceof HTMLInputElement && event.target.value === '') {
+                handleHeightChange('')
+              }
+            }}
           />
         </Field>
       </div>

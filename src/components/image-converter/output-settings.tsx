@@ -1,4 +1,4 @@
-import { Field, Input, Select, Slider, Switch } from 'moraine'
+import { Field, InputNumber, Select, Slider, Switch } from 'moraine'
 import type { Component } from 'solid-js'
 import { Show } from 'solid-js'
 
@@ -73,28 +73,38 @@ export const OutputSettings: Component<OutputSettingsProps> = (props) => {
             label="Global Width"
             classes={{ root: 'min-w-0 flex-1', label: 'sr-only', container: 'mt-0!' }}
           >
-            <Input
+            <InputNumber
               classes={{ root: 'min-w-0 flex-1' }}
-              type="number"
+              orientation="vertical"
               placeholder="Width"
               value={props.globalWidth ? `${props.globalWidth}` : ''}
               onValueChange={(value) =>
                 props.onGlobalWidthChange(value ? Number.parseInt(value) : undefined)
               }
+              onInput={(event) => {
+                if (event.target instanceof HTMLInputElement && event.target.value === '') {
+                  props.onGlobalWidthChange(undefined)
+                }
+              }}
             />
           </Field>
           <Field
             label="Global Height"
             classes={{ root: 'min-w-0 flex-1', label: 'sr-only', container: 'mt-0!' }}
           >
-            <Input
+            <InputNumber
               classes={{ root: 'min-w-0 flex-1' }}
-              type="number"
+              orientation="vertical"
               placeholder="Height"
               value={props.globalHeight ? `${props.globalHeight}` : ''}
               onValueChange={(value) =>
                 props.onGlobalHeightChange(value ? Number.parseInt(value) : undefined)
               }
+              onInput={(event) => {
+                if (event.target instanceof HTMLInputElement && event.target.value === '') {
+                  props.onGlobalHeightChange(undefined)
+                }
+              }}
             />
           </Field>
         </div>
