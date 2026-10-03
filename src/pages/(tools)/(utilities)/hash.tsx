@@ -7,6 +7,7 @@ import { Card } from '#/components/card'
 import { ClearButton } from '#/components/clear-button'
 import { CopyButton } from '#/components/copy-button'
 import { FileUpload } from '#/components/file-upload'
+import { ToolOptions } from '#/components/tool-options'
 import type { HashAlgorithm } from '#/utils/hash'
 import { generateHash } from '#/utils/hash'
 
@@ -146,60 +147,68 @@ function HashGenerator() {
           </p>
         }
       >
-        <Card
-          variant="section"
-          title="Generated Hashes"
-          class="border-border pt-4! border-t!"
-          content={
-            <div class="flex flex-col gap-4">
-              <Field
-                label="Verify Hash (Optional)"
-                classes={{ root: 'min-w-0', label: 'text-muted-foreground font-medium text-xs' }}
-              >
-                <Textarea
-                  value={verifyHash()}
-                  onValueChange={setVerifyHash}
-                  placeholder="Paste a hash to verify against generated hashes..."
-                  rows={2}
-                  classes={{ root: 'text-sm font-mono resize-y' }}
-                />
-              </Field>
-
-              <div class="flex flex-col gap-3">
-                <For each={results()}>
-                  {(result) => {
-                    const match = createMemo(() => isHashMatch(result.hash))
-                    return (
-                      <div
-                        class={cn(
-                          'p-2 border flex gap-2 items-center rounded-lg',
-                          match() === true
-                            ? 'border-green-500/50 bg-green-500/10'
-                            : match() === false
-                              ? 'bg-red-500/5 border-red-500/20'
-                              : 'bg-muted/30',
-                        )}
-                      >
-                        <div class="flex-1 min-w-0">
-                          <div class="mb-0.5 flex gap-1 items-center">
-                            <div class="text-muted-foreground font-medium select-none uppercase text-sm">
-                              {result.algorithm}
+        <>
+          <ToolOptions>
+            <Field
+              label="Verify Hash (Optional)"
+              classes={{ root: 'min-w-0', label: 'text-muted-foreground font-medium text-xs' }}
+            >
+              <Textarea
+                value={verifyHash()}
+                onValueChange={setVerifyHash}
+                placeholder="Paste a hash to verify against generated hashes..."
+                rows={2}
+                classes={{ root: 'text-sm font-mono resize-y' }}
+              />
+            </Field>
+          </ToolOptions>
+          <Card
+            variant="section"
+            title="Generated Hashes"
+            class="border-border pt-4! border-t!"
+            content={
+              <div class="flex flex-col gap-4">
+                <div class="flex flex-col gap-3">
+                  <For each={results()}>
+                    {(result) => {
+                      const match = createMemo(() => isHashMatch(result.hash))
+                      return (
+                        <div
+                          class={cn(
+                            'p-2 border flex gap-2 items-center rounded-lg',
+                            match() === true
+                              ? 'border-green-500/50 bg-green-500/10'
+                              : match() === false
+                                ? 'bg-red-500/5 border-red-500/20'
+                                : 'bg-muted/30',
+                          )}
+                        >
+                          <div class="flex-1 min-w-0">
+                            <div class="mb-0.5 flex gap-1 items-center">
+                              <div class="text-muted-foreground font-medium select-none uppercase text-sm">
+                                {result.algorithm}
+                              </div>
+                              <Show when={match()}>
+                                <Icon name="i-lucide-check" class="text-green-600 text-sm" />
+                              </Show>
                             </div>
-                            <Show when={match()}>
-                              <Icon name="i-lucide-check" class="text-green-600 text-sm" />
-                            </Show>
+                            <code class="font-mono break-all text-sm">{result.hash}</code>
                           </div>
-                          <code class="font-mono break-all text-sm">{result.hash}</code>
+                          <CopyButton
+                            content={result.hash}
+                            variant="ghost"
+                            size="sm"
+                            text={false}
+                          />
                         </div>
-                        <CopyButton content={result.hash} variant="ghost" size="sm" text={false} />
-                      </div>
-                    )
-                  }}
-                </For>
+                      )
+                    }}
+                  </For>
+                </div>
               </div>
-            </div>
-          }
-        />
+            }
+          />
+        </>
       </Show>
     </div>
   )

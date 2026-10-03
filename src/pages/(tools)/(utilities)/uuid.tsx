@@ -5,6 +5,7 @@ import { toast } from 'solid-toaster'
 
 import { ClearButton } from '#/components/clear-button'
 import { CopyButton } from '#/components/copy-button'
+import { ToolOptions } from '#/components/tool-options'
 
 const PRESET_COUNTS = [1, 5, 10, 15, 20] as const
 
@@ -58,44 +59,45 @@ function UUIDGenerator() {
 
   return (
     <div class="space-y-4">
-      <div class="tool-toolbar items-end">
-        <Field
-          label="Quick Select"
-          classes={{
-            root: 'w-full min-w-0 md:w-60 shrink-0',
-            label: 'text-muted-foreground font-medium text-xs',
-          }}
-        >
-          <Tabs
-            aria-label="Quick Select"
-            value={selectedTab()}
-            onChange={handleTabChange}
-            items={PRESET_COUNTS.map((preset) => ({
-              value: preset.toString(),
-              label: String(preset),
-            }))}
-          />
-        </Field>
+      <ToolOptions>
+        <div class="tool-toolbar items-end">
+          <Field
+            label="Quick Select"
+            classes={{
+              root: 'w-full min-w-0 md:w-60 shrink-0',
+              label: 'text-muted-foreground font-medium text-xs',
+            }}
+          >
+            <Tabs
+              aria-label="Quick Select"
+              value={selectedTab()}
+              onChange={handleTabChange}
+              items={PRESET_COUNTS.map((preset) => ({
+                value: preset.toString(),
+                label: String(preset),
+              }))}
+            />
+          </Field>
 
-        <Field
-          label="Custom Count"
-          classes={{ root: 'min-w-0 w-32', label: 'text-muted-foreground font-medium text-xs' }}
-        >
-          <InputNumber
-            minValue={1}
-            maxValue={100}
-            rawValue={count()}
-            onRawValueChange={(val) => handleCustomInput(val)}
-            classes={{ input: 'text-center h-9' }}
-          />
-        </Field>
-
-        <div class="tool-actions">
-          <Button onClick={generateUUIDs} leading="i-lucide-refresh-cw">
-            Generate
-          </Button>
-          <ClearButton class="min-w-0" onClear={handleClear} disabled={uuids().length === 0} />
+          <Field
+            label="Custom Count"
+            classes={{ root: 'min-w-0 w-32', label: 'text-muted-foreground font-medium text-xs' }}
+          >
+            <InputNumber
+              minValue={1}
+              maxValue={100}
+              rawValue={count()}
+              onRawValueChange={(val) => handleCustomInput(val)}
+              classes={{ input: 'text-center h-9' }}
+            />
+          </Field>
         </div>
+      </ToolOptions>
+      <div class="tool-actions">
+        <Button onClick={generateUUIDs} leading="i-lucide-refresh-cw">
+          Generate
+        </Button>
+        <ClearButton class="min-w-0" onClear={handleClear} disabled={uuids().length === 0} />
       </div>
 
       <Show

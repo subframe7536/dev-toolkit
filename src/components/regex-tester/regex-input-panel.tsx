@@ -2,6 +2,7 @@ import { Field, Icon, MultiSelect, Textarea } from 'moraine'
 import type { HighlighterCore } from 'shiki'
 import { createEffect, createMemo, createResource, For, on, Show, Suspense } from 'solid-js'
 
+import { ToolOptions } from '#/components/tool-options'
 import { useRegexContext } from '#/contexts/regex-context'
 import type { MatchResult } from '#/utils/regex/types'
 import { useTheme } from '#/utils/theme'
@@ -294,7 +295,7 @@ export function RegexInputPanel() {
           </span>
         }
       >
-        {/* Pattern Input with Shiki highlighting + Flag Select */}
+        {/* Pattern Input with Shiki highlighting */}
         <div class="flex flex-col gap-2 items-stretch sm:flex-row sm:items-start">
           <div class="flex-1 min-w-0 relative">
             {/* Mirror div for syntax highlighting */}
@@ -328,19 +329,6 @@ export function RegexInputPanel() {
               aria-invalid={!store.isValid}
             />
           </div>
-
-          {/* Flag Select */}
-          <Field
-            label="Regex flags"
-            classes={{ root: 'min-w-0 w-full sm:w-auto', label: 'sr-only', container: 'mt-0!' }}
-          >
-            <MultiSelect
-              value={selectedFlags()}
-              onValueChange={handleFlagsChange}
-              items={FLAG_OPTIONS.map((o) => ({ value: o.flag, label: `${o.flag} - ${o.label}` }))}
-              classes={{ control: 'shrink-0 w-full sm:w-40' }}
-            />
-          </Field>
         </div>
       </Field>
 
@@ -387,6 +375,19 @@ export function RegexInputPanel() {
           />
         </div>
       </Field>
+      <ToolOptions>
+        <Field
+          label="Regex flags"
+          classes={{ root: 'min-w-0', label: 'text-muted-foreground font-medium text-xs' }}
+        >
+          <MultiSelect
+            value={selectedFlags()}
+            onValueChange={handleFlagsChange}
+            items={FLAG_OPTIONS.map((o) => ({ value: o.flag, label: `${o.flag} - ${o.label}` }))}
+            classes={{ control: 'w-full sm:w-60' }}
+          />
+        </Field>
+      </ToolOptions>
 
       {/* No matches hint */}
       <Show when={hasInput() && matchCount() === 0 && store.isValid}>

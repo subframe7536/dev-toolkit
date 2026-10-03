@@ -4,6 +4,7 @@ import { toast } from 'solid-toaster'
 
 import { CopyButton } from '#/components/copy-button'
 import { DownloadButton } from '#/components/download-button'
+import { ToolOptions } from '#/components/tool-options'
 import { useTableEditorContext } from '#/contexts'
 import { downloadFile } from '#/utils/download'
 import {
@@ -200,72 +201,73 @@ export function ExportDialog() {
       <Dialog.Content title="Export" description="Configure export settings and generate output">
         <Dialog.Body>
           <div class="space-y-6">
-            <div class="gap-4 grid grid-cols-1 md:grid-cols-2">
-              <Field
-                label="Table Name"
-                classes={{ root: 'min-w-0', label: 'text-muted-foreground font-medium text-xs' }}
-              >
-                <Input value={tableName()} onValueChange={setTableName} placeholder="my_table" />
-              </Field>
+            <ToolOptions>
+              <div class="gap-4 grid grid-cols-1 md:grid-cols-2">
+                <Field
+                  label="Table Name"
+                  classes={{ root: 'min-w-0', label: 'text-muted-foreground font-medium text-xs' }}
+                >
+                  <Input value={tableName()} onValueChange={setTableName} placeholder="my_table" />
+                </Field>
+
+                <Field
+                  label="Export Format"
+                  classes={{ root: 'min-w-0', label: 'text-muted-foreground font-medium text-xs' }}
+                >
+                  <Select
+                    value={exportFormat()}
+                    onValueChange={(value) => {
+                      if (value !== null) {
+                        setExportFormat(value)
+                      }
+                    }}
+                    items={exportOptions.map((o) => ({ value: o.value, label: o.label }))}
+                  />
+                </Field>
+              </div>
 
               <Field
-                label="Export Format"
+                label="Column Naming Pattern"
                 classes={{ root: 'min-w-0', label: 'text-muted-foreground font-medium text-xs' }}
               >
                 <Select
-                  value={exportFormat()}
-                  onValueChange={(value) => {
-                    if (value !== null) {
-                      setExportFormat(value)
-                    }
-                  }}
-                  items={exportOptions.map((o) => ({ value: o.value, label: o.label }))}
+                  value={namePattern()}
+                  onValueChange={(value) => value && setNamePattern(value)}
+                  items={namePatternOptions.map((o) => ({ value: o.value, label: o.label }))}
                 />
               </Field>
-            </div>
 
-            <Field
-              label="Column Naming Pattern"
-              classes={{ root: 'min-w-0', label: 'text-muted-foreground font-medium text-xs' }}
-            >
-              <Select
-                value={namePattern()}
-                onValueChange={(value) => value && setNamePattern(value)}
-                items={namePatternOptions.map((o) => ({ value: o.value, label: o.label }))}
-              />
-            </Field>
-
-            <Show when={exportFormat() === 'sql-update'}>
-              <div class="space-y-2">
-                <h3 class="font-medium text-sm">Key Columns (for UPDATE)</h3>
-                <div class="p-2 border bg-input flex flex-wrap gap-3 max-h-32 overflow-y-auto rounded-md">
-                  <For each={computed.visibleColumns()}>
-                    {(col) => (
-                      <Field
-                        label={col.name}
-                        classes={{
-                          root: 'flex flex-row-reverse gap-2 items-center',
-                          label: 'font-normal',
-                          container: 'mt-0!',
-                        }}
-                      >
-                        <Checkbox
-                          checked={keyColumns().includes(col.id)}
-                          onCheckedChange={(checked) => {
-                            setKeyColumns(
-                              checked
-                                ? [...keyColumns(), col.id]
-                                : keyColumns().filter((id) => id !== col.id),
-                            )
+              <Show when={exportFormat() === 'sql-update'}>
+                <div class="space-y-2">
+                  <h3 class="font-medium text-sm">Key Columns (for UPDATE)</h3>
+                  <div class="p-2 border bg-input flex flex-wrap gap-3 max-h-32 overflow-y-auto rounded-md">
+                    <For each={computed.visibleColumns()}>
+                      {(col) => (
+                        <Field
+                          label={col.name}
+                          classes={{
+                            root: 'flex flex-row-reverse gap-2 items-center',
+                            label: 'font-normal',
+                            container: 'mt-0!',
                           }}
-                        />
-                      </Field>
-                    )}
-                  </For>
+                        >
+                          <Checkbox
+                            checked={keyColumns().includes(col.id)}
+                            onCheckedChange={(checked) => {
+                              setKeyColumns(
+                                checked
+                                  ? [...keyColumns(), col.id]
+                                  : keyColumns().filter((id) => id !== col.id),
+                              )
+                            }}
+                          />
+                        </Field>
+                      )}
+                    </For>
+                  </div>
                 </div>
-              </div>
-            </Show>
-
+              </Show>
+            </ToolOptions>{' '}
             <Field
               label="Output"
               classes={{
@@ -276,7 +278,12 @@ export function ExportDialog() {
               hint={
                 <span class="tool-actions">
                   <Show when={exportFormat() !== 'excel'}>
-                    <CopyButton content={exportOutput()} size="sm" variant="outline" />
+                    <CopyButton
+                      text="Copy Output"
+                      content={exportOutput()}
+                      size="sm"
+                      variant="outline"
+                    />
                   </Show>
                   <DownloadButton
                     content={exportOutput()}

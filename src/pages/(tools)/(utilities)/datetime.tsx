@@ -15,6 +15,7 @@ import { toast } from 'solid-toaster'
 
 import { Card } from '#/components/card'
 import { CopyButton } from '#/components/copy-button'
+import { ToolOptions } from '#/components/tool-options'
 import {
   commonTimeZones,
   formatDateTime,
@@ -189,59 +190,86 @@ function DateTimeTool() {
             </div>
 
             {/* Format Options */}
-            <div class="space-y-2">
-              <div class="text-muted-foreground font-medium text-xs">Format Options</div>
-              <div class="gap-4 grid grid-cols-2">
-                <Field
-                  label="Locale"
-                  classes={{ root: 'min-w-0', label: 'text-muted-foreground font-medium text-xs' }}
-                >
-                  <Select
-                    value={selectedLocale()}
-                    onValueChange={(value) => {
-                      if (value !== null) {
-                        setSelectedLocale(value)
-                      }
+            <ToolOptions>
+              <div class="space-y-2">
+                <div class="gap-4 grid grid-cols-2">
+                  <Field
+                    label="Locale"
+                    classes={{
+                      root: 'min-w-0',
+                      label: 'text-muted-foreground font-medium text-xs',
                     }}
-                    items={locales.map((v) => ({ value: v, label: v }))}
-                  />
-                </Field>
-                <Field
-                  label="Time Zone"
-                  classes={{ root: 'min-w-0', label: 'text-muted-foreground font-medium text-xs' }}
-                >
-                  <Select
-                    value={selectedTimeZone()}
-                    onValueChange={(value) => {
-                      if (value !== null) {
-                        setSelectedTimeZone(value)
-                      }
+                  >
+                    <Select
+                      value={selectedLocale()}
+                      onValueChange={(value) => {
+                        if (value !== null) {
+                          setSelectedLocale(value)
+                        }
+                      }}
+                      items={locales.map((v) => ({ value: v, label: v }))}
+                    />
+                  </Field>
+                  <Field
+                    label="Time Zone"
+                    classes={{
+                      root: 'min-w-0',
+                      label: 'text-muted-foreground font-medium text-xs',
                     }}
-                    items={commonTimeZones.map((v) => ({ value: v, label: v }))}
-                  />
-                </Field>
-                <Field
-                  label="Date Style"
-                  classes={{ root: 'min-w-0', label: 'text-muted-foreground font-medium text-xs' }}
-                >
-                  <Select
-                    value={dateStyle()}
-                    onValueChange={(v) => v && setDateStyle(v as any)}
-                    items={[...styles].map((v) => ({ value: v, label: v }))}
-                  />
-                </Field>
-                <Field
-                  label="Time Style"
-                  classes={{ root: 'min-w-0', label: 'text-muted-foreground font-medium text-xs' }}
-                >
-                  <Select
-                    value={timeStyle()}
-                    onValueChange={(v) => v && setTimeStyle(v as any)}
-                    items={[...styles].map((v) => ({ value: v, label: v }))}
-                  />
-                </Field>
+                  >
+                    <Select
+                      value={selectedTimeZone()}
+                      onValueChange={(value) => {
+                        if (value !== null) {
+                          setSelectedTimeZone(value)
+                        }
+                      }}
+                      items={commonTimeZones.map((v) => ({ value: v, label: v }))}
+                    />
+                  </Field>
+                  <Field
+                    label="Date Style"
+                    classes={{
+                      root: 'min-w-0',
+                      label: 'text-muted-foreground font-medium text-xs',
+                    }}
+                  >
+                    <Select
+                      value={dateStyle()}
+                      onValueChange={(v) => v && setDateStyle(v as any)}
+                      items={[...styles].map((v) => ({ value: v, label: v }))}
+                    />
+                  </Field>
+                  <Field
+                    label="Time Style"
+                    classes={{
+                      root: 'min-w-0',
+                      label: 'text-muted-foreground font-medium text-xs',
+                    }}
+                  >
+                    <Select
+                      value={timeStyle()}
+                      onValueChange={(v) => v && setTimeStyle(v as any)}
+                      items={[...styles].map((v) => ({ value: v, label: v }))}
+                    />
+                  </Field>
+                </div>
               </div>
-            </div>
+              <Field
+                label="Custom Format Pattern"
+                classes={{ root: 'min-w-0', label: 'text-muted-foreground font-medium text-xs' }}
+              >
+                <Input
+                  value={customFormat()}
+                  onValueChange={setCustomFormat}
+                  placeholder="e.g., yyyy/MM/dd or dd-MM-yyyy HH:mm"
+                />
+                <div class="text-muted-foreground space-y-1 text-xs">
+                  <div>Tokens: yyyy (year), MM (month), dd (day)</div>
+                  <div>HH/hh (hours), mm (minutes), ss (seconds), SSS (ms)</div>
+                </div>
+              </Field>
+            </ToolOptions>
           </div>
 
           {/* DateTime Manipulation */}
@@ -286,7 +314,7 @@ function DateTimeTool() {
         </div>
 
         {/* Right Column */}
-        {/* Custom Format + Output Formats */}
+        {/* Custom Preview + Output Formats */}
         <Card
           variant="section"
           title="Format Outputs"
@@ -294,38 +322,24 @@ function DateTimeTool() {
           content={
             <div class="space-y-4">
               {/* Custom Format */}
-              <Field
-                label="Custom Format Pattern"
-                classes={{ root: 'min-w-0', label: 'text-muted-foreground font-medium text-xs' }}
-              >
-                <Input
-                  value={customFormat()}
-                  onValueChange={setCustomFormat}
-                  placeholder="e.g., yyyy/MM/dd or dd-MM-yyyy HH:mm"
-                />
-                <div class="text-muted-foreground space-y-1 text-xs">
-                  <div>Tokens: yyyy (year), MM (month), dd (day)</div>
-                  <div>HH/hh (hours), mm (minutes), ss (seconds), SSS (ms)</div>
-                </div>
-                <Show when={customFormat().trim()}>
-                  <div class="p-3 border bg-muted/50 rounded-lg">
-                    <div class="flex items-center justify-between">
-                      <div class="flex-1 min-w-0">
-                        <div class="text-muted-foreground mb-1 text-xs">Preview:</div>
-                        <div class="font-mono font-semibold truncate text-sm">
-                          {formatWithPattern(customDate() || currentTime(), customFormat())}
-                        </div>
+              <Show when={customFormat().trim()}>
+                <div class="p-3 border bg-muted/50 rounded-lg">
+                  <div class="flex items-center justify-between">
+                    <div class="flex-1 min-w-0">
+                      <div class="text-muted-foreground mb-1 text-xs">Preview:</div>
+                      <div class="font-mono font-semibold truncate text-sm">
+                        {formatWithPattern(customDate() || currentTime(), customFormat())}
                       </div>
-                      <CopyButton
-                        content={formatWithPattern(customDate() || currentTime(), customFormat())}
-                        size="sm"
-                        variant="ghost"
-                        text={false}
-                      />
                     </div>
+                    <CopyButton
+                      content={formatWithPattern(customDate() || currentTime(), customFormat())}
+                      size="sm"
+                      variant="ghost"
+                      text={false}
+                    />
                   </div>
-                </Show>
-              </Field>
+                </div>
+              </Show>
 
               {/* Common Formats */}
               <div class="space-y-2">

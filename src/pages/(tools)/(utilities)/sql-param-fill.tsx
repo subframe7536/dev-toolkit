@@ -121,7 +121,12 @@ function SqlParamFill() {
           <Button onClick={loadSample} variant="outline">
             Load Sample
           </Button>
-          <CopyButton content={output()} disabled={!output() || !!error()} variant="secondary" />
+          <CopyButton
+            text="Copy Output"
+            content={output()}
+            disabled={!output() || !!error()}
+            variant="secondary"
+          />
           <ClearButton onClear={handleClear} disabled={!sqlInput() && !paramsInput()} />
         </div>
       </div>

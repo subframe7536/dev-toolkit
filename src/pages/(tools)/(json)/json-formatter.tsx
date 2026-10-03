@@ -6,6 +6,7 @@ import { toast } from 'solid-toaster'
 import { ClearButton } from '#/components/clear-button'
 import { CopyButton } from '#/components/copy-button'
 import { DownloadButton } from '#/components/download-button'
+import { ToolOptions } from '#/components/tool-options'
 import type { JSONError } from '#/utils/json/formatter'
 import { formatJSON, formatJSONWithNested, repairJSON, sortKeys } from '#/utils/json/formatter'
 import type { CaseStyle } from '#/utils/json/key-converter'
@@ -162,7 +163,12 @@ function JSONFormatter() {
         </Field>
       </div>
       <div class="tool-toolbar">
-        <CopyButton content={output()} variant="secondary" disabled={!output()} />
+        <CopyButton
+          text="Copy Output"
+          content={output()}
+          variant="secondary"
+          disabled={!output()}
+        />
         <DownloadButton
           content={output()}
           filename="formatted.json"
@@ -180,69 +186,71 @@ function JSONFormatter() {
         </Button>
         <ClearButton onClear={handleClear} disabled={!input() && !output()} />
       </div>
-      <div class="pt-4 border-t border-border tool-toolbar items-start">
-        <div class="w-full">
-          <div class="flex flex-wrap gap-3">
-            <Field
-              label="Auto repair JSON string"
-              classes={{
-                root: 'flex flex-row-reverse gap-2 w-fit min-w-0 items-center',
-                label: 'font-normal',
-                container: 'mt-0! shrink-0',
-              }}
-            >
-              <Switch checked={autoRepair()} onCheckedChange={setAutoRepair} />
-            </Field>
-            <Field
-              label="Sort Keys"
-              classes={{
-                root: 'flex flex-row-reverse gap-2 w-fit min-w-0 items-center',
-                label: 'font-normal',
-                container: 'mt-0! shrink-0',
-              }}
-            >
-              <Switch checked={shouldSortKeys()} onCheckedChange={setShouldSortKeys} />
-            </Field>
-            <Field
-              label="Parse Nested JSON"
-              classes={{
-                root: 'flex flex-row-reverse gap-2 w-fit min-w-0 items-center',
-                label: 'font-normal',
-                container: 'mt-0! shrink-0',
-              }}
-            >
-              <Switch checked={parseNested()} onCheckedChange={setParseNested} />
-            </Field>
+      <ToolOptions>
+        <div class="tool-toolbar items-start">
+          <div class="w-full">
+            <div class="flex flex-wrap gap-3">
+              <Field
+                label="Auto repair JSON string"
+                classes={{
+                  root: 'flex flex-row-reverse gap-2 w-fit min-w-0 items-center',
+                  label: 'font-normal',
+                  container: 'mt-0! shrink-0',
+                }}
+              >
+                <Switch checked={autoRepair()} onCheckedChange={setAutoRepair} />
+              </Field>
+              <Field
+                label="Sort Keys"
+                classes={{
+                  root: 'flex flex-row-reverse gap-2 w-fit min-w-0 items-center',
+                  label: 'font-normal',
+                  container: 'mt-0! shrink-0',
+                }}
+              >
+                <Switch checked={shouldSortKeys()} onCheckedChange={setShouldSortKeys} />
+              </Field>
+              <Field
+                label="Parse Nested JSON"
+                classes={{
+                  root: 'flex flex-row-reverse gap-2 w-fit min-w-0 items-center',
+                  label: 'font-normal',
+                  container: 'mt-0! shrink-0',
+                }}
+              >
+                <Switch checked={parseNested()} onCheckedChange={setParseNested} />
+              </Field>
+            </div>
           </div>
+          <Field
+            label="Key Case"
+            classes={{ root: 'min-w-0 w-44', label: 'text-muted-foreground font-medium text-xs' }}
+          >
+            <Select
+              value={targetCase()}
+              onValueChange={(value) => {
+                if (value !== null) {
+                  setTargetCase(value)
+                }
+              }}
+              items={caseOptions}
+              classes={{ control: 'w-full' }}
+            />
+          </Field>
+          <Field
+            label="Indent Size"
+            classes={{ root: 'min-w-0 w-44', label: 'text-muted-foreground font-medium text-xs' }}
+          >
+            <Slider
+              value={[indent()]}
+              onValueChange={(value) => setIndent(value[0])}
+              min={2}
+              max={8}
+              step={2}
+            />
+          </Field>
         </div>
-        <Field
-          label="Key Case"
-          classes={{ root: 'min-w-0 w-44', label: 'text-muted-foreground font-medium text-xs' }}
-        >
-          <Select
-            value={targetCase()}
-            onValueChange={(value) => {
-              if (value !== null) {
-                setTargetCase(value)
-              }
-            }}
-            items={caseOptions}
-            classes={{ control: 'w-full' }}
-          />
-        </Field>
-        <Field
-          label="Indent Size"
-          classes={{ root: 'min-w-0 w-44', label: 'text-muted-foreground font-medium text-xs' }}
-        >
-          <Slider
-            value={[indent()]}
-            onValueChange={(value) => setIndent(value[0])}
-            min={2}
-            max={8}
-            step={2}
-          />
-        </Field>
-      </div>
+      </ToolOptions>
       <Dialog
         open={isFullscreen()}
         onOpenChange={setIsFullscreen}

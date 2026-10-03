@@ -60,8 +60,8 @@ export default defineConfig<PresetWind4Theme>({
     ],
     ['tool-actions', 'flex flex-wrap gap-2 items-center'],
     [
-      'tool-workbench',
-      'p-4 border border-border bg-card min-w-0 rounded-lg sm:p-6 [&_[data-slot=button]]:min-h-11 [&_[data-slot=button]]:min-w-11 [&_[data-slot=button]]:rounded-md md:[&_[data-slot=button]]:min-h-8 md:[&_[data-slot=button]]:min-w-8 [&_[data-slot=dialog-trigger]]:min-h-11 md:[&_[data-slot=dialog-trigger]]:min-h-8 [&_[data-slot=tabs-trigger]]:min-h-11 md:[&_[data-slot=tabs-trigger]]:min-h-8',
+      'tool-controls',
+      '[&_[data-slot=button]]:min-h-11 [&_[data-slot=button]]:min-w-11 [&_[data-slot=button]]:rounded-md md:[&_[data-slot=button]]:min-h-8 md:[&_[data-slot=button]]:min-w-8 [&_[data-slot=dialog-trigger]]:min-h-11 md:[&_[data-slot=dialog-trigger]]:min-h-8 [&_[data-slot=tabs-trigger]]:min-h-11 md:[&_[data-slot=tabs-trigger]]:min-h-8',
     ],
     ['tool-editor-grid', 'grid grid-cols-1 gap-4 items-start md:grid-cols-2 [&>*]:min-w-0'],
     ['tool-toolbar', 'flex flex-wrap gap-3 items-center'],
@@ -112,7 +112,7 @@ export default defineConfig<PresetWind4Theme>({
   --secondary: #f0f0f0;
   --secondary-foreground: #262626;
   --muted: #f5f5f5;
-  --muted-foreground: #666666;
+  --muted-foreground: #737373;
   --accent: #f0f0f0;
   --accent-foreground: #262626;
   --destructive: #b23c3c;
@@ -177,11 +177,6 @@ body {
 
 input, textarea, [contenteditable="true"] {
   caret-color: var(--primary);
-}
-
-input::placeholder, textarea::placeholder {
-  color: var(--muted-foreground);
-  opacity: 1;
 }`,
     },
   ],

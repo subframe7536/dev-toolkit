@@ -6,6 +6,7 @@ import { toast } from 'solid-toaster'
 import { ClearButton } from '#/components/clear-button'
 import { CopyButton } from '#/components/copy-button'
 import { DownloadButton } from '#/components/download-button'
+import { ToolOptions } from '#/components/tool-options'
 import type { ConversionResult } from '#/utils/json/converter'
 import {
   jsonToJavaClass,
@@ -142,22 +143,12 @@ function JSONConverter() {
         </Field>
       </div>
       <div class="tool-toolbar">
-        <Field
-          label="Output format"
-          classes={{ root: 'min-w-0', label: 'sr-only', container: 'mt-0!' }}
-        >
-          <Select
-            value={mode()}
-            onValueChange={(value) => {
-              if (value !== null) {
-                setMode(value)
-              }
-            }}
-            items={conversionModes.map(({ value, label }) => ({ value, label }))}
-            classes={{ control: 'w-52 max-w-full' }}
-          />
-        </Field>
-        <CopyButton content={output()} variant="secondary" disabled={!output()} />
+        <CopyButton
+          text="Copy Output"
+          content={output()}
+          variant="secondary"
+          disabled={!output()}
+        />
         <DownloadButton
           content={output()}
           filename={`converted.${getFileExtension()}`}
@@ -167,18 +158,35 @@ function JSONConverter() {
         />
         <ClearButton onClear={handleClear} disabled={!input()} />
       </div>
-      <div class="pt-4 border-t border-border tool-toolbar">
-        <Field
-          label="Auto-repair JSON"
-          classes={{
-            root: 'flex flex-row-reverse gap-2 w-fit min-w-0 items-center',
-            label: 'font-normal',
-            container: 'mt-0! shrink-0',
-          }}
-        >
-          <Switch checked={useRepair()} onCheckedChange={setUseRepair} />
-        </Field>
-      </div>
+      <ToolOptions>
+        <div class="tool-toolbar items-end">
+          <Field
+            label="Output format"
+            classes={{ root: 'min-w-0', label: 'text-muted-foreground font-medium text-xs' }}
+          >
+            <Select
+              value={mode()}
+              onValueChange={(value) => {
+                if (value !== null) {
+                  setMode(value)
+                }
+              }}
+              items={conversionModes.map(({ value, label }) => ({ value, label }))}
+              classes={{ control: 'w-52 max-w-full' }}
+            />
+          </Field>
+          <Field
+            label="Auto-repair JSON"
+            classes={{
+              root: 'flex flex-row-reverse gap-2 w-fit min-w-0 items-center',
+              label: 'font-normal',
+              container: 'mt-0! shrink-0',
+            }}
+          >
+            <Switch checked={useRepair()} onCheckedChange={setUseRepair} />
+          </Field>
+        </div>
+      </ToolOptions>
     </div>
   )
 }

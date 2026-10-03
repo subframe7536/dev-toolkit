@@ -3,6 +3,7 @@ import { createEffect, createSignal, Show } from 'solid-js'
 
 import { CopyButton } from '#/components/copy-button'
 import { DownloadButton } from '#/components/download-button'
+import { ToolOptions } from '#/components/tool-options'
 import { useRegexContext } from '#/contexts'
 import { generateExportCode } from '#/utils/regex/export-generator'
 
@@ -62,46 +63,50 @@ export function ExportDialog() {
         <Dialog.Body>
           <div class="space-y-4">
             {/* Language and Variable Name Row */}
-            <div class="gap-4 grid grid-cols-1 sm:grid-cols-2">
-              <Field
-                label="Language"
-                classes={{ root: 'min-w-0', label: 'text-muted-foreground font-medium text-xs' }}
-              >
-                <Select
-                  value={store.selectedExportLanguage}
-                  onValueChange={(lang) =>
-                    lang && actions.setExportLanguage(lang as ExportLanguage)
-                  }
-                  items={languageOptions.map((o) => ({ value: o.value, label: o.label }))}
-                />
-              </Field>
+            <ToolOptions>
+              <div class="gap-4 grid grid-cols-1 sm:grid-cols-2">
+                <Field
+                  label="Language"
+                  classes={{ root: 'min-w-0', label: 'text-muted-foreground font-medium text-xs' }}
+                >
+                  <Select
+                    value={store.selectedExportLanguage}
+                    onValueChange={(lang) =>
+                      lang && actions.setExportLanguage(lang as ExportLanguage)
+                    }
+                    items={languageOptions.map((o) => ({ value: o.value, label: o.label }))}
+                  />
+                </Field>
 
-              <Field
-                label="Variable Name"
-                help="The name of the variable in the exported code"
-                classes={{
-                  root: 'min-w-0',
-                  label: 'text-muted-foreground font-medium text-xs',
-                  help: 'sr-only',
-                }}
-              >
-                <Input value={variableName()} onValueChange={setVariableName} placeholder="regex" />
-              </Field>
-            </div>
-
-            {/* Options */}
-            <div class="flex items-center">
-              <Field
-                label="Include comments"
-                classes={{
-                  root: 'flex flex-row-reverse gap-2 w-fit min-w-0 items-center',
-                  label: 'font-normal',
-                  container: 'mt-0! shrink-0',
-                }}
-              >
-                <Switch checked={includeComments()} onCheckedChange={setIncludeComments} />
-              </Field>
-            </div>
+                <Field
+                  label="Variable Name"
+                  help="The name of the variable in the exported code"
+                  classes={{
+                    root: 'min-w-0',
+                    label: 'text-muted-foreground font-medium text-xs',
+                    help: 'sr-only',
+                  }}
+                >
+                  <Input
+                    value={variableName()}
+                    onValueChange={setVariableName}
+                    placeholder="regex"
+                  />
+                </Field>
+              </div>
+              <div class="flex items-center">
+                <Field
+                  label="Include comments"
+                  classes={{
+                    root: 'flex flex-row-reverse gap-2 w-fit min-w-0 items-center',
+                    label: 'font-normal',
+                    container: 'mt-0! shrink-0',
+                  }}
+                >
+                  <Switch checked={includeComments()} onCheckedChange={setIncludeComments} />
+                </Field>
+              </div>
+            </ToolOptions>
 
             {/* Code Output */}
             <Show
@@ -130,6 +135,7 @@ export function ExportDialog() {
                 hint={
                   <span class="tool-actions">
                     <CopyButton
+                      text="Copy Output"
                       content={exportOutput()}
                       size="sm"
                       aria-label="Copy generated code to clipboard"

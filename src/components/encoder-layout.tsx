@@ -125,7 +125,12 @@ export function EncoderLayout(props: EncoderLayoutProps): JSX.Element {
         >
           Switch to {isEncode() ? 'decode' : 'encode'}
         </Button>
-        <CopyButton content={outputText()} disabled={!outputText()} variant="secondary" />
+        <CopyButton
+          text="Copy Output"
+          content={outputText()}
+          disabled={!outputText()}
+          variant="secondary"
+        />
         <ClearButton onClear={clear} disabled={!inputText()} />
       </div>
     </div>

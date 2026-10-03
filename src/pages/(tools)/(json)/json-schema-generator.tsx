@@ -6,6 +6,7 @@ import { toast } from 'solid-toaster'
 import { ClearButton } from '#/components/clear-button'
 import { CopyButton } from '#/components/copy-button'
 import { DownloadButton } from '#/components/download-button'
+import { ToolOptions } from '#/components/tool-options'
 import { generateJsonSchema } from '#/utils/json/schema-generator'
 
 export default createRoute({
@@ -82,7 +83,12 @@ function JSONSchemaGenerator() {
         </Field>
       </div>
       <div class="tool-toolbar">
-        <CopyButton content={output()} disabled={!output()} variant="secondary" />
+        <CopyButton
+          text="Copy Output"
+          content={output()}
+          disabled={!output()}
+          variant="secondary"
+        />
         <DownloadButton
           content={output()}
           disabled={!output()}
@@ -92,46 +98,48 @@ function JSONSchemaGenerator() {
         />
         <ClearButton onClear={handleClear} disabled={!input() && !output()} />
       </div>
-      <div class="pt-4 border-t border-border tool-toolbar">
-        <Field
-          label="Mark fields as required"
-          classes={{
-            root: 'flex flex-row-reverse gap-2 w-fit min-w-0 items-center',
-            label: 'font-normal',
-            container: 'mt-0! shrink-0',
-          }}
-        >
-          <Switch checked={required()} onCheckedChange={setRequired} />
-        </Field>
-        <Field
-          label="Allow additional properties"
-          classes={{
-            root: 'flex flex-row-reverse gap-2 w-fit min-w-0 items-center',
-            label: 'font-normal',
-            container: 'mt-0! shrink-0',
-          }}
-        >
-          <Switch checked={additionalProperties()} onCheckedChange={setAdditionalProperties} />
-        </Field>
-      </div>
-      <div class="gap-4 grid sm:grid-cols-2">
-        <Field
-          label="Schema Title (optional)"
-          classes={{ root: 'min-w-0', label: 'text-muted-foreground font-medium text-xs' }}
-        >
-          <Input value={title()} onValueChange={setTitle} placeholder="My Schema" />
-        </Field>
-        <Field
-          label="Schema Description (optional)"
-          classes={{ root: 'min-w-0', label: 'text-muted-foreground font-medium text-xs' }}
-        >
-          <Input
-            value={description()}
-            onValueChange={setDescription}
-            placeholder="Description of the schema"
-          />
-        </Field>
-      </div>
+      <ToolOptions>
+        <div class="tool-toolbar">
+          <Field
+            label="Mark fields as required"
+            classes={{
+              root: 'flex flex-row-reverse gap-2 w-fit min-w-0 items-center',
+              label: 'font-normal',
+              container: 'mt-0! shrink-0',
+            }}
+          >
+            <Switch checked={required()} onCheckedChange={setRequired} />
+          </Field>
+          <Field
+            label="Allow additional properties"
+            classes={{
+              root: 'flex flex-row-reverse gap-2 w-fit min-w-0 items-center',
+              label: 'font-normal',
+              container: 'mt-0! shrink-0',
+            }}
+          >
+            <Switch checked={additionalProperties()} onCheckedChange={setAdditionalProperties} />
+          </Field>
+        </div>
+        <div class="gap-4 grid sm:grid-cols-2">
+          <Field
+            label="Schema Title (optional)"
+            classes={{ root: 'min-w-0', label: 'text-muted-foreground font-medium text-xs' }}
+          >
+            <Input value={title()} onValueChange={setTitle} placeholder="My Schema" />
+          </Field>
+          <Field
+            label="Schema Description (optional)"
+            classes={{ root: 'min-w-0', label: 'text-muted-foreground font-medium text-xs' }}
+          >
+            <Input
+              value={description()}
+              onValueChange={setDescription}
+              placeholder="Description of the schema"
+            />
+          </Field>
+        </div>
+      </ToolOptions>
     </div>
   )
 }

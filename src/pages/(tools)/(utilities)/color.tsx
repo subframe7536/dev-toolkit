@@ -5,6 +5,7 @@ import { toast } from 'solid-toaster'
 
 import { Card } from '#/components/card'
 import { CopyButton } from '#/components/copy-button'
+import { ToolOptions } from '#/components/tool-options'
 import type { ColorFormat, RGB } from '#/utils/color'
 import {
   formatColor,
@@ -179,99 +180,119 @@ function ColorConverter() {
       {/* Right Column */}
       <div class="min-w-0 space-y-4">
         {/* RGB & HSL Sliders */}
-        <div class="gap-4 grid 2xl:grid-cols-2">
-          <Card
-            variant="section"
-            title="RGB Channels"
-            class="flex-1"
-            content={
-              <div class="space-y-4">
-                <Field
-                  label="Red"
-                  classes={{ root: 'min-w-0', label: 'text-muted-foreground font-medium text-xs' }}
-                >
-                  <Slider
-                    value={[Math.round(rgb().r)]}
-                    onValueChange={(value) => updateFromSliders('r', value[0])}
-                    min={0}
-                    max={255}
-                    step={1}
-                  />
-                </Field>
-                <Field
-                  label="Green"
-                  classes={{ root: 'min-w-0', label: 'text-muted-foreground font-medium text-xs' }}
-                >
-                  <Slider
-                    value={[Math.round(rgb().g)]}
-                    onValueChange={(value) => updateFromSliders('g', value[0])}
-                    min={0}
-                    max={255}
-                    step={1}
-                  />
-                </Field>
-                <Field
-                  label="Blue"
-                  classes={{ root: 'min-w-0', label: 'text-muted-foreground font-medium text-xs' }}
-                >
-                  <Slider
-                    value={[Math.round(rgb().b)]}
-                    onValueChange={(value) => updateFromSliders('b', value[0])}
-                    min={0}
-                    max={255}
-                    step={1}
-                  />
-                </Field>
-              </div>
-            }
-          />
+        <ToolOptions>
+          <div class="gap-4 grid 2xl:grid-cols-2">
+            <Card
+              variant="section"
+              title="RGB Channels"
+              class="flex-1"
+              content={
+                <div class="space-y-4">
+                  <Field
+                    label="Red"
+                    classes={{
+                      root: 'min-w-0',
+                      label: 'text-muted-foreground font-medium text-xs',
+                    }}
+                  >
+                    <Slider
+                      value={[Math.round(rgb().r)]}
+                      onValueChange={(value) => updateFromSliders('r', value[0])}
+                      min={0}
+                      max={255}
+                      step={1}
+                    />
+                  </Field>
+                  <Field
+                    label="Green"
+                    classes={{
+                      root: 'min-w-0',
+                      label: 'text-muted-foreground font-medium text-xs',
+                    }}
+                  >
+                    <Slider
+                      value={[Math.round(rgb().g)]}
+                      onValueChange={(value) => updateFromSliders('g', value[0])}
+                      min={0}
+                      max={255}
+                      step={1}
+                    />
+                  </Field>
+                  <Field
+                    label="Blue"
+                    classes={{
+                      root: 'min-w-0',
+                      label: 'text-muted-foreground font-medium text-xs',
+                    }}
+                  >
+                    <Slider
+                      value={[Math.round(rgb().b)]}
+                      onValueChange={(value) => updateFromSliders('b', value[0])}
+                      min={0}
+                      max={255}
+                      step={1}
+                    />
+                  </Field>
+                </div>
+              }
+            />
 
-          <Card
-            variant="section"
-            title="HSL Properties"
-            class="flex-1"
-            content={
-              <div class="space-y-4">
-                <Field
-                  label="Hue"
-                  classes={{ root: 'min-w-0', label: 'text-muted-foreground font-medium text-xs' }}
-                >
-                  <Slider
-                    value={[Math.round(hsl().h)]}
-                    onValueChange={(value) => updateFromHsl('h', value[0])}
-                    min={0}
-                    max={360}
-                    step={1}
-                  />
-                </Field>
-                <Field
-                  label="Saturation"
-                  classes={{ root: 'min-w-0', label: 'text-muted-foreground font-medium text-xs' }}
-                >
-                  <Slider
-                    value={[Math.round(hsl().s)]}
-                    onValueChange={(value) => updateFromHsl('s', value[0])}
-                    min={0}
-                    max={100}
-                    step={1}
-                  />
-                </Field>
-                <Field
-                  label="Lightness"
-                  classes={{ root: 'min-w-0', label: 'text-muted-foreground font-medium text-xs' }}
-                >
-                  <Slider
-                    value={[Math.round(hsl().l)]}
-                    onValueChange={(value) => updateFromHsl('l', value[0])}
-                    min={0}
-                    max={100}
-                    step={1}
-                  />
-                </Field>
-              </div>
-            }
-          />
-        </div>
+            <Card
+              variant="section"
+              title="HSL Properties"
+              class="flex-1"
+              content={
+                <div class="space-y-4">
+                  <Field
+                    label="Hue"
+                    classes={{
+                      root: 'min-w-0',
+                      label: 'text-muted-foreground font-medium text-xs',
+                    }}
+                  >
+                    <Slider
+                      value={[Math.round(hsl().h)]}
+                      onValueChange={(value) => updateFromHsl('h', value[0])}
+                      min={0}
+                      max={360}
+                      step={1}
+                    />
+                  </Field>
+                  <Field
+                    label="Saturation"
+                    classes={{
+                      root: 'min-w-0',
+                      label: 'text-muted-foreground font-medium text-xs',
+                    }}
+                  >
+                    <Slider
+                      value={[Math.round(hsl().s)]}
+                      onValueChange={(value) => updateFromHsl('s', value[0])}
+                      min={0}
+                      max={100}
+                      step={1}
+                    />
+                  </Field>
+                  <Field
+                    label="Lightness"
+                    classes={{
+                      root: 'min-w-0',
+                      label: 'text-muted-foreground font-medium text-xs',
+                    }}
+                  >
+                    <Slider
+                      value={[Math.round(hsl().l)]}
+                      onValueChange={(value) => updateFromHsl('l', value[0])}
+                      min={0}
+                      max={100}
+                      step={1}
+                    />
+                  </Field>
+                </div>
+              }
+            />
+          </div>
+        </ToolOptions>
 
         {/* Color Formats List */}
         <Card

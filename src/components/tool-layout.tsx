@@ -9,7 +9,11 @@ export function ToolLayout(props: ParentProps) {
   const tool = createMemo(() => matches().at(-1)?.route.info as FileRouteInfo | undefined)
 
   return (
-    <div class={tool()?.title ? 'px-4 py-6 min-w-0 w-full sm:(px-6 py-8)' : 'min-w-0 w-full'}>
+    <div
+      class={
+        tool()?.title ? 'tool-controls px-4 py-6 min-w-0 w-full sm:(px-6 py-8)' : 'min-w-0 w-full'
+      }
+    >
       <Show when={tool()?.title}>
         <header class="mb-6 flex gap-3 items-start">
           <div class="text-muted-foreground mt-1 shrink-0">
@@ -25,7 +29,7 @@ export function ToolLayout(props: ParentProps) {
           </div>
         </header>
       </Show>
-      <div class={tool()?.title ? 'tool-workbench' : undefined}>{props.children}</div>
+      {props.children}
     </div>
   )
 }

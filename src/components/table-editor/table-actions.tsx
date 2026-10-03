@@ -1,5 +1,6 @@
 import { Field, Button, MultiSelect, Switch } from 'moraine'
 
+import { ToolOptions } from '#/components/tool-options'
 import { useTableEditorContext } from '#/contexts/table-editor-context'
 
 import { ClearButton } from '../clear-button'
@@ -18,31 +19,33 @@ export function TableActions() {
   }
 
   return (
-    <div class="tool-toolbar justify-between">
-      <div class="tool-toolbar">
-        <Field
-          label="Visible columns"
-          classes={{ root: 'min-w-0', label: 'sr-only', container: 'mt-0!' }}
-        >
-          <MultiSelect
-            value={computed.visibleColumnIds()}
-            onValueChange={handleColumnVisibilityChange}
-            items={store.tableData.columns.map((col) => ({ value: col.id, label: col.name }))}
-            classes={{ control: 'w-48' }}
-          />
-        </Field>
+    <div class="space-y-4">
+      <ToolOptions>
+        <div class="tool-toolbar">
+          <Field
+            label="Visible columns"
+            classes={{ root: 'min-w-0', label: 'sr-only', container: 'mt-0!' }}
+          >
+            <MultiSelect
+              value={computed.visibleColumnIds()}
+              onValueChange={handleColumnVisibilityChange}
+              items={store.tableData.columns.map((col) => ({ value: col.id, label: col.name }))}
+              classes={{ control: 'w-48' }}
+            />
+          </Field>
 
-        <Field
-          label="First row is header"
-          classes={{
-            root: 'flex flex-row-reverse gap-2 w-fit min-w-0 items-center',
-            label: 'font-normal',
-            container: 'mt-0! shrink-0',
-          }}
-        >
-          <Switch checked={store.hasHeaders} onCheckedChange={actions.toggleHeaders} />
-        </Field>
-      </div>
+          <Field
+            label="First row is header"
+            classes={{
+              root: 'flex flex-row-reverse gap-2 w-fit min-w-0 items-center',
+              label: 'font-normal',
+              container: 'mt-0! shrink-0',
+            }}
+          >
+            <Switch checked={store.hasHeaders} onCheckedChange={actions.toggleHeaders} />
+          </Field>
+        </div>
+      </ToolOptions>
 
       <div class="tool-actions">
         <ExportDialog />

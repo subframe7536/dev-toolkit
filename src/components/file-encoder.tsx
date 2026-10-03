@@ -5,6 +5,7 @@ import { toast } from 'solid-toaster'
 import { CopyButton } from '#/components/copy-button'
 import { DownloadButton } from '#/components/download-button'
 import { FileUpload } from '#/components/file-upload'
+import { ToolOptions } from '#/components/tool-options'
 
 import { ClearButton } from './clear-button'
 
@@ -81,7 +82,16 @@ export function FileEncoder(props: FileEncoderProps) {
             {targetOutput()}
           </div>
           <div class="tool-toolbar">
-            <Show when={props.showDataURLSwitch}>
+            <CopyButton text="Copy Output" content={targetOutput()} variant="secondary" size="sm" />
+            <DownloadButton
+              content={targetOutput()}
+              filename={outputFilename()}
+              variant="secondary"
+              size="sm"
+            />
+          </div>
+          <Show when={props.showDataURLSwitch}>
+            <ToolOptions>
               <Field
                 label="Include Data URL prefix"
                 classes={{
@@ -92,15 +102,8 @@ export function FileEncoder(props: FileEncoderProps) {
               >
                 <Switch checked={includeDataURL()} onCheckedChange={setIncludeDataURL} />
               </Field>
-            </Show>
-            <CopyButton content={targetOutput()} variant="secondary" size="sm" />
-            <DownloadButton
-              content={targetOutput()}
-              filename={outputFilename()}
-              variant="secondary"
-              size="sm"
-            />
-          </div>
+            </ToolOptions>
+          </Show>
         </div>
       </Show>
     </div>

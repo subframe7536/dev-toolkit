@@ -10,6 +10,7 @@ import type { ImageFileData } from '#/components/image-converter/image-card'
 import { ImageCard } from '#/components/image-converter/image-card'
 import { OutputSettings } from '#/components/image-converter/output-settings'
 import { SvgOptions } from '#/components/image-converter/svg-options'
+import { ToolOptions } from '#/components/tool-options'
 import { downloadFile } from '#/utils/download'
 import type { ImageFormat } from '#/utils/image'
 import { convertImage, getFileExtension } from '#/utils/image'
@@ -279,46 +280,38 @@ function ImageConverter() {
 
       {/* Right side - Settings */}
       <div class="space-y-4">
-        <Card
-          variant="section"
-          title="Output Settings"
-          content={
-            <OutputSettings
-              targetFormat={targetFormat()}
-              onFormatChange={setTargetFormat}
-              quality={quality()}
-              onQualityChange={setQuality}
-              ratio={ratio()}
-              onRatioChange={setRatio}
-              globalWidth={globalWidth()}
-              onGlobalWidthChange={handleGlobalWidthChange}
-              globalHeight={globalHeight()}
-              onGlobalHeightChange={handleGlobalHeightChange}
-            />
-          }
-        />
+        <ToolOptions>
+          <OutputSettings
+            targetFormat={targetFormat()}
+            onFormatChange={setTargetFormat}
+            quality={quality()}
+            onQualityChange={setQuality}
+            ratio={ratio()}
+            onRatioChange={setRatio}
+            globalWidth={globalWidth()}
+            onGlobalWidthChange={handleGlobalWidthChange}
+            globalHeight={globalHeight()}
+            onGlobalHeightChange={handleGlobalHeightChange}
+          />
+        </ToolOptions>
 
         <Show when={hasSvgFiles()}>
-          <Card
-            variant="section"
-            title="SVG Options"
-            content={
-              <SvgOptions
-                previewUrl={svgPreviewUrl()}
-                backgroundColor={svgBackgroundColor()}
-                onBackgroundColorChange={setSvgBackgroundColor}
-                fillColor={svgColor()}
-                onFillColorChange={setSvgColor}
-                strokeColor={svgStrokeColor()}
-                onStrokeColorChange={setSvgStrokeColor}
-                onReset={() => {
-                  setSvgBackgroundColor('')
-                  setSvgColor('')
-                  setSvgStrokeColor('')
-                }}
-              />
-            }
-          />
+          <ToolOptions title="SVG Options">
+            <SvgOptions
+              previewUrl={svgPreviewUrl()}
+              backgroundColor={svgBackgroundColor()}
+              onBackgroundColorChange={setSvgBackgroundColor}
+              fillColor={svgColor()}
+              onFillColorChange={setSvgColor}
+              strokeColor={svgStrokeColor()}
+              onStrokeColorChange={setSvgStrokeColor}
+              onReset={() => {
+                setSvgBackgroundColor('')
+                setSvgColor('')
+                setSvgStrokeColor('')
+              }}
+            />
+          </ToolOptions>
         </Show>
 
         <Button

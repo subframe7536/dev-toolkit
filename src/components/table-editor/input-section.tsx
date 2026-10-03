@@ -3,6 +3,7 @@ import { createSignal, Show } from 'solid-js'
 import { toast } from 'solid-toaster'
 
 import { FileUpload } from '#/components/file-upload'
+import { ToolOptions } from '#/components/tool-options'
 import { useTableEditorContext } from '#/contexts/table-editor-context'
 import {
   detectTSVFormat,
@@ -233,20 +234,22 @@ export function InputSection() {
                     onValueChange={setTextInput}
                   />
                 </Field>
-                <Field
-                  label="Replace \n"
-                  classes={{
-                    root: 'flex flex-row-reverse gap-2 w-fit min-w-0 items-center',
-                    label: 'font-normal',
-                    container: 'mt-0! shrink-0',
-                  }}
-                >
-                  <Switch
-                    classes={{ root: 'whitespace-nowrap' }}
-                    checked={replaceLineWrap()}
-                    onCheckedChange={handleReplaceLineWrap}
-                  />
-                </Field>
+                <ToolOptions>
+                  <Field
+                    label="Replace \n"
+                    classes={{
+                      root: 'flex flex-row-reverse gap-2 w-fit min-w-0 items-center',
+                      label: 'font-normal',
+                      container: 'mt-0! shrink-0',
+                    }}
+                  >
+                    <Switch
+                      classes={{ root: 'whitespace-nowrap' }}
+                      checked={replaceLineWrap()}
+                      onCheckedChange={handleReplaceLineWrap}
+                    />
+                  </Field>
+                </ToolOptions>
                 <div class="tool-toolbar">
                   <Button
                     onClick={handleParseText}
@@ -305,23 +308,25 @@ export function InputSection() {
                 />
 
                 <Show when={sheetNames().length > 1}>
-                  <Field
-                    label="Select Sheet"
-                    classes={{
-                      root: 'min-w-0',
-                      label: 'text-muted-foreground font-medium text-xs',
-                    }}
-                  >
-                    <Select
-                      value={selectedSheet()}
-                      onValueChange={(value) => {
-                        if (value !== null) {
-                          setSelectedSheet(value)
-                        }
+                  <ToolOptions>
+                    <Field
+                      label="Select Sheet"
+                      classes={{
+                        root: 'min-w-0',
+                        label: 'text-muted-foreground font-medium text-xs',
                       }}
-                      items={sheetNames().map((s) => ({ value: s, label: s }))}
-                    />
-                  </Field>
+                    >
+                      <Select
+                        value={selectedSheet()}
+                        onValueChange={(value) => {
+                          if (value !== null) {
+                            setSelectedSheet(value)
+                          }
+                        }}
+                        items={sheetNames().map((s) => ({ value: s, label: s }))}
+                      />
+                    </Field>
+                  </ToolOptions>
                 </Show>
 
                 <div class="flex gap-2 items-center">

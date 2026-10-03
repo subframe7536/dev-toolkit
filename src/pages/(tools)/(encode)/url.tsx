@@ -3,6 +3,7 @@ import { createRoute } from 'solid-file-router'
 import { createSignal } from 'solid-js'
 
 import { EncoderLayout } from '#/components/encoder-layout'
+import { ToolOptions } from '#/components/tool-options'
 
 export default createRoute({
   info: {
@@ -29,16 +30,18 @@ function URLEncoder() {
   return (
     <div class="flex flex-col gap-4">
       <EncoderLayout mode="URL" onEncode={encode} onDecode={decode} />
-      <Field
-        label="Regard as URL component"
-        classes={{
-          root: 'flex flex-row-reverse gap-2 w-fit min-w-0 items-center pt-4 border-t border-border',
-          label: 'font-normal',
-          container: 'mt-0! shrink-0',
-        }}
-      >
-        <Switch checked={useComponent()} onCheckedChange={setUseComponent} />
-      </Field>
+      <ToolOptions>
+        <Field
+          label="Regard as URL component"
+          classes={{
+            root: 'flex flex-row-reverse gap-2 w-fit min-w-0 items-center',
+            label: 'font-normal',
+            container: 'mt-0! shrink-0',
+          }}
+        >
+          <Switch checked={useComponent()} onCheckedChange={setUseComponent} />
+        </Field>
+      </ToolOptions>
     </div>
   )
 }
