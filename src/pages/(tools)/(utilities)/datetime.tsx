@@ -1,4 +1,4 @@
-import { Button, Input, Select } from 'moraine'
+import { Field, Button, Input, Select } from 'moraine'
 import { createRoute } from 'solid-file-router'
 import {
   batch,
@@ -15,6 +15,7 @@ import { toast } from 'solid-toaster'
 
 import { Card } from '#/components/card'
 import { CopyButton } from '#/components/copy-button'
+import { ToolOptions } from '#/components/tool-options'
 import {
   commonTimeZones,
   formatDateTime,
@@ -146,16 +147,18 @@ function DateTimeTool() {
   })
 
   return (
-    <div class="space-y-6">
+    <div class="space-y-4">
       {/* Two Column Layout for Wide Screens */}
-      <div class="gap-6 grid lg:grid-cols-2">
+      <div class="tool-grid lg:grid-cols-2">
         {/* Left Column */}
-        <div class="space-y-10">
+        <div class="space-y-4">
           {/* Real-time Clock + Custom Date Input + Format Options */}
           <div class="space-y-4">
             {/* Real-time Display */}
             <div class="p-4 text-center border bg-muted/50 rounded-lg">
-              <div class="font-bold font-mono mb-2 text-3xl">{formattedTime()}</div>
+              <div class="leading-relaxed font-medium font-mono mb-2 break-words tabular-nums text-xl">
+                {formattedTime()}
+              </div>
               <div class="text-muted-foreground text-sm">
                 {selectedTimeZone()} • {selectedLocale()}
               </div>
@@ -164,14 +167,19 @@ function DateTimeTool() {
             {/* Custom Date Input */}
             <div class="space-y-2">
               <div class="flex gap-2 items-end">
-                <div class="flex flex-1 flex-col gap-1">
-                  <label class="font-medium text-sm">Custom Date Input</label>
+                <Field
+                  label="Custom Date Input"
+                  classes={{
+                    root: 'min-w-0 flex-1',
+                    label: 'text-muted-foreground font-medium text-xs',
+                  }}
+                >
                   <Input
                     value={customInput()}
                     onValueChange={setCustomInput}
                     placeholder="ISO, Unix timestamp, yyyy-MM-dd HH:mm:ss..."
                   />
-                </div>
+                </Field>
                 <Button onClick={handleParseCustomDate} classes={{ root: 'shrink-0' }}>
                   {customDate() ? 'Reset' : 'Parse'}
                 </Button>
@@ -182,65 +190,106 @@ function DateTimeTool() {
             </div>
 
             {/* Format Options */}
-            <div class="space-y-2">
-              <div class="font-medium">Format Options</div>
-              <div class="gap-4 grid grid-cols-2">
-                <div>
-                  <label class="text-muted-foreground mb-1.5 block text-xs">Locale</label>
-                  <Select
-                    value={selectedLocale()}
-                    onValueChange={(value) => {
-                      if (value !== null) {
-                        setSelectedLocale(value)
-                      }
+            <ToolOptions>
+              <div class="space-y-2">
+                <div class="gap-4 grid grid-cols-2">
+                  <Field
+                    label="Locale"
+                    classes={{
+                      root: 'min-w-0',
+                      label: 'text-muted-foreground font-medium text-xs',
                     }}
-                    items={locales.map((v) => ({ value: v, label: v }))}
-                  />
-                </div>
-                <div>
-                  <label class="text-muted-foreground mb-1.5 block text-xs">Time Zone</label>
-                  <Select
-                    value={selectedTimeZone()}
-                    onValueChange={(value) => {
-                      if (value !== null) {
-                        setSelectedTimeZone(value)
-                      }
+                  >
+                    <Select
+                      value={selectedLocale()}
+                      onValueChange={(value) => {
+                        if (value !== null) {
+                          setSelectedLocale(value)
+                        }
+                      }}
+                      items={locales.map((v) => ({ value: v, label: v }))}
+                    />
+                  </Field>
+                  <Field
+                    label="Time Zone"
+                    classes={{
+                      root: 'min-w-0',
+                      label: 'text-muted-foreground font-medium text-xs',
                     }}
-                    items={commonTimeZones.map((v) => ({ value: v, label: v }))}
-                  />
-                </div>
-                <div>
-                  <label class="text-muted-foreground mb-1.5 block text-xs">Date Style</label>
-                  <Select
-                    value={dateStyle()}
-                    onValueChange={(v) => v && setDateStyle(v as any)}
-                    items={[...styles].map((v) => ({ value: v, label: v }))}
-                  />
-                </div>
-                <div>
-                  <label class="text-muted-foreground mb-1.5 block text-xs">Time Style</label>
-                  <Select
-                    value={timeStyle()}
-                    onValueChange={(v) => v && setTimeStyle(v as any)}
-                    items={[...styles].map((v) => ({ value: v, label: v }))}
-                  />
+                  >
+                    <Select
+                      value={selectedTimeZone()}
+                      onValueChange={(value) => {
+                        if (value !== null) {
+                          setSelectedTimeZone(value)
+                        }
+                      }}
+                      items={commonTimeZones.map((v) => ({ value: v, label: v }))}
+                    />
+                  </Field>
+                  <Field
+                    label="Date Style"
+                    classes={{
+                      root: 'min-w-0',
+                      label: 'text-muted-foreground font-medium text-xs',
+                    }}
+                  >
+                    <Select
+                      value={dateStyle()}
+                      onValueChange={(v) => v && setDateStyle(v as any)}
+                      items={[...styles].map((v) => ({ value: v, label: v }))}
+                    />
+                  </Field>
+                  <Field
+                    label="Time Style"
+                    classes={{
+                      root: 'min-w-0',
+                      label: 'text-muted-foreground font-medium text-xs',
+                    }}
+                  >
+                    <Select
+                      value={timeStyle()}
+                      onValueChange={(v) => v && setTimeStyle(v as any)}
+                      items={[...styles].map((v) => ({ value: v, label: v }))}
+                    />
+                  </Field>
                 </div>
               </div>
-            </div>
+              <Field
+                label="Custom Format Pattern"
+                classes={{ root: 'min-w-0', label: 'text-muted-foreground font-medium text-xs' }}
+              >
+                <Input
+                  value={customFormat()}
+                  onValueChange={setCustomFormat}
+                  placeholder="e.g., yyyy/MM/dd or dd-MM-yyyy HH:mm"
+                />
+                <div class="text-muted-foreground space-y-1 text-xs">
+                  <div>Tokens: yyyy (year), MM (month), dd (day)</div>
+                  <div>HH/hh (hours), mm (minutes), ss (seconds), SSS (ms)</div>
+                </div>
+              </Field>
+            </ToolOptions>
           </div>
 
           {/* DateTime Manipulation */}
           <Card
+            variant="section"
             title="DateTime Manipulation"
             description="Units: y=years, M=months, d=days, h=hours, m=minutes, s=seconds"
             icon="i-lucide-calculator"
             content={
               <div class="space-y-2">
-                <Input
-                  value={manipulationInput()}
-                  onValueChange={setManipulationInput}
-                  placeholder="e.g., +1h -30m +2d"
-                />
+                <Field
+                  label="DateTime Manipulation"
+                  classes={{ root: 'min-w-0', label: 'sr-only', container: 'mt-0!' }}
+                >
+                  <Input
+                    value={manipulationInput()}
+                    onValueChange={setManipulationInput}
+                    placeholder="e.g., +1h -30m +2d"
+                  />
+                </Field>
                 <Show when={manipulatedTime()}>
                   <div class="p-3 border bg-muted/50 rounded-lg">
                     <div class="flex items-center justify-between">
@@ -265,43 +314,32 @@ function DateTimeTool() {
         </div>
 
         {/* Right Column */}
-        {/* Custom Format + Output Formats */}
+        {/* Custom Preview + Output Formats */}
         <Card
+          variant="section"
           title="Format Outputs"
           icon="i-lucide-list"
           content={
             <div class="space-y-4">
               {/* Custom Format */}
-              <div class="space-y-2">
-                <label class="font-medium text-sm">Custom Format Pattern</label>
-                <Input
-                  value={customFormat()}
-                  onValueChange={setCustomFormat}
-                  placeholder="e.g., yyyy/MM/dd or dd-MM-yyyy HH:mm"
-                />
-                <div class="text-muted-foreground space-y-1 text-xs">
-                  <div>Tokens: yyyy (year), MM (month), dd (day)</div>
-                  <div>HH/hh (hours), mm (minutes), ss (seconds), SSS (ms)</div>
-                </div>
-                <Show when={customFormat().trim()}>
-                  <div class="p-3 border bg-muted/50 rounded-lg">
-                    <div class="flex items-center justify-between">
-                      <div class="flex-1 min-w-0">
-                        <div class="text-muted-foreground mb-1 text-xs">Preview:</div>
-                        <div class="font-mono font-semibold truncate text-sm">
-                          {formatWithPattern(customDate() || currentTime(), customFormat())}
-                        </div>
+              <Show when={customFormat().trim()}>
+                <div class="p-3 border bg-muted/50 rounded-lg">
+                  <div class="flex items-center justify-between">
+                    <div class="flex-1 min-w-0">
+                      <div class="text-muted-foreground mb-1 text-xs">Preview:</div>
+                      <div class="font-mono font-semibold truncate text-sm">
+                        {formatWithPattern(customDate() || currentTime(), customFormat())}
                       </div>
-                      <CopyButton
-                        content={formatWithPattern(customDate() || currentTime(), customFormat())}
-                        size="sm"
-                        variant="ghost"
-                        text={false}
-                      />
                     </div>
+                    <CopyButton
+                      content={formatWithPattern(customDate() || currentTime(), customFormat())}
+                      size="sm"
+                      variant="ghost"
+                      text={false}
+                    />
                   </div>
-                </Show>
-              </div>
+                </div>
+              </Show>
 
               {/* Common Formats */}
               <div class="space-y-2">
@@ -312,7 +350,7 @@ function DateTimeTool() {
                       <div class="p-3 border bg-muted/30 flex gap-2 items-center justify-between rounded-lg">
                         <div class="flex-1 min-w-0">
                           <div class="text-muted-foreground text-xs">{format().label}</div>
-                          <div class="font-mono truncate text-sm">{format().value}</div>
+                          <div class="font-mono break-all text-sm">{format().value}</div>
                         </div>
                         <CopyButton
                           content={format().value}

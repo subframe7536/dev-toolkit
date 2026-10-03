@@ -10,6 +10,7 @@ import type { ImageFileData } from '#/components/image-converter/image-card'
 import { ImageCard } from '#/components/image-converter/image-card'
 import { OutputSettings } from '#/components/image-converter/output-settings'
 import { SvgOptions } from '#/components/image-converter/svg-options'
+import { ToolOptions } from '#/components/tool-options'
 import { downloadFile } from '#/utils/download'
 import type { ImageFormat } from '#/utils/image'
 import { convertImage, getFileExtension } from '#/utils/image'
@@ -244,9 +245,10 @@ function ImageConverter() {
   }
 
   return (
-    <div class="gap-6 grid grid-cols-1 xl:grid-cols-[1fr_450px]">
+    <div class="gap-6 grid grid-cols-1 items-start lg:grid-cols-[minmax(0,1fr)_18rem] [&>*]:min-w-0">
       {/* Left side - Images */}
       <Card
+        variant="section"
         title="Upload Images"
         content={
           <>
@@ -259,7 +261,7 @@ function ImageConverter() {
               icon="i-lucide-image"
             />
             <Show when={images.length > 0}>
-              <div class="mt-6 flex flex-wrap gap-4 justify-evenly">
+              <div class="mt-4 gap-4 grid grid-cols-[repeat(auto-fill,minmax(min(100%,14rem),1fr))]">
                 <For each={images}>
                   {(img) => (
                     <ImageCard
@@ -277,45 +279,39 @@ function ImageConverter() {
       />
 
       {/* Right side - Settings */}
-      <div class="space-y-6">
-        <Card
-          title="Output Settings"
-          content={
-            <OutputSettings
-              targetFormat={targetFormat()}
-              onFormatChange={setTargetFormat}
-              quality={quality()}
-              onQualityChange={setQuality}
-              ratio={ratio()}
-              onRatioChange={setRatio}
-              globalWidth={globalWidth()}
-              onGlobalWidthChange={handleGlobalWidthChange}
-              globalHeight={globalHeight()}
-              onGlobalHeightChange={handleGlobalHeightChange}
-            />
-          }
-        />
+      <div class="space-y-4">
+        <ToolOptions>
+          <OutputSettings
+            targetFormat={targetFormat()}
+            onFormatChange={setTargetFormat}
+            quality={quality()}
+            onQualityChange={setQuality}
+            ratio={ratio()}
+            onRatioChange={setRatio}
+            globalWidth={globalWidth()}
+            onGlobalWidthChange={handleGlobalWidthChange}
+            globalHeight={globalHeight()}
+            onGlobalHeightChange={handleGlobalHeightChange}
+          />
+        </ToolOptions>
 
         <Show when={hasSvgFiles()}>
-          <Card
-            title="SVG Options"
-            content={
-              <SvgOptions
-                previewUrl={svgPreviewUrl()}
-                backgroundColor={svgBackgroundColor()}
-                onBackgroundColorChange={setSvgBackgroundColor}
-                fillColor={svgColor()}
-                onFillColorChange={setSvgColor}
-                strokeColor={svgStrokeColor()}
-                onStrokeColorChange={setSvgStrokeColor}
-                onReset={() => {
-                  setSvgBackgroundColor('')
-                  setSvgColor('')
-                  setSvgStrokeColor('')
-                }}
-              />
-            }
-          />
+          <ToolOptions title="SVG Options">
+            <SvgOptions
+              previewUrl={svgPreviewUrl()}
+              backgroundColor={svgBackgroundColor()}
+              onBackgroundColorChange={setSvgBackgroundColor}
+              fillColor={svgColor()}
+              onFillColorChange={setSvgColor}
+              strokeColor={svgStrokeColor()}
+              onStrokeColorChange={setSvgStrokeColor}
+              onReset={() => {
+                setSvgBackgroundColor('')
+                setSvgColor('')
+                setSvgStrokeColor('')
+              }}
+            />
+          </ToolOptions>
         </Show>
 
         <Button

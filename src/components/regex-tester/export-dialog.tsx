@@ -1,8 +1,9 @@
-import { Dialog, Icon, Input, Select, Switch, Textarea } from 'moraine'
-import { createEffect, createSignal, createUniqueId, Show } from 'solid-js'
+import { Field, Dialog, Icon, Input, Select, Switch, Textarea } from 'moraine'
+import { createEffect, createSignal, Show } from 'solid-js'
 
 import { CopyButton } from '#/components/copy-button'
 import { DownloadButton } from '#/components/download-button'
+import { ToolOptions } from '#/components/tool-options'
 import { useRegexContext } from '#/contexts'
 import { generateExportCode } from '#/utils/regex/export-generator'
 
@@ -20,9 +21,6 @@ export function ExportDialog() {
   const [variableName, setVariableName] = createSignal('regex')
   const [includeComments, setIncludeComments] = createSignal(true)
   const [exportOutput, setExportOutput] = createSignal('')
-
-  const languageLabelId = createUniqueId()
-  const outputLabelId = createUniqueId()
 
   // Generate export code when dialog opens or settings change
   createEffect(() => {
@@ -65,43 +63,45 @@ export function ExportDialog() {
         <Dialog.Body>
           <div class="space-y-4">
             {/* Language and Variable Name Row */}
-            <div class="gap-4 grid grid-cols-1 sm:grid-cols-2">
-              <div class="flex flex-col gap-2">
-                <label id={languageLabelId} class="font-medium text-sm">
-                  Language
-                </label>
-                <Select
-                  value={store.selectedExportLanguage}
-                  onValueChange={(lang) =>
-                    lang && actions.setExportLanguage(lang as ExportLanguage)
-                  }
-                  items={languageOptions.map((o) => ({ value: o.value, label: o.label }))}
+            <ToolOptions>
+              <div class="gap-4 grid grid-cols-1 sm:grid-cols-2">
+                <Field
+                  label="Language"
+                  classes={{ root: 'min-w-0', label: 'text-muted-foreground font-medium text-xs' }}
+                >
+                  <Select
+                    value={store.selectedExportLanguage}
+                    onValueChange={(lang) =>
+                      lang && actions.setExportLanguage(lang as ExportLanguage)
+                    }
+                    items={languageOptions.map((o) => ({ value: o.value, label: o.label }))}
+                  />
+                </Field>
+
+                <Field
+                  label="Variable Name"
+                  help="The name of the variable in the exported code"
+                  classes={{
+                    root: 'min-w-0',
+                    label: 'text-muted-foreground font-medium text-xs',
+                    help: 'sr-only',
+                  }}
+                >
+                  <Input
+                    value={variableName()}
+                    onValueChange={setVariableName}
+                    placeholder="regex"
+                  />
+                </Field>
+              </div>
+              <div class="flex items-center">
+                <Switch
+                  label="Include comments"
+                  checked={includeComments()}
+                  onCheckedChange={setIncludeComments}
                 />
               </div>
-
-              <div>
-                <label class="font-medium text-sm">Variable Name</label>
-                <Input
-                  value={variableName()}
-                  onValueChange={setVariableName}
-                  placeholder="regex"
-                  aria-describedby="variable-name-hint"
-                  classes={{ root: 'mt-1' }}
-                />
-                <span id="variable-name-hint" class="sr-only">
-                  The name of the variable in the exported code
-                </span>
-              </div>
-            </div>
-
-            {/* Options */}
-            <div class="flex items-center">
-              <Switch
-                label="Include comments"
-                checked={includeComments()}
-                onCheckedChange={setIncludeComments}
-              />
-            </div>
+            </ToolOptions>
 
             {/* Code Output */}
             <Show
@@ -120,13 +120,17 @@ export function ExportDialog() {
                 </div>
               }
             >
-              <div class="space-y-2">
-                <div class="flex gap-2 items-center justify-between">
-                  <label id={outputLabelId} class="font-medium text-sm">
-                    Generated Code
-                  </label>
-                  <div class="flex gap-2">
+              <Field
+                label="Generated Code"
+                classes={{
+                  root: 'min-w-0',
+                  label: 'text-muted-foreground font-medium text-xs',
+                  labelWrapper: 'tool-panel-heading',
+                }}
+                hint={
+                  <span class="tool-actions">
                     <CopyButton
+                      text="Copy Output"
                       content={exportOutput()}
                       size="sm"
                       aria-label="Copy generated code to clipboard"
@@ -138,16 +142,15 @@ export function ExportDialog() {
                       size="sm"
                       aria-label={`Download as ${getExportFilename()}`}
                     />
-                  </div>
-                </div>
+                  </span>
+                }
+              >
                 <Textarea
                   classes={{ root: 'text-sm font-mono resize-none h-48' }}
                   readOnly
                   value={exportOutput()}
-                  aria-labelledby={outputLabelId}
-                  aria-readonly="true"
                 />
-              </div>
+              </Field>
             </Show>
           </div>
         </Dialog.Body>

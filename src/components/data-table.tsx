@@ -11,8 +11,8 @@ import {
   sortFn_text,
   tableFeatures,
 } from '@tanstack/solid-table'
-import { Icon, Tooltip, cn } from 'moraine'
-import { createEffect, createMemo, createSignal, For, Show } from 'solid-js'
+import { Field, Icon, Textarea, Tooltip, cn } from 'moraine'
+import { createEffect, createMemo, createSignal, For, onCleanup, onMount, Show } from 'solid-js'
 
 import type { CellValue, TableData, TableRow } from '#/utils/table/types'
 
@@ -46,6 +46,23 @@ export function DataTable(props: DataTableProps) {
   const [internalColumnVisibility, setInternalColumnVisibility] = createSignal<
     Record<string, boolean>
   >({})
+  const [columnWidths, setColumnWidths] = createSignal<Record<string, number>>({})
+  const headers = new Map<string, HTMLTableCellElement>()
+  let resizeObserver: ResizeObserver | undefined
+
+  onMount(() => {
+    resizeObserver = new ResizeObserver(() => {
+      setColumnWidths(
+        Object.fromEntries(
+          [...headers]
+            .filter(([, el]) => el.isConnected)
+            .map(([id, el]) => [id, el.getBoundingClientRect().width]),
+        ),
+      )
+    })
+    headers.forEach((header) => resizeObserver!.observe(header))
+  })
+  onCleanup(() => resizeObserver?.disconnect())
 
   // Cell editing state
   const [editingCell, setEditingCell] = createSignal<{ rowId: string; columnId: string } | null>(
@@ -181,21 +198,26 @@ export function DataTable(props: DataTableProps) {
               </div>
             }
           >
-            <textarea
-              class="px-3 py-2 border-2 border-primary rounded bg-input w-full focus:outline-none"
-              value={editValue()}
-              aria-label={`Editing ${col.name}`}
-              ref={(r) => setTimeout(() => r.focus(), 0)}
-              onInput={(e) => setEditValue(e.currentTarget.value)}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter') {
-                  handleCellSave(rowId, columnId, editValue())
-                } else if (e.key === 'Escape') {
-                  setEditingCell(null)
-                }
-              }}
-              onBlur={() => handleCellSave(rowId, columnId, editValue())}
-            />
+            <Field
+              label={`Editing ${col.name}`}
+              classes={{ root: 'min-w-0', label: 'sr-only', container: 'mt-0!' }}
+            >
+              <Textarea
+                classes={{ root: 'px-3 py-2 border-2 border-primary bg-input min-h-0 w-full' }}
+                rows={2}
+                value={editValue()}
+                ref={(r) => setTimeout(() => r.focus(), 0)}
+                onValueChange={setEditValue}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    handleCellSave(rowId, columnId, editValue())
+                  } else if (e.key === 'Escape') {
+                    setEditingCell(null)
+                  }
+                }}
+                onBlur={() => handleCellSave(rowId, columnId, editValue())}
+              />
+            </Field>
           </Show>
         )
       },
@@ -232,6 +254,19 @@ export function DataTable(props: DataTableProps) {
     enableSorting: true,
     enableColumnPinning: true,
   })
+
+  const pinnedOffset = (columnId: string) => {
+    let offset = 0
+    for (const column of table.getVisibleLeafColumns()) {
+      if (column.id === columnId) {
+        break
+      }
+      if (columnPinning().start.includes(column.id)) {
+        offset += columnWidths()[column.id] ?? 0
+      }
+    }
+    return `${offset}px`
+  }
 
   // Handle column pin toggle
   const handlePinToggle = (columnId: string) => {
@@ -313,10 +348,17 @@ export function DataTable(props: DataTableProps) {
                         <th
                           class={cn(
                             'font-semibold text-left b-(b r border) min-w-30 select-none text-sm',
-                            isPinned()
-                              ? 'bg-muted shadow-[2px_0_8px_rgba(0,0,0,0.1)] left-0 sticky z-10 border-r-2!'
-                              : 'bg-muted/50',
+                            isPinned() ? 'bg-muted sticky z-10' : 'bg-muted/50',
                           )}
+                          ref={(element) => {
+                            const previous = headers.get(columnId)
+                            if (previous) {
+                              resizeObserver?.unobserve(previous)
+                            }
+                            headers.set(columnId, element)
+                            resizeObserver?.observe(element)
+                          }}
+                          style={{ left: isPinned() ? pinnedOffset(columnId) : undefined }}
                           role="columnheader"
                           aria-sort={
                             sortState() ? (sortState()!.desc ? 'descending' : 'ascending') : 'none'
@@ -386,10 +428,11 @@ export function DataTable(props: DataTableProps) {
                           class={cn(
                             'b-(r border) min-w-30 text-sm',
                             isPinned() && [
-                              'sticky left-0 z-10 shadow-sm',
+                              'sticky z-10',
                               index() % 2 === 0 ? 'bg-background' : 'bg-muted',
                             ],
                           )}
+                          style={{ left: isPinned() ? pinnedOffset(columnId) : undefined }}
                         >
                           <FlexRender cell={cell} />
                         </td>

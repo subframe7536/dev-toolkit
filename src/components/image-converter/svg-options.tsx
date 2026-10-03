@@ -1,4 +1,4 @@
-import { Button, Input } from 'moraine'
+import { Field, Button, Input } from 'moraine'
 import type { Component } from 'solid-js'
 import { Show } from 'solid-js'
 
@@ -18,7 +18,7 @@ export const SvgOptions: Component<SvgOptionsProps> = (props) => {
     <div class="space-y-4">
       <Show when={props.previewUrl}>
         <div>
-          <label class="font-medium mb-2 block text-sm">Preview</label>
+          <h3 class="font-medium mb-2 text-sm">Preview</h3>
           <div class="p-4 border bg-muted/30 flex items-center justify-center rounded-lg">
             <img
               src={props.previewUrl}
@@ -29,15 +29,22 @@ export const SvgOptions: Component<SvgOptionsProps> = (props) => {
         </div>
       </Show>
 
-      <div>
-        <label class="font-medium text-sm">Background Color (optional)</label>
+      <Field
+        label="Background Color (optional)"
+        classes={{ root: 'min-w-0', label: 'text-muted-foreground font-medium text-xs' }}
+      >
         <div class="flex gap-2">
-          <input
-            type="color"
-            value={props.backgroundColor || '#ffffff'}
-            onInput={(e) => props.onBackgroundColorChange(e.currentTarget.value)}
-            class="border rounded h-10 w-14 cursor-pointer"
-          />
+          <Field
+            label="Background color picker"
+            classes={{ root: 'shrink-0', label: 'sr-only', container: 'mt-0!' }}
+          >
+            <Input
+              type="color"
+              value={props.backgroundColor || '#ffffff'}
+              onValueChange={props.onBackgroundColorChange}
+              classes={{ root: 'p-0 h-9 w-12 cursor-pointer' }}
+            />
+          </Field>
           <Input
             type="text"
             placeholder="Leave empty for transparent"
@@ -45,17 +52,24 @@ export const SvgOptions: Component<SvgOptionsProps> = (props) => {
             onValueChange={props.onBackgroundColorChange}
           />
         </div>
-      </div>
+      </Field>
 
-      <div>
-        <label class="font-medium text-sm">Fill Color (optional)</label>
+      <Field
+        label="Fill Color (optional)"
+        classes={{ root: 'min-w-0', label: 'text-muted-foreground font-medium text-xs' }}
+      >
         <div class="flex gap-2">
-          <input
-            type="color"
-            value={props.fillColor || '#000000'}
-            onInput={(e) => props.onFillColorChange(e.currentTarget.value)}
-            class="border rounded h-10 w-14 cursor-pointer"
-          />
+          <Field
+            label="Fill color picker"
+            classes={{ root: 'shrink-0', label: 'sr-only', container: 'mt-0!' }}
+          >
+            <Input
+              type="color"
+              value={props.fillColor || '#000000'}
+              onValueChange={props.onFillColorChange}
+              classes={{ root: 'p-0 h-9 w-12 cursor-pointer' }}
+            />
+          </Field>
           <Input
             type="text"
             placeholder="Leave empty for original"
@@ -63,17 +77,24 @@ export const SvgOptions: Component<SvgOptionsProps> = (props) => {
             onValueChange={props.onFillColorChange}
           />
         </div>
-      </div>
+      </Field>
 
-      <div>
-        <label class="font-medium text-sm">Stroke Color (optional)</label>
+      <Field
+        label="Stroke Color (optional)"
+        classes={{ root: 'min-w-0', label: 'text-muted-foreground font-medium text-xs' }}
+      >
         <div class="flex gap-2">
-          <input
-            type="color"
-            value={props.strokeColor || '#000000'}
-            onInput={(e) => props.onStrokeColorChange(e.currentTarget.value)}
-            class="border rounded h-10 w-14 cursor-pointer"
-          />
+          <Field
+            label="Stroke color picker"
+            classes={{ root: 'shrink-0', label: 'sr-only', container: 'mt-0!' }}
+          >
+            <Input
+              type="color"
+              value={props.strokeColor || '#000000'}
+              onValueChange={props.onStrokeColorChange}
+              classes={{ root: 'p-0 h-9 w-12 cursor-pointer' }}
+            />
+          </Field>
           <Input
             type="text"
             placeholder="Leave empty for original"
@@ -81,7 +102,7 @@ export const SvgOptions: Component<SvgOptionsProps> = (props) => {
             onValueChange={props.onStrokeColorChange}
           />
         </div>
-      </div>
+      </Field>
 
       <Button
         variant="outline"

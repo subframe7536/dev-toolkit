@@ -1,11 +1,12 @@
-import { Input, Switch, Textarea } from 'moraine'
+import { Field, Input, Switch, Textarea } from 'moraine'
 import { createRoute } from 'solid-file-router'
-import { createSignal } from 'solid-js'
+import { createEffect, createSignal, on } from 'solid-js'
 import { toast } from 'solid-toaster'
 
 import { ClearButton } from '#/components/clear-button'
 import { CopyButton } from '#/components/copy-button'
 import { DownloadButton } from '#/components/download-button'
+import { ToolOptions } from '#/components/tool-options'
 import { generateJsonSchema } from '#/utils/json/schema-generator'
 
 export default createRoute({
@@ -27,20 +28,26 @@ function JSONSchemaGenerator() {
   const [title, setTitle] = createSignal('')
   const [description, setDescription] = createSignal('')
 
-  const handleGenerate = () => {
-    try {
-      const schema = generateJsonSchema(input(), {
-        required: required(),
-        additionalProperties: additionalProperties(),
-        title: title() || undefined,
-        description: description() || undefined,
-      })
-      setOutput(schema)
-      toast.success('Schema generated successfully')
-    } catch {
-      toast.error('Invalid JSON input')
-    }
-  }
+  createEffect(
+    on([input, required, additionalProperties, title, description], () => {
+      if (!input().trim()) {
+        setOutput('')
+        return
+      }
+      try {
+        const schema = generateJsonSchema(input(), {
+          required: required(),
+          additionalProperties: additionalProperties(),
+          title: title() || undefined,
+          description: description() || undefined,
+        })
+        setOutput(schema)
+      } catch {
+        setOutput('')
+        toast.error('Invalid JSON input')
+      }
+    }),
+  )
 
   const handleClear = () => {
     setInput('')
@@ -50,75 +57,79 @@ function JSONSchemaGenerator() {
   }
 
   return (
-    <div class="space-y-6">
-      <div class="flex flex-wrap gap-6">
-        <Switch
-          checked={required()}
-          onCheckedChange={setRequired}
-          label="Mark fields as required"
-        />
-        <Switch
-          checked={additionalProperties()}
-          onCheckedChange={setAdditionalProperties}
-          label="Allow additional properties"
-        />
+    <div class="space-y-4">
+      <div class="tool-editor-grid">
+        <Field
+          label="Input JSON"
+          classes={{ root: 'min-w-0', label: 'text-muted-foreground font-medium text-xs' }}
+        >
+          <Textarea
+            classes={{ root: 'tool-editor' }}
+            placeholder='{"name": "John", "age": 30}'
+            value={input()}
+            onValueChange={setInput}
+          />
+        </Field>
+        <Field
+          label="JSON Schema Output"
+          classes={{ root: 'min-w-0', label: 'text-muted-foreground font-medium text-xs' }}
+        >
+          <Textarea
+            classes={{ root: 'tool-editor bg-muted/30' }}
+            readOnly
+            placeholder="Generated schema will appear here"
+            value={output()}
+          />
+        </Field>
       </div>
-      <div class="flex flex-wrap gap-6 items-center">
-        <div class="flex-1 min-w-60">
-          <label class="font-medium text-sm">Schema Title (optional)</label>
-          <Input value={title()} onValueChange={setTitle} placeholder="My Schema" />
-        </div>
-        <div class="flex-1 min-w-60">
-          <label class="font-medium text-sm">Schema Description (optional)</label>
-          <Input
-            value={description()}
-            onValueChange={setDescription}
-            placeholder="Description of the schema"
+      <div class="tool-toolbar">
+        <CopyButton
+          text="Copy Output"
+          content={output()}
+          disabled={!output()}
+          variant="secondary"
+        />
+        <DownloadButton
+          content={output()}
+          disabled={!output()}
+          filename="schema.json"
+          mimeType="application/json"
+          variant="secondary"
+        />
+        <ClearButton onClear={handleClear} disabled={!input() && !output()} />
+      </div>
+      <ToolOptions>
+        <div class="tool-toolbar">
+          <Switch
+            label="Mark fields as required"
+            checked={required()}
+            onCheckedChange={setRequired}
+          />
+          <Switch
+            label="Allow additional properties"
+            checked={additionalProperties()}
+            onCheckedChange={setAdditionalProperties}
           />
         </div>
-      </div>
-
-      <div class="gap-6 grid lg:grid-cols-2">
-        <div class="space-y-4">
-          <div>
-            <label class="font-medium text-sm">Input JSON</label>
-            <Textarea
-              classes={{ root: 'text-sm font-mono h-96' }}
-              placeholder='{"name": "John", "age": 30}'
-              value={input()}
-              onValueChange={(value) => {
-                setInput(value)
-                handleGenerate()
-              }}
+        <div class="gap-4 grid sm:grid-cols-2">
+          <Field
+            label="Schema Title (optional)"
+            classes={{ root: 'min-w-0', label: 'text-muted-foreground font-medium text-xs' }}
+          >
+            <Input value={title()} onValueChange={setTitle} placeholder="My Schema" />
+          </Field>
+          <Field
+            label="Schema Description (optional)"
+            classes={{ root: 'min-w-0', label: 'text-muted-foreground font-medium text-xs' }}
+          >
+            <Input
+              value={description()}
+              onValueChange={setDescription}
+              placeholder="Description of the schema"
             />
-          </div>
-          <div class="flex flex-wrap gap-2">
-            <ClearButton onClear={handleClear} disabled={!input() && !output()} />
-          </div>
+          </Field>
         </div>
-
-        <div class="space-y-4">
-          <div>
-            <label class="font-medium text-sm">JSON Schema Output</label>
-            <Textarea
-              classes={{ root: 'text-sm font-mono bg-muted/50 h-96' }}
-              readOnly
-              placeholder="Generated schema will appear here"
-              value={output()}
-            />
-          </div>
-          <div class="flex flex-wrap gap-2">
-            <CopyButton content={output()} disabled={!output()} variant="secondary" />
-            <DownloadButton
-              content={output()}
-              disabled={!output()}
-              filename="schema.json"
-              mimeType="application/json"
-              variant="secondary"
-            />
-          </div>
-        </div>
-      </div>
+      </ToolOptions>
     </div>
   )
 }

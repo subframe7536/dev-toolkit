@@ -100,9 +100,9 @@ export function csvToJSON(input: string, hasHeaders?: boolean): ConversionResult
  * @param input - JSON string to convert
  * @returns ConversionResult with YAML output or error
  */
-export function jsonToYAML(input: string): ConversionResult {
+export function jsonToYAML(input: string, useRepair: boolean = false): ConversionResult {
   try {
-    const parsed = JSON.parse(input)
+    const parsed = JSON.parse(useRepair ? repairJSON(input) : input)
     const yamlOutput = stringify(parsed, {
       indent: 2,
       lineWidth: 0, // No line wrapping
@@ -146,9 +146,9 @@ export function yamlToJSON(input: string): ConversionResult {
  * @param input - JSON string to convert
  * @returns ConversionResult with query parameters output or error
  */
-export function jsonToQueryParams(input: string): ConversionResult {
+export function jsonToQueryParams(input: string, useRepair: boolean = false): ConversionResult {
   try {
-    const parsed = JSON.parse(input)
+    const parsed = JSON.parse(useRepair ? repairJSON(input) : input)
 
     // Only handle flat objects for query parameters
     if (typeof parsed !== 'object' || parsed === null || Array.isArray(parsed)) {

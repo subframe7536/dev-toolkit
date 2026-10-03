@@ -1,8 +1,9 @@
-import { Button, Icon, Select, Switch, Tabs, Textarea } from 'moraine'
+import { Field, Button, Icon, Select, Switch, Tabs, Textarea } from 'moraine'
 import { createSignal, Show } from 'solid-js'
 import { toast } from 'solid-toaster'
 
 import { FileUpload } from '#/components/file-upload'
+import { ToolOptions } from '#/components/tool-options'
 import { useTableEditorContext } from '#/contexts/table-editor-context'
 import {
   detectTSVFormat,
@@ -215,30 +216,37 @@ export function InputSection() {
             label: 'Text Input',
             content: (
               <div class="mt-4 flex flex-col gap-3">
-                <div class="flex gap-4 justify-between">
+                <div class="flex flex-wrap gap-3 items-start justify-between">
                   <p class="text-muted-foreground text-sm">
                     Paste MySQL CLI output (starts with +-), CSV text, or Excel table data here.
                   </p>
+                </div>
+                <Field
+                  label="Table input"
+                  classes={{ root: 'min-w-0', label: 'sr-only', container: 'mt-0!' }}
+                >
+                  <Textarea
+                    classes={{
+                      root: 'tool-editor whitespace-nowrap overflow-x-auto placeholder:whitespace-pre-wrap',
+                    }}
+                    placeholder={PLACEHOLDER}
+                    value={textInput()}
+                    onValueChange={setTextInput}
+                  />
+                </Field>
+                <ToolOptions>
                   <Switch
-                    classes={{ root: 'whitespace-nowrap' }}
                     label="Replace \n"
+                    classes={{ root: 'whitespace-nowrap' }}
                     checked={replaceLineWrap()}
                     onCheckedChange={handleReplaceLineWrap}
                   />
-                </div>
-                <Textarea
-                  classes={{
-                    root: 'text-sm font-mono h-120 resize-none whitespace-nowrap overflow-x-scroll placeholder:whitespace-pre-wrap',
-                  }}
-                  placeholder={PLACEHOLDER}
-                  value={textInput()}
-                  onValueChange={setTextInput}
-                />
-                <div class="flex flex-wrap gap-2 items-center">
+                </ToolOptions>
+                <div class="tool-toolbar">
                   <Button
                     onClick={handleParseText}
                     disabled={!textInput().trim()}
-                    classes={{ root: 'flex-1 min-w-48' }}
+                    classes={{ root: 'min-w-24' }}
                     leading="i-lucide-play"
                   >
                     Parse
@@ -292,18 +300,25 @@ export function InputSection() {
                 />
 
                 <Show when={sheetNames().length > 1}>
-                  <div class="flex flex-col gap-2">
-                    <label class="font-medium text-sm">Select Sheet</label>
-                    <Select
-                      value={selectedSheet()}
-                      onValueChange={(value) => {
-                        if (value !== null) {
-                          setSelectedSheet(value)
-                        }
+                  <ToolOptions>
+                    <Field
+                      label="Select Sheet"
+                      classes={{
+                        root: 'min-w-0',
+                        label: 'text-muted-foreground font-medium text-xs',
                       }}
-                      items={sheetNames().map((s) => ({ value: s, label: s }))}
-                    />
-                  </div>
+                    >
+                      <Select
+                        value={selectedSheet()}
+                        onValueChange={(value) => {
+                          if (value !== null) {
+                            setSelectedSheet(value)
+                          }
+                        }}
+                        items={sheetNames().map((s) => ({ value: s, label: s }))}
+                      />
+                    </Field>
+                  </ToolOptions>
                 </Show>
 
                 <div class="flex gap-2 items-center">

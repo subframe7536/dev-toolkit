@@ -20,11 +20,6 @@ export function fileToBase64(file: File): Promise<string> {
 }
 
 const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/'
-const lookup = Object.fromEntries(Array.from(alphabet).map((a, i) => [a.codePointAt(0), i]))
-lookup['='.codePointAt(0)!] = 0
-lookup['-'.codePointAt(0)!] = 62
-lookup['_'.codePointAt(0)!] = 63
-
 const encodeLookup = Object.fromEntries(Array.from(alphabet).map((a, i) => [i, a.codePointAt(0)]))
 
 const encoder = new TextEncoder()
@@ -42,31 +37,9 @@ export function encodeText(text: string): string {
  * Decode Base64 string to text (supports Unicode)
  */
 export function decodeText(base64: string): string {
-  const bytes = toBytes(base64)
+  const binary = atob(base64.replaceAll('-', '+').replaceAll('_', '/'))
+  const bytes = Uint8Array.from(binary, (char) => char.codePointAt(0)!)
   return decoder.decode(bytes)
-}
-
-function toBytes(base64: string) {
-  base64 = base64.replace(/=/g, '')
-  let n = base64.length
-  let rem = n % 4
-  let k = rem && rem - 1 // how many bytes the last base64 chunk encodes
-  let m = (n >> 2) * 3 + k // total encoded bytes
-
-  let encoded = new Uint8Array(n + 3)
-  encoder.encodeInto(`${base64}===`, encoded)
-
-  for (let i = 0, j = 0; i < n; i += 4, j += 3) {
-    let x =
-      (lookup[encoded[i]] << 18) +
-      (lookup[encoded[i + 1]] << 12) +
-      (lookup[encoded[i + 2]] << 6) +
-      lookup[encoded[i + 3]]
-    encoded[j] = x >> 16
-    encoded[j + 1] = (x >> 8) & 0xff
-    encoded[j + 2] = x & 0xff
-  }
-  return new Uint8Array(encoded.buffer, 0, m)
 }
 
 function toBase64(bytes: Uint8Array) {

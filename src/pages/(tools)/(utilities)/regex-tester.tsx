@@ -91,17 +91,17 @@ function RegexTesterSkeleton() {
 function RegexTester() {
   const { actions } = useRegexContext()
   return (
-    <div class="space-y-6">
+    <div class="space-y-4">
       {/* Main content area - responsive layout */}
-      <div class="gap-6 grid grid-cols-1 xl:grid-cols-2">
+      <div class="tool-grid lg:grid-cols-2">
         {/* Left column - Input with integrated replacement */}
-        <div class="space-y-6">
+        <div class="space-y-4">
           {/* Regex Input Panel with integrated Find & Replace */}
-          <div class="text-card-foreground p-6 border bg-card shadow-sm rounded-lg">
+          <div class="min-w-0">
             <RegexInputPanel />
 
             {/* Action buttons section */}
-            <div class="mt-6 flex flex-wrap gap-3">
+            <div class="mt-4 tool-toolbar">
               <Button
                 variant="default"
                 onClick={() => actions.toggleExportDialog(true)}
@@ -136,12 +136,12 @@ function RegexTester() {
         </div>
 
         {/* Right column - Analysis and results */}
-        <div class="space-y-6">
+        <div class="space-y-4">
           {/* Explanation and Debug Panels */}
-          <div class="text-card-foreground border bg-card shadow-sm rounded-lg">
+          <div class="min-w-0">
             <Tabs
               defaultValue="matches"
-              classes={{ list: 'm-4 mb-0 p-1' }}
+              classes={{ list: 'p-1 w-full! flex-wrap' }}
               items={[
                 { value: 'matches', label: 'Matches', content: <DetailsPanel /> },
                 { value: 'replace', label: 'Replace', content: <ReplacementPanel /> },

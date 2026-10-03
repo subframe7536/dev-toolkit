@@ -4,7 +4,6 @@ import { Show } from 'solid-js'
 import { DataTable } from '#/components/data-table'
 import { InputSection } from '#/components/table-editor/input-section'
 import { TableActions } from '#/components/table-editor/table-actions'
-import { useSidebar } from '#/components/ui/sidebar'
 import { TableEditorProvider, useTableEditorContext } from '#/contexts/table-editor-context'
 
 export default createRoute({
@@ -28,7 +27,6 @@ function TableEditor() {
     actions: { setData },
     computed,
   } = useTableEditorContext()
-  const { isMobile, open } = useSidebar()
 
   return (
     <Show
@@ -36,15 +34,7 @@ function TableEditor() {
       fallback={
         <div class="space-y-4">
           <TableActions />
-          <div
-            class="border max-w-400 overflow-x-scroll rounded-lg"
-            style={{
-              width:
-                !isMobile() && open()
-                  ? 'calc(100vw - 12rem - var(--sidebar-width))'
-                  : 'calc(100vw - 12rem)',
-            }}
-          >
+          <div class="min-w-0 w-full overflow-x-auto rounded-lg">
             <DataTable
               data={store.tableData}
               onDataChange={setData}

@@ -1,11 +1,12 @@
-import { Button, Icon, Select, Slider, Switch, Textarea } from 'moraine'
+import { Field, Button, Dialog, Select, Slider, Switch, Textarea } from 'moraine'
 import { createRoute } from 'solid-file-router'
-import { createEffect, createSignal, on, Show } from 'solid-js'
+import { createEffect, createSignal, on } from 'solid-js'
 import { toast } from 'solid-toaster'
 
 import { ClearButton } from '#/components/clear-button'
 import { CopyButton } from '#/components/copy-button'
 import { DownloadButton } from '#/components/download-button'
+import { ToolOptions } from '#/components/tool-options'
 import type { JSONError } from '#/utils/json/formatter'
 import { formatJSON, formatJSONWithNested, repairJSON, sortKeys } from '#/utils/json/formatter'
 import type { CaseStyle } from '#/utils/json/key-converter'
@@ -50,7 +51,6 @@ function JSONFormatter() {
   const [parseNested, setParseNested] = createSignal(false)
   const [targetCase, setTargetCase] = createSignal<CaseStyle>('As is')
   const [indent, setIndent] = createSignal(2)
-  const [displayIndent, setDisplayIndent] = createSignal(2)
   const [isFullscreen, setIsFullscreen] = createSignal(false)
 
   const tryRepairIfEnabled = (inputValue: string): string => {
@@ -136,126 +136,135 @@ function JSONFormatter() {
     setOutput('')
   }
 
-  const updateIndent = (value: number | number[]) => {
-    const nextIndent = Array.isArray(value) ? value[0] : value
-    setDisplayIndent(nextIndent)
-    setIndent(nextIndent)
-  }
-
   return (
-    <div class="space-y-6">
-      <div class="gap-6 grid items-start xl:grid-cols-[minmax(0,1fr)_18rem_minmax(20rem,30rem)]">
-        <div class="space-y-4">
-          <div class="font-medium text-sm">Options</div>
-          <div class="flex flex-wrap gap-4">
-            <Switch
-              checked={autoRepair()}
-              onCheckedChange={setAutoRepair}
-              label="Auto repair JSON string"
-            />
-            <Switch
-              checked={shouldSortKeys()}
-              onCheckedChange={setShouldSortKeys}
-              label="Sort Keys"
-            />
-            <Switch
-              checked={parseNested()}
-              onCheckedChange={setParseNested}
-              label="Parse Nested JSON"
-            />
-          </div>
-        </div>
-        <div class="space-y-4">
-          <div class="font-medium text-sm">Key Case</div>
-          <Select
-            value={targetCase()}
-            onValueChange={(value) => {
-              if (value !== null) {
-                setTargetCase(value)
-              }
-            }}
-            items={caseOptions}
-            classes={{ control: 'w-72 max-w-full' }}
+    <div class="space-y-4">
+      <div class="tool-editor-grid">
+        <Field
+          label="Input JSON"
+          classes={{ root: 'min-w-0', label: 'text-muted-foreground font-medium text-xs' }}
+        >
+          <Textarea
+            classes={{ root: 'tool-editor' }}
+            placeholder="Paste your JSON here..."
+            value={input()}
+            onValueChange={setInput}
           />
-        </div>
-        <div class="min-w-80 space-y-4">
-          <label class="font-medium text-sm">Indent Size</label>
-          <Slider
-            value={[displayIndent()]}
-            onValueChange={(value) => setDisplayIndent(value[0])}
-            onValueCommit={updateIndent}
-            min={2}
-            max={8}
-            step={2}
+        </Field>
+        <Field
+          label="Output"
+          classes={{ root: 'min-w-0', label: 'text-muted-foreground font-medium text-xs' }}
+        >
+          <Textarea
+            classes={{ root: 'tool-editor bg-muted/30' }}
+            readOnly
+            placeholder="Formatted JSON will appear here..."
+            value={output()}
           />
-        </div>
+        </Field>
       </div>
-
-      <div class="gap-6 grid lg:grid-cols-2">
-        <div class="space-y-4">
-          <div>
-            <label class="font-medium text-sm">Input JSON</label>
-            <Textarea
-              classes={{ root: 'text-sm font-mono h-96 resize-none' }}
-              placeholder="Paste your JSON here..."
-              value={input()}
-              onValueChange={setInput}
-            />
-          </div>
-          <ClearButton onClear={handleClear} disabled={!input() && !output()} />
-        </div>
-
-        <div class="space-y-4">
-          <div class="flex-1 relative">
-            <label class="font-medium text-sm">Output</label>
-            <Button
-              variant="secondary"
-              size="icon-md"
-              classes={{ root: ['right-2 top-9 absolute', !output() && 'hidden'] }}
-              onClick={() => setIsFullscreen(true)}
-            >
-              <Icon name="i-lucide-maximize-2" />
-            </Button>
-            <Textarea
-              classes={{ root: 'text-sm font-mono bg-muted/50 h-96 resize-none' }}
-              readOnly
-              placeholder="Formatted JSON will appear here..."
-              value={output()}
-            />
-          </div>
-          <div class="flex gap-2">
-            <CopyButton content={output()} variant="secondary" disabled={!output()} />
-            <DownloadButton
-              content={output()}
-              filename="formatted.json"
-              mimeType="application/json"
-              variant="secondary"
-              disabled={!output()}
-            />
-          </div>
-        </div>
+      <div class="tool-toolbar">
+        <CopyButton
+          text="Copy Output"
+          content={output()}
+          variant="secondary"
+          disabled={!output()}
+        />
+        <DownloadButton
+          content={output()}
+          filename="formatted.json"
+          mimeType="application/json"
+          variant="secondary"
+          disabled={!output()}
+        />
+        <Button
+          variant="ghost"
+          disabled={!output()}
+          leading="i-lucide-maximize-2"
+          onClick={() => setIsFullscreen(true)}
+        >
+          Expand
+        </Button>
+        <ClearButton onClear={handleClear} disabled={!input() && !output()} />
       </div>
-      <Show when={isFullscreen()}>
-        <div class="p-4 bg-background/95 flex flex-col gap-4 inset-0 fixed z-50 overflow-hidden">
-          <div class="flex items-center justify-between">
-            <h2 class="font-semibold text-lg">Formatted JSON (Fullscreen)</h2>
-            <button
-              class="py-1 rounded size-7 hover:bg-primary/90"
-              onClick={() => setIsFullscreen(false)}
-            >
-              <Icon name="i-lucide-x" />
-            </button>
+      <ToolOptions>
+        <div class="tool-toolbar items-start">
+          <div class="w-full">
+            <div class="flex flex-wrap gap-3">
+              <Switch
+                label="Auto repair JSON string"
+                checked={autoRepair()}
+                onCheckedChange={setAutoRepair}
+              />
+              <Switch
+                label="Sort Keys"
+                checked={shouldSortKeys()}
+                onCheckedChange={setShouldSortKeys}
+              />
+              <Switch
+                label="Parse Nested JSON"
+                checked={parseNested()}
+                onCheckedChange={setParseNested}
+              />
+            </div>
           </div>
-          <div class="flex-1">
-            <label class="font-medium text-sm">Output</label>
-            <Textarea
-              classes={{ root: 'text-sm font-mono bg-muted/50 h-full resize-none' }}
-              readOnly
-              value={output()}
+          <Field
+            label="Key Case"
+            classes={{ root: 'min-w-0 w-44', label: 'text-muted-foreground font-medium text-xs' }}
+          >
+            <Select
+              value={targetCase()}
+              onValueChange={(value) => {
+                if (value !== null) {
+                  setTargetCase(value)
+                }
+              }}
+              items={caseOptions}
+              classes={{ control: 'w-full' }}
             />
-          </div>
+          </Field>
+          <Field
+            label="Indent Size"
+            classes={{ root: 'min-w-0 w-44', label: 'text-muted-foreground font-medium text-xs' }}
+          >
+            <Slider
+              value={[indent()]}
+              onValueChange={(value) => setIndent(value[0])}
+              min={2}
+              max={8}
+              step={2}
+            />
+          </Field>
         </div>
-      </Show>
+      </ToolOptions>
+      <Dialog
+        open={isFullscreen()}
+        onOpenChange={setIsFullscreen}
+        classes={{
+          content: 'flex flex-col max-w-none w-[calc(100vw-2rem)] h-[calc(100dvh-2rem)] max-h-none',
+          body: 'min-h-0 flex-1 flex flex-col',
+        }}
+      >
+        <Dialog.Content title="Formatted JSON (Fullscreen)">
+          <Dialog.Body>
+            <Field
+              label="Expanded JSON output"
+              classes={{
+                root: 'min-h-0 flex-1 flex flex-col',
+                label: 'sr-only',
+                container: 'mt-0! min-h-0 flex-1',
+              }}
+            >
+              <Textarea
+                classes={{
+                  root: 'text-sm leading-relaxed font-mono bg-muted/30 min-h-0 flex-1 resize-none',
+                }}
+                readOnly
+                value={output()}
+              />
+            </Field>
+          </Dialog.Body>
+        </Dialog.Content>
+      </Dialog>
     </div>
   )
 }

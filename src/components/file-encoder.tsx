@@ -5,6 +5,7 @@ import { toast } from 'solid-toaster'
 import { CopyButton } from '#/components/copy-button'
 import { DownloadButton } from '#/components/download-button'
 import { FileUpload } from '#/components/file-upload'
+import { ToolOptions } from '#/components/tool-options'
 
 import { ClearButton } from './clear-button'
 
@@ -54,7 +55,7 @@ export function FileEncoder(props: FileEncoderProps) {
   }
 
   return (
-    <div class="space-y-8">
+    <div class="space-y-4">
       <div class="space-y-4">
         <FileUpload
           file={file()}
@@ -63,8 +64,8 @@ export function FileEncoder(props: FileEncoderProps) {
           info={props.uploadInfo || `Upload any file to encode to ${props.mode}`}
         />
         <Show when={file()}>
-          <div class="p-4 border bg-input/50 flex flex-wrap gap-4 w-fit items-center rounded-lg">
-            <span>{file()?.name}</span>
+          <div class="text-muted-foreground flex flex-wrap gap-3 items-center text-sm">
+            <span class="min-w-0 break-all">{file()?.name}</span>
             <ClearButton onClear={clearFile} disabled={!file() && !output()} />
           </div>
         </Show>
@@ -72,30 +73,32 @@ export function FileEncoder(props: FileEncoderProps) {
 
       <Show when={output()}>
         <div class="space-y-4">
-          <div class="flex items-center justify-between">
-            <h3 class="text-foreground font-semibold text-lg">
+          <div class="tool-panel-heading">
+            <h3 class="text-foreground font-medium text-sm">
               {props.outputTitle || `${props.mode} Output`}
             </h3>
-            <div class="flex gap-4">
-              <Show when={props.showDataURLSwitch}>
-                <Switch
-                  checked={includeDataURL()}
-                  onCheckedChange={setIncludeDataURL}
-                  label="Include Data URL prefix"
-                />
-              </Show>
-              <CopyButton content={targetOutput()} variant="secondary" size="sm" />
-              <DownloadButton
-                content={targetOutput()}
-                filename={outputFilename()}
-                variant="secondary"
-                size="sm"
-              />
-            </div>
           </div>
-          <div class="font-mono p-4 border bg-muted/50 max-h-96 break-all of-y-auto text-sm rounded-md">
+          <div class="font-mono p-3 border bg-muted/50 max-h-96 break-all of-y-auto text-sm rounded-md">
             {targetOutput()}
           </div>
+          <div class="tool-toolbar">
+            <CopyButton text="Copy Output" content={targetOutput()} variant="secondary" size="sm" />
+            <DownloadButton
+              content={targetOutput()}
+              filename={outputFilename()}
+              variant="secondary"
+              size="sm"
+            />
+          </div>
+          <Show when={props.showDataURLSwitch}>
+            <ToolOptions>
+              <Switch
+                label="Include Data URL prefix"
+                checked={includeDataURL()}
+                onCheckedChange={setIncludeDataURL}
+              />
+            </ToolOptions>
+          </Show>
         </div>
       </Show>
     </div>

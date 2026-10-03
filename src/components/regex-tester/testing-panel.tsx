@@ -1,3 +1,4 @@
+import { Field, Textarea } from 'moraine'
 import { createMemo, For, Show } from 'solid-js'
 
 import { useRegexContext } from '#/contexts/regex-context'
@@ -212,87 +213,85 @@ export function TestingPanel() {
 
   return (
     <div class="space-y-2">
-      <div class="flex items-center justify-between">
-        <label
-          id="test-text-label"
-          class="text-muted-foreground tracking-wide font-medium uppercase text-sm"
-        >
-          Test String
-        </label>
-        <div class="text-muted-foreground text-xs">
-          {/* Match count only - execution time moved to pattern header */}
-          <Show when={hasInput()}>
-            <div aria-live="polite">
-              <Show
-                when={hasMatches()}
-                fallback={<span class="text-amber-600 dark:text-amber-400">No matches</span>}
-              >
-                <span class="text-green-600 dark:text-green-400">
-                  {store.matches.length} match{store.matches.length !== 1 ? 'es' : ''}
-                </span>
-              </Show>
-            </div>
-          </Show>
-        </div>
-      </div>
-
-      <div class="relative">
-        {/* Highlight overlay - hidden from screen readers */}
-        <div
-          ref={(element) => (highlightRef = element)}
-          class="leading-relaxed font-mono p-(2 3) border border-transparent whitespace-pre-wrap break-words inset-0 absolute z-1 overflow-hidden text-sm rounded-md"
-          onClick={handleHighlightClick}
-          aria-hidden="true"
-        >
-          <For each={segments()}>
-            {(segment) => (
-              <span
-                class={`${getSegmentClass(segment, store.selectedMatchIndex)}  ${
-                  segment.type === 'match'
-                    ? 'cursor-pointer hover:opacity-80 transition-opacity'
-                    : ''
-                }`}
-                data-match-index={segment.matchIndex}
-                data-group-index={segment.groupIndex}
-              >
-                {segment.text}
+      <Field
+        label="Test String"
+        help={
+          hasMatches()
+            ? 'Click on highlighted matches to view details. Use Alt+↑/↓ to navigate matches.'
+            : undefined
+        }
+        classes={{
+          root: 'min-w-0',
+          label: 'text-muted-foreground tracking-wide font-medium uppercase text-xs',
+          labelWrapper: 'tool-panel-heading',
+        }}
+        hint={
+          <span class="text-muted-foreground text-xs">
+            {/* Match count only - execution time moved to pattern header */}
+            <Show when={hasInput()}>
+              <span aria-live="polite">
+                <Show
+                  when={hasMatches()}
+                  fallback={<span class="text-amber-600 dark:text-amber-400">No matches</span>}
+                >
+                  <span class="text-green-600 dark:text-green-400">
+                    {store.matches.length} match{store.matches.length !== 1 ? 'es' : ''}
+                  </span>
+                </Show>
               </span>
-            )}
-          </For>
-        </div>
+            </Show>
+          </span>
+        }
+      >
+        <div class="relative">
+          {/* Highlight overlay - hidden from screen readers */}
+          <div
+            ref={(element) => (highlightRef = element)}
+            class="leading-relaxed font-mono p-(2 3) border border-transparent whitespace-pre-wrap break-words inset-0 absolute z-1 overflow-hidden text-sm rounded-md"
+            onClick={handleHighlightClick}
+            aria-hidden="true"
+          >
+            <For each={segments()}>
+              {(segment) => (
+                <span
+                  class={`${getSegmentClass(segment, store.selectedMatchIndex)}  ${
+                    segment.type === 'match'
+                      ? 'cursor-pointer hover:opacity-80 transition-opacity'
+                      : ''
+                  }`}
+                  data-match-index={segment.matchIndex}
+                  data-group-index={segment.groupIndex}
+                >
+                  {segment.text}
+                </span>
+              )}
+            </For>
+          </div>
 
-        {/* Textarea input */}
-        <textarea
-          ref={(element) => (textareaRef = element)}
-          placeholder="Enter text to test your regex against..."
-          class="leading-relaxed font-mono p-(2 3) border border-input h-64 w-full resize-y relative z-10 text-sm rounded-md focus:(outline-none ring-2 ring-ring)"
-          style={{
-            background: store.testText ? 'transparent' : undefined,
-            color: store.testText ? 'transparent' : undefined,
-            'caret-color': 'var(--foreground)',
-          }}
-          value={store.testText}
-          onInput={(e) => actions.setTestText(e.currentTarget.value)}
-          onScroll={handleScroll}
-          onKeyDown={handleKeyDown}
-          aria-label="Test text input"
-          aria-labelledby="test-text-label"
-          aria-describedby="test-text-hint"
-        />
+          {/* Textarea input */}
+          <Textarea
+            ref={(element) => (textareaRef = element)}
+            placeholder="Enter text to test your regex against..."
+            classes={{
+              root: 'leading-relaxed font-mono p-(2 3) h-64 sm:h-[300px] w-full resize-y relative z-10 text-sm',
+            }}
+            style={{
+              background: store.testText ? 'transparent' : undefined,
+              color: store.testText ? 'transparent' : undefined,
+              'caret-color': 'var(--foreground)',
+            }}
+            value={store.testText}
+            onValueChange={actions.setTestText}
+            onScroll={handleScroll}
+            onKeyDown={handleKeyDown}
+          />
 
-        {/* Screen reader status */}
-        <div class="sr-only" role="status" aria-live="polite" aria-atomic="true">
-          {statusMessage()}
+          {/* Screen reader status */}
+          <div class="sr-only" role="status" aria-live="polite" aria-atomic="true">
+            {statusMessage()}
+          </div>
         </div>
-      </div>
-
-      {/* Hint for clickable matches */}
-      <Show when={hasMatches()}>
-        <div id="test-text-hint" class="text-muted-foreground text-xs">
-          <span class="i-lucide-mouse-pointer-click mr-1 size-3 inline-block" aria-hidden="true" />
-          Click on highlighted matches to view details. Use Alt+↑/↓ to navigate matches.
-        </div>
-      </Show>
+      </Field>
 
       {/* No matches indicator when pattern and text exist but no matches */}
       <Show when={hasInput() && !hasMatches() && store.isValid}>

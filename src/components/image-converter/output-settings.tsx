@@ -1,4 +1,4 @@
-import { Input, Select, Slider, Switch } from 'moraine'
+import { Field, InputNumber, Select, Slider, Switch } from 'moraine'
 import type { Component } from 'solid-js'
 import { Show } from 'solid-js'
 
@@ -30,59 +30,83 @@ export const OutputSettings: Component<OutputSettingsProps> = (props) => {
   }
 
   return (
-    <div class="flex flex-col gap-6">
-      <div>
-        <label class="font-medium text-sm">Output Format</label>
+    <div class="flex flex-col gap-4">
+      <Field
+        label="Output Format"
+        classes={{ root: 'min-w-0', label: 'text-muted-foreground font-medium text-xs' }}
+      >
         <Select
           value={props.targetFormat}
           onValueChange={(value) => value && props.onFormatChange(value)}
           items={FORMAT_OPTIONS.map((o) => ({ value: o.value, label: o.label }))}
         />
-      </div>
+      </Field>
 
       <Show when={showQualitySlider()}>
-        <div>
-          <label class="font-medium text-sm">{`${props.targetFormat.toUpperCase()} Quality: ${props.quality}`}</label>
+        <Field
+          label={`${props.targetFormat.toUpperCase()} Quality: ${props.quality}`}
+          classes={{ root: 'min-w-0', label: 'text-muted-foreground font-medium text-xs' }}
+        >
           <Slider
             value={[props.quality]}
-            onValueCommit={(value) => props.onQualityChange(value[0])}
+            onValueChange={(value) => props.onQualityChange(value[0])}
             min={1}
             max={100}
             step={1}
           />
-        </div>
+        </Field>
       </Show>
 
       <Switch
+        label="Keep aspect ratio"
         checked={props.ratio}
         onCheckedChange={props.onRatioChange}
-        label="Keep aspect ratio"
       />
 
       <div>
-        <label class="font-medium mb-2 block text-sm">Global Dimensions</label>
+        <h3 class="font-medium mb-2 text-sm">Global Dimensions</h3>
         <p class="text-muted-foreground mb-3 text-xs">
           Apply to all images without individual settings
         </p>
         <div class="flex gap-2">
-          <Input
-            classes={{ root: 'flex-1' }}
-            type="number"
-            placeholder="Width"
-            value={props.globalWidth ? `${props.globalWidth}` : ''}
-            onValueChange={(value) =>
-              props.onGlobalWidthChange(value ? Number.parseInt(value) : undefined)
-            }
-          />
-          <Input
-            classes={{ root: 'flex-1' }}
-            type="number"
-            placeholder="Height"
-            value={props.globalHeight ? `${props.globalHeight}` : ''}
-            onValueChange={(value) =>
-              props.onGlobalHeightChange(value ? Number.parseInt(value) : undefined)
-            }
-          />
+          <Field
+            label="Global Width"
+            classes={{ root: 'min-w-0 flex-1', label: 'sr-only', container: 'mt-0!' }}
+          >
+            <InputNumber
+              classes={{ root: 'min-w-0 flex-1' }}
+              orientation="vertical"
+              placeholder="Width"
+              value={props.globalWidth ? `${props.globalWidth}` : ''}
+              onValueChange={(value) =>
+                props.onGlobalWidthChange(value ? Number.parseInt(value) : undefined)
+              }
+              onInput={(event) => {
+                if (event.target instanceof HTMLInputElement && event.target.value === '') {
+                  props.onGlobalWidthChange(undefined)
+                }
+              }}
+            />
+          </Field>
+          <Field
+            label="Global Height"
+            classes={{ root: 'min-w-0 flex-1', label: 'sr-only', container: 'mt-0!' }}
+          >
+            <InputNumber
+              classes={{ root: 'min-w-0 flex-1' }}
+              orientation="vertical"
+              placeholder="Height"
+              value={props.globalHeight ? `${props.globalHeight}` : ''}
+              onValueChange={(value) =>
+                props.onGlobalHeightChange(value ? Number.parseInt(value) : undefined)
+              }
+              onInput={(event) => {
+                if (event.target instanceof HTMLInputElement && event.target.value === '') {
+                  props.onGlobalHeightChange(undefined)
+                }
+              }}
+            />
+          </Field>
         </div>
       </div>
     </div>

@@ -1,4 +1,4 @@
-import { Button, Textarea } from 'moraine'
+import { Field, Button, Textarea } from 'moraine'
 import { createRoute } from 'solid-file-router'
 import { createEffect, createSignal } from 'solid-js'
 
@@ -75,55 +75,63 @@ function SqlParamFill() {
   })
 
   return (
-    <div class="flex flex-col gap-4 h-full relative">
-      <Button
-        onClick={loadSample}
-        variant="outline"
-        size="sm"
-        classes={{ root: 'right-0 top--2 absolute' }}
-      >
-        Load Sample
-      </Button>
-
-      <div class="flex-1 gap-4 grid grid-cols-1 lg:gap-6 lg:grid-cols-2">
-        <div>
-          <label class="font-medium text-sm">SQL Template</label>
+    <div class="flex flex-col gap-4">
+      <div class="tool-editor-grid">
+        <Field
+          label="SQL Template"
+          classes={{ root: 'min-w-0', label: 'text-muted-foreground font-medium text-xs' }}
+        >
           <Textarea
             value={sqlInput()}
             onValueChange={setSqlInput}
             placeholder={`All Mybatis logs\n\nor\n\nSELECT * FROM T WHERE id = ? AND name = ?`}
-            classes={{ root: 'font-mono h-48 resize-none' }}
+            classes={{ root: 'tool-editor' }}
           />
-        </div>
+        </Field>
 
-        <div>
-          <label class="font-medium text-sm">Parameters</label>
+        <Field
+          label="Parameters"
+          classes={{ root: 'min-w-0', label: 'text-muted-foreground font-medium text-xs' }}
+        >
           <Textarea
             value={paramsInput()}
             onValueChange={setParamsInput}
             placeholder="1(Integer), zhangshan(String)"
-            classes={{ root: 'font-mono h-48 resize-none' }}
+            classes={{ root: 'tool-editor' }}
           />
-        </div>
+        </Field>
       </div>
 
       <div class="relative">
-        <div>
-          <label class="font-medium text-sm">Output</label>
+        <Field
+          label="Output"
+          classes={{ root: 'min-w-0', label: 'text-muted-foreground font-medium text-xs' }}
+        >
           <Textarea
+            aria-invalid={!!error()}
             value={error() || output()}
             readOnly
             placeholder="SELECT * FROM T WHERE id=1 AND name='zhangshan'"
-            classes={{ root: [error() && 'text-red-500', 'font-mono h-48 resize-none'] }}
+            classes={{
+              root: [error() && 'text-destructive', 'tool-editor bg-muted/30'],
+            }}
           />
-        </div>
-        <div class="mt-4 flex gap-4 justify-end">
-          <CopyButton content={output()} disabled={!output() || !error()} variant="secondary" />
+        </Field>
+        <div class="mt-4 tool-toolbar">
+          <Button onClick={loadSample} variant="outline">
+            Load Sample
+          </Button>
+          <CopyButton
+            text="Copy Output"
+            content={output()}
+            disabled={!output() || !!error()}
+            variant="secondary"
+          />
           <ClearButton onClear={handleClear} disabled={!sqlInput() && !paramsInput()} />
         </div>
       </div>
 
-      <div class="text-muted-foreground p-4 bg-muted space-y-3 rounded-lg">
+      <div class="text-muted-foreground leading-relaxed pt-4 border-t border-border space-y-3 text-sm rounded-lg">
         <div>
           <strong>How to use:</strong>
           <ul class="mt-1 list-disc list-inside space-y-0.5">

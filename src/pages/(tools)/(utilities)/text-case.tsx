@@ -1,4 +1,4 @@
-import { Textarea } from 'moraine'
+import { Field, Textarea } from 'moraine'
 import { createRoute } from 'solid-file-router'
 import { createMemo, createSignal, For } from 'solid-js'
 
@@ -42,27 +42,28 @@ function TextCase() {
   }
 
   return (
-    <div class="flex flex-col gap-6">
-      <div class="relative">
-        <div>
-          <label class="font-medium text-sm">Input Text</label>
-          <Textarea
-            value={input()}
-            modelModifiers={{ lazy: true }}
-            onValueChange={setInput}
-            classes={{ root: 'font-mono h-36 resize-none' }}
-            placeholder="Enter text to convert..."
-          />
-        </div>
-        <ClearButton
-          onClear={handleClear}
-          disabled={!input()}
-          size="sm"
-          class="right-0 top--2 absolute"
+    <div class="flex flex-col gap-4">
+      <Field
+        label="Input Text"
+        classes={{
+          root: 'min-w-0',
+          label: 'text-muted-foreground font-medium text-xs',
+          labelWrapper: 'tool-panel-heading',
+        }}
+      >
+        <Textarea
+          value={input()}
+          modelModifiers={{ lazy: true }}
+          onValueChange={setInput}
+          classes={{ root: 'tool-editor' }}
+          placeholder="Enter text to convert..."
         />
-      </div>
+      </Field>
 
-      <div class="gap-4 grid grid-cols-1 2xl:grid-cols-4 lg:grid-cols-2 xl:grid-cols-3">
+      <div class="tool-toolbar">
+        <ClearButton onClear={handleClear} disabled={!input()} size="sm" />
+      </div>
+      <div class="pt-4 border-t border-border gap-4 grid grid-cols-1 md:grid-cols-2">
         <For each={CASE_STYLES}>
           {(style) => {
             const converted = createMemo(() =>
@@ -71,23 +72,24 @@ function TextCase() {
 
             return (
               <Card
+                variant="section"
                 title={style.label}
-                class="flex flex-col relative"
+                class="flex flex-col"
                 description={`Example: ${style.example}`}
                 content={
-                  <>
-                    <div class="font-mono p-3 bg-muted min-h-16 break-all rounded-md">
+                  <div class="p-3 bg-muted flex gap-2 min-h-16 items-start rounded-md">
+                    <div class="leading-relaxed font-mono flex-1 min-w-0 break-all text-sm">
                       {converted()}
                     </div>
                     <CopyButton
-                      class="right-6 top-7 absolute"
+                      class="shrink-0"
                       content={converted()}
-                      disabled={converted() !== '...'}
+                      disabled={!input()}
                       text={false}
                       variant="ghost"
                       size="sm"
                     />
-                  </>
+                  </div>
                 }
               />
             )

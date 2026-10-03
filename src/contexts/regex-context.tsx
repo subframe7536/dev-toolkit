@@ -136,10 +136,10 @@ export function RegexProvider(props: ParentProps) {
     setStore('replacementResult', result)
   }
 
-  const reset = () => {
+  const reset = (error?: ParseError) => {
     batch(() => {
-      setStore('isValid', true)
-      setStore('parseError', undefined)
+      setStore('isValid', !error)
+      setStore('parseError', error)
       setStore('matches', [])
       setStore('executionTime', 0)
       setStore('validationResult', undefined)
@@ -175,7 +175,7 @@ export function RegexProvider(props: ParentProps) {
           }
         })
       } else {
-        reset()
+        reset(validation.error)
       }
     },
 
@@ -201,7 +201,7 @@ export function RegexProvider(props: ParentProps) {
               }
             }
           } else {
-            reset()
+            reset(validation.error)
           }
         }
       })

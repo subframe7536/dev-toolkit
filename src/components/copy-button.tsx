@@ -34,6 +34,7 @@ export function CopyButton(props: CopyButtonProps) {
       size={props.size}
       classes={{ root: props.class }}
       disabled={props.disabled}
+      aria-label={text() === false ? 'Copy to clipboard' : undefined}
       onClick={handleCopy}
       leading={text() ? (isCopied() ? 'i-lucide-check' : 'i-lucide-copy') : undefined}
     >

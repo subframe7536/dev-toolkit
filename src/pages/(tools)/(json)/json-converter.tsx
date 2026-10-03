@@ -1,11 +1,12 @@
-import { Select, Switch, Textarea } from 'moraine'
+import { Field, Select, Switch, Textarea } from 'moraine'
 import { createRoute } from 'solid-file-router'
-import { createEffect, createSignal } from 'solid-js'
+import { createEffect, createSignal, on } from 'solid-js'
 import { toast } from 'solid-toaster'
 
 import { ClearButton } from '#/components/clear-button'
 import { CopyButton } from '#/components/copy-button'
 import { DownloadButton } from '#/components/download-button'
+import { ToolOptions } from '#/components/tool-options'
 import type { ConversionResult } from '#/utils/json/converter'
 import {
   jsonToJavaClass,
@@ -52,7 +53,7 @@ function JSONConverter() {
 
     switch (conversionMode) {
       case 'yaml':
-        result = jsonToYAML(inputValue)
+        result = jsonToYAML(inputValue, repair)
         break
       case 'js-object':
         result = jsonToJSObject(inputValue, repair)
@@ -64,7 +65,7 @@ function JSONConverter() {
         result = jsonToJavaClass(inputValue, repair)
         break
       case 'query-params':
-        result = jsonToQueryParams(inputValue)
+        result = jsonToQueryParams(inputValue, repair)
         break
       default:
         result = { success: false, error: { message: 'Unknown conversion mode' } }
@@ -82,9 +83,11 @@ function JSONConverter() {
   }
 
   // Auto-convert on input or mode change
-  createEffect(() => {
-    convert(input(), mode(), useRepair())
-  })
+  createEffect(
+    on([input, mode, useRepair], ([value, conversionMode, repair]) => {
+      convert(value, conversionMode, repair)
+    }),
+  )
 
   const getFileExtension = () => {
     const modeToExtension: Record<ConversionMode, string> = {
@@ -115,28 +118,52 @@ function JSONConverter() {
 
   return (
     <div class="space-y-4">
-      <div class="flex flex-wrap gap-4 items-center">
-        <Switch checked={useRepair()} onCheckedChange={setUseRepair} label="Auto-repair JSON" />
+      <div class="tool-editor-grid">
+        <Field
+          label="JSON Input"
+          classes={{ root: 'min-w-0', label: 'text-muted-foreground font-medium text-xs' }}
+        >
+          <Textarea
+            classes={{ root: 'tool-editor' }}
+            placeholder="Paste your JSON here..."
+            value={input()}
+            onValueChange={setInput}
+          />
+        </Field>
+        <Field
+          label="Output"
+          classes={{ root: 'min-w-0', label: 'text-muted-foreground font-medium text-xs' }}
+        >
+          <Textarea
+            classes={{ root: 'tool-editor bg-muted/30' }}
+            readOnly
+            placeholder="Converted output will appear here..."
+            value={output()}
+          />
+        </Field>
       </div>
-
-      <div class="gap-6 grid lg:grid-cols-2">
-        <div class="flex flex-col gap-4">
-          <div class="mt-3 flex-1">
-            <label class="font-medium text-sm">JSON Input</label>
-            <Textarea
-              classes={{ root: 'text-sm font-mono mt-2 h-96 resize-none' }}
-              placeholder="Paste your JSON here..."
-              value={input()}
-              onValueChange={setInput}
-            />
-          </div>
-          <div>
-            <ClearButton onClear={handleClear} disabled={!input()} />
-          </div>
-        </div>
-
-        <div class="flex flex-col gap-4">
-          <div class="flex-1">
+      <div class="tool-toolbar">
+        <CopyButton
+          text="Copy Output"
+          content={output()}
+          variant="secondary"
+          disabled={!output()}
+        />
+        <DownloadButton
+          content={output()}
+          filename={`converted.${getFileExtension()}`}
+          mimeType={getMimeType()}
+          disabled={!output()}
+          variant="secondary"
+        />
+        <ClearButton onClear={handleClear} disabled={!input()} />
+      </div>
+      <ToolOptions>
+        <div class="tool-toolbar items-end">
+          <Field
+            label="Output format"
+            classes={{ root: 'min-w-0', label: 'text-muted-foreground font-medium text-xs' }}
+          >
             <Select
               value={mode()}
               onValueChange={(value) => {
@@ -145,27 +172,12 @@ function JSONConverter() {
                 }
               }}
               items={conversionModes.map(({ value, label }) => ({ value, label }))}
-              classes={{ control: 'w-60' }}
+              classes={{ control: 'w-52 max-w-full' }}
             />
-            <Textarea
-              classes={{ root: 'text-sm font-mono mt-2 bg-muted/50 h-96 resize-none' }}
-              readOnly
-              placeholder="Converted output will appear here..."
-              value={output()}
-            />
-          </div>
-          <div class="flex flex-wrap gap-4">
-            <CopyButton content={output()} variant="secondary" disabled={!output()} />
-            <DownloadButton
-              content={output()}
-              filename={`converted.${getFileExtension()}`}
-              mimeType={getMimeType()}
-              disabled={!output()}
-              variant="secondary"
-            />
-          </div>
+          </Field>
+          <Switch label="Auto-repair JSON" checked={useRepair()} onCheckedChange={setUseRepair} />
         </div>
-      </div>
+      </ToolOptions>
     </div>
   )
 }

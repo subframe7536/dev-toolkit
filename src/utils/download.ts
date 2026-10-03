@@ -16,8 +16,12 @@ export function downloadFile(
   const a = document.createElement('a')
   a.href = url
   a.download = filename
-  document.body.appendChild(a)
+  // Modal layers block clicks outside their content, including temporary download links.
+  const host =
+    Array.from(document.querySelectorAll('[role="dialog"][aria-modal="true"]')).at(-1) ??
+    document.body
+  host.appendChild(a)
   a.click()
-  document.body.removeChild(a)
+  a.remove()
   URL.revokeObjectURL(url)
 }
