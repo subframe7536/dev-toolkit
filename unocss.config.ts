@@ -20,7 +20,44 @@ export default defineConfig<PresetWind4Theme>({
       scale: 1.2,
     }),
     presetCompletion(),
-    presetMoraine(),
+    presetMoraine({
+      override: {
+        light: {
+          colors: {
+            background: 'rgb(248, 247, 244)',
+            foreground: 'rgb(26, 31, 46)',
+            card: { base: 'rgb(250, 250, 248)', foreground: 'rgb(26, 31, 46)' },
+            popover: { base: 'rgb(250, 250, 250)', foreground: 'rgb(26, 31, 46)' },
+            primary: { base: 'rgb(124, 144, 130)', foreground: 'rgb(239, 246, 241)' },
+            secondary: { base: 'rgb(153, 165, 120)', foreground: 'rgb(238, 241, 239)' },
+            muted: { base: 'rgb(232, 230, 225)', foreground: 'rgb(107, 114, 128)' },
+            accent: { base: 'rgb(215, 219, 223)', foreground: 'rgb(26, 31, 46)' },
+            destructive: { base: 'rgb(173, 84, 81)', foreground: 'rgb(232, 232, 232)' },
+            border: 'rgb(232, 230, 225)',
+            input: 'rgb(252, 252, 252)',
+            control: 'rgb(252, 252, 252)',
+            ring: 'rgb(124, 144, 130)',
+          },
+        },
+        dark: {
+          colors: {
+            background: 'rgb(37, 39, 38)',
+            foreground: 'rgb(220, 220, 220)',
+            card: { base: 'rgb(42, 45, 43)', foreground: 'rgb(220, 220, 220)' },
+            popover: { base: 'rgb(51, 51, 51)', foreground: 'rgb(220, 220, 220)' },
+            primary: { base: 'rgb(124, 144, 130)', foreground: 'rgb(235, 239, 236)' },
+            secondary: { base: 'rgb(77, 91, 81)', foreground: 'rgb(219, 225, 221)' },
+            muted: { base: 'rgb(56, 61, 58)', foreground: 'rgb(173, 173, 173)' },
+            accent: { base: 'rgb(96, 112, 118)', foreground: 'rgb(217, 220, 227)' },
+            destructive: { base: 'rgb(149, 92, 92)', foreground: 'rgb(234, 234, 234)' },
+            border: 'rgb(79, 79, 79)',
+            input: 'rgb(65, 65, 65)',
+            control: 'rgb(65, 65, 65)',
+            ring: 'rgb(192, 192, 192)',
+          },
+        },
+      },
+    }),
   ],
   content: {
     // Extract before the first CSS response; lazy routes and cached dependencies may skip transforms.
@@ -77,11 +114,11 @@ export default defineConfig<PresetWind4Theme>({
   theme: {
     colors: {
       sidebar: {
-        DEFAULT: 'var(--card)',
-        foreground: 'var(--card-foreground)',
+        DEFAULT: 'var(--sidebar)',
+        foreground: 'var(--sidebar-foreground)',
         'muted-foreground': 'var(--muted-foreground)',
-        accent: 'var(--accent)',
-        'accent-foreground': 'var(--accent-foreground)',
+        accent: 'var(--sidebar-accent)',
+        'accent-foreground': 'var(--sidebar-accent-foreground)',
       },
     },
     font: {
@@ -107,10 +144,18 @@ export default defineConfig<PresetWind4Theme>({
     {
       getCSS: () => `:root {
   color-scheme: light;
+  --sidebar: rgb(250, 250, 248);
+  --sidebar-foreground: rgb(26, 31, 46);
+  --sidebar-accent: rgb(232, 230, 225);
+  --sidebar-accent-foreground: rgb(26, 31, 46);
 }
 
 .dark {
   color-scheme: dark;
+  --sidebar: rgb(44, 48, 45);
+  --sidebar-foreground: rgb(211, 213, 211);
+  --sidebar-accent: rgb(64, 69, 66);
+  --sidebar-accent-foreground: rgb(211, 213, 211);
 }
 
 body {

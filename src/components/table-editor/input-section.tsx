@@ -231,14 +231,6 @@ export function InputSection() {
                     onValueChange={setTextInput}
                   />
                 </Field>
-                <ToolOptions>
-                  <Switch
-                    label="Replace \n"
-                    classes={{ root: 'whitespace-nowrap' }}
-                    checked={replaceLineWrap()}
-                    onCheckedChange={handleReplaceLineWrap}
-                  />
-                </ToolOptions>
                 <div class="tool-toolbar">
                   <Button
                     onClick={handleParseText}
@@ -248,38 +240,48 @@ export function InputSection() {
                   >
                     Parse
                   </Button>
-                  <Button
-                    variant="secondary"
-                    onClick={() => {
-                      setTextInput(MYSQL_EXAMPLE)
-                      setReplaceLineWrap(true)
-                    }}
-                    leading="i-lucide-database"
-                  >
-                    MySQL Example
-                  </Button>
-                  <Button
-                    variant="secondary"
-                    onClick={() => {
-                      setTextInput(CSV_EXAMPLE)
-                      setReplaceLineWrap(true)
-                    }}
-                    leading="i-lucide-table"
-                  >
-                    CSV Example
-                  </Button>
-                  <Button
-                    variant="secondary"
-                    onClick={() => {
-                      setTextInput(EXCEL_EXAMPLE)
-                      setReplaceLineWrap(true)
-                    }}
-                    leading="i-lucide-file-spreadsheet"
-                  >
-                    Excel Example
-                  </Button>
                   <ClearButton onClear={() => setTextInput('')} disabled={!textInput().trim()} />
                 </div>
+                <ToolOptions>
+                  <div class="tool-toolbar">
+                    <Button
+                      variant="secondary"
+                      onClick={() => {
+                        setTextInput(MYSQL_EXAMPLE)
+                        setReplaceLineWrap(true)
+                      }}
+                      leading="i-lucide-database"
+                    >
+                      MySQL Example
+                    </Button>
+                    <Button
+                      variant="secondary"
+                      onClick={() => {
+                        setTextInput(CSV_EXAMPLE)
+                        setReplaceLineWrap(true)
+                      }}
+                      leading="i-lucide-table"
+                    >
+                      CSV Example
+                    </Button>
+                    <Button
+                      variant="secondary"
+                      onClick={() => {
+                        setTextInput(EXCEL_EXAMPLE)
+                        setReplaceLineWrap(true)
+                      }}
+                      leading="i-lucide-file-spreadsheet"
+                    >
+                      Excel Example
+                    </Button>
+                  </div>
+                  <Switch
+                    label="Replace \n"
+                    classes={{ root: 'whitespace-nowrap' }}
+                    checked={replaceLineWrap()}
+                    onCheckedChange={handleReplaceLineWrap}
+                  />
+                </ToolOptions>
               </div>
             ),
           },
@@ -295,28 +297,6 @@ export function InputSection() {
                   accept={['.xlsx', '.xls', '.csv']}
                   icon="i-lucide-file-spreadsheet"
                 />
-
-                <Show when={sheetNames().length > 1}>
-                  <ToolOptions>
-                    <Field
-                      label="Select Sheet"
-                      classes={{
-                        root: 'min-w-0',
-                        label: 'text-muted-foreground font-medium text-xs',
-                      }}
-                    >
-                      <Select
-                        value={selectedSheet()}
-                        onValueChange={(value) => {
-                          if (value !== null) {
-                            setSelectedSheet(value)
-                          }
-                        }}
-                        items={sheetNames().map((s) => ({ value: s, label: s }))}
-                      />
-                    </Field>
-                  </ToolOptions>
-                </Show>
 
                 <div class="flex gap-2 items-center">
                   <Button
@@ -338,6 +318,27 @@ export function InputSection() {
                     disabled={!uploadedFile()}
                   />
                 </div>
+                <Show when={sheetNames().length > 1}>
+                  <ToolOptions>
+                    <Field
+                      label="Select Sheet"
+                      classes={{
+                        root: 'min-w-0',
+                        label: 'text-muted-foreground font-medium text-xs',
+                      }}
+                    >
+                      <Select
+                        value={selectedSheet()}
+                        onValueChange={(value) => {
+                          if (value !== null) {
+                            setSelectedSheet(value)
+                          }
+                        }}
+                        items={sheetNames().map((s) => ({ value: s, label: s }))}
+                      />
+                    </Field>
+                  </ToolOptions>
+                </Show>
               </div>
             ),
           },
