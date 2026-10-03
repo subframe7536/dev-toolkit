@@ -198,12 +198,9 @@ export function DataTable(props: DataTableProps) {
               </div>
             }
           >
-            <Field
-              label={`Editing ${col.name}`}
-              classes={{ root: 'min-w-0', label: 'sr-only', container: 'mt-0!' }}
-            >
+            <Field hiddenLabel={`Editing ${col.name}`} classes={{ root: 'min-w-0' }}>
               <Textarea
-                classes={{ root: 'px-3 py-2 border-2 border-primary bg-input min-h-0 w-full' }}
+                classes={{ root: 'px-3 py-2 border-2 border-primary bg-control min-h-0 w-full' }}
                 rows={2}
                 value={editValue()}
                 ref={(r) => setTimeout(() => r.focus(), 0)}

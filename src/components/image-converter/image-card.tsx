@@ -74,10 +74,7 @@ export const ImageCard: Component<ImageCardProps> = (props) => {
       </Show>
 
       <div class="mt-2 space-y-2">
-        <Field
-          label={`Width for ${props.image.file.name}`}
-          classes={{ root: 'min-w-0', label: 'sr-only', container: 'mt-0!' }}
-        >
+        <Field hiddenLabel={`Width for ${props.image.file.name}`} classes={{ root: 'min-w-0' }}>
           <InputNumber
             orientation="vertical"
             placeholder="Width"
@@ -92,10 +89,7 @@ export const ImageCard: Component<ImageCardProps> = (props) => {
           />
         </Field>
 
-        <Field
-          label={`Height for ${props.image.file.name}`}
-          classes={{ root: 'min-w-0', label: 'sr-only', container: 'mt-0!' }}
-        >
+        <Field hiddenLabel={`Height for ${props.image.file.name}`} classes={{ root: 'min-w-0' }}>
           <InputNumber
             orientation="vertical"
             placeholder="Height"

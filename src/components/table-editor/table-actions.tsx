@@ -22,10 +22,7 @@ export function TableActions() {
     <div class="space-y-4">
       <ToolOptions>
         <div class="tool-toolbar">
-          <Field
-            label="Visible columns"
-            classes={{ root: 'min-w-0', label: 'sr-only', container: 'mt-0!' }}
-          >
+          <Field hiddenLabel="Visible columns" classes={{ root: 'min-w-0' }}>
             <MultiSelect
               value={computed.visibleColumnIds()}
               onValueChange={handleColumnVisibilityChange}

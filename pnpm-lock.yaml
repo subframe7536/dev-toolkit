@@ -176,8 +176,8 @@ importers:
         specifier: ^9.2.4
         version: 9.2.4(solid-js@1.9.15)
       moraine:
-        specifier: ^0.6.0-beta.1
-        version: 0.6.0-beta.1(@subf/unocss@0.3.1(magic-string@1.4.2)(vite@8.3.1(@types/node@24.19.0)(jiti@2.7.0)(yaml@2.9.1)))(solid-js@1.9.15)(typescript@7.0.2)(valibot@1.5.0(typescript@7.0.2))
+        specifier: ^0.6.0-beta.2
+        version: 0.6.0-beta.2(@subf/unocss@0.3.1(magic-string@1.4.2)(vite@8.3.1(@types/node@24.19.0)(jiti@2.7.0)(yaml@2.9.1)))(solid-js@1.9.15)(typescript@7.0.2)(valibot@1.5.0(typescript@7.0.2))
       papaparse:
         specifier: ^5.7.0
         version: 5.7.0
@@ -1489,8 +1489,8 @@ packages:
   micromark-util-types@2.0.3:
     resolution: {integrity: sha512-oxB2Ik03hI0gv+VNn9tnh1t1YEe9MDPptViAEgfdf3YQHsn0pzGTgCdlSCJXcwhqm8phaEuM7zeEu3QQzVBrPg==}
 
-  moraine@0.6.0-beta.1:
-    resolution: {integrity: sha512-CzGpiTwRlNnJO3c2bxEIPKqEK8SvIrKUfSTD4z/VAJK+0GIoGQgHxy7qWXbLASrPOB1BjFoUzF9YPGZnKtguIQ==}
+  moraine@0.6.0-beta.2:
+    resolution: {integrity: sha512-z1cGcCSvqowBV1NeIyFmRjxnZAuTE3uj0iXgdEJsp53sgauVz4qQrDTGPk4iBHVG5VwQFoWAMFrRRxouZY0INQ==}
     peerDependencies:
       '@iconify/tailwind': 1.2.0
       '@subf/unocss': ^0.3.0
@@ -2968,7 +2968,7 @@ snapshots:
 
   micromark-util-types@2.0.3: {}
 
-  moraine@0.6.0-beta.1(@subf/unocss@0.3.1(magic-string@1.4.2)(vite@8.3.1(@types/node@24.19.0)(jiti@2.7.0)(yaml@2.9.1)))(solid-js@1.9.15)(typescript@7.0.2)(valibot@1.5.0(typescript@7.0.2)):
+  moraine@0.6.0-beta.2(@subf/unocss@0.3.1(magic-string@1.4.2)(vite@8.3.1(@types/node@24.19.0)(jiti@2.7.0)(yaml@2.9.1)))(solid-js@1.9.15)(typescript@7.0.2)(valibot@1.5.0(typescript@7.0.2)):
     dependencies:
       '@floating-ui/dom': 1.8.0
       '@formisch/solid': 1.1.0(solid-js@1.9.15)(typescript@7.0.2)(valibot@1.5.0(typescript@7.0.2))

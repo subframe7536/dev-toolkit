@@ -1,7 +1,6 @@
 import { Field, Select, Switch, Textarea } from 'moraine'
 import { createRoute } from 'solid-file-router'
 import { createEffect, createSignal, on } from 'solid-js'
-import { toast } from 'solid-toaster'
 
 import { ClearButton } from '#/components/clear-button'
 import { CopyButton } from '#/components/copy-button'
@@ -32,6 +31,7 @@ type ConversionMode = 'yaml' | 'js-object' | 'ts-definition' | 'java-class' | 'q
 function JSONConverter() {
   const [input, setInput] = createSignal('')
   const [output, setOutput] = createSignal('')
+  const [error, setError] = createSignal('')
   const [mode, setMode] = createSignal<ConversionMode>('yaml')
   const [useRepair, setUseRepair] = createSignal(false)
 
@@ -46,6 +46,7 @@ function JSONConverter() {
   const convert = (inputValue: string, conversionMode: ConversionMode, repair: boolean) => {
     if (!inputValue.trim()) {
       setOutput('')
+      setError('')
       return
     }
 
@@ -71,14 +72,17 @@ function JSONConverter() {
         result = { success: false, error: { message: 'Unknown conversion mode' } }
     }
 
-    if (result.success && result.output) {
-      setOutput(result.output)
+    if (result.success) {
+      setOutput(result.output ?? '')
+      setError('')
     } else {
-      const error = result.error!
-      toast.error('Conversion failed', {
-        description: error.details ? `${error.message}: ${error.details}` : error.message,
-      })
       setOutput('')
+      const conversionError = result.error!
+      setError(
+        conversionError.details
+          ? `${conversionError.message}: ${conversionError.details}`
+          : conversionError.message,
+      )
     }
   }
 
@@ -132,13 +136,15 @@ function JSONConverter() {
         </Field>
         <Field
           label="Output"
+          error={Boolean(error())}
           classes={{ root: 'min-w-0', label: 'text-muted-foreground font-medium text-xs' }}
         >
           <Textarea
-            classes={{ root: 'tool-editor bg-muted/30' }}
+            classes={{ root: ['tool-editor bg-muted/30', error() && 'text-destructive'] }}
+            aria-invalid={Boolean(error())}
             readOnly
             placeholder="Converted output will appear here..."
-            value={output()}
+            value={error() || output()}
           />
         </Field>
       </div>

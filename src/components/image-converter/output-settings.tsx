@@ -69,10 +69,7 @@ export const OutputSettings: Component<OutputSettingsProps> = (props) => {
           Apply to all images without individual settings
         </p>
         <div class="flex gap-2">
-          <Field
-            label="Global Width"
-            classes={{ root: 'min-w-0 flex-1', label: 'sr-only', container: 'mt-0!' }}
-          >
+          <Field hiddenLabel="Global Width" classes={{ root: 'min-w-0 flex-1' }}>
             <InputNumber
               classes={{ root: 'min-w-0 flex-1' }}
               orientation="vertical"
@@ -88,10 +85,7 @@ export const OutputSettings: Component<OutputSettingsProps> = (props) => {
               }}
             />
           </Field>
-          <Field
-            label="Global Height"
-            classes={{ root: 'min-w-0 flex-1', label: 'sr-only', container: 'mt-0!' }}
-          >
+          <Field hiddenLabel="Global Height" classes={{ root: 'min-w-0 flex-1' }}>
             <InputNumber
               classes={{ root: 'min-w-0 flex-1' }}
               orientation="vertical"

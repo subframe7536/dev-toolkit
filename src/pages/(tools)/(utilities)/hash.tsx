@@ -95,10 +95,7 @@ function HashGenerator() {
               label: 'Text Input',
               content: (
                 <div class="mt-4">
-                  <Field
-                    label="Text Input"
-                    classes={{ root: 'min-w-0', label: 'sr-only', container: 'mt-0!' }}
-                  >
+                  <Field hiddenLabel="Text Input" classes={{ root: 'min-w-0' }}>
                     <Textarea
                       value={textInput()}
                       onValueChange={setTextInput}

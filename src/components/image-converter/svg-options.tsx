@@ -34,15 +34,12 @@ export const SvgOptions: Component<SvgOptionsProps> = (props) => {
         classes={{ root: 'min-w-0', label: 'text-muted-foreground font-medium text-xs' }}
       >
         <div class="flex gap-2">
-          <Field
-            label="Background color picker"
-            classes={{ root: 'shrink-0', label: 'sr-only', container: 'mt-0!' }}
-          >
+          <Field hiddenLabel="Background color picker" classes={{ root: 'shrink-0' }}>
             <Input
               type="color"
               value={props.backgroundColor || '#ffffff'}
               onValueChange={props.onBackgroundColorChange}
-              classes={{ root: 'p-0 h-9 w-12 cursor-pointer' }}
+              classes={{ root: 'p-0 h-8 w-12 cursor-pointer' }}
             />
           </Field>
           <Input
@@ -59,15 +56,12 @@ export const SvgOptions: Component<SvgOptionsProps> = (props) => {
         classes={{ root: 'min-w-0', label: 'text-muted-foreground font-medium text-xs' }}
       >
         <div class="flex gap-2">
-          <Field
-            label="Fill color picker"
-            classes={{ root: 'shrink-0', label: 'sr-only', container: 'mt-0!' }}
-          >
+          <Field hiddenLabel="Fill color picker" classes={{ root: 'shrink-0' }}>
             <Input
               type="color"
               value={props.fillColor || '#000000'}
               onValueChange={props.onFillColorChange}
-              classes={{ root: 'p-0 h-9 w-12 cursor-pointer' }}
+              classes={{ root: 'p-0 h-8 w-12 cursor-pointer' }}
             />
           </Field>
           <Input
@@ -84,15 +78,12 @@ export const SvgOptions: Component<SvgOptionsProps> = (props) => {
         classes={{ root: 'min-w-0', label: 'text-muted-foreground font-medium text-xs' }}
       >
         <div class="flex gap-2">
-          <Field
-            label="Stroke color picker"
-            classes={{ root: 'shrink-0', label: 'sr-only', container: 'mt-0!' }}
-          >
+          <Field hiddenLabel="Stroke color picker" classes={{ root: 'shrink-0' }}>
             <Input
               type="color"
               value={props.strokeColor || '#000000'}
               onValueChange={props.onStrokeColorChange}
-              classes={{ root: 'p-0 h-9 w-12 cursor-pointer' }}
+              classes={{ root: 'p-0 h-8 w-12 cursor-pointer' }}
             />
           </Field>
           <Input

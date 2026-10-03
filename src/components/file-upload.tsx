@@ -51,7 +51,7 @@ export function FileUpload(props: Props) {
   }
 
   return (
-    <Field label="Upload files" classes={{ root: 'min-w-0', label: 'sr-only', container: 'mt-0!' }}>
+    <Field hiddenLabel="Upload files" classes={{ root: 'min-w-0' }}>
       <MoraineFileUpload
         accept={accept()}
         description={info()}

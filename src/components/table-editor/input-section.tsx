@@ -221,10 +221,7 @@ export function InputSection() {
                     Paste MySQL CLI output (starts with +-), CSV text, or Excel table data here.
                   </p>
                 </div>
-                <Field
-                  label="Table input"
-                  classes={{ root: 'min-w-0', label: 'sr-only', container: 'mt-0!' }}
-                >
+                <Field hiddenLabel="Table input" classes={{ root: 'min-w-0' }}>
                   <Textarea
                     classes={{
                       root: 'tool-editor whitespace-nowrap overflow-x-auto placeholder:whitespace-pre-wrap',

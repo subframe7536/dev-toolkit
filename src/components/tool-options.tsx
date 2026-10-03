@@ -5,7 +5,7 @@ export function ToolOptions(props: ParentProps<{ title?: string }>) {
   const headingId = createUniqueId()
 
   return (
-    <section aria-labelledby={headingId} class="min-w-0 w-full space-y-3">
+    <section aria-labelledby={headingId} class="tool-option-controls min-w-0 w-full space-y-3">
       <h2 id={headingId} class="text-foreground font-medium text-sm">
         {props.title ?? 'Options'}
       </h2>

@@ -145,12 +145,12 @@ function AppContent(props: RouteSectionProps) {
         </SidebarFrame.Sidebar>
       </Show>
       <SidebarFrame.Main>
-        <div class="flex flex-col min-h-full min-w-0">
+        <div class="flex flex-col min-h-full min-w-0 xl:bg-gutter-pattern">
           <AppToolbar pathname={props.location.pathname} />
-          <main class="mx-auto border-x border-border/70 flex-1 max-w-5xl min-w-0 w-full">
+          <main class="mx-auto border-x border-border/70 bg-background flex-1 max-w-5xl min-w-0 w-full">
             <ToolLayout>{props.children}</ToolLayout>
           </main>
-          <footer class="text-muted-foreground mx-auto px-4 py-5 border-x border-t border-border/70 flex flex-wrap gap-2 max-w-5xl w-full items-center justify-between text-xs sm:px-6">
+          <footer class="text-muted-foreground mx-auto px-4 py-5 border-x border-t border-border/70 bg-background flex flex-wrap gap-2 max-w-5xl w-full items-center justify-between text-xs sm:px-6">
             <span>{count} tools · All processing stays in your browser.</span>
             <a
               href="https://github.com/subframe7536/dev-toolkit"

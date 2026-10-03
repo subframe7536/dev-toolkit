@@ -95,11 +95,10 @@ function ColorConverter() {
       <div class="min-w-0 space-y-4">
         {/* Color Preview with Picker */}
         <Field
-          label="Pick color"
+          hiddenLabel="Pick color"
           classes={{
             root: 'group border h-32 w-full cursor-pointer relative overflow-hidden rounded-lg focus-within:effect-fv',
-            label: 'sr-only',
-            container: 'mt-0! h-full',
+            container: 'h-full',
           }}
         >
           <div
@@ -118,10 +117,7 @@ function ColorConverter() {
         </Field>
 
         {/* Text Input with Clear */}
-        <Field
-          label="Color value"
-          classes={{ root: 'min-w-0', label: 'sr-only', container: 'mt-0! relative' }}
-        >
+        <Field hiddenLabel="Color value" classes={{ root: 'min-w-0', container: 'relative' }}>
           <Input
             value={inputValue()}
             onValueChange={handleInputChange}

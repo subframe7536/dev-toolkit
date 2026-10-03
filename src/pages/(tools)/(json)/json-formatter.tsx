@@ -247,11 +247,10 @@ function JSONFormatter() {
         <Dialog.Content title="Formatted JSON (Fullscreen)">
           <Dialog.Body>
             <Field
-              label="Expanded JSON output"
+              hiddenLabel="Expanded JSON output"
               classes={{
                 root: 'min-h-0 flex-1 flex flex-col',
-                label: 'sr-only',
-                container: 'mt-0! min-h-0 flex-1',
+                container: 'min-h-0 flex-1',
               }}
             >
               <Textarea

@@ -20,20 +20,7 @@ export default defineConfig<PresetWind4Theme>({
       scale: 1.2,
     }),
     presetCompletion(),
-    presetMoraine({
-      themeDefaults: false,
-      override: {
-        light: {
-          // Moraine's shadow tokens must resolve for the composed focus ring to render.
-          shadows: Object.fromEntries(
-            Object.entries(windPreset.theme?.shadow ?? {}).map(([name, value]) => [
-              name === 'DEFAULT' ? 'base' : name,
-              Array.isArray(value) ? value.join(', ') : value,
-            ]),
-          ),
-        },
-      },
-    }),
+    presetMoraine(),
   ],
   content: {
     // Extract before the first CSS response; lazy routes and cached dependencies may skip transforms.
@@ -43,13 +30,17 @@ export default defineConfig<PresetWind4Theme>({
     },
   },
   rules: [
-    // Moraine shares the input token between borders and fills; keep their contrast independent.
-    ['bg-input/30', { 'background-color': 'var(--input-background)' }],
+    [
+      'bg-gutter-pattern',
+      {
+        'background-image':
+          'repeating-linear-gradient(135deg, color-mix(in srgb, var(--border) 50%, transparent) 0 1px, transparent 1px 8px)',
+      },
+    ],
   ],
   shortcuts: [
     ['effect-fv', 'outline-none border-ring ring-3 ring-ring/50'],
     ['effect-dis', 'pointer-events-none opacity-70 cursor-not-allowed'],
-    [/activor:(.*)/, ([, cls]) => `hover:${cls} active:${cls}`],
     ['border', 'b-1 b-border'],
     ['tool-grid', 'gap-6 grid grid-cols-1 items-start xl:grid-cols-2 [&>*]:min-w-0'],
     ['tool-field', 'flex min-w-0 flex-col gap-2'],
@@ -65,15 +56,32 @@ export default defineConfig<PresetWind4Theme>({
     ],
     ['tool-editor-grid', 'grid grid-cols-1 gap-4 items-start md:grid-cols-2 [&>*]:min-w-0'],
     ['tool-toolbar', 'flex flex-wrap gap-3 items-center'],
+    [
+      'tool-option-controls',
+      [
+        '[&_[data-slot=switch]]:items-center',
+        ...[
+          'input',
+          'input-number',
+          'select-control',
+          'multi-select-control',
+          'slider',
+          'switch',
+        ].flatMap((slot) => [
+          `[&_[data-slot=${slot}]]:min-h-11`,
+          `md:[&_[data-slot=${slot}]]:min-h-8`,
+        ]),
+      ].join(' '),
+    ],
   ],
   theme: {
     colors: {
       sidebar: {
-        DEFAULT: 'var(--sidebar)',
-        foreground: 'var(--sidebar-foreground)',
-        'muted-foreground': 'var(--sidebar-muted-foreground)',
-        accent: 'var(--sidebar-accent)',
-        'accent-foreground': 'var(--sidebar-accent-foreground)',
+        DEFAULT: 'var(--card)',
+        foreground: 'var(--card-foreground)',
+        'muted-foreground': 'var(--muted-foreground)',
+        accent: 'var(--accent)',
+        'accent-foreground': 'var(--accent-foreground)',
       },
     },
     font: {
@@ -99,69 +107,10 @@ export default defineConfig<PresetWind4Theme>({
     {
       getCSS: () => `:root {
   color-scheme: light;
-  --background: #ffffff;
-  --foreground: #171717;
-  --card: #ffffff;
-  --card-foreground: #171717;
-  --popover: #ffffff;
-  --popover-foreground: #171717;
-  --primary: #171717;
-  --primary-foreground: #ffffff;
-  --primary-hover: #303030;
-  --primary-active: #454545;
-  --secondary: #f0f0f0;
-  --secondary-foreground: #262626;
-  --muted: #f5f5f5;
-  --muted-foreground: #737373;
-  --accent: #f0f0f0;
-  --accent-foreground: #262626;
-  --destructive: #b23c3c;
-  --destructive-foreground: #ffffff;
-  --destructive-hover: #9d3030;
-  --destructive-active: #862828;
-  --border: #e5e5e5;
-  --input: #8a8a8a;
-  --input-background: #fafafa;
-  --ring: #171717;
-  --sidebar: #fafafa;
-  --sidebar-foreground: #171717;
-  --sidebar-muted-foreground: #666666;
-  --sidebar-accent: #f0f0f0;
-  --sidebar-accent-foreground: #171717;
-  --radius: .5rem
 }
 
 .dark {
   color-scheme: dark;
-  --background: #101010;
-  --foreground: #ededed;
-  --card: #171717;
-  --card-foreground: #ededed;
-  --popover: #1c1c1c;
-  --popover-foreground: #ededed;
-  --primary: #ededed;
-  --primary-foreground: #171717;
-  --primary-hover: #d4d4d4;
-  --primary-active: #bdbdbd;
-  --secondary: #262626;
-  --secondary-foreground: #ededed;
-  --muted: #222222;
-  --muted-foreground: #a3a3a3;
-  --accent: #262626;
-  --accent-foreground: #ededed;
-  --destructive: #f09a91;
-  --destructive-foreground: #321916;
-  --destructive-hover: #f4afa8;
-  --destructive-active: #f7c1bb;
-  --border: #333333;
-  --input: #737373;
-  --input-background: #171717;
-  --ring: #ededed;
-  --sidebar: #171717;
-  --sidebar-foreground: #ededed;
-  --sidebar-muted-foreground: #a3a3a3;
-  --sidebar-accent: #262626;
-  --sidebar-accent-foreground: #ededed;
 }
 
 body {

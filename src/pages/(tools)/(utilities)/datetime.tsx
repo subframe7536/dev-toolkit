@@ -166,7 +166,7 @@ function DateTimeTool() {
 
             {/* Custom Date Input */}
             <div class="space-y-2">
-              <div class="flex gap-2 items-end">
+              <div class="tool-option-controls flex gap-2 items-end">
                 <Field
                   label="Custom Date Input"
                   classes={{
@@ -280,10 +280,7 @@ function DateTimeTool() {
             icon="i-lucide-calculator"
             content={
               <div class="space-y-2">
-                <Field
-                  label="DateTime Manipulation"
-                  classes={{ root: 'min-w-0', label: 'sr-only', container: 'mt-0!' }}
-                >
+                <Field hiddenLabel="DateTime Manipulation" classes={{ root: 'min-w-0' }}>
                   <Input
                     value={manipulationInput()}
                     onValueChange={setManipulationInput}
