@@ -175,16 +175,7 @@ function JSONConverter() {
               classes={{ control: 'w-52 max-w-full' }}
             />
           </Field>
-          <Field
-            label="Auto-repair JSON"
-            classes={{
-              root: 'flex flex-row-reverse gap-2 w-fit min-w-0 items-center',
-              label: 'font-normal',
-              container: 'mt-0! shrink-0',
-            }}
-          >
-            <Switch checked={useRepair()} onCheckedChange={setUseRepair} />
-          </Field>
+          <Switch label="Auto-repair JSON" checked={useRepair()} onCheckedChange={setUseRepair} />
         </div>
       </ToolOptions>
     </div>

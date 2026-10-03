@@ -57,16 +57,11 @@ export const OutputSettings: Component<OutputSettingsProps> = (props) => {
         </Field>
       </Show>
 
-      <Field
+      <Switch
         label="Keep aspect ratio"
-        classes={{
-          root: 'flex flex-row-reverse gap-2 w-fit min-w-0 items-center',
-          label: 'font-normal',
-          container: 'mt-0! shrink-0',
-        }}
-      >
-        <Switch checked={props.ratio} onCheckedChange={props.onRatioChange} />
-      </Field>
+        checked={props.ratio}
+        onCheckedChange={props.onRatioChange}
+      />
 
       <div>
         <h3 class="font-medium mb-2 text-sm">Global Dimensions</h3>

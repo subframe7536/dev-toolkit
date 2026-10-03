@@ -100,26 +100,16 @@ function JSONSchemaGenerator() {
       </div>
       <ToolOptions>
         <div class="tool-toolbar">
-          <Field
+          <Switch
             label="Mark fields as required"
-            classes={{
-              root: 'flex flex-row-reverse gap-2 w-fit min-w-0 items-center',
-              label: 'font-normal',
-              container: 'mt-0! shrink-0',
-            }}
-          >
-            <Switch checked={required()} onCheckedChange={setRequired} />
-          </Field>
-          <Field
+            checked={required()}
+            onCheckedChange={setRequired}
+          />
+          <Switch
             label="Allow additional properties"
-            classes={{
-              root: 'flex flex-row-reverse gap-2 w-fit min-w-0 items-center',
-              label: 'font-normal',
-              container: 'mt-0! shrink-0',
-            }}
-          >
-            <Switch checked={additionalProperties()} onCheckedChange={setAdditionalProperties} />
-          </Field>
+            checked={additionalProperties()}
+            onCheckedChange={setAdditionalProperties}
+          />
         </div>
         <div class="gap-4 grid sm:grid-cols-2">
           <Field

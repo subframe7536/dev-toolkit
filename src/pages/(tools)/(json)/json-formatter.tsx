@@ -190,36 +190,21 @@ function JSONFormatter() {
         <div class="tool-toolbar items-start">
           <div class="w-full">
             <div class="flex flex-wrap gap-3">
-              <Field
+              <Switch
                 label="Auto repair JSON string"
-                classes={{
-                  root: 'flex flex-row-reverse gap-2 w-fit min-w-0 items-center',
-                  label: 'font-normal',
-                  container: 'mt-0! shrink-0',
-                }}
-              >
-                <Switch checked={autoRepair()} onCheckedChange={setAutoRepair} />
-              </Field>
-              <Field
+                checked={autoRepair()}
+                onCheckedChange={setAutoRepair}
+              />
+              <Switch
                 label="Sort Keys"
-                classes={{
-                  root: 'flex flex-row-reverse gap-2 w-fit min-w-0 items-center',
-                  label: 'font-normal',
-                  container: 'mt-0! shrink-0',
-                }}
-              >
-                <Switch checked={shouldSortKeys()} onCheckedChange={setShouldSortKeys} />
-              </Field>
-              <Field
+                checked={shouldSortKeys()}
+                onCheckedChange={setShouldSortKeys}
+              />
+              <Switch
                 label="Parse Nested JSON"
-                classes={{
-                  root: 'flex flex-row-reverse gap-2 w-fit min-w-0 items-center',
-                  label: 'font-normal',
-                  container: 'mt-0! shrink-0',
-                }}
-              >
-                <Switch checked={parseNested()} onCheckedChange={setParseNested} />
-              </Field>
+                checked={parseNested()}
+                onCheckedChange={setParseNested}
+              />
             </div>
           </div>
           <Field

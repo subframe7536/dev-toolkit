@@ -235,20 +235,12 @@ export function InputSection() {
                   />
                 </Field>
                 <ToolOptions>
-                  <Field
+                  <Switch
                     label="Replace \n"
-                    classes={{
-                      root: 'flex flex-row-reverse gap-2 w-fit min-w-0 items-center',
-                      label: 'font-normal',
-                      container: 'mt-0! shrink-0',
-                    }}
-                  >
-                    <Switch
-                      classes={{ root: 'whitespace-nowrap' }}
-                      checked={replaceLineWrap()}
-                      onCheckedChange={handleReplaceLineWrap}
-                    />
-                  </Field>
+                    classes={{ root: 'whitespace-nowrap' }}
+                    checked={replaceLineWrap()}
+                    onCheckedChange={handleReplaceLineWrap}
+                  />
                 </ToolOptions>
                 <div class="tool-toolbar">
                   <Button

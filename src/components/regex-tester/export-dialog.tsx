@@ -95,16 +95,11 @@ export function ExportDialog() {
                 </Field>
               </div>
               <div class="flex items-center">
-                <Field
+                <Switch
                   label="Include comments"
-                  classes={{
-                    root: 'flex flex-row-reverse gap-2 w-fit min-w-0 items-center',
-                    label: 'font-normal',
-                    container: 'mt-0! shrink-0',
-                  }}
-                >
-                  <Switch checked={includeComments()} onCheckedChange={setIncludeComments} />
-                </Field>
+                  checked={includeComments()}
+                  onCheckedChange={setIncludeComments}
+                />
               </div>
             </ToolOptions>
 

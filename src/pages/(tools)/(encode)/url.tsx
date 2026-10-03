@@ -1,4 +1,4 @@
-import { Field, Switch } from 'moraine'
+import { Switch } from 'moraine'
 import { createRoute } from 'solid-file-router'
 import { createSignal } from 'solid-js'
 
@@ -31,16 +31,11 @@ function URLEncoder() {
     <div class="flex flex-col gap-4">
       <EncoderLayout mode="URL" onEncode={encode} onDecode={decode} />
       <ToolOptions>
-        <Field
+        <Switch
           label="Regard as URL component"
-          classes={{
-            root: 'flex flex-row-reverse gap-2 w-fit min-w-0 items-center',
-            label: 'font-normal',
-            container: 'mt-0! shrink-0',
-          }}
-        >
-          <Switch checked={useComponent()} onCheckedChange={setUseComponent} />
-        </Field>
+          checked={useComponent()}
+          onCheckedChange={setUseComponent}
+        />
       </ToolOptions>
     </div>
   )
