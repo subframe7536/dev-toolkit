@@ -2,7 +2,7 @@ import { Icon } from 'moraine'
 import type { Component, ComponentProps } from 'solid-js'
 import { BaseToaster } from 'solid-toaster'
 
-import { useTheme } from '#/utils/theme'
+import { useTheme } from '#/contexts/theme-context'
 
 type ToasterProps = ComponentProps<typeof BaseToaster>
 

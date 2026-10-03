@@ -1,7 +1,7 @@
 import { Button } from 'moraine'
 import { createMemo } from 'solid-js'
 
-import { useTheme } from '#/utils/theme'
+import { useTheme } from '#/contexts/theme-context'
 
 export function ThemeToggle(props: { class?: string }) {
   const { mode, setMode } = useTheme()

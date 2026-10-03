@@ -4,8 +4,8 @@ import { createEffect, createMemo, createResource, For, on, Show, Suspense } fro
 
 import { ToolOptions } from '#/components/tool-options'
 import { useRegexContext } from '#/contexts/regex-context'
+import { useTheme } from '#/contexts/theme-context'
 import type { MatchResult } from '#/utils/regex/types'
-import { useTheme } from '#/utils/theme'
 
 const FLAG_OPTIONS = [
   { flag: 'g', label: 'Global', key: 'global', description: 'Find all matches' },

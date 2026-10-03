@@ -18,7 +18,6 @@
   },
   "dependencies": {
     "@solid-primitives/clipboard": "^1.6.6",
-    "@solid-primitives/rootless": "^1.5.4",
     "@solid-primitives/scheduled": "^1.5.3",
     "@tanstack/solid-table": "^9.2.4",
     "moraine": "^0.6.0-beta.1",

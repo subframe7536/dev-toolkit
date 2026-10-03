@@ -1,14 +1,14 @@
 import type { RouteSectionProps } from '@solidjs/router'
 import { A, useBeforeLeave, useNavigate } from '@solidjs/router'
-import { Button, cn, DropdownMenu, Icon } from 'moraine'
+import { Button, cn, DropdownMenu, Icon, SidebarFrame, useSidebarFrame } from 'moraine'
 import { createRoute } from 'solid-file-router'
 import { For, Show } from 'solid-js'
 
 import { ThemeToggle } from '#/components/theme-toggle'
+import { Toaster } from '#/components/toaster'
 import { ToolLayout } from '#/components/tool-layout'
 import { ToolSearchDialog, ToolSearchProvider, ToolSearchTrigger } from '#/components/tool-search'
-import { SidebarLayout, SidebarTrigger, useSidebar } from '#/components/ui/sidebar'
-import { Toaster } from '#/components/ui/sonner'
+import { ThemeProvider } from '#/contexts/theme-context'
 import { registPWA } from '#/utils/pwa'
 import { getCategories } from '#/utils/routes'
 
@@ -29,7 +29,6 @@ function Catch(props: { error: Error; reset: () => void }) {
 }
 
 function App(props: RouteSectionProps) {
-  const { categories, count } = getCategories()
   registPWA()
 
   useBeforeLeave((e) => {
@@ -44,9 +43,33 @@ function App(props: RouteSectionProps) {
 
   return (
     <ToolSearchProvider>
-      <SidebarLayout
-        renderSidebarHeader={(sidebar) => (
-          <>
+      <ThemeProvider>
+        <SidebarFrame
+          variant="default"
+          classes={{
+            root: 'bg-background h-[100dvh]',
+            sidebar: 'bg-sidebar text-sidebar-foreground w-60 duration-200 ease-out',
+            sidebarHeader: 'px-3 py-3 flex-col gap-3',
+            sidebarBody: 'px-2 pb-2',
+            main: 'bg-background min-w-0',
+          }}
+        >
+          <AppContent {...props} />
+        </SidebarFrame>
+      </ThemeProvider>
+    </ToolSearchProvider>
+  )
+}
+
+function AppContent(props: RouteSectionProps) {
+  const sidebar = useSidebarFrame()
+  const { categories, count } = getCategories()
+
+  return (
+    <>
+      <Show when={sidebar.isMobile()}>
+        <SidebarFrame.Sidebar ariaLabel="Tools navigation">
+          <SidebarFrame.SidebarHeader>
             <A
               href="/"
               class="flex flex-col min-h-11 justify-center rounded-sm focus-visible:effect-fv"
@@ -60,50 +83,50 @@ function App(props: RouteSectionProps) {
               <p class="text-sidebar-muted-foreground text-xs">{count} tools</p>
             </A>
             <ToolSearchTrigger />
-          </>
-        )}
-        renderSidebarBody={(sidebar) => (
-          <div class="mt-2 flex flex-col gap-3">
-            <For each={categories}>
-              {(category) => (
-                <section class="flex flex-col gap-1">
-                  <h3 class="text-[11px] text-sidebar-muted-foreground tracking-wide font-semibold px-2 uppercase">
-                    {category.name}
-                  </h3>
-                  <div class="flex flex-col gap-0.5">
-                    <For each={category.tools}>
-                      {(tool) => (
-                        <A
-                          href={tool.path}
-                          title={tool.info.title}
-                          aria-current={props.location.pathname === tool.path ? 'page' : undefined}
-                          class={cn(
-                            'group text-[13px] text-sidebar-foreground leading-5 px-2 py-1 flex gap-2 min-h-11 transition-colors duration-200 ease-out items-center rounded-md hover:(text-sidebar-accent-foreground bg-sidebar-accent) focus-visible:effect-fv md:min-h-8',
-                            props.location.pathname === tool.path &&
-                              'text-sidebar-accent-foreground font-semibold bg-sidebar-accent',
-                          )}
-                          onClick={() => {
-                            if (sidebar.isMobile()) {
-                              sidebar.setOpen(false)
+          </SidebarFrame.SidebarHeader>
+          <SidebarFrame.SidebarBody>
+            <div class="mt-2 flex flex-col gap-3">
+              <For each={categories}>
+                {(category) => (
+                  <section class="flex flex-col gap-1">
+                    <h3 class="text-[11px] text-sidebar-muted-foreground tracking-wide font-semibold px-2 uppercase">
+                      {category.name}
+                    </h3>
+                    <div class="flex flex-col gap-0.5">
+                      <For each={category.tools}>
+                        {(tool) => (
+                          <A
+                            href={tool.path}
+                            title={tool.info.title}
+                            aria-current={
+                              props.location.pathname === tool.path ? 'page' : undefined
                             }
-                          }}
-                        >
-                          <Icon
-                            name={tool.info.icon as any}
-                            class="text-sidebar-muted-foreground shrink-0 size-4 transition-colors duration-200 group-hover:text-sidebar-accent-foreground"
-                          />
-                          <span class="truncate">{tool.info.title}</span>
-                        </A>
-                      )}
-                    </For>
-                  </div>
-                </section>
-              )}
-            </For>
-          </div>
-        )}
-        renderSidebarFooter={() => (
-          <>
+                            class={cn(
+                              'group text-[13px] text-sidebar-foreground leading-5 px-2 py-1 flex gap-2 min-h-11 transition-colors duration-200 ease-out items-center rounded-md hover:(text-sidebar-accent-foreground bg-sidebar-accent) focus-visible:effect-fv md:min-h-8',
+                              props.location.pathname === tool.path &&
+                                'text-sidebar-accent-foreground font-semibold bg-sidebar-accent',
+                            )}
+                            onClick={() => {
+                              if (sidebar.isMobile()) {
+                                sidebar.setOpen(false)
+                              }
+                            }}
+                          >
+                            <Icon
+                              name={tool.info.icon as any}
+                              class="text-sidebar-muted-foreground shrink-0 size-4 transition-colors duration-200 group-hover:text-sidebar-accent-foreground"
+                            />
+                            <span class="truncate">{tool.info.title}</span>
+                          </A>
+                        )}
+                      </For>
+                    </div>
+                  </section>
+                )}
+              </For>
+            </div>
+          </SidebarFrame.SidebarBody>
+          <SidebarFrame.SidebarFooter>
             <Button
               variant="ghost"
               as="a"
@@ -118,9 +141,10 @@ function App(props: RouteSectionProps) {
               GitHub
             </Button>
             <ThemeToggle />
-          </>
-        )}
-      >
+          </SidebarFrame.SidebarFooter>
+        </SidebarFrame.Sidebar>
+      </Show>
+      <SidebarFrame.Main>
         <div class="flex flex-col min-h-full min-w-0">
           <AppToolbar pathname={props.location.pathname} />
           <main class="mx-auto border-x border-border/70 flex-1 max-w-5xl min-w-0 w-full">
@@ -141,13 +165,13 @@ function App(props: RouteSectionProps) {
           <ToolSearchDialog />
           <Toaster />
         </div>
-      </SidebarLayout>
-    </ToolSearchProvider>
+      </SidebarFrame.Main>
+    </>
   )
 }
 
 function AppToolbar(props: { pathname: string }) {
-  const sidebar = useSidebar()
+  const sidebar = useSidebarFrame()
   const navigate = useNavigate()
   const { categories } = getCategories()
 
@@ -165,7 +189,22 @@ function AppToolbar(props: { pathname: string }) {
           <ToolSearchTrigger compact />
         </div>
         <nav aria-label="Tool navigation" class="flex shrink-0 items-center sm:gap-1">
-          <Show when={!sidebar.isMobile()} fallback={<SidebarTrigger />}>
+          <Show
+            when={!sidebar.isMobile()}
+            fallback={
+              <SidebarFrame.Trigger
+                as={Button}
+                variant="ghost"
+                size="icon-md"
+                classes={{
+                  root: 'size-11 md:size-8 shrink-0 transition-colors hover:(text-foreground bg-muted)',
+                }}
+              >
+                <Icon name="i-lucide-menu" />
+                <span class="sr-only">Browse tools</span>
+              </SidebarFrame.Trigger>
+            }
+          >
             <DropdownMenu align="end" gutter={8}>
               <DropdownMenu.Trigger
                 as={Button}

@@ -1,5 +1,5 @@
 import { useNavigate } from '@solidjs/router'
-import { Button, CommandPalette, Dialog, Icon } from 'moraine'
+import { Button, CommandPalette, Dialog, Icon, useSidebarFrame } from 'moraine'
 import type { Accessor, ParentProps } from 'solid-js'
 import {
   createContext,
@@ -12,7 +12,6 @@ import {
   useContext,
 } from 'solid-js'
 
-import { useSidebar } from '#/components/ui/sidebar'
 import { getTools, searchTools } from '#/utils/routes'
 
 const ToolSearchContext = createContext<{
@@ -56,7 +55,7 @@ export function ToolSearchDialog() {
     throw new Error('ToolSearchDialog must be inside ToolSearchProvider.')
   }
   const navigate = useNavigate()
-  const sidebar = useSidebar()
+  const sidebar = useSidebarFrame()
   const [query, setQuery] = createSignal('')
   const tools = getTools()
   const groups = createMemo(() => [
