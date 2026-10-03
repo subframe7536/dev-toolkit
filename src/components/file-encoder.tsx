@@ -54,7 +54,7 @@ export function FileEncoder(props: FileEncoderProps) {
   }
 
   return (
-    <div class="space-y-8">
+    <div class="space-y-4">
       <div class="space-y-4">
         <FileUpload
           file={file()}
@@ -63,7 +63,7 @@ export function FileEncoder(props: FileEncoderProps) {
           info={props.uploadInfo || `Upload any file to encode to ${props.mode}`}
         />
         <Show when={file()}>
-          <div class="p-4 border bg-input/50 flex flex-wrap gap-4 w-fit items-center rounded-lg">
+          <div class="text-muted-foreground flex flex-wrap gap-3 items-center text-sm">
             <span class="min-w-0 break-all">{file()?.name}</span>
             <ClearButton onClear={clearFile} disabled={!file() && !output()} />
           </div>
@@ -73,33 +73,33 @@ export function FileEncoder(props: FileEncoderProps) {
       <Show when={output()}>
         <div class="space-y-4">
           <div class="tool-panel-heading">
-            <h3 class="text-foreground font-semibold text-lg">
+            <h3 class="text-foreground font-medium text-sm">
               {props.outputTitle || `${props.mode} Output`}
             </h3>
-            <div class="tool-actions">
-              <Show when={props.showDataURLSwitch}>
-                <Field
-                  label="Include Data URL prefix"
-                  classes={{
-                    root: 'flex flex-row-reverse gap-2 w-fit min-w-0 items-center',
-                    label: 'font-normal',
-                    container: 'mt-0! shrink-0',
-                  }}
-                >
-                  <Switch checked={includeDataURL()} onCheckedChange={setIncludeDataURL} />
-                </Field>
-              </Show>
-              <CopyButton content={targetOutput()} variant="secondary" size="sm" />
-              <DownloadButton
-                content={targetOutput()}
-                filename={outputFilename()}
-                variant="secondary"
-                size="sm"
-              />
-            </div>
           </div>
-          <div class="font-mono p-4 border bg-muted/50 max-h-96 break-all of-y-auto text-sm rounded-md">
+          <div class="font-mono p-3 border bg-muted/50 max-h-96 break-all of-y-auto text-sm rounded-md">
             {targetOutput()}
+          </div>
+          <div class="tool-toolbar">
+            <Show when={props.showDataURLSwitch}>
+              <Field
+                label="Include Data URL prefix"
+                classes={{
+                  root: 'flex flex-row-reverse gap-2 w-fit min-w-0 items-center',
+                  label: 'font-normal',
+                  container: 'mt-0! shrink-0',
+                }}
+              >
+                <Switch checked={includeDataURL()} onCheckedChange={setIncludeDataURL} />
+              </Field>
+            </Show>
+            <CopyButton content={targetOutput()} variant="secondary" size="sm" />
+            <DownloadButton
+              content={targetOutput()}
+              filename={outputFilename()}
+              variant="secondary"
+              size="sm"
+            />
           </div>
         </div>
       </Show>

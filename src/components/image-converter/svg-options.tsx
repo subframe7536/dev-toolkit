@@ -31,7 +31,7 @@ export const SvgOptions: Component<SvgOptionsProps> = (props) => {
 
       <Field
         label="Background Color (optional)"
-        classes={{ root: 'min-w-0', label: 'font-medium text-sm' }}
+        classes={{ root: 'min-w-0', label: 'text-muted-foreground font-medium text-xs' }}
       >
         <div class="flex gap-2">
           <Field
@@ -56,7 +56,7 @@ export const SvgOptions: Component<SvgOptionsProps> = (props) => {
 
       <Field
         label="Fill Color (optional)"
-        classes={{ root: 'min-w-0', label: 'font-medium text-sm' }}
+        classes={{ root: 'min-w-0', label: 'text-muted-foreground font-medium text-xs' }}
       >
         <div class="flex gap-2">
           <Field
@@ -81,7 +81,7 @@ export const SvgOptions: Component<SvgOptionsProps> = (props) => {
 
       <Field
         label="Stroke Color (optional)"
-        classes={{ root: 'min-w-0', label: 'font-medium text-sm' }}
+        classes={{ root: 'min-w-0', label: 'text-muted-foreground font-medium text-xs' }}
       >
         <div class="flex gap-2">
           <Field

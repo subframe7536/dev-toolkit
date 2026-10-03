@@ -201,13 +201,16 @@ export function ExportDialog() {
         <Dialog.Body>
           <div class="space-y-6">
             <div class="gap-4 grid grid-cols-1 md:grid-cols-2">
-              <Field label="Table Name" classes={{ root: 'min-w-0', label: 'font-medium text-sm' }}>
+              <Field
+                label="Table Name"
+                classes={{ root: 'min-w-0', label: 'text-muted-foreground font-medium text-xs' }}
+              >
                 <Input value={tableName()} onValueChange={setTableName} placeholder="my_table" />
               </Field>
 
               <Field
                 label="Export Format"
-                classes={{ root: 'min-w-0', label: 'font-medium text-sm' }}
+                classes={{ root: 'min-w-0', label: 'text-muted-foreground font-medium text-xs' }}
               >
                 <Select
                   value={exportFormat()}
@@ -223,7 +226,7 @@ export function ExportDialog() {
 
             <Field
               label="Column Naming Pattern"
-              classes={{ root: 'min-w-0', label: 'font-medium text-sm' }}
+              classes={{ root: 'min-w-0', label: 'text-muted-foreground font-medium text-xs' }}
             >
               <Select
                 value={namePattern()}
@@ -267,7 +270,7 @@ export function ExportDialog() {
               label="Output"
               classes={{
                 root: 'min-w-0',
-                label: 'font-medium text-sm',
+                label: 'text-muted-foreground font-medium text-xs',
                 labelWrapper: 'tool-panel-heading',
               }}
               hint={

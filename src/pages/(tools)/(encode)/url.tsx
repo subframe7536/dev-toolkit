@@ -28,17 +28,17 @@ function URLEncoder() {
 
   return (
     <div class="flex flex-col gap-4">
+      <EncoderLayout mode="URL" onEncode={encode} onDecode={decode} />
       <Field
         label="Regard as URL component"
         classes={{
-          root: 'flex flex-row-reverse gap-2 w-fit min-w-0 items-center',
+          root: 'flex flex-row-reverse gap-2 w-fit min-w-0 items-center pt-4 border-t border-border',
           label: 'font-normal',
           container: 'mt-0! shrink-0',
         }}
       >
         <Switch checked={useComponent()} onCheckedChange={setUseComponent} />
       </Field>
-      <EncoderLayout mode="URL" onEncode={encode} onDecode={decode} />
     </div>
   )
 }

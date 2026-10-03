@@ -434,7 +434,7 @@ export function DebugPanel() {
   const canStartDebug = createMemo(() => store.pattern && store.testText && store.isValid)
 
   return (
-    <div class="p-4" role="region" aria-labelledby="debug-heading">
+    <div class="pt-4" role="region" aria-labelledby="debug-heading">
       <div class="mb-3 flex items-center justify-between">
         <div class="flex gap-2 items-center">
           <span class="i-lucide-bug size-5" aria-hidden="true" />

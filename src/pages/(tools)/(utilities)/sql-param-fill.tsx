@@ -75,55 +75,58 @@ function SqlParamFill() {
   })
 
   return (
-    <div class="flex flex-col gap-6">
-      <div class="tool-actions">
-        <Button onClick={loadSample} variant="outline" size="sm">
-          Load Sample
-        </Button>
-      </div>
-
-      <div class="tool-grid">
-        <Field label="SQL Template" classes={{ root: 'min-w-0', label: 'font-medium text-sm' }}>
+    <div class="flex flex-col gap-4">
+      <div class="tool-editor-grid">
+        <Field
+          label="SQL Template"
+          classes={{ root: 'min-w-0', label: 'text-muted-foreground font-medium text-xs' }}
+        >
           <Textarea
             value={sqlInput()}
             onValueChange={setSqlInput}
             placeholder={`All Mybatis logs\n\nor\n\nSELECT * FROM T WHERE id = ? AND name = ?`}
-            classes={{ root: 'text-sm leading-relaxed font-mono h-48 resize-y' }}
+            classes={{ root: 'tool-editor' }}
           />
         </Field>
 
-        <Field label="Parameters" classes={{ root: 'min-w-0', label: 'font-medium text-sm' }}>
+        <Field
+          label="Parameters"
+          classes={{ root: 'min-w-0', label: 'text-muted-foreground font-medium text-xs' }}
+        >
           <Textarea
             value={paramsInput()}
             onValueChange={setParamsInput}
             placeholder="1(Integer), zhangshan(String)"
-            classes={{ root: 'text-sm leading-relaxed font-mono h-48 resize-y' }}
+            classes={{ root: 'tool-editor' }}
           />
         </Field>
       </div>
 
       <div class="relative">
-        <Field label="Output" classes={{ root: 'min-w-0', label: 'font-medium text-sm' }}>
+        <Field
+          label="Output"
+          classes={{ root: 'min-w-0', label: 'text-muted-foreground font-medium text-xs' }}
+        >
           <Textarea
             aria-invalid={!!error()}
             value={error() || output()}
             readOnly
             placeholder="SELECT * FROM T WHERE id=1 AND name='zhangshan'"
             classes={{
-              root: [
-                error() && 'text-destructive',
-                'text-sm leading-relaxed font-mono bg-muted/30 h-48 resize-y',
-              ],
+              root: [error() && 'text-destructive', 'tool-editor bg-muted/30'],
             }}
           />
         </Field>
-        <div class="mt-4 tool-actions">
+        <div class="mt-4 tool-toolbar">
+          <Button onClick={loadSample} variant="outline">
+            Load Sample
+          </Button>
           <CopyButton content={output()} disabled={!output() || !!error()} variant="secondary" />
           <ClearButton onClear={handleClear} disabled={!sqlInput() && !paramsInput()} />
         </div>
       </div>
 
-      <div class="text-muted-foreground leading-relaxed p-4 bg-muted space-y-3 text-sm rounded-lg">
+      <div class="text-muted-foreground leading-relaxed pt-4 border-t border-border space-y-3 text-sm rounded-lg">
         <div>
           <strong>How to use:</strong>
           <ul class="mt-1 list-disc list-inside space-y-0.5">

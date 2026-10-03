@@ -219,20 +219,6 @@ export function InputSection() {
                   <p class="text-muted-foreground text-sm">
                     Paste MySQL CLI output (starts with +-), CSV text, or Excel table data here.
                   </p>
-                  <Field
-                    label="Replace \n"
-                    classes={{
-                      root: 'flex flex-row-reverse gap-2 w-fit min-w-0 items-center',
-                      label: 'font-normal',
-                      container: 'mt-0! shrink-0',
-                    }}
-                  >
-                    <Switch
-                      classes={{ root: 'whitespace-nowrap' }}
-                      checked={replaceLineWrap()}
-                      onCheckedChange={handleReplaceLineWrap}
-                    />
-                  </Field>
                 </div>
                 <Field
                   label="Table input"
@@ -247,11 +233,25 @@ export function InputSection() {
                     onValueChange={setTextInput}
                   />
                 </Field>
-                <div class="flex flex-wrap gap-2 items-center">
+                <Field
+                  label="Replace \n"
+                  classes={{
+                    root: 'flex flex-row-reverse gap-2 w-fit min-w-0 items-center',
+                    label: 'font-normal',
+                    container: 'mt-0! shrink-0',
+                  }}
+                >
+                  <Switch
+                    classes={{ root: 'whitespace-nowrap' }}
+                    checked={replaceLineWrap()}
+                    onCheckedChange={handleReplaceLineWrap}
+                  />
+                </Field>
+                <div class="tool-toolbar">
                   <Button
                     onClick={handleParseText}
                     disabled={!textInput().trim()}
-                    classes={{ root: 'flex-1 min-w-48' }}
+                    classes={{ root: 'min-w-24' }}
                     leading="i-lucide-play"
                   >
                     Parse
@@ -307,7 +307,10 @@ export function InputSection() {
                 <Show when={sheetNames().length > 1}>
                   <Field
                     label="Select Sheet"
-                    classes={{ root: 'min-w-0', label: 'font-medium text-sm' }}
+                    classes={{
+                      root: 'min-w-0',
+                      label: 'text-muted-foreground font-medium text-xs',
+                    }}
                   >
                     <Select
                       value={selectedSheet()}

@@ -1,4 +1,4 @@
-import { Field, Button, Icon, InputNumber, Tabs } from 'moraine'
+import { Field, Button, InputNumber, Tabs } from 'moraine'
 import { createRoute } from 'solid-file-router'
 import { createSignal, For, onMount, Show } from 'solid-js'
 import { toast } from 'solid-toaster'
@@ -57,11 +57,17 @@ function UUIDGenerator() {
   })
 
   return (
-    <div class="gap-6 grid grid-cols-1 items-start xl:grid-cols-[18rem_minmax(0,1fr)] [&>*]:min-w-0">
-      <div class="flex flex-col gap-6">
-        <div>
-          <div class="font-semibold mb-4 text-lg">Quick Select</div>
+    <div class="space-y-4">
+      <div class="tool-toolbar items-end">
+        <Field
+          label="Quick Select"
+          classes={{
+            root: 'w-full min-w-0 md:w-60 shrink-0',
+            label: 'text-muted-foreground font-medium text-xs',
+          }}
+        >
           <Tabs
+            aria-label="Quick Select"
             value={selectedTab()}
             onChange={handleTabChange}
             items={PRESET_COUNTS.map((preset) => ({
@@ -69,9 +75,12 @@ function UUIDGenerator() {
               label: String(preset),
             }))}
           />
-        </div>
+        </Field>
 
-        <Field label="Custom Count" classes={{ root: 'min-w-0', label: 'font-medium text-sm' }}>
+        <Field
+          label="Custom Count"
+          classes={{ root: 'min-w-0 w-32', label: 'text-muted-foreground font-medium text-xs' }}
+        >
           <InputNumber
             minValue={1}
             maxValue={100}
@@ -81,38 +90,25 @@ function UUIDGenerator() {
           />
         </Field>
 
-        <div class="flex gap-2">
-          <Button
-            classes={{ root: 'flex-1' }}
-            onClick={generateUUIDs}
-            leading="i-lucide-refresh-cw"
-          >
+        <div class="tool-actions">
+          <Button onClick={generateUUIDs} leading="i-lucide-refresh-cw">
             Generate
           </Button>
-          <ClearButton
-            class="flex-1 min-w-0"
-            onClear={handleClear}
-            disabled={uuids().length === 0}
-          />
+          <ClearButton class="min-w-0" onClear={handleClear} disabled={uuids().length === 0} />
         </div>
       </div>
 
       <Show
         when={uuids().length > 0}
         fallback={
-          <div class="text-muted-foreground p-6 text-center border border-dashed flex min-h-48 items-center justify-center rounded-lg">
-            <div>
-              <Icon name="i-lucide-fingerprint" class="mx-auto mb-4 opacity-50 size-12" />
-              <p>Click "Generate" to create UUIDs</p>
-            </div>
-          </div>
+          <p class="text-muted-foreground py-4 border-t border-border text-sm">
+            Click "Generate" to create UUIDs
+          </p>
         }
       >
-        <div class="flex flex-col gap-4">
+        <div class="pt-4 border-t border-border flex flex-col gap-4">
           <div class="tool-panel-heading">
-            <h3 class="text-foreground font-semibold text-lg">
-              Generated UUIDs ({uuids().length})
-            </h3>
+            <h3 class="text-foreground font-medium text-sm">Generated UUIDs ({uuids().length})</h3>
             <CopyButton
               content={uuids().join('\n')}
               variant="secondary"

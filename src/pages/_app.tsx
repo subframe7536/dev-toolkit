@@ -1,6 +1,6 @@
 import type { RouteSectionProps } from '@solidjs/router'
-import { A, useBeforeLeave } from '@solidjs/router'
-import { Button, cn, Icon } from 'moraine'
+import { A, useBeforeLeave, useNavigate } from '@solidjs/router'
+import { Button, cn, DropdownMenu, Icon } from 'moraine'
 import { createRoute } from 'solid-file-router'
 import { For, Show } from 'solid-js'
 
@@ -122,10 +122,22 @@ function App(props: RouteSectionProps) {
         )}
       >
         <div class="flex flex-col min-h-full min-w-0">
-          <MobileToolbar />
-          <main class="px-4 py-4 flex-1 min-w-0 lg:px-6 sm:px-5">
+          <AppToolbar pathname={props.location.pathname} />
+          <main class="mx-auto border-x border-border/70 flex-1 max-w-5xl min-w-0 w-full">
             <ToolLayout>{props.children}</ToolLayout>
           </main>
+          <footer class="text-muted-foreground mx-auto px-4 py-5 border-x border-t border-border/70 flex flex-wrap gap-2 max-w-5xl w-full items-center justify-between text-xs sm:px-6">
+            <span>{count} tools · All processing stays in your browser.</span>
+            <a
+              href="https://github.com/subframe7536/dev-toolkit"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="inline-flex gap-1.5 min-h-11 items-center rounded-sm focus-visible:effect-fv sm:min-h-8"
+            >
+              <Icon name="i-lucide-github" class="size-3.5" />
+              GitHub
+            </a>
+          </footer>
           <ToolSearchDialog />
           <Toaster />
         </div>
@@ -134,16 +146,74 @@ function App(props: RouteSectionProps) {
   )
 }
 
-function MobileToolbar() {
+function AppToolbar(props: { pathname: string }) {
   const sidebar = useSidebar()
+  const navigate = useNavigate()
+  const { categories } = getCategories()
+
   return (
-    <Show when={sidebar.isMobile()}>
-      <header class="px-3 py-2 border-b border-border/60 bg-background flex gap-2 min-w-0 items-center top-0 sticky z-20">
-        <SidebarTrigger />
-        <div class="flex-1 min-w-0">
-          <ToolSearchTrigger />
+    <header class="border-b border-border bg-background top-0 sticky z-20">
+      <div class="mx-auto px-3 border-x border-border/70 flex gap-1 h-14 max-w-5xl min-w-0 items-center sm:(px-6 gap-3)">
+        <A
+          href="/"
+          class="font-semibold flex shrink-0 gap-2 min-h-11 items-center text-sm rounded-sm focus-visible:effect-fv"
+        >
+          <Icon name="i-lucide-code-xml" class="size-4" />
+          <span>Dev Toolkit</span>
+        </A>
+        <div class="flex flex-1 min-w-0 justify-end sm:justify-center">
+          <ToolSearchTrigger compact />
         </div>
-      </header>
-    </Show>
+        <nav aria-label="Tool navigation" class="flex shrink-0 items-center sm:gap-1">
+          <Show when={!sidebar.isMobile()} fallback={<SidebarTrigger />}>
+            <DropdownMenu align="end" gutter={8}>
+              <DropdownMenu.Trigger
+                as={Button}
+                variant="ghost"
+                trailing="i-lucide-chevron-down"
+                classes={{ root: 'min-h-9 px-2 text-sm' }}
+              >
+                Tools
+              </DropdownMenu.Trigger>
+              <DropdownMenu.Content
+                aria-label="Tools"
+                items={categories.map((category) => ({
+                  type: 'group' as const,
+                  label: category.name,
+                  children: category.tools.map((tool) => ({
+                    label: tool.info.title,
+                    icon: tool.info.icon,
+                    value: tool.path,
+                    onSelect: () => navigate(tool.path),
+                  })),
+                }))}
+                itemProps={({ item }) => ({
+                  'aria-current': item.value === props.pathname ? 'page' : undefined,
+                  class: item.value === props.pathname ? 'font-semibold bg-accent' : undefined,
+                })}
+                classes={{
+                  content: 'w-72 max-h-[calc(100dvh-5rem)] overflow-y-auto',
+                  groupLabel: 'text-[11px] tracking-wide uppercase',
+                  item: 'min-h-9',
+                }}
+              />
+            </DropdownMenu>
+          </Show>
+          <Button
+            variant="ghost"
+            as="a"
+            href="https://github.com/subframe7536/dev-toolkit"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="View Dev Toolkit on GitHub"
+            title="GitHub"
+            size="icon-md"
+            leading="i-lucide-github"
+            classes={{ root: 'hidden sm:flex size-9' }}
+          />
+          <ThemeToggle />
+        </nav>
+      </div>
+    </header>
   )
 }

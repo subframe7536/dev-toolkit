@@ -222,7 +222,7 @@ export function TestingPanel() {
         }
         classes={{
           root: 'min-w-0',
-          label: 'text-muted-foreground tracking-wide font-medium uppercase text-sm',
+          label: 'text-muted-foreground tracking-wide font-medium uppercase text-xs',
           labelWrapper: 'tool-panel-heading',
         }}
         hint={
@@ -273,7 +273,7 @@ export function TestingPanel() {
             ref={(element) => (textareaRef = element)}
             placeholder="Enter text to test your regex against..."
             classes={{
-              root: 'leading-relaxed font-mono p-(2 3) h-64 w-full resize-y relative z-10 text-sm',
+              root: 'leading-relaxed font-mono p-(2 3) h-64 sm:h-[300px] w-full resize-y relative z-10 text-sm',
             }}
             style={{
               background: store.testText ? 'transparent' : undefined,

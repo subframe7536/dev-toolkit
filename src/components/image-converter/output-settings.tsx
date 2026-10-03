@@ -30,8 +30,11 @@ export const OutputSettings: Component<OutputSettingsProps> = (props) => {
   }
 
   return (
-    <div class="flex flex-col gap-6">
-      <Field label="Output Format" classes={{ root: 'min-w-0', label: 'font-medium text-sm' }}>
+    <div class="flex flex-col gap-4">
+      <Field
+        label="Output Format"
+        classes={{ root: 'min-w-0', label: 'text-muted-foreground font-medium text-xs' }}
+      >
         <Select
           value={props.targetFormat}
           onValueChange={(value) => value && props.onFormatChange(value)}
@@ -42,7 +45,7 @@ export const OutputSettings: Component<OutputSettingsProps> = (props) => {
       <Show when={showQualitySlider()}>
         <Field
           label={`${props.targetFormat.toUpperCase()} Quality: ${props.quality}`}
-          classes={{ root: 'min-w-0', label: 'font-medium text-sm' }}
+          classes={{ root: 'min-w-0', label: 'text-muted-foreground font-medium text-xs' }}
         >
           <Slider
             value={[props.quality]}

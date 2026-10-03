@@ -63,7 +63,10 @@ export function ExportDialog() {
           <div class="space-y-4">
             {/* Language and Variable Name Row */}
             <div class="gap-4 grid grid-cols-1 sm:grid-cols-2">
-              <Field label="Language" classes={{ root: 'min-w-0', label: 'font-medium text-sm' }}>
+              <Field
+                label="Language"
+                classes={{ root: 'min-w-0', label: 'text-muted-foreground font-medium text-xs' }}
+              >
                 <Select
                   value={store.selectedExportLanguage}
                   onValueChange={(lang) =>
@@ -76,7 +79,11 @@ export function ExportDialog() {
               <Field
                 label="Variable Name"
                 help="The name of the variable in the exported code"
-                classes={{ root: 'min-w-0', label: 'font-medium text-sm', help: 'sr-only' }}
+                classes={{
+                  root: 'min-w-0',
+                  label: 'text-muted-foreground font-medium text-xs',
+                  help: 'sr-only',
+                }}
               >
                 <Input value={variableName()} onValueChange={setVariableName} placeholder="regex" />
               </Field>
@@ -117,7 +124,7 @@ export function ExportDialog() {
                 label="Generated Code"
                 classes={{
                   root: 'min-w-0',
-                  label: 'font-medium text-sm',
+                  label: 'text-muted-foreground font-medium text-xs',
                   labelWrapper: 'tool-panel-heading',
                 }}
                 hint={

@@ -89,7 +89,34 @@ export function EncoderLayout(props: EncoderLayoutProps): JSX.Element {
 
   return (
     <div class="space-y-4">
-      <div class="tool-actions">
+      <div class="tool-editor-grid">
+        <Field
+          label={inputLabel()}
+          classes={{ root: 'min-w-0', label: 'text-muted-foreground font-medium text-xs' }}
+        >
+          <Textarea
+            classes={{ root: 'tool-editor' }}
+            placeholder={inputPlaceholder()}
+            value={inputText()}
+            onValueChange={setInputText}
+          />
+        </Field>
+        <Field
+          label={outputLabel()}
+          classes={{ root: 'min-w-0', label: 'text-muted-foreground font-medium text-xs' }}
+        >
+          <Textarea
+            aria-invalid={!!error()}
+            classes={{
+              root: ['tool-editor bg-muted/30', error() && 'border-destructive text-destructive'],
+            }}
+            readOnly
+            placeholder={outputPlaceholder()}
+            value={error() || outputText()}
+          />
+        </Field>
+      </div>
+      <div class="tool-toolbar">
         <Button
           onClick={toggleMode}
           variant="outline"
@@ -98,33 +125,8 @@ export function EncoderLayout(props: EncoderLayoutProps): JSX.Element {
         >
           Switch to {isEncode() ? 'decode' : 'encode'}
         </Button>
-      </div>
-      <div class="tool-grid">
-        <div class="space-y-4">
-          <Field label={inputLabel()} classes={{ root: 'min-w-0', label: 'font-medium text-sm' }}>
-            <Textarea
-              classes={{ root: 'tool-editor' }}
-              placeholder={inputPlaceholder()}
-              value={inputText()}
-              onValueChange={setInputText}
-            />
-          </Field>
-          <ClearButton onClear={clear} disabled={!inputText()} />
-        </div>
-        <div class="space-y-4">
-          <Field label={outputLabel()} classes={{ root: 'min-w-0', label: 'font-medium text-sm' }}>
-            <Textarea
-              aria-invalid={!!error()}
-              classes={{
-                root: ['tool-editor bg-muted/30', error() && 'border-destructive text-destructive'],
-              }}
-              readOnly
-              placeholder={outputPlaceholder()}
-              value={error() || outputText()}
-            />
-          </Field>
-          <CopyButton content={outputText()} disabled={!outputText()} variant="secondary" />
-        </div>
+        <CopyButton content={outputText()} disabled={!outputText()} variant="secondary" />
+        <ClearButton onClear={clear} disabled={!inputText()} />
       </div>
     </div>
   )

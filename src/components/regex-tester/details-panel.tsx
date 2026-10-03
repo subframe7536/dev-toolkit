@@ -130,7 +130,7 @@ export function DetailsPanel() {
   })
 
   return (
-    <div class="p-4" role="region" aria-labelledby="matches-heading">
+    <div class="pt-4" role="region" aria-labelledby="matches-heading">
       <div class="mb-4 flex items-center justify-between">
         <h3 id="matches-heading" class="text-md text-foreground font-medium">
           Matches

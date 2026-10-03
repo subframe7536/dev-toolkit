@@ -83,7 +83,7 @@ function HashGenerator() {
   }
 
   return (
-    <div class="gap-6 grid grid-cols-1 items-start xl:grid-cols-[18rem_minmax(0,1fr)] [&>*]:min-w-0">
+    <div class="space-y-4">
       <div class="flex flex-col gap-4">
         <Tabs
           value={inputMode()}
@@ -126,17 +126,12 @@ function HashGenerator() {
           ]}
         />
 
-        <div class="flex gap-3">
-          <Button
-            classes={{ root: 'flex-1' }}
-            onClick={handleGenerate}
-            disabled={isGenerating()}
-            leading="i-lucide-refresh-cw"
-          >
+        <div class="tool-toolbar">
+          <Button onClick={handleGenerate} disabled={isGenerating()} leading="i-lucide-refresh-cw">
             {isGenerating() ? 'Generating...' : 'Generate'}
           </Button>
           <ClearButton
-            class="flex-1 min-w-0"
+            class="min-w-0"
             onClear={handleClear}
             disabled={results().length === 0 && !textInput() && !file()}
           />
@@ -146,21 +141,20 @@ function HashGenerator() {
       <Show
         when={results().length > 0}
         fallback={
-          <div class="text-muted-foreground p-6 text-center border border-dashed flex min-h-48 items-center justify-center rounded-lg">
-            <div>
-              <Icon name="i-lucide-hash" class="mx-auto mb-4 opacity-50 size-12" />
-              <p>Enter text or upload a file, then click "Generate"</p>
-            </div>
-          </div>
+          <p class="text-muted-foreground py-4 border-t border-border text-sm">
+            Enter text or upload a file, then click "Generate"
+          </p>
         }
       >
         <Card
+          variant="section"
           title="Generated Hashes"
+          class="border-border pt-4! border-t!"
           content={
             <div class="flex flex-col gap-4">
               <Field
                 label="Verify Hash (Optional)"
-                classes={{ root: 'min-w-0', label: 'font-medium text-sm' }}
+                classes={{ root: 'min-w-0', label: 'text-muted-foreground font-medium text-xs' }}
               >
                 <Textarea
                   value={verifyHash()}

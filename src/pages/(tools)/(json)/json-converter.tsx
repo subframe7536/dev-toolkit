@@ -116,8 +116,58 @@ function JSONConverter() {
   }
 
   return (
-    <div class="space-y-6">
-      <div class="flex flex-wrap gap-4 items-center">
+    <div class="space-y-4">
+      <div class="tool-editor-grid">
+        <Field
+          label="JSON Input"
+          classes={{ root: 'min-w-0', label: 'text-muted-foreground font-medium text-xs' }}
+        >
+          <Textarea
+            classes={{ root: 'tool-editor' }}
+            placeholder="Paste your JSON here..."
+            value={input()}
+            onValueChange={setInput}
+          />
+        </Field>
+        <Field
+          label="Output"
+          classes={{ root: 'min-w-0', label: 'text-muted-foreground font-medium text-xs' }}
+        >
+          <Textarea
+            classes={{ root: 'tool-editor bg-muted/30' }}
+            readOnly
+            placeholder="Converted output will appear here..."
+            value={output()}
+          />
+        </Field>
+      </div>
+      <div class="tool-toolbar">
+        <Field
+          label="Output format"
+          classes={{ root: 'min-w-0', label: 'sr-only', container: 'mt-0!' }}
+        >
+          <Select
+            value={mode()}
+            onValueChange={(value) => {
+              if (value !== null) {
+                setMode(value)
+              }
+            }}
+            items={conversionModes.map(({ value, label }) => ({ value, label }))}
+            classes={{ control: 'w-52 max-w-full' }}
+          />
+        </Field>
+        <CopyButton content={output()} variant="secondary" disabled={!output()} />
+        <DownloadButton
+          content={output()}
+          filename={`converted.${getFileExtension()}`}
+          mimeType={getMimeType()}
+          disabled={!output()}
+          variant="secondary"
+        />
+        <ClearButton onClear={handleClear} disabled={!input()} />
+      </div>
+      <div class="pt-4 border-t border-border tool-toolbar">
         <Field
           label="Auto-repair JSON"
           classes={{
@@ -128,67 +178,6 @@ function JSONConverter() {
         >
           <Switch checked={useRepair()} onCheckedChange={setUseRepair} />
         </Field>
-      </div>
-
-      <div class="tool-grid">
-        <div class="flex flex-col gap-4">
-          <Field label="JSON Input" classes={{ root: 'min-w-0', label: 'font-medium text-sm' }}>
-            <Textarea
-              classes={{ root: 'tool-editor' }}
-              placeholder="Paste your JSON here..."
-              value={input()}
-              onValueChange={setInput}
-            />
-          </Field>
-          <div>
-            <ClearButton onClear={handleClear} disabled={!input()} />
-          </div>
-        </div>
-
-        <div class="flex flex-col gap-4">
-          <Field
-            label="Output"
-            classes={{
-              root: 'min-w-0',
-              label: 'font-medium text-sm',
-              labelWrapper: 'tool-panel-heading',
-            }}
-            hint={
-              <Field
-                label="Output format"
-                classes={{ root: 'min-w-0', label: 'sr-only', container: 'mt-0!' }}
-              >
-                <Select
-                  value={mode()}
-                  onValueChange={(value) => {
-                    if (value !== null) {
-                      setMode(value)
-                    }
-                  }}
-                  items={conversionModes.map(({ value, label }) => ({ value, label }))}
-                  classes={{ control: 'w-52 max-w-full' }}
-                />
-              </Field>
-            }
-          >
-            <Textarea
-              classes={{ root: 'tool-editor bg-muted/30' }}
-              readOnly
-              placeholder="Converted output will appear here..."
-              value={output()}
-            />
-          </Field>
-          <div class="tool-actions">
-            <CopyButton content={output()} variant="secondary" disabled={!output()} />
-            <DownloadButton
-              content={output()}
-              filename={`converted.${getFileExtension()}`}
-              mimeType={getMimeType()}
-              disabled={!output()}
-              variant="secondary"
-            />
-          </div>
-        </div>
       </div>
     </div>
   )

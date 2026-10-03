@@ -123,7 +123,7 @@ export function ToolSearchDialog() {
   )
 }
 
-export function ToolSearchTrigger(props: { prominent?: boolean }) {
+export function ToolSearchTrigger(props: { compact?: boolean }) {
   const context = useContext(ToolSearchContext)
   if (!context) {
     throw new Error('ToolSearchTrigger must be inside ToolSearchProvider.')
@@ -136,16 +136,16 @@ export function ToolSearchTrigger(props: { prominent?: boolean }) {
       aria-haspopup="dialog"
       onClick={context.open}
       classes={{
-        label: 'flex w-full min-w-0 gap-2 items-center',
-        root: props.prominent
-          ? 'text-muted-foreground border border-border bg-card px-3 min-h-11 w-full justify-start rounded-md'
-          : 'text-muted-foreground border border-border px-3 min-h-11 min-w-0 w-full justify-start rounded-md md:min-h-8 md:max-w-md',
+        label: props.compact
+          ? 'flex min-w-0 gap-2 items-center justify-center sm:w-full'
+          : 'flex w-full min-w-0 gap-2 items-center',
+        root: props.compact
+          ? 'text-muted-foreground p-0 size-11 shrink-0 sm:(px-3 min-h-9 h-9 w-64 border border-border bg-muted/40 justify-start rounded-md)'
+          : 'text-muted-foreground border border-border px-3 min-h-11 min-w-0 w-full justify-start rounded-md',
       }}
     >
       <Icon name="i-lucide-search" class="shrink-0 size-4" />
-      <span class="truncate">
-        {props.prominent ? 'Search tools by name or task...' : 'Search tools...'}
-      </span>
+      <span class={props.compact ? 'truncate hidden sm:block' : 'truncate'}>Search tools...</span>
       <kbd class="text-[11px] font-sans ml-auto pl-3 shrink-0 hidden sm:block">
         {context.shortcut()}
       </kbd>

@@ -18,8 +18,8 @@ export function TableActions() {
   }
 
   return (
-    <div class="flex flex-wrap gap-4 items-center justify-between">
-      <div class="flex flex-wrap gap-4 items-center">
+    <div class="tool-toolbar justify-between">
+      <div class="tool-toolbar">
         <Field
           label="Visible columns"
           classes={{ root: 'min-w-0', label: 'sr-only', container: 'mt-0!' }}

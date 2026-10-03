@@ -268,7 +268,7 @@ export function RegexInputPanel() {
         error={store.parseError ? <span role="alert">{store.parseError.message}</span> : undefined}
         classes={{
           root: 'min-w-0',
-          label: 'font-medium text-sm',
+          label: 'text-muted-foreground font-medium text-xs',
           labelWrapper: 'tool-panel-heading',
           container: 'gap-3',
         }}
@@ -345,8 +345,11 @@ export function RegexInputPanel() {
       </Field>
 
       {/* Both layers share the same text geometry so highlights follow the caret. */}
-      <Field label="Test String" classes={{ root: 'min-w-0', label: 'font-medium text-sm' }}>
-        <div class="h-64 relative overflow-hidden rounded-lg sm:h-88">
+      <Field
+        label="Test String"
+        classes={{ root: 'min-w-0', label: 'text-muted-foreground font-medium text-xs' }}
+      >
+        <div class="h-64 min-h-32 resize-y relative overflow-hidden rounded-md sm:h-[300px]">
           {/* Highlight layer */}
           <div
             ref={(element) => (testMirrorRef = element)}

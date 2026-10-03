@@ -42,26 +42,28 @@ function TextCase() {
   }
 
   return (
-    <div class="flex flex-col gap-6">
+    <div class="flex flex-col gap-4">
       <Field
         label="Input Text"
         classes={{
           root: 'min-w-0',
-          label: 'font-medium text-sm',
+          label: 'text-muted-foreground font-medium text-xs',
           labelWrapper: 'tool-panel-heading',
         }}
-        hint={<ClearButton onClear={handleClear} disabled={!input()} size="sm" />}
       >
         <Textarea
           value={input()}
           modelModifiers={{ lazy: true }}
           onValueChange={setInput}
-          classes={{ root: 'text-sm leading-relaxed font-mono h-36 resize-y' }}
+          classes={{ root: 'tool-editor' }}
           placeholder="Enter text to convert..."
         />
       </Field>
 
-      <div class="gap-4 grid grid-cols-1 2xl:grid-cols-3 lg:grid-cols-2">
+      <div class="tool-toolbar">
+        <ClearButton onClear={handleClear} disabled={!input()} size="sm" />
+      </div>
+      <div class="pt-4 border-t border-border gap-4 grid grid-cols-1 md:grid-cols-2">
         <For each={CASE_STYLES}>
           {(style) => {
             const converted = createMemo(() =>
@@ -70,6 +72,7 @@ function TextCase() {
 
             return (
               <Card
+                variant="section"
                 title={style.label}
                 class="flex flex-col"
                 description={`Example: ${style.example}`}

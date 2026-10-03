@@ -244,9 +244,10 @@ function ImageConverter() {
   }
 
   return (
-    <div class="gap-6 grid grid-cols-1 items-start xl:grid-cols-[minmax(0,1fr)_20rem] [&>*]:min-w-0">
+    <div class="gap-6 grid grid-cols-1 items-start lg:grid-cols-[minmax(0,1fr)_18rem] [&>*]:min-w-0">
       {/* Left side - Images */}
       <Card
+        variant="section"
         title="Upload Images"
         content={
           <>
@@ -259,7 +260,7 @@ function ImageConverter() {
               icon="i-lucide-image"
             />
             <Show when={images.length > 0}>
-              <div class="mt-6 gap-4 grid grid-cols-[repeat(auto-fill,minmax(min(100%,14rem),1fr))]">
+              <div class="mt-4 gap-4 grid grid-cols-[repeat(auto-fill,minmax(min(100%,14rem),1fr))]">
                 <For each={images}>
                   {(img) => (
                     <ImageCard
@@ -277,8 +278,9 @@ function ImageConverter() {
       />
 
       {/* Right side - Settings */}
-      <div class="space-y-6">
+      <div class="space-y-4">
         <Card
+          variant="section"
           title="Output Settings"
           content={
             <OutputSettings
@@ -298,6 +300,7 @@ function ImageConverter() {
 
         <Show when={hasSvgFiles()}>
           <Card
+            variant="section"
             title="SVG Options"
             content={
               <SvgOptions

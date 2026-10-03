@@ -146,16 +146,16 @@ function DateTimeTool() {
   })
 
   return (
-    <div class="space-y-6">
+    <div class="space-y-4">
       {/* Two Column Layout for Wide Screens */}
-      <div class="tool-grid">
+      <div class="tool-grid lg:grid-cols-2">
         {/* Left Column */}
-        <div class="space-y-6">
+        <div class="space-y-4">
           {/* Real-time Clock + Custom Date Input + Format Options */}
           <div class="space-y-4">
             {/* Real-time Display */}
             <div class="p-4 text-center border bg-muted/50 rounded-lg">
-              <div class="leading-relaxed font-mono font-semibold mb-2 break-words tabular-nums text-xl sm:text-2xl">
+              <div class="leading-relaxed font-medium font-mono mb-2 break-words tabular-nums text-xl">
                 {formattedTime()}
               </div>
               <div class="text-muted-foreground text-sm">
@@ -168,7 +168,10 @@ function DateTimeTool() {
               <div class="flex gap-2 items-end">
                 <Field
                   label="Custom Date Input"
-                  classes={{ root: 'min-w-0 flex-1', label: 'font-medium text-sm' }}
+                  classes={{
+                    root: 'min-w-0 flex-1',
+                    label: 'text-muted-foreground font-medium text-xs',
+                  }}
                 >
                   <Input
                     value={customInput()}
@@ -187,9 +190,12 @@ function DateTimeTool() {
 
             {/* Format Options */}
             <div class="space-y-2">
-              <div class="font-medium">Format Options</div>
+              <div class="text-muted-foreground font-medium text-xs">Format Options</div>
               <div class="gap-4 grid grid-cols-2">
-                <Field label="Locale" classes={{ root: 'min-w-0', label: 'font-medium text-sm' }}>
+                <Field
+                  label="Locale"
+                  classes={{ root: 'min-w-0', label: 'text-muted-foreground font-medium text-xs' }}
+                >
                   <Select
                     value={selectedLocale()}
                     onValueChange={(value) => {
@@ -202,7 +208,7 @@ function DateTimeTool() {
                 </Field>
                 <Field
                   label="Time Zone"
-                  classes={{ root: 'min-w-0', label: 'font-medium text-sm' }}
+                  classes={{ root: 'min-w-0', label: 'text-muted-foreground font-medium text-xs' }}
                 >
                   <Select
                     value={selectedTimeZone()}
@@ -216,7 +222,7 @@ function DateTimeTool() {
                 </Field>
                 <Field
                   label="Date Style"
-                  classes={{ root: 'min-w-0', label: 'font-medium text-sm' }}
+                  classes={{ root: 'min-w-0', label: 'text-muted-foreground font-medium text-xs' }}
                 >
                   <Select
                     value={dateStyle()}
@@ -226,7 +232,7 @@ function DateTimeTool() {
                 </Field>
                 <Field
                   label="Time Style"
-                  classes={{ root: 'min-w-0', label: 'font-medium text-sm' }}
+                  classes={{ root: 'min-w-0', label: 'text-muted-foreground font-medium text-xs' }}
                 >
                   <Select
                     value={timeStyle()}
@@ -240,6 +246,7 @@ function DateTimeTool() {
 
           {/* DateTime Manipulation */}
           <Card
+            variant="section"
             title="DateTime Manipulation"
             description="Units: y=years, M=months, d=days, h=hours, m=minutes, s=seconds"
             icon="i-lucide-calculator"
@@ -281,6 +288,7 @@ function DateTimeTool() {
         {/* Right Column */}
         {/* Custom Format + Output Formats */}
         <Card
+          variant="section"
           title="Format Outputs"
           icon="i-lucide-list"
           content={
@@ -288,7 +296,7 @@ function DateTimeTool() {
               {/* Custom Format */}
               <Field
                 label="Custom Format Pattern"
-                classes={{ root: 'min-w-0', label: 'font-medium text-sm' }}
+                classes={{ root: 'min-w-0', label: 'text-muted-foreground font-medium text-xs' }}
               >
                 <Input
                   value={customFormat()}

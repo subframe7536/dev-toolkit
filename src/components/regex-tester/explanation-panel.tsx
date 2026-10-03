@@ -97,7 +97,7 @@ export function ExplanationPanel() {
   const hasElements = createMemo(() => explanation().elements.length > 0)
 
   return (
-    <div class="p-4 space-y-4">
+    <div class="pt-4 space-y-4">
       {/* Overall description */}
       <div>
         <h3 class="text-md text-foreground font-medium mb-3 flex gap-2 items-center">

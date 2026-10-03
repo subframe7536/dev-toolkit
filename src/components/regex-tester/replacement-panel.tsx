@@ -23,11 +23,11 @@ export function ReplacementPanel() {
   }
 
   return (
-    <div class="p-4 space-y-4">
+    <div class="pt-4 space-y-4">
       {/* Replacement Pattern Input */}
       <Field
         label="Replacement Pattern"
-        classes={{ root: 'min-w-0', label: 'font-medium text-sm' }}
+        classes={{ root: 'min-w-0', label: 'text-muted-foreground font-medium text-xs' }}
       >
         <Input
           placeholder="Enter replacement (e.g., $1-$2 or $<name>)"

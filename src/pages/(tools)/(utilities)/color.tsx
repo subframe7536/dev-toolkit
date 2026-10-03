@@ -89,14 +89,14 @@ function ColorConverter() {
   }
 
   return (
-    <div class="gap-6 grid grid-cols-1 xl:grid-cols-[18rem_minmax(0,1fr)]">
+    <div class="tool-grid lg:grid-cols-2">
       {/* Left Column */}
-      <div class="min-w-0 space-y-6">
+      <div class="min-w-0 space-y-4">
         {/* Color Preview with Picker */}
         <Field
           label="Pick color"
           classes={{
-            root: 'group border h-48 w-full cursor-pointer relative overflow-hidden rounded-xl focus-within:effect-fv',
+            root: 'group border h-32 w-full cursor-pointer relative overflow-hidden rounded-lg focus-within:effect-fv',
             label: 'sr-only',
             container: 'mt-0! h-full',
           }}
@@ -125,11 +125,11 @@ function ColorConverter() {
             value={inputValue()}
             onValueChange={handleInputChange}
             placeholder="Enter color..."
-            classes={{ root: 'font-mono pr-10' }}
+            classes={{ root: 'font-mono pr-12 min-h-11 md:min-h-8 md:pr-10' }}
           />
           <button
             aria-label="Clear color input"
-            class="rounded-1.5 size-8 translate-y--50% right-2 top-50% absolute hover:bg-background"
+            class="rounded-1.5 size-11 translate-y--50% right-0 top-50% absolute hover:bg-background md:size-8 md:right-2"
             onClick={() => handleInputChange('')}
           >
             <Icon name="i-lucide-x" class="size-3 inline-block" title="clear" />
@@ -154,7 +154,7 @@ function ColorConverter() {
         {/* Saved Colors */}
         <div class="space-y-2">
           <h3 class="text-muted-foreground font-medium select-none text-sm">Saved Colors</h3>
-          <div class="gap-2 grid grid-cols-6">
+          <div class="gap-2 grid grid-cols-4 max-h-40 overflow-y-auto sm:grid-cols-6">
             <For each={Array.from({ length: MAX_COLORS })}>
               {(_, i) => {
                 const color = createMemo(() => savedColors()[i()])
@@ -162,10 +162,8 @@ function ColorConverter() {
                   <button
                     onClick={() => color() && applySavedColor(color()!)}
                     class={cn(
-                      'b-(2 border) rounded h-10 w-full transition-colors focus-visible:effect-fv',
-                      color()
-                        ? 'cursor-pointer hover:(shadow-md scale-110)'
-                        : 'bg-muted/30 cursor-default',
+                      'b-(2 border) rounded h-11 w-full transition-colors focus-visible:effect-fv',
+                      color() ? 'cursor-pointer hover:opacity-80' : 'bg-muted/30 cursor-default',
                     )}
                     style={color() ? { 'background-color': color() } : {}}
                     title={color() || 'Empty slot'}
@@ -183,11 +181,15 @@ function ColorConverter() {
         {/* RGB & HSL Sliders */}
         <div class="gap-4 grid 2xl:grid-cols-2">
           <Card
+            variant="section"
             title="RGB Channels"
             class="flex-1"
             content={
               <div class="space-y-4">
-                <Field label="Red" classes={{ root: 'min-w-0', label: 'font-medium text-sm' }}>
+                <Field
+                  label="Red"
+                  classes={{ root: 'min-w-0', label: 'text-muted-foreground font-medium text-xs' }}
+                >
                   <Slider
                     value={[Math.round(rgb().r)]}
                     onValueChange={(value) => updateFromSliders('r', value[0])}
@@ -196,7 +198,10 @@ function ColorConverter() {
                     step={1}
                   />
                 </Field>
-                <Field label="Green" classes={{ root: 'min-w-0', label: 'font-medium text-sm' }}>
+                <Field
+                  label="Green"
+                  classes={{ root: 'min-w-0', label: 'text-muted-foreground font-medium text-xs' }}
+                >
                   <Slider
                     value={[Math.round(rgb().g)]}
                     onValueChange={(value) => updateFromSliders('g', value[0])}
@@ -205,7 +210,10 @@ function ColorConverter() {
                     step={1}
                   />
                 </Field>
-                <Field label="Blue" classes={{ root: 'min-w-0', label: 'font-medium text-sm' }}>
+                <Field
+                  label="Blue"
+                  classes={{ root: 'min-w-0', label: 'text-muted-foreground font-medium text-xs' }}
+                >
                   <Slider
                     value={[Math.round(rgb().b)]}
                     onValueChange={(value) => updateFromSliders('b', value[0])}
@@ -219,11 +227,15 @@ function ColorConverter() {
           />
 
           <Card
+            variant="section"
             title="HSL Properties"
             class="flex-1"
             content={
               <div class="space-y-4">
-                <Field label="Hue" classes={{ root: 'min-w-0', label: 'font-medium text-sm' }}>
+                <Field
+                  label="Hue"
+                  classes={{ root: 'min-w-0', label: 'text-muted-foreground font-medium text-xs' }}
+                >
                   <Slider
                     value={[Math.round(hsl().h)]}
                     onValueChange={(value) => updateFromHsl('h', value[0])}
@@ -234,7 +246,7 @@ function ColorConverter() {
                 </Field>
                 <Field
                   label="Saturation"
-                  classes={{ root: 'min-w-0', label: 'font-medium text-sm' }}
+                  classes={{ root: 'min-w-0', label: 'text-muted-foreground font-medium text-xs' }}
                 >
                   <Slider
                     value={[Math.round(hsl().s)]}
@@ -246,7 +258,7 @@ function ColorConverter() {
                 </Field>
                 <Field
                   label="Lightness"
-                  classes={{ root: 'min-w-0', label: 'font-medium text-sm' }}
+                  classes={{ root: 'min-w-0', label: 'text-muted-foreground font-medium text-xs' }}
                 >
                   <Slider
                     value={[Math.round(hsl().l)]}
@@ -263,6 +275,7 @@ function ColorConverter() {
 
         {/* Color Formats List */}
         <Card
+          variant="section"
           title="Color Formats"
           content={
             <div class="space-y-4">

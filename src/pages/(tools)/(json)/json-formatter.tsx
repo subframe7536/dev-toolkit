@@ -136,11 +136,53 @@ function JSONFormatter() {
   }
 
   return (
-    <div class="space-y-6">
-      <div class="p-4 border bg-muted/30 gap-6 grid rounded-lg xl:grid-cols-[minmax(0,2fr)_minmax(0,1fr)_minmax(0,1fr)]">
-        <div class="space-y-4">
-          <div class="font-medium text-sm">Options</div>
-          <div class="flex flex-col gap-3">
+    <div class="space-y-4">
+      <div class="tool-editor-grid">
+        <Field
+          label="Input JSON"
+          classes={{ root: 'min-w-0', label: 'text-muted-foreground font-medium text-xs' }}
+        >
+          <Textarea
+            classes={{ root: 'tool-editor' }}
+            placeholder="Paste your JSON here..."
+            value={input()}
+            onValueChange={setInput}
+          />
+        </Field>
+        <Field
+          label="Output"
+          classes={{ root: 'min-w-0', label: 'text-muted-foreground font-medium text-xs' }}
+        >
+          <Textarea
+            classes={{ root: 'tool-editor bg-muted/30' }}
+            readOnly
+            placeholder="Formatted JSON will appear here..."
+            value={output()}
+          />
+        </Field>
+      </div>
+      <div class="tool-toolbar">
+        <CopyButton content={output()} variant="secondary" disabled={!output()} />
+        <DownloadButton
+          content={output()}
+          filename="formatted.json"
+          mimeType="application/json"
+          variant="secondary"
+          disabled={!output()}
+        />
+        <Button
+          variant="ghost"
+          disabled={!output()}
+          leading="i-lucide-maximize-2"
+          onClick={() => setIsFullscreen(true)}
+        >
+          Expand
+        </Button>
+        <ClearButton onClear={handleClear} disabled={!input() && !output()} />
+      </div>
+      <div class="pt-4 border-t border-border tool-toolbar items-start">
+        <div class="w-full">
+          <div class="flex flex-wrap gap-3">
             <Field
               label="Auto repair JSON string"
               classes={{
@@ -173,7 +215,10 @@ function JSONFormatter() {
             </Field>
           </div>
         </div>
-        <Field label="Key Case" classes={{ root: 'min-w-0', label: 'font-medium text-sm' }}>
+        <Field
+          label="Key Case"
+          classes={{ root: 'min-w-0 w-44', label: 'text-muted-foreground font-medium text-xs' }}
+        >
           <Select
             value={targetCase()}
             onValueChange={(value) => {
@@ -185,7 +230,10 @@ function JSONFormatter() {
             classes={{ control: 'w-full' }}
           />
         </Field>
-        <Field label="Indent Size" classes={{ root: 'min-w-0', label: 'font-medium text-sm' }}>
+        <Field
+          label="Indent Size"
+          classes={{ root: 'min-w-0 w-44', label: 'text-muted-foreground font-medium text-xs' }}
+        >
           <Slider
             value={[indent()]}
             onValueChange={(value) => setIndent(value[0])}
@@ -194,59 +242,6 @@ function JSONFormatter() {
             step={2}
           />
         </Field>
-      </div>
-
-      <div class="tool-grid">
-        <div class="space-y-4">
-          <Field label="Input JSON" classes={{ root: 'min-w-0', label: 'font-medium text-sm' }}>
-            <Textarea
-              classes={{ root: 'tool-editor' }}
-              placeholder="Paste your JSON here..."
-              value={input()}
-              onValueChange={setInput}
-            />
-          </Field>
-          <ClearButton onClear={handleClear} disabled={!input() && !output()} />
-        </div>
-
-        <div class="space-y-4">
-          <Field
-            label="Output"
-            classes={{
-              root: 'min-w-0',
-              label: 'font-medium text-sm',
-              labelWrapper: 'tool-panel-heading',
-            }}
-            hint={
-              <Button
-                variant="ghost"
-                size="sm"
-                disabled={!output()}
-                leading="i-lucide-maximize-2"
-                onClick={() => setIsFullscreen(true)}
-              >
-                Expand
-              </Button>
-            }
-          >
-            <Textarea
-              classes={{ root: 'tool-editor bg-muted/30' }}
-              readOnly
-              placeholder="Formatted JSON will appear here..."
-              value={output()}
-            />
-          </Field>
-          <div class="tool-actions">
-            <CopyButton content={output()} variant="secondary" disabled={!output()} />
-            <DownloadButton
-              content={output()}
-              filename="formatted.json"
-              mimeType="application/json"
-              variant="secondary"
-              disabled={!output()}
-            />
-          </div>
-        </div>
       </div>
       <Dialog
         open={isFullscreen()}

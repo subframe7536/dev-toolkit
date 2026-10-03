@@ -56,8 +56,43 @@ function JSONSchemaGenerator() {
   }
 
   return (
-    <div class="space-y-6">
-      <div class="flex flex-wrap gap-6">
+    <div class="space-y-4">
+      <div class="tool-editor-grid">
+        <Field
+          label="Input JSON"
+          classes={{ root: 'min-w-0', label: 'text-muted-foreground font-medium text-xs' }}
+        >
+          <Textarea
+            classes={{ root: 'tool-editor' }}
+            placeholder='{"name": "John", "age": 30}'
+            value={input()}
+            onValueChange={setInput}
+          />
+        </Field>
+        <Field
+          label="JSON Schema Output"
+          classes={{ root: 'min-w-0', label: 'text-muted-foreground font-medium text-xs' }}
+        >
+          <Textarea
+            classes={{ root: 'tool-editor bg-muted/30' }}
+            readOnly
+            placeholder="Generated schema will appear here"
+            value={output()}
+          />
+        </Field>
+      </div>
+      <div class="tool-toolbar">
+        <CopyButton content={output()} disabled={!output()} variant="secondary" />
+        <DownloadButton
+          content={output()}
+          disabled={!output()}
+          filename="schema.json"
+          mimeType="application/json"
+          variant="secondary"
+        />
+        <ClearButton onClear={handleClear} disabled={!input() && !output()} />
+      </div>
+      <div class="pt-4 border-t border-border tool-toolbar">
         <Field
           label="Mark fields as required"
           classes={{
@@ -82,13 +117,13 @@ function JSONSchemaGenerator() {
       <div class="gap-4 grid sm:grid-cols-2">
         <Field
           label="Schema Title (optional)"
-          classes={{ root: 'min-w-0', label: 'font-medium text-sm' }}
+          classes={{ root: 'min-w-0', label: 'text-muted-foreground font-medium text-xs' }}
         >
           <Input value={title()} onValueChange={setTitle} placeholder="My Schema" />
         </Field>
         <Field
           label="Schema Description (optional)"
-          classes={{ root: 'min-w-0', label: 'font-medium text-sm' }}
+          classes={{ root: 'min-w-0', label: 'text-muted-foreground font-medium text-xs' }}
         >
           <Input
             value={description()}
@@ -96,46 +131,6 @@ function JSONSchemaGenerator() {
             placeholder="Description of the schema"
           />
         </Field>
-      </div>
-
-      <div class="tool-grid">
-        <div class="space-y-4">
-          <Field label="Input JSON" classes={{ root: 'min-w-0', label: 'font-medium text-sm' }}>
-            <Textarea
-              classes={{ root: 'tool-editor' }}
-              placeholder='{"name": "John", "age": 30}'
-              value={input()}
-              onValueChange={setInput}
-            />
-          </Field>
-          <div class="flex flex-wrap gap-2">
-            <ClearButton onClear={handleClear} disabled={!input() && !output()} />
-          </div>
-        </div>
-
-        <div class="space-y-4">
-          <Field
-            label="JSON Schema Output"
-            classes={{ root: 'min-w-0', label: 'font-medium text-sm' }}
-          >
-            <Textarea
-              classes={{ root: 'tool-editor bg-muted/30' }}
-              readOnly
-              placeholder="Generated schema will appear here"
-              value={output()}
-            />
-          </Field>
-          <div class="flex flex-wrap gap-2">
-            <CopyButton content={output()} disabled={!output()} variant="secondary" />
-            <DownloadButton
-              content={output()}
-              disabled={!output()}
-              filename="schema.json"
-              mimeType="application/json"
-              variant="secondary"
-            />
-          </div>
-        </div>
       </div>
     </div>
   )
