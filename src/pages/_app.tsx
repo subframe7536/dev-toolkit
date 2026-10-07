@@ -15,7 +15,7 @@ import { getCategories } from '#/utils/routes'
 export default createRoute({
   component: App,
   errorComponent: Catch,
-  loadingComponent: () => <div>Loading...</div>,
+  loadingComponent: () => <div class="p-4">Loading...</div>,
 })
 
 function Catch(props: { error: Error; reset: () => void }) {
