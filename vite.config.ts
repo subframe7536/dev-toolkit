@@ -9,7 +9,7 @@ import solid from 'vite-plugin-solid'
 import { manualPwa } from './vite.pwa.ts'
 
 // const base = '/dev-toolkit'
-const base = ''
+const base = process.env.BASE_URL || '/'
 
 const title = 'Dev Toolkit'
 const description = 'Tools for developers, just in browser'

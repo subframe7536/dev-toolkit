@@ -72,11 +72,24 @@ export function registPWA() {
           label: 'Cancel',
           onClick: () => setNeedRefresh(false),
         },
+        onDismiss: () => setNeedRefresh(false),
+        onAutoClose: () => setNeedRefresh(false),
       })
     }
   })
 
   return null
+}
+
+export const registerPWA = registPWA
+
+export function getServiceWorkerBaseUrl(
+  baseEnv = import.meta.env.BASE_URL,
+  origin = window.location.origin,
+) {
+  const rawBase = baseEnv || '/'
+  const base = rawBase.endsWith('/') ? rawBase : `${rawBase}/`
+  return new URL(base, origin)
 }
 
 function registerServiceWorker(onUpdateReady: (registration: ServiceWorkerRegistration) => void) {
@@ -95,16 +108,20 @@ function registerServiceWorker(onUpdateReady: (registration: ServiceWorkerRegist
     window.location.reload()
   })
 
-  window.addEventListener('load', () => {
+  if (document.readyState === 'complete') {
     void registerServiceWorkerOnLoad(onUpdateReady)
-  })
+  } else {
+    window.addEventListener('load', () => {
+      void registerServiceWorkerOnLoad(onUpdateReady)
+    })
+  }
 }
 
-async function registerServiceWorkerOnLoad(
+export async function registerServiceWorkerOnLoad(
   onUpdateReady: (registration: ServiceWorkerRegistration) => void,
 ) {
   try {
-    const baseUrl = new URL(import.meta.env.BASE_URL || '/', window.location.origin)
+    const baseUrl = getServiceWorkerBaseUrl()
     const nextRegistration = await navigator.serviceWorker.register(new URL('sw.js', baseUrl), {
       scope: baseUrl.pathname,
       updateViaCache: 'none',
@@ -114,25 +131,35 @@ async function registerServiceWorkerOnLoad(
       onUpdateReady(nextRegistration)
     }
 
-    nextRegistration.addEventListener('updatefound', () => {
-      const installingWorker = nextRegistration.installing
-
-      if (!installingWorker) {
+    const listenInstallingWorker = (worker: ServiceWorker | null) => {
+      if (!worker) {
         return
       }
 
-      installingWorker.addEventListener('statechange', () => {
-        if (installingWorker.state === 'installed' && navigator.serviceWorker.controller) {
+      worker.addEventListener('statechange', () => {
+        if (worker.state === 'installed' && navigator.serviceWorker.controller) {
           onUpdateReady(nextRegistration)
         }
       })
+    }
+
+    if (nextRegistration.installing) {
+      listenInstallingWorker(nextRegistration.installing)
+    }
+
+    nextRegistration.addEventListener('updatefound', () => {
+      listenInstallingWorker(nextRegistration.installing)
     })
   } catch (error) {
     console.warn('Service worker registration failed.', error)
   }
 }
 
-function activateWaitingServiceWorker(registration: ServiceWorkerRegistration | null) {
+export function activateWaitingServiceWorker(registration: ServiceWorkerRegistration | null) {
+  if (!registration?.waiting) {
+    return
+  }
+
   shouldReloadAfterActivation = true
-  registration?.waiting?.postMessage({ type: 'SKIP_WAITING' })
+  registration.waiting.postMessage({ type: 'SKIP_WAITING' })
 }

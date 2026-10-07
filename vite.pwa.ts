@@ -1,12 +1,14 @@
+import path from 'node:path'
+
 import type { Plugin, ResolvedConfig } from 'vite'
 
-interface ManualPwaOptions {
+export interface ManualPwaOptions {
   name: string
   shortName: string
   description: string
 }
 
-const PUBLIC_ASSETS = [
+export const PUBLIC_ASSETS = [
   'manifest.webmanifest',
   'favicon.ico',
   'favicon.svg',
@@ -53,7 +55,7 @@ export function manualPwa(options: ManualPwaOptions): Plugin {
         fileName: 'sw.js',
         source: createServiceWorker({
           buildId,
-          cachePrefix: config.root.split('/').at(-1) ?? 'app',
+          cachePrefix: path.basename(config.root) || 'app',
           precacheUrls,
         }),
       })
@@ -61,17 +63,17 @@ export function manualPwa(options: ManualPwaOptions): Plugin {
   }
 }
 
-function serializeManifest(manifest: ReturnType<typeof createManifest>) {
+export function serializeManifest(manifest: ReturnType<typeof createManifest>) {
   return `${JSON.stringify(manifest, null, 2)}\n`
 }
 
-function getManifestPath(base: string) {
-  const normalizedBase = base === '' || base === './' ? '/' : base
+export function getManifestPath(base: string) {
+  const normalizedBase = base === '' || base === './' ? '/' : base.endsWith('/') ? base : `${base}/`
 
   return new URL('manifest.webmanifest', `http://localhost${normalizedBase}`).pathname
 }
 
-function createManifest(options: ManualPwaOptions) {
+export function createManifest(options: ManualPwaOptions) {
   return {
     name: options.name,
     short_name: options.shortName,
@@ -110,13 +112,13 @@ function createManifest(options: ManualPwaOptions) {
   }
 }
 
-function getBundleAssets(bundle: Record<string, unknown>) {
+export function getBundleAssets(bundle: Record<string, unknown>) {
   return Object.values(bundle)
     .flatMap((output) => (hasFileName(output) ? [output.fileName] : []))
     .filter((fileName) => !fileName.endsWith('.map') && fileName !== 'sw.js')
 }
 
-function unique(values: string[]) {
+export function unique(values: string[]) {
   return [...new Set(values)]
 }
 
@@ -129,12 +131,13 @@ function hasFileName(output: unknown): output is { fileName: string } {
   )
 }
 
-function createServiceWorker(options: {
+export function createServiceWorker(options: {
   buildId: string
   cachePrefix: string
   precacheUrls: string[]
 }) {
   const cacheName = `${options.cachePrefix}-precache-${options.buildId}`
+  const cachePrefixPattern = `${options.cachePrefix}-precache-`
 
   return `const CACHE_NAME = ${JSON.stringify(cacheName)}
 const PRECACHE_URLS = ${JSON.stringify(options.precacheUrls, null, 2)}
@@ -156,7 +159,7 @@ self.addEventListener('activate', event => {
     caches
       .keys()
       .then(cacheNames =>
-        Promise.all(cacheNames.filter(cacheName => cacheName !== CACHE_NAME).map(cacheName => caches.delete(cacheName))),
+        Promise.all(cacheNames.filter(cacheName => cacheName.startsWith(${JSON.stringify(cachePrefixPattern)}) && cacheName !== CACHE_NAME).map(cacheName => caches.delete(cacheName))),
       )
       .then(() => self.clients.claim()),
   )
@@ -207,14 +210,18 @@ async function cacheFirst(request) {
     return cachedResponse
   }
 
-  const response = await fetch(request)
+  try {
+    const response = await fetch(request)
 
-  if (response.ok) {
-    const cache = await caches.open(CACHE_NAME)
-    await cache.put(request, response.clone())
+    if (response.ok) {
+      const cache = await caches.open(CACHE_NAME)
+      await cache.put(request, response.clone())
+    }
+
+    return response
+  } catch {
+    return Response.error()
   }
-
-  return response
 }
 `
 }
