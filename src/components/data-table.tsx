@@ -344,7 +344,7 @@ export function DataTable(props: DataTableProps) {
                       return (
                         <th
                           class={cn(
-                            'font-semibold text-left b-(b r border) min-w-30 select-none text-sm',
+                            'text-sm font-semibold text-left b-(b r border) min-w-30 select-none',
                             isPinned() ? 'bg-muted sticky z-10' : 'bg-muted/50',
                           )}
                           ref={(element) => {
@@ -423,7 +423,7 @@ export function DataTable(props: DataTableProps) {
                       return (
                         <td
                           class={cn(
-                            'b-(r border) min-w-30 text-sm',
+                            'text-sm b-(r border) min-w-30',
                             isPinned() && [
                               'sticky z-10',
                               index() % 2 === 0 ? 'bg-background' : 'bg-muted',

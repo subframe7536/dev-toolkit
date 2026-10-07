@@ -64,8 +64,8 @@ export const OutputSettings: Component<OutputSettingsProps> = (props) => {
       />
 
       <div>
-        <h3 class="font-medium mb-2 text-sm">Global Dimensions</h3>
-        <p class="text-muted-foreground mb-3 text-xs">
+        <h3 class="text-sm font-medium mb-2">Global Dimensions</h3>
+        <p class="text-xs text-muted-foreground mb-3">
           Apply to all images without individual settings
         </p>
         <div class="flex gap-2">

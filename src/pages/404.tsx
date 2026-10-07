@@ -11,8 +11,8 @@ function NotFound() {
         <Icon name="i-lucide-search-x" class="text-muted-foreground h-24 w-24" />
       </div>
 
-      <h1 class="font-bold mb-2 text-4xl">404</h1>
-      <h2 class="text-muted-foreground font-semibold mb-4 text-2xl">Page Not Found</h2>
+      <h1 class="text-4xl font-bold mb-2">404</h1>
+      <h2 class="text-2xl text-muted-foreground font-semibold mb-4">Page Not Found</h2>
 
       <p class="text-muted-foreground mb-8 max-w-md">
         The page you're looking for doesn't exist or has been moved. Let's get you back to the

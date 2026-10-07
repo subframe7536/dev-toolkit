@@ -20,10 +20,10 @@ export function ToolLayout(props: ParentProps) {
             <Icon name={tool()?.icon as any} class="size-5" />
           </div>
           <div class="min-w-0">
-            <h1 class="text-foreground leading-tight tracking-tight font-semibold text-xl sm:text-2xl">
+            <h1 class="text-xl text-foreground leading-tight tracking-tight font-semibold sm:text-2xl">
               {tool()?.title}
             </h1>
-            <p class="text-muted-foreground leading-5 mt-1 max-w-90ch text-sm">
+            <p class="text-sm text-muted-foreground leading-5 mt-1 max-w-90ch">
               {tool()?.description}
             </p>
           </div>

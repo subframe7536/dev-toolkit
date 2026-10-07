@@ -108,7 +108,7 @@ export function ExportDialog() {
               when={store.pattern}
               fallback={
                 <div
-                  class="text-muted-foreground p-4 text-center border bg-muted/50 rounded-md"
+                  class="text-muted-foreground p-4 text-center border rounded-md bg-muted/50"
                   role="status"
                 >
                   <Icon

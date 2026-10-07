@@ -34,7 +34,7 @@ function TableEditor() {
       fallback={
         <div class="space-y-4">
           <TableActions />
-          <div class="min-w-0 w-full overflow-x-auto rounded-lg">
+          <div class="rounded-lg min-w-0 w-full overflow-x-auto">
             <DataTable
               data={store.tableData}
               onDataChange={setData}

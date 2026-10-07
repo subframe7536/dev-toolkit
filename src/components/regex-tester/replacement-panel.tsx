@@ -38,7 +38,7 @@ export function ReplacementPanel() {
       </Field>
 
       {/* Syntax Help */}
-      <div class="text-muted-foreground space-y-1 text-xs">
+      <div class="text-xs text-muted-foreground space-y-1">
         <div class="font-medium mb-1">Replacement syntax:</div>
         <div class="gap-x-4 gap-y-1 grid grid-cols-2">
           <span>
@@ -60,7 +60,7 @@ export function ReplacementPanel() {
       <Show
         when={hasInput() && store.isValid}
         fallback={
-          <div class="text-muted-foreground py-8 text-center text-sm">
+          <div class="text-sm text-muted-foreground py-8 text-center">
             Enter a pattern and test text to see replacements
           </div>
         }
@@ -69,7 +69,7 @@ export function ReplacementPanel() {
           when={hasMatches()}
           fallback={
             <div
-              class="text-amber-600 p-3 border border-amber-200 bg-amber-50 text-sm rounded-md dark:text-amber-400 dark:border-amber-800 dark:bg-amber-950/30"
+              class="text-sm text-amber-600 p-3 border border-amber-200 rounded-md bg-amber-50 dark:text-amber-400 dark:border-amber-800 dark:bg-amber-950/30"
               role="status"
             >
               <Icon name="i-lucide-info" class="mr-2 size-4 inline-block" aria-hidden="true" />
@@ -82,7 +82,7 @@ export function ReplacementPanel() {
             <Show when={replacementResult()}>
               {(result) => (
                 <div
-                  class="text-muted-foreground flex gap-2 items-center text-xs"
+                  class="text-xs text-muted-foreground flex gap-2 items-center"
                   aria-live="polite"
                 >
                   <Icon name="i-lucide-repeat" class="size-3" aria-hidden="true" />
@@ -95,9 +95,9 @@ export function ReplacementPanel() {
 
             {/* Preview Output */}
             <div class="space-y-2">
-              <h3 class="text-muted-foreground text-xs">Result Preview</h3>
-              <div class="border bg-muted/50 max-h-64 overflow-auto rounded-md">
-                <pre class="font-mono p-3 whitespace-pre-wrap break-words text-sm" tabIndex={0}>
+              <h3 class="text-xs text-muted-foreground">Result Preview</h3>
+              <div class="border rounded-md bg-muted/50 max-h-64 overflow-auto">
+                <pre class="text-sm font-mono p-3 whitespace-pre-wrap break-words" tabIndex={0}>
                   {replacementResult()?.result || store.testText}
                 </pre>
               </div>

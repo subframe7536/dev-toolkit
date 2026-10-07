@@ -274,7 +274,7 @@ export function RegexInputPanel() {
           container: 'gap-3',
         }}
         hint={
-          <span class="text-muted-foreground flex gap-3 items-center text-xs">
+          <span class="text-xs text-muted-foreground flex gap-3 items-center">
             <Show when={hasInput() && store.executionTime > 0}>
               <span class="flex gap-1 items-center">
                 <Icon name="i-lucide-clock" class="size-3" />
@@ -301,7 +301,7 @@ export function RegexInputPanel() {
             {/* Mirror div for syntax highlighting */}
             <div
               ref={(element) => (patternMirrorRef = element)}
-              class="leading-relaxed font-mono p-2 b-(1 transparent) pointer-events-none whitespace-pre-wrap break-all inset-0 absolute z-10 overflow-hidden text-sm"
+              class="text-sm leading-relaxed font-mono p-2 b-(1 transparent) pointer-events-none whitespace-pre-wrap break-all inset-0 absolute z-10 overflow-hidden"
               aria-hidden="true"
             >
               <Suspense fallback={<span>{store.pattern || ' '}</span>}>
@@ -337,11 +337,11 @@ export function RegexInputPanel() {
         label="Test String"
         classes={{ root: 'min-w-0', label: 'text-muted-foreground font-medium text-xs' }}
       >
-        <div class="h-64 min-h-32 resize-y relative overflow-hidden rounded-md sm:h-[300px]">
+        <div class="rounded-md h-64 min-h-32 resize-y relative overflow-hidden sm:h-[300px]">
           {/* Highlight layer */}
           <div
             ref={(element) => (testMirrorRef = element)}
-            class="leading-relaxed font-mono p-2 b-(1 transparent) h-full pointer-events-none whitespace-pre-wrap break-all inset-0 absolute z-0 overflow-auto text-sm"
+            class="text-sm leading-relaxed font-mono p-2 b-(1 transparent) h-full pointer-events-none whitespace-pre-wrap break-all inset-0 absolute z-0 overflow-auto"
             aria-hidden="true"
           >
             <For each={segments()}>
@@ -391,7 +391,7 @@ export function RegexInputPanel() {
 
       {/* No matches hint */}
       <Show when={hasInput() && matchCount() === 0 && store.isValid}>
-        <div class="text-amber-600 p-3 border border-amber-200 bg-amber-50 flex gap-2 items-center text-sm rounded-lg dark:text-amber-400 dark:border-amber-800 dark:bg-amber-950/30">
+        <div class="text-sm text-amber-600 p-3 border border-amber-200 rounded-lg bg-amber-50 flex gap-2 items-center dark:text-amber-400 dark:border-amber-800 dark:bg-amber-950/30">
           <Icon name="i-lucide-info" class="size-4" />
           <span>No matches found. Try adjusting your pattern.</span>
         </div>

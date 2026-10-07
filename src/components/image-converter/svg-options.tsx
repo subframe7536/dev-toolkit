@@ -18,8 +18,8 @@ export const SvgOptions: Component<SvgOptionsProps> = (props) => {
     <div class="space-y-4">
       <Show when={props.previewUrl}>
         <div>
-          <h3 class="font-medium mb-2 text-sm">Preview</h3>
-          <div class="p-4 border bg-muted/30 flex items-center justify-center rounded-lg">
+          <h3 class="text-sm font-medium mb-2">Preview</h3>
+          <div class="p-4 border rounded-lg bg-muted/30 flex items-center justify-center">
             <img
               src={props.previewUrl}
               alt="SVG Preview"

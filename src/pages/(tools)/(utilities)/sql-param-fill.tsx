@@ -131,7 +131,7 @@ function SqlParamFill() {
         </div>
       </div>
 
-      <div class="text-muted-foreground leading-relaxed pt-4 border-t border-border space-y-3 text-sm rounded-lg">
+      <div class="text-sm text-muted-foreground leading-relaxed pt-4 border-t border-border rounded-lg space-y-3">
         <div>
           <strong>How to use:</strong>
           <ul class="mt-1 list-disc list-inside space-y-0.5">
@@ -144,12 +144,12 @@ function SqlParamFill() {
         </div>
         <div>
           <strong>Parameter format:</strong>
-          <code class="px-1.5 py-0.5 rounded bg-muted text-xs">value(Type), value(Type), ...</code>
+          <code class="text-xs px-1.5 py-0.5 rounded bg-muted">value(Type), value(Type), ...</code>
           <div class="mt-1">
-            Supported types: <code class="px-1 rounded bg-muted text-xs">String</code>,{' '}
-            <code class="px-1 rounded bg-muted text-xs">Integer</code>,{' '}
-            <code class="px-1 rounded bg-muted text-xs">Long</code>,{' '}
-            <code class="px-1 rounded bg-muted text-xs">Timestamp</code>
+            Supported types: <code class="text-xs px-1 rounded bg-muted">String</code>,{' '}
+            <code class="text-xs px-1 rounded bg-muted">Integer</code>,{' '}
+            <code class="text-xs px-1 rounded bg-muted">Long</code>,{' '}
+            <code class="text-xs px-1 rounded bg-muted">Timestamp</code>
           </div>
         </div>
       </div>

@@ -72,15 +72,15 @@ function AppContent(props: RouteSectionProps) {
           <SidebarFrame.SidebarHeader>
             <A
               href="/"
-              class="flex flex-col min-h-11 justify-center rounded-sm focus-visible:effect-fv"
+              class="rounded-sm flex flex-col min-h-11 justify-center focus-visible:effect-fv"
               onClick={() => {
                 if (sidebar.isMobile()) {
                   sidebar.setOpen(false)
                 }
               }}
             >
-              <h2 class="text-sidebar-foreground font-semibold text-base">Dev Toolkit</h2>
-              <p class="text-sidebar-muted-foreground text-xs">{count} tools</p>
+              <h2 class="text-base text-sidebar-foreground font-semibold">Dev Toolkit</h2>
+              <p class="text-xs text-sidebar-muted-foreground">{count} tools</p>
             </A>
             <ToolSearchTrigger />
           </SidebarFrame.SidebarHeader>
@@ -102,7 +102,7 @@ function AppContent(props: RouteSectionProps) {
                               props.location.pathname === tool.path ? 'page' : undefined
                             }
                             class={cn(
-                              'group text-[13px] text-sidebar-foreground leading-5 px-2 py-1 flex gap-2 min-h-11 transition-colors duration-200 ease-out items-center rounded-md hover:(text-sidebar-accent-foreground bg-sidebar-accent) focus-visible:effect-fv md:min-h-8',
+                              'group text-[13px] text-sidebar-foreground leading-5 px-2 py-1 rounded-md flex gap-2 min-h-11 transition-colors duration-200 ease-out items-center hover:(text-sidebar-accent-foreground bg-sidebar-accent) focus-visible:effect-fv md:min-h-8',
                               props.location.pathname === tool.path &&
                                 'text-sidebar-accent-foreground font-semibold bg-sidebar-accent',
                             )}
@@ -150,13 +150,13 @@ function AppContent(props: RouteSectionProps) {
           <main class="mx-auto border-x border-border/70 bg-background flex-1 max-w-5xl min-w-0 w-full">
             <ToolLayout>{props.children}</ToolLayout>
           </main>
-          <footer class="text-muted-foreground mx-auto px-4 py-5 border-x border-t border-border/70 bg-background flex flex-wrap gap-2 max-w-5xl w-full items-center justify-between text-xs sm:px-6">
+          <footer class="text-xs text-muted-foreground mx-auto px-4 py-5 border-x border-t border-border/70 bg-background flex flex-wrap gap-2 max-w-5xl w-full items-center justify-between sm:px-6">
             <span>{count} tools · All processing stays in your browser.</span>
             <a
               href="https://github.com/subframe7536/dev-toolkit"
               target="_blank"
               rel="noopener noreferrer"
-              class="inline-flex gap-1.5 min-h-11 items-center rounded-sm focus-visible:effect-fv sm:min-h-8"
+              class="rounded-sm inline-flex gap-1.5 min-h-11 items-center focus-visible:effect-fv sm:min-h-8"
             >
               <Icon name="i-lucide-github" class="size-3.5" />
               GitHub
@@ -180,7 +180,7 @@ function AppToolbar(props: { pathname: string }) {
       <div class="mx-auto px-3 border-x border-border/70 flex gap-1 h-14 max-w-5xl min-w-0 items-center sm:(px-6 gap-3)">
         <A
           href="/"
-          class="font-semibold flex shrink-0 gap-2 min-h-11 items-center text-sm rounded-sm focus-visible:effect-fv"
+          class="text-sm font-semibold rounded-sm flex shrink-0 gap-2 min-h-11 items-center focus-visible:effect-fv"
         >
           <Icon name="i-lucide-code-xml" class="size-4" />
           <span>Dev Toolkit</span>

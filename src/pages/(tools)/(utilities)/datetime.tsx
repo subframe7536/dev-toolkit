@@ -155,18 +155,18 @@ function DateTimeTool() {
           {/* Real-time Clock + Custom Date Input + Format Options */}
           <div class="space-y-4">
             {/* Real-time Display */}
-            <div class="p-4 text-center border bg-muted/50 rounded-lg">
-              <div class="leading-relaxed font-medium font-mono mb-2 break-words tabular-nums text-xl">
+            <div class="p-4 text-center border rounded-lg bg-muted/50">
+              <div class="text-xl leading-relaxed font-medium font-mono mb-2 break-words tabular-nums">
                 {formattedTime()}
               </div>
-              <div class="text-muted-foreground text-sm">
+              <div class="text-sm text-muted-foreground">
                 {selectedTimeZone()} • {selectedLocale()}
               </div>
             </div>
 
             {/* Custom Date Input */}
             <div class="space-y-2">
-              <div class="tool-option-controls flex gap-2 items-end">
+              <div class="flex gap-2 tool-option-controls items-end">
                 <Field
                   label="Custom Date Input"
                   classes={{
@@ -185,7 +185,7 @@ function DateTimeTool() {
                 </Button>
               </div>
               <Show when={customDate()}>
-                <div class="text-muted-foreground text-sm">Using: {toISOString(customDate()!)}</div>
+                <div class="text-sm text-muted-foreground">Using: {toISOString(customDate()!)}</div>
               </Show>
             </div>
 
@@ -264,7 +264,7 @@ function DateTimeTool() {
                   onValueChange={setCustomFormat}
                   placeholder="e.g., yyyy/MM/dd or dd-MM-yyyy HH:mm"
                 />
-                <div class="text-muted-foreground space-y-1 text-xs">
+                <div class="text-xs text-muted-foreground space-y-1">
                   <div>Tokens: yyyy (year), MM (month), dd (day)</div>
                   <div>HH/hh (hours), mm (minutes), ss (seconds), SSS (ms)</div>
                 </div>
@@ -288,11 +288,11 @@ function DateTimeTool() {
                   />
                 </Field>
                 <Show when={manipulatedTime()}>
-                  <div class="p-3 border bg-muted/50 rounded-lg">
+                  <div class="p-3 border rounded-lg bg-muted/50">
                     <div class="flex items-center justify-between">
                       <div class="flex-1 min-w-0">
-                        <div class="text-muted-foreground mb-1 text-xs">Result:</div>
-                        <div class="font-mono font-semibold truncate text-sm">
+                        <div class="text-xs text-muted-foreground mb-1">Result:</div>
+                        <div class="text-sm font-mono font-semibold truncate">
                           {manipulatedTime()}
                         </div>
                       </div>
@@ -320,11 +320,11 @@ function DateTimeTool() {
             <div class="space-y-4">
               {/* Custom Format */}
               <Show when={customFormat().trim()}>
-                <div class="p-3 border bg-muted/50 rounded-lg">
+                <div class="p-3 border rounded-lg bg-muted/50">
                   <div class="flex items-center justify-between">
                     <div class="flex-1 min-w-0">
-                      <div class="text-muted-foreground mb-1 text-xs">Preview:</div>
-                      <div class="font-mono font-semibold truncate text-sm">
+                      <div class="text-xs text-muted-foreground mb-1">Preview:</div>
+                      <div class="text-sm font-mono font-semibold truncate">
                         {formatWithPattern(customDate() || currentTime(), customFormat())}
                       </div>
                     </div>
@@ -340,14 +340,14 @@ function DateTimeTool() {
 
               {/* Common Formats */}
               <div class="space-y-2">
-                <div class="font-medium text-sm">Common Formats</div>
+                <div class="text-sm font-medium">Common Formats</div>
                 <div class="space-y-2">
                   <Index each={outputFormats}>
                     {(format) => (
-                      <div class="p-3 border bg-muted/30 flex gap-2 items-center justify-between rounded-lg">
+                      <div class="p-3 border rounded-lg bg-muted/30 flex gap-2 items-center justify-between">
                         <div class="flex-1 min-w-0">
-                          <div class="text-muted-foreground text-xs">{format().label}</div>
-                          <div class="font-mono break-all text-sm">{format().value}</div>
+                          <div class="text-xs text-muted-foreground">{format().label}</div>
+                          <div class="text-sm font-mono break-all">{format().value}</div>
                         </div>
                         <CopyButton
                           content={format().value}

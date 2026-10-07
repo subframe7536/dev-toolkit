@@ -27,33 +27,33 @@ function PatternItem(props: PatternItemProps) {
 
   return (
     <div
-      class="p-4 border border-border bg-card cursor-pointer transition-all rounded-lg hover:border-primary/30 hover:bg-muted/50 hover:shadow-sm"
+      class="p-4 border border-border rounded-lg bg-card cursor-pointer transition-all hover:border-primary/30 hover:bg-muted/50 hover:shadow-sm"
       onClick={handleClick}
     >
       <div class="mb-3">
-        <h4 class="text-foreground font-semibold mb-1 text-sm">{props.pattern.name}</h4>
-        <p class="text-muted-foreground leading-relaxed text-xs">{props.pattern.description}</p>
+        <h4 class="text-sm text-foreground font-semibold mb-1">{props.pattern.name}</h4>
+        <p class="text-xs text-muted-foreground leading-relaxed">{props.pattern.description}</p>
       </div>
 
       {/* Pattern preview */}
       <div class="mb-3">
-        <code class="text-primary font-mono px-2 py-1.5 rounded bg-muted/50 block break-all text-xs">
+        <code class="text-xs text-primary font-mono px-2 py-1.5 rounded bg-muted/50 block break-all">
           {props.pattern.pattern}
         </code>
       </div>
 
       {/* Examples preview */}
       <div class="mb-3">
-        <div class="text-muted-foreground font-medium mb-1 text-xs">Examples:</div>
+        <div class="text-xs text-muted-foreground font-medium mb-1">Examples:</div>
         <div class="space-y-1">
           <For each={props.pattern.examples.slice(0, 2)}>
             {(example) => (
-              <div class="flex gap-2 items-center text-xs">
+              <div class="text-xs flex gap-2 items-center">
                 <Icon
                   name={example.shouldMatch ? 'i-lucide-check' : 'i-lucide-x'}
                   class={example.shouldMatch ? 'text-green-500 size-3' : 'text-red-500 size-3'}
                 />
-                <code class="font-mono px-1 rounded bg-muted/30 text-xs">{example.input}</code>
+                <code class="text-xs font-mono px-1 rounded bg-muted/30">{example.input}</code>
               </div>
             )}
           </For>
@@ -64,7 +64,7 @@ function PatternItem(props: PatternItemProps) {
       <div class="flex flex-wrap gap-1">
         <For each={props.pattern.tags.slice(0, 3)}>
           {(tag) => (
-            <span class="text-muted-foreground px-1.5 py-0.5 rounded bg-muted/50 text-xs">
+            <span class="text-xs text-muted-foreground px-1.5 py-0.5 rounded bg-muted/50">
               {tag}
             </span>
           )}
@@ -86,10 +86,10 @@ function CategorySection(props: CategorySectionProps) {
     <div class="mb-6">
       <div class="mb-3 flex gap-2 items-center">
         <Icon name={icon()} class="text-muted-foreground size-4" />
-        <h3 class="text-foreground font-semibold text-sm">{props.category.name}</h3>
-        <span class="text-muted-foreground text-xs">({props.category.patterns.length})</span>
+        <h3 class="text-sm text-foreground font-semibold">{props.category.name}</h3>
+        <span class="text-xs text-muted-foreground">({props.category.patterns.length})</span>
       </div>
-      <p class="text-muted-foreground mb-4 text-xs">{props.category.description}</p>
+      <p class="text-xs text-muted-foreground mb-4">{props.category.description}</p>
 
       <div class="gap-4 grid grid-cols-1 md:grid-cols-2">
         <For each={props.category.patterns}>
@@ -159,7 +159,7 @@ export function PatternLibraryDialog(props: PatternLibraryDialogProps) {
                 <CategorySection category={category} onSelectPattern={handleSelectPattern} />
               )}
             </For>
-            <div class="text-muted-foreground pt-4 text-center border-t border-border text-xs">
+            <div class="text-xs text-muted-foreground pt-4 text-center border-t border-border">
               {categories.reduce((sum, cat) => sum + cat.patterns.length, 0)} patterns across{' '}
               {categories.length} categories
             </div>

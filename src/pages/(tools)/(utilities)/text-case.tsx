@@ -77,8 +77,8 @@ function TextCase() {
                 class="flex flex-col"
                 description={`Example: ${style.example}`}
                 content={
-                  <div class="p-3 bg-muted flex gap-2 min-h-16 items-start rounded-md">
-                    <div class="leading-relaxed font-mono flex-1 min-w-0 break-all text-sm">
+                  <div class="p-3 rounded-md bg-muted flex gap-2 min-h-16 items-start">
+                    <div class="text-sm leading-relaxed font-mono flex-1 min-w-0 break-all">
                       {converted()}
                     </div>
                     <CopyButton

@@ -103,14 +103,14 @@ function UUIDGenerator() {
       <Show
         when={uuids().length > 0}
         fallback={
-          <p class="text-muted-foreground py-4 border-t border-border text-sm">
+          <p class="text-sm text-muted-foreground py-4 border-t border-border">
             Click "Generate" to create UUIDs
           </p>
         }
       >
         <div class="pt-4 border-t border-border flex flex-col gap-4">
           <div class="tool-panel-heading">
-            <h3 class="text-foreground font-medium text-sm">Generated UUIDs ({uuids().length})</h3>
+            <h3 class="text-sm text-foreground font-medium">Generated UUIDs ({uuids().length})</h3>
             <CopyButton
               content={uuids().join('\n')}
               variant="secondary"
@@ -122,7 +122,7 @@ function UUIDGenerator() {
           <div class="flex flex-col gap-2">
             <For each={uuids()}>
               {(uuid) => (
-                <div class="font-mono p-3 border bg-muted/50 flex gap-2 items-center text-sm rounded-md">
+                <div class="text-sm font-mono p-3 border rounded-md bg-muted/50 flex gap-2 items-center">
                   <span class="flex-1 min-w-0 break-all">{uuid}</span>
                   <CopyButton content={uuid} variant="ghost" size="sm" text={false} />
                 </div>

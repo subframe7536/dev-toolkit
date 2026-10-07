@@ -239,8 +239,8 @@ export function ExportDialog() {
 
               <Show when={exportFormat() === 'sql-update'}>
                 <div class="space-y-2">
-                  <h3 class="font-medium text-sm">Key Columns (for UPDATE)</h3>
-                  <div class="p-2 border bg-control flex flex-wrap gap-3 max-h-32 overflow-y-auto rounded-md">
+                  <h3 class="text-sm font-medium">Key Columns (for UPDATE)</h3>
+                  <div class="p-2 border rounded-md bg-control flex flex-wrap gap-3 max-h-32 overflow-y-auto">
                     <For each={computed.visibleColumns()}>
                       {(col) => (
                         <Field

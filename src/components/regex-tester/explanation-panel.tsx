@@ -71,17 +71,17 @@ function ElementBadge(props: ElementBadgeProps) {
   const label = () => ELEMENT_TYPE_LABELS[type()] || 'Unknown'
 
   return (
-    <div class="p-2 border border-border bg-card transition-colors rounded-md hover:bg-muted/50">
+    <div class="p-2 border border-border rounded-md bg-card transition-colors hover:bg-muted/50">
       <div class="flex gap-2 items-start">
         <span
-          class={`font-medium px-2 py-0.5 rounded flex gap-1 items-center text-xs ${colorClass()}`}
+          class={`text-xs font-medium px-2 py-0.5 rounded flex gap-1 items-center ${colorClass()}`}
         >
           <Icon name={icon()} class="size-3" />
           {label()}
         </span>
-        <code class="font-mono font-semibold break-all text-sm">{props.element.value}</code>
+        <code class="text-sm font-mono font-semibold break-all">{props.element.value}</code>
       </div>
-      <p class="text-muted-foreground leading-relaxed mt-1.5 text-xs">
+      <p class="text-xs text-muted-foreground leading-relaxed mt-1.5">
         {props.element.description}
       </p>
     </div>
@@ -107,12 +107,12 @@ export function ExplanationPanel() {
         <Show
           when={hasPattern()}
           fallback={
-            <div class="text-muted-foreground p-4 border border-border border-dashed bg-muted/20 text-sm rounded-md">
+            <div class="text-sm text-muted-foreground p-4 border border-border rounded-md border-dashed bg-muted/20">
               Enter a regex pattern to see its explanation.
             </div>
           }
         >
-          <div class="text-foreground p-3 border border-border bg-muted/20 text-sm rounded-md">
+          <div class="text-sm text-foreground p-3 border border-border rounded-md bg-muted/20">
             {explanation().description}
           </div>
         </Show>
@@ -128,7 +128,7 @@ export function ExplanationPanel() {
 
           {/* Sequential element list */}
           <div class="mb-4 space-y-2">
-            <div class="text-muted-foreground mb-2 text-xs">Elements in order of appearance:</div>
+            <div class="text-xs text-muted-foreground mb-2">Elements in order of appearance:</div>
             <div class="max-h-64 overflow-y-auto space-y-2">
               <For each={explanation().elements}>
                 {(element) => <ElementBadge element={element} />}

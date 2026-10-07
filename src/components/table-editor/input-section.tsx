@@ -217,7 +217,7 @@ export function InputSection() {
             content: (
               <div class="mt-4 flex flex-col gap-3">
                 <div class="flex flex-wrap gap-3 items-start justify-between">
-                  <p class="text-muted-foreground text-sm">
+                  <p class="text-sm text-muted-foreground">
                     Paste MySQL CLI output (starts with +-), CSV text, or Excel table data here.
                   </p>
                 </div>
@@ -290,7 +290,7 @@ export function InputSection() {
             label: 'File Upload',
             content: (
               <div class="mt-4 flex flex-col gap-3">
-                <p class="text-muted-foreground text-sm">{getFileDescription()}</p>
+                <p class="text-sm text-muted-foreground">{getFileDescription()}</p>
                 <FileUpload
                   file={uploadedFile()}
                   setFile={handleFileSelect}

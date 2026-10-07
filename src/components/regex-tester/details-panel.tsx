@@ -24,7 +24,7 @@ interface MatchDetailRowProps {
 function MatchDetailRow(props: MatchDetailRowProps) {
   return (
     <div
-      class={`p-3 border cursor-pointer transition-colors rounded-md focus-visible:outline-none ${
+      class={`p-3 border rounded-md cursor-pointer transition-colors focus-visible:outline-none ${
         props.isSelected
           ? 'border-primary bg-primary/10 ring-2 ring-primary/30'
           : 'border-border bg-muted/20 hover:bg-muted/40'
@@ -43,12 +43,12 @@ function MatchDetailRow(props: MatchDetailRowProps) {
     >
       {/* Match header */}
       <div class="mb-2 flex items-center justify-between">
-        <span class="font-medium text-sm">Match {props.match.index + 1}</span>
-        <span class="text-muted-foreground text-xs">Index: {props.match.index}</span>
+        <span class="text-sm font-medium">Match {props.match.index + 1}</span>
+        <span class="text-xs text-muted-foreground">Index: {props.match.index}</span>
       </div>
 
       {/* Match details table */}
-      <table class="w-full text-sm" aria-label={`Details for match ${props.match.index + 1}`}>
+      <table class="text-sm w-full" aria-label={`Details for match ${props.match.index + 1}`}>
         <tbody>
           <tr class="border-b border-border/50">
             <td class="text-muted-foreground font-medium py-1 pr-3 w-24">Full Match</td>
@@ -70,13 +70,13 @@ function MatchDetailRow(props: MatchDetailRowProps) {
       {/* Capture groups */}
       <Show when={props.match.groups.length > 0}>
         <div class="mt-3 pt-2 border-t border-border/50">
-          <div class="text-muted-foreground font-medium mb-2 text-xs">
+          <div class="text-xs text-muted-foreground font-medium mb-2">
             Capture Groups ({props.match.groups.length})
           </div>
           <div class="space-y-1" role="list" aria-label="Capture groups">
             <For each={props.match.groups}>
               {(group) => (
-                <div class="flex gap-2 items-start text-xs" role="listitem">
+                <div class="text-xs flex gap-2 items-start" role="listitem">
                   <span
                     class={`font-mono px-1.5 py-0.5 rounded ${
                       CAPTURE_GROUP_COLORS[group.index % CAPTURE_GROUP_COLORS.length]
@@ -137,7 +137,7 @@ export function DetailsPanel() {
         </h3>
         <Show when={hasMatches() && store.selectedMatchIndex !== null}>
           <button
-            class="text-muted-foreground transition-colors text-xs hover:text-foreground focus:(outline-none underline)"
+            class="text-xs text-muted-foreground transition-colors hover:text-foreground focus:(outline-none underline)"
             onClick={() => actions.setSelectedMatchIndex(null)}
             aria-label="Clear match selection"
           >
@@ -149,7 +149,7 @@ export function DetailsPanel() {
       <Show
         when={hasMatches()}
         fallback={
-          <div class="text-muted-foreground p-4 border border-border border-dashed bg-muted/20 text-sm rounded-md">
+          <div class="text-sm text-muted-foreground p-4 border border-border rounded-md border-dashed bg-muted/20">
             {hasInput()
               ? 'No matches found'
               : 'Match results will appear here when you enter a pattern and test text.'}
@@ -158,32 +158,32 @@ export function DetailsPanel() {
       >
         {/* Summary statistics */}
         <div class="mb-4 gap-3 grid grid-cols-3" role="group" aria-label="Match statistics">
-          <div class="p-3 text-center border border-border bg-muted/20 rounded-md">
+          <div class="p-3 text-center border border-border rounded-md bg-muted/20">
             <div
-              class="text-primary font-bold text-2xl"
+              class="text-2xl text-primary font-bold"
               aria-label={`${stats()?.matchCount} matches`}
             >
               {stats()?.matchCount}
             </div>
-            <div class="text-muted-foreground text-xs">Matches</div>
+            <div class="text-xs text-muted-foreground">Matches</div>
           </div>
-          <div class="p-3 text-center border border-border bg-muted/20 rounded-md">
+          <div class="p-3 text-center border border-border rounded-md bg-muted/20">
             <div
-              class="text-primary font-bold text-2xl"
+              class="text-2xl text-primary font-bold"
               aria-label={`${stats()?.groupCount} groups`}
             >
               {stats()?.groupCount}
             </div>
-            <div class="text-muted-foreground text-xs">Groups</div>
+            <div class="text-xs text-muted-foreground">Groups</div>
           </div>
-          <div class="p-3 text-center border border-border bg-muted/20 rounded-md">
+          <div class="p-3 text-center border border-border rounded-md bg-muted/20">
             <div
-              class="text-primary font-bold text-2xl"
+              class="text-2xl text-primary font-bold"
               aria-label={`${stats()?.totalLength} characters matched`}
             >
               {stats()?.totalLength}
             </div>
-            <div class="text-muted-foreground text-xs">Chars Matched</div>
+            <div class="text-xs text-muted-foreground">Chars Matched</div>
           </div>
         </div>
 
@@ -218,18 +218,18 @@ export function DetailsPanel() {
       <Show when={selectedMatch()}>
         {(match) => (
           <div
-            class="mt-4 p-4 border border-primary/50 bg-primary/5 rounded-lg"
+            class="mt-4 p-4 border border-primary/50 rounded-lg bg-primary/5"
             role="region"
             aria-label={`Selected match ${match().index + 1} details`}
           >
-            <h4 class="text-foreground font-medium mb-3 text-sm">
+            <h4 class="text-sm text-foreground font-medium mb-3">
               Selected: Match {match().index + 1}
             </h4>
             <div class="space-y-3">
               <div>
-                <div class="text-muted-foreground mb-1 text-xs">Full Match Text</div>
+                <div class="text-xs text-muted-foreground mb-1">Full Match Text</div>
                 <div
-                  class="font-mono p-2 border border-border rounded bg-muted/30 break-all text-sm"
+                  class="text-sm font-mono p-2 border border-border rounded bg-muted/30 break-all"
                   tabIndex={0}
                 >
                   {match().fullMatch}
@@ -238,14 +238,14 @@ export function DetailsPanel() {
 
               <div class="gap-3 grid grid-cols-2">
                 <div>
-                  <div class="text-muted-foreground mb-1 text-xs">Start Position</div>
-                  <div class="font-mono p-2 border border-border rounded bg-muted/30 text-sm">
+                  <div class="text-xs text-muted-foreground mb-1">Start Position</div>
+                  <div class="text-sm font-mono p-2 border border-border rounded bg-muted/30">
                     {match().start}
                   </div>
                 </div>
                 <div>
-                  <div class="text-muted-foreground mb-1 text-xs">End Position</div>
-                  <div class="font-mono p-2 border border-border rounded bg-muted/30 text-sm">
+                  <div class="text-xs text-muted-foreground mb-1">End Position</div>
+                  <div class="text-sm font-mono p-2 border border-border rounded bg-muted/30">
                     {match().end}
                   </div>
                 </div>
@@ -253,9 +253,9 @@ export function DetailsPanel() {
 
               <Show when={match().groups.length > 0}>
                 <div>
-                  <div class="text-muted-foreground mb-2 text-xs">Capture Groups</div>
+                  <div class="text-xs text-muted-foreground mb-2">Capture Groups</div>
                   <table
-                    class="border border-border rounded w-full overflow-hidden text-sm"
+                    class="text-sm border border-border rounded w-full overflow-hidden"
                     aria-label="Capture groups table"
                   >
                     <thead class="bg-muted/50">

@@ -106,7 +106,7 @@ function ColorConverter() {
             style={{ 'background-color': rgbToHex(rgb()) }}
           />
           <div class="opacity-0 flex transition-opacity items-center inset-0 justify-center absolute group-hover:opacity-100">
-            <Icon name="i-lucide-pipette" class="text-white drop-shadow-lg text-5xl" />
+            <Icon name="i-lucide-pipette" class="text-5xl text-white drop-shadow-lg" />
           </div>
           <Input
             type="color"
@@ -150,7 +150,7 @@ function ColorConverter() {
 
         {/* Saved Colors */}
         <div class="space-y-2">
-          <h3 class="text-muted-foreground font-medium select-none text-sm">Saved Colors</h3>
+          <h3 class="text-sm text-muted-foreground font-medium select-none">Saved Colors</h3>
           <div class="gap-2 grid grid-cols-4 max-h-40 overflow-y-auto sm:grid-cols-6">
             <For each={Array.from({ length: MAX_COLORS })}>
               {(_, i) => {
@@ -300,12 +300,12 @@ function ColorConverter() {
                 {(format) => {
                   const value = () => formatColor(rgb(), format)
                   return (
-                    <div class="p-2 border bg-muted/30 flex gap-2 items-center rounded-lg">
+                    <div class="p-2 border rounded-lg bg-muted/30 flex gap-2 items-center">
                       <div class="flex-1 min-w-0">
-                        <div class="text-muted-foreground font-medium mb-0.5 select-none uppercase text-xs">
+                        <div class="text-xs text-muted-foreground font-medium mb-0.5 select-none uppercase">
                           {format}
                         </div>
-                        <code class="font-mono break-all text-sm">{value()}</code>
+                        <code class="text-sm font-mono break-all">{value()}</code>
                       </div>
                       <CopyButton content={value()} variant="ghost" size="sm" text={false} />
                     </div>

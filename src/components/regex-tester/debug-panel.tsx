@@ -91,7 +91,7 @@ function DebugControls(props: DebugControlsProps) {
       </div>
 
       {/* Progress indicator */}
-      <div class="text-muted-foreground ml-auto text-xs" aria-live="polite">
+      <div class="text-xs text-muted-foreground ml-auto" aria-live="polite">
         Step {props.session.currentStepIndex + 1} / {props.session.steps.length}
       </div>
     </div>
@@ -131,7 +131,7 @@ function PatternVisualizer(props: PatternVisualizerProps) {
   })
 
   return (
-    <div class="font-mono p-2 border rounded bg-muted/30 overflow-x-auto text-sm">
+    <div class="text-sm font-mono p-2 border rounded bg-muted/30 overflow-x-auto">
       <For each={segments()}>
         {(segment) => (
           <span class={segment.highlighted ? PATTERN_HIGHLIGHT : ''}>{segment.text}</span>
@@ -204,7 +204,7 @@ function TextVisualizer(props: TextVisualizerProps) {
   }
 
   return (
-    <div class="font-mono p-2 border rounded bg-muted/30 whitespace-pre-wrap break-all overflow-x-auto text-sm">
+    <div class="text-sm font-mono p-2 border rounded bg-muted/30 whitespace-pre-wrap break-all overflow-x-auto">
       <For each={segments()}>
         {(segment) => <span class={getSegmentClass(segment.type)}>{segment.text}</span>}
       </For>
@@ -248,7 +248,7 @@ function StepList(props: StepListProps) {
           <div
             id={`step-${index()}`}
             data-step-index={index()}
-            class={`p-2 rounded cursor-pointer transition-colors text-sm ${
+            class={`text-sm p-2 rounded cursor-pointer transition-colors ${
               index() === props.currentIndex ? getActionBgColor(step.action) : 'hover:bg-muted/50'
             }`}
             onClick={() => props.onStepClick(index())}
@@ -270,9 +270,9 @@ function StepList(props: StepListProps) {
               <span class={`font-medium ${getActionColor(step.action)}`}>
                 {step.action.charAt(0).toUpperCase() + step.action.slice(1)}
               </span>
-              <span class="text-muted-foreground ml-auto text-xs">#{step.stepNumber}</span>
+              <span class="text-xs text-muted-foreground ml-auto">#{step.stepNumber}</span>
             </div>
-            <p class="text-muted-foreground ml-6 mt-1 text-xs">{step.description}</p>
+            <p class="text-xs text-muted-foreground ml-6 mt-1">{step.description}</p>
           </div>
         )}
       </For>
@@ -465,7 +465,7 @@ export function DebugPanel() {
       <Show
         when={isDebugMode() && debugSession()}
         fallback={
-          <p class="text-muted-foreground text-sm" id="debug-disabled-hint">
+          <p class="text-sm text-muted-foreground" id="debug-disabled-hint">
             <Show
               when={canStartDebug()}
               fallback="Enter a valid pattern and test text to enable debug mode."
@@ -506,7 +506,7 @@ export function DebugPanel() {
                   </div>
                   <p class="text-sm">{step().description}</p>
                   <Show when={step().matchedText}>
-                    <p class="text-muted-foreground mt-1 text-xs">
+                    <p class="text-xs text-muted-foreground mt-1">
                       Matched: "{step().matchedText}"
                     </p>
                   </Show>
@@ -516,7 +516,7 @@ export function DebugPanel() {
 
             {/* Pattern visualization */}
             <div>
-              <div class="text-muted-foreground mb-1 text-xs" id="pattern-viz-label">
+              <div class="text-xs text-muted-foreground mb-1" id="pattern-viz-label">
                 Pattern
               </div>
               <PatternVisualizer
@@ -528,7 +528,7 @@ export function DebugPanel() {
 
             {/* Text visualization */}
             <div>
-              <div class="text-muted-foreground mb-1 text-xs" id="text-viz-label">
+              <div class="text-xs text-muted-foreground mb-1" id="text-viz-label">
                 Test Text
               </div>
               <TextVisualizer
@@ -549,7 +549,7 @@ export function DebugPanel() {
 
             {/* Step history */}
             <div>
-              <div class="text-muted-foreground mb-1 text-xs">Step History</div>
+              <div class="text-xs text-muted-foreground mb-1">Step History</div>
               <StepList
                 steps={session().steps}
                 currentIndex={session().currentStepIndex}

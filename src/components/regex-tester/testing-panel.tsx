@@ -226,7 +226,7 @@ export function TestingPanel() {
           labelWrapper: 'tool-panel-heading',
         }}
         hint={
-          <span class="text-muted-foreground text-xs">
+          <span class="text-xs text-muted-foreground">
             {/* Match count only - execution time moved to pattern header */}
             <Show when={hasInput()}>
               <span aria-live="polite">
@@ -247,7 +247,7 @@ export function TestingPanel() {
           {/* Highlight overlay - hidden from screen readers */}
           <div
             ref={(element) => (highlightRef = element)}
-            class="leading-relaxed font-mono p-(2 3) border border-transparent whitespace-pre-wrap break-words inset-0 absolute z-1 overflow-hidden text-sm rounded-md"
+            class="text-sm leading-relaxed font-mono p-(2 3) border border-transparent rounded-md whitespace-pre-wrap break-words inset-0 absolute z-1 overflow-hidden"
             onClick={handleHighlightClick}
             aria-hidden="true"
           >
@@ -296,7 +296,7 @@ export function TestingPanel() {
       {/* No matches indicator when pattern and text exist but no matches */}
       <Show when={hasInput() && !hasMatches() && store.isValid}>
         <div
-          class="text-amber-600 p-2 border border-amber-200 bg-amber-50 flex gap-2 items-center text-sm rounded-md dark:text-amber-400 dark:border-amber-800 dark:bg-amber-950/30"
+          class="text-sm text-amber-600 p-2 border border-amber-200 rounded-md bg-amber-50 flex gap-2 items-center dark:text-amber-400 dark:border-amber-800 dark:bg-amber-950/30"
           role="status"
         >
           <span class="i-lucide-info size-4" aria-hidden="true" />

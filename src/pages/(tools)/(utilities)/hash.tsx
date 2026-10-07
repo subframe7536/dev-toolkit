@@ -114,7 +114,7 @@ function HashGenerator() {
                 <div class="mt-4">
                   <FileUpload file={file()} setFile={setFile} multiple={false} />
                   <Show when={file()}>
-                    <div class="text-muted-foreground mt-2 text-sm">
+                    <div class="text-sm text-muted-foreground mt-2">
                       Selected: {file()!.name} ({(file()!.size / 1024).toFixed(2)} KB)
                     </div>
                   </Show>
@@ -139,7 +139,7 @@ function HashGenerator() {
       <Show
         when={results().length > 0}
         fallback={
-          <p class="text-muted-foreground py-4 border-t border-border text-sm">
+          <p class="text-sm text-muted-foreground py-4 border-t border-border">
             Enter text or upload a file, then click "Generate"
           </p>
         }
@@ -172,7 +172,7 @@ function HashGenerator() {
                       return (
                         <div
                           class={cn(
-                            'p-2 border flex gap-2 items-center rounded-lg',
+                            'p-2 border rounded-lg flex gap-2 items-center',
                             match() === true
                               ? 'border-green-500/50 bg-green-500/10'
                               : match() === false
@@ -182,14 +182,14 @@ function HashGenerator() {
                         >
                           <div class="flex-1 min-w-0">
                             <div class="mb-0.5 flex gap-1 items-center">
-                              <div class="text-muted-foreground font-medium select-none uppercase text-sm">
+                              <div class="text-sm text-muted-foreground font-medium select-none uppercase">
                                 {result.algorithm}
                               </div>
                               <Show when={match()}>
-                                <Icon name="i-lucide-check" class="text-green-600 text-sm" />
+                                <Icon name="i-lucide-check" class="text-sm text-green-600" />
                               </Show>
                             </div>
-                            <code class="font-mono break-all text-sm">{result.hash}</code>
+                            <code class="text-sm font-mono break-all">{result.hash}</code>
                           </div>
                           <CopyButton
                             content={result.hash}
