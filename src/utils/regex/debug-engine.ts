@@ -466,7 +466,7 @@ export function getActionIcon(action: DebugStep['action']): `i-lucide-${string}`
     case 'fail':
       return 'i-lucide-x'
     case 'success':
-      return 'i-lucide-check-circle'
+      return 'i-lucide-circle-check'
     case 'start':
       return 'i-lucide-play'
     default:

@@ -64,7 +64,7 @@ export function FileUpload(props: Props) {
         onValueChange={handleValueChange}
         preview={false}
         classes={{
-          control: 'min-h-56! sm:min-h-72!',
+          control: 'h-81',
         }}
       />
     </Field>

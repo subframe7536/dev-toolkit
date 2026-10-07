@@ -1,24 +1,20 @@
-import { Field, Textarea } from 'moraine'
-import { createMemo, For, Show } from 'solid-js'
+import { Icon, Switch } from 'moraine'
+import { createMemo, createSignal, For, Show } from 'solid-js'
 
 import { useRegexContext } from '#/contexts/regex-context'
 import type { MatchResult } from '#/utils/regex/types'
 
-// Color palette for capture groups - distinct, accessible colors
-const CAPTURE_GROUP_COLORS = [
-  'bg-blue-200/70 dark:bg-blue-800/50',
-  'bg-green-200/70 dark:bg-green-800/50',
-  'bg-purple-200/70 dark:bg-purple-800/50',
-  'bg-orange-200/70 dark:bg-orange-800/50',
-  'bg-pink-200/70 dark:bg-pink-800/50',
-  'bg-cyan-200/70 dark:bg-cyan-800/50',
-  'bg-yellow-200/70 dark:bg-yellow-800/50',
-  'bg-red-200/70 dark:bg-red-800/50',
+// Match highlight colors
+const MATCH_COLOR = 'bg-primary/20 dark:bg-primary/30 rounded-xs'
+const MATCH_SELECTED_COLOR = 'bg-primary/35 dark:bg-primary/50 ring-1 ring-primary rounded-xs'
+const GROUP_COLORS = [
+  'bg-blue-300/40 dark:bg-blue-800/40 text-blue-900 dark:text-blue-100 rounded-xs',
+  'bg-green-300/40 dark:bg-green-800/40 text-green-900 dark:text-green-100 rounded-xs',
+  'bg-purple-300/40 dark:bg-purple-800/40 text-purple-900 dark:text-purple-100 rounded-xs',
+  'bg-orange-300/40 dark:bg-orange-800/40 text-orange-900 dark:text-orange-100 rounded-xs',
+  'bg-pink-300/40 dark:bg-pink-800/40 text-pink-900 dark:text-pink-100 rounded-xs',
+  'bg-cyan-300/40 dark:bg-cyan-800/40 text-cyan-900 dark:text-cyan-100 rounded-xs',
 ] as const
-
-// Full match highlight color
-const FULL_MATCH_COLOR = 'bg-amber-300/60 dark:bg-amber-600/40'
-const FULL_MATCH_SELECTED_COLOR = 'bg-amber-400/80 dark:bg-amber-500/60 ring-2 ring-primary'
 
 interface HighlightSegment {
   start: number
@@ -31,14 +27,12 @@ interface HighlightSegment {
 
 /**
  * Build highlight segments from matches
- * Handles overlapping capture groups by prioritizing full matches
  */
 function buildHighlightSegments(text: string, matches: MatchResult[]): HighlightSegment[] {
   if (!text || matches.length === 0) {
     return [{ start: 0, end: text.length, text, type: 'text' }]
   }
 
-  // Collect all highlight ranges
   const ranges: Array<{
     start: number
     end: number
@@ -48,7 +42,6 @@ function buildHighlightSegments(text: string, matches: MatchResult[]): Highlight
   }> = []
 
   for (const match of matches) {
-    // Add full match range
     ranges.push({
       start: match.start,
       end: match.end,
@@ -56,7 +49,6 @@ function buildHighlightSegments(text: string, matches: MatchResult[]): Highlight
       matchIndex: match.index,
     })
 
-    // Add capture group ranges (they may overlap with full match)
     for (const group of match.groups) {
       if (group.value && group.start >= 0 && group.end > group.start) {
         ranges.push({
@@ -70,20 +62,16 @@ function buildHighlightSegments(text: string, matches: MatchResult[]): Highlight
     }
   }
 
-  // Sort ranges by start position
   ranges.sort((a, b) => a.start - b.start || a.end - b.end)
 
-  // Build segments
   const segments: HighlightSegment[] = []
   let currentPos = 0
 
   for (const range of ranges) {
-    // Skip if this range is before current position (already processed)
     if (range.end <= currentPos) {
       continue
     }
 
-    // Add text segment before this range
     if (range.start > currentPos) {
       segments.push({
         start: currentPos,
@@ -93,10 +81,7 @@ function buildHighlightSegments(text: string, matches: MatchResult[]): Highlight
       })
     }
 
-    // Adjust start if we've already processed part of this range
     const effectiveStart = Math.max(range.start, currentPos)
-
-    // Add highlighted segment
     segments.push({
       start: effectiveStart,
       end: range.end,
@@ -109,7 +94,6 @@ function buildHighlightSegments(text: string, matches: MatchResult[]): Highlight
     currentPos = range.end
   }
 
-  // Add remaining text
   if (currentPos < text.length) {
     segments.push({
       start: currentPos,
@@ -122,66 +106,66 @@ function buildHighlightSegments(text: string, matches: MatchResult[]): Highlight
   return segments
 }
 
-/**
- * Get CSS class for a highlight segment
- */
 function getSegmentClass(segment: HighlightSegment, selectedMatchIndex: number | null): string {
   if (segment.type === 'text') {
     return ''
   }
   if (segment.type === 'group' && segment.groupIndex !== undefined) {
-    return CAPTURE_GROUP_COLORS[segment.groupIndex % CAPTURE_GROUP_COLORS.length]
+    return GROUP_COLORS[segment.groupIndex % GROUP_COLORS.length]
   }
-  // Full match - check if selected
   if (segment.matchIndex !== undefined && segment.matchIndex === selectedMatchIndex) {
-    return FULL_MATCH_SELECTED_COLOR
+    return MATCH_SELECTED_COLOR
   }
-  return FULL_MATCH_COLOR
+  return MATCH_COLOR
 }
 
 export function TestingPanel() {
   const { store, actions } = useRegexContext()
-  let textareaRef: HTMLTextAreaElement | undefined
-  let highlightRef: HTMLDivElement | undefined
 
-  // Build highlight segments reactively
+  let testRef!: HTMLTextAreaElement
+  let testMirrorRef!: HTMLDivElement
+
+  const [cursorPos, setCursorPos] = createSignal({ line: 1, column: 1 })
+
+  const matchCount = createMemo(() => store.matches.length)
+  const hasInput = createMemo(() => Boolean(store.pattern && store.testText))
   const segments = createMemo(() => buildHighlightSegments(store.testText, store.matches))
 
-  // Check if there are any matches
-  const hasMatches = createMemo(() => store.matches.length > 0)
-  const hasInput = createMemo(() => store.pattern && store.testText)
+  const updateCursorPos = () => {
+    if (!testRef) {
+      return
+    }
+    const pos = testRef.selectionStart ?? 0
+    const textBefore = store.testText.slice(0, pos)
+    const lines = textBefore.split('\n')
+    setCursorPos({
+      line: lines.length,
+      column: (lines[lines.length - 1]?.length ?? 0) + 1,
+    })
+  }
 
-  const handleScroll = () => {
-    if (textareaRef && highlightRef) {
-      highlightRef.scrollTop = textareaRef.scrollTop
-      highlightRef.scrollLeft = textareaRef.scrollLeft
+  const syncTestScroll = () => {
+    if (testRef && testMirrorRef) {
+      testMirrorRef.scrollTop = testRef.scrollTop
+      testMirrorRef.scrollLeft = testRef.scrollLeft
     }
   }
 
-  // Handle click on highlighted match
-  const handleHighlightClick = (e: MouseEvent) => {
-    const target = e.target as HTMLElement
-    const matchIndexAttr = target.getAttribute('data-match-index')
-    if (matchIndexAttr !== null) {
-      const matchIndex = Number.parseInt(matchIndexAttr, 10)
-      if (!Number.isNaN(matchIndex)) {
-        // Toggle selection: if already selected, deselect; otherwise select
-        if (store.selectedMatchIndex === matchIndex) {
-          actions.setSelectedMatchIndex(null)
-        } else {
-          actions.setSelectedMatchIndex(matchIndex)
-        }
-      }
+  const handleMatchClick = (matchIndex: number) => {
+    if (store.selectedMatchIndex === matchIndex) {
+      actions.setSelectedMatchIndex(null)
+    } else {
+      actions.setSelectedMatchIndex(matchIndex)
     }
   }
 
-  // Keyboard navigation for matches
   const handleKeyDown = (e: KeyboardEvent) => {
-    if (!hasMatches()) {
+    updateCursorPos()
+
+    if (matchCount() === 0) {
       return
     }
 
-    // Arrow keys to navigate between matches when focused on test text
     if (e.key === 'ArrowDown' && e.altKey) {
       e.preventDefault()
       const currentIndex = store.selectedMatchIndex ?? -1
@@ -197,70 +181,44 @@ export function TestingPanel() {
     }
   }
 
-  // Status message for screen readers
-  const statusMessage = createMemo(() => {
-    if (!hasInput()) {
-      return 'Enter a pattern and test text to see matches'
-    }
-    if (!store.isValid) {
-      return 'Invalid pattern'
-    }
-    if (!hasMatches()) {
-      return 'No matches found'
-    }
-    return `${store.matches.length} match${store.matches.length !== 1 ? 'es' : ''} found`
-  })
-
   return (
-    <div class="space-y-2">
-      <Field
-        label="Test String"
-        help={
-          hasMatches()
-            ? 'Click on highlighted matches to view details. Use Alt+↑/↓ to navigate matches.'
-            : undefined
-        }
-        classes={{
-          root: 'min-w-0',
-          label: 'text-muted-foreground tracking-wide font-medium uppercase text-xs',
-          labelWrapper: 'tool-panel-heading',
-        }}
-        hint={
-          <span class="text-xs text-muted-foreground">
-            {/* Match count only - execution time moved to pattern header */}
-            <Show when={hasInput()}>
-              <span aria-live="polite">
-                <Show
-                  when={hasMatches()}
-                  fallback={<span class="text-amber-600 dark:text-amber-400">No matches</span>}
-                >
-                  <span class="text-green-600 dark:text-green-400">
-                    {store.matches.length} match{store.matches.length !== 1 ? 'es' : ''}
-                  </span>
-                </Show>
-              </span>
-            </Show>
+    <div class="flex flex-col gap-1.5" role="region" aria-label="Test String">
+      {/* Header bar */}
+      <div class="flex min-h-6 items-center justify-between">
+        <div class="flex gap-3 items-center">
+          <span class="text-sm text-foreground font-medium">Test String</span>
+          <Switch
+            label="details"
+            size="sm"
+            checked={store.showMatchInfo}
+            onCheckedChange={(checked) => actions.toggleMatchInfo(checked)}
+            classes={{
+              label: 'text-xs text-muted-foreground font-normal cursor-pointer select-none',
+            }}
+          />
+        </div>
+        <Show when={store.testText}>
+          <span class="text-xs text-muted-foreground font-mono">
+            {store.testText.length} {store.testText.length === 1 ? 'char' : 'chars'}
           </span>
-        }
-      >
-        <div class="relative">
-          {/* Highlight overlay - hidden from screen readers */}
+        </Show>
+      </div>
+
+      {/* Enclosed Card */}
+      <div class="border border-border rounded-lg bg-card/60 flex flex-col h-[300px] relative overflow-hidden focus-within:(border-primary ring-1 ring-primary)">
+        {/* Editor Container */}
+        <div class="flex-1 relative overflow-hidden">
+          {/* Highlight mirror layer */}
           <div
-            ref={(element) => (highlightRef = element)}
-            class="text-sm leading-relaxed font-mono p-(2 3) border border-transparent rounded-md whitespace-pre-wrap break-words inset-0 absolute z-1 overflow-hidden"
-            onClick={handleHighlightClick}
+            ref={(element) => (testMirrorRef = element)}
+            class="text-sm leading-6 font-mono m-0 p-3.5 border-0 h-full w-full pointer-events-none select-none whitespace-pre-wrap break-all inset-0 absolute z-0 overflow-auto"
             aria-hidden="true"
           >
             <For each={segments()}>
               {(segment) => (
                 <span
-                  class={`${getSegmentClass(segment, store.selectedMatchIndex)}  ${
-                    segment.type === 'match'
-                      ? 'cursor-pointer hover:opacity-80 transition-opacity'
-                      : ''
-                  }`}
+                  class={getSegmentClass(segment, store.selectedMatchIndex)}
                   data-match-index={segment.matchIndex}
-                  data-group-index={segment.groupIndex}
                 >
                   {segment.text}
                 </span>
@@ -268,39 +226,42 @@ export function TestingPanel() {
             </For>
           </div>
 
-          {/* Textarea input */}
-          <Textarea
-            ref={(element) => (textareaRef = element)}
-            placeholder="Enter text to test your regex against..."
-            classes={{
-              root: 'leading-relaxed font-mono p-(2 3) h-64 sm:h-[300px] w-full resize-y relative z-10 text-sm',
-            }}
-            style={{
-              background: store.testText ? 'transparent' : undefined,
-              color: store.testText ? 'transparent' : undefined,
-              'caret-color': 'var(--foreground)',
-            }}
+          {/* Textarea */}
+          <textarea
+            ref={(element) => (testRef = element)}
+            placeholder="Enter text to test your regex..."
+            class="text-sm text-transparent leading-6 font-mono m-0 p-3.5 outline-none caret-foreground border-0 bg-transparent h-full w-full block resize-none break-all relative z-10 overflow-auto selection:(text-transparent bg-primary/30)"
             value={store.testText}
-            onValueChange={actions.setTestText}
-            onScroll={handleScroll}
+            onInput={(e) => {
+              actions.setTestText(e.currentTarget.value)
+              updateCursorPos()
+            }}
+            onScroll={syncTestScroll}
             onKeyDown={handleKeyDown}
+            onKeyUp={updateCursorPos}
+            onSelect={updateCursorPos}
+            onClick={(e: MouseEvent) => {
+              updateCursorPos()
+              const target = e.target as HTMLElement
+              const idx = target.getAttribute?.('data-match-index')
+              if (idx !== null && idx !== undefined) {
+                handleMatchClick(Number.parseInt(idx, 10))
+              }
+            }}
           />
-
-          {/* Screen reader status */}
-          <div class="sr-only" role="status" aria-live="polite" aria-atomic="true">
-            {statusMessage()}
-          </div>
         </div>
-      </Field>
 
-      {/* No matches indicator when pattern and text exist but no matches */}
-      <Show when={hasInput() && !hasMatches() && store.isValid}>
-        <div
-          class="text-sm text-amber-600 p-2 border border-amber-200 rounded-md bg-amber-50 flex gap-2 items-center dark:text-amber-400 dark:border-amber-800 dark:bg-amber-950/30"
-          role="status"
-        >
-          <span class="i-lucide-info size-4" aria-hidden="true" />
-          <span>No matches found. Try adjusting your pattern or test text.</span>
+        {/* Status bar */}
+        <div class="text-xs text-muted-foreground font-mono px-3.5 py-1 text-right border-t border-border/40 bg-muted/10 shrink-0 select-none">
+          Line {cursorPos().line}, column {cursorPos().column}
+        </div>
+      </div>
+
+      {/* No matches hint (shown when match info is hidden) */}
+      <Show when={!store.showMatchInfo && hasInput() && matchCount() === 0 && store.isValid}>
+        <div class="text-xs text-amber-600 p-2.5 border border-amber-200 rounded-lg bg-amber-50 flex gap-2 items-center dark:text-amber-400 dark:border-amber-800 dark:bg-amber-950/30">
+          <Icon name="i-lucide-info" class="shrink-0 size-4" />
+          <span>No matches found. Try adjusting your pattern or flags.</span>
         </div>
       </Show>
     </div>

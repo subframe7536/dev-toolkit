@@ -1,4 +1,4 @@
-import { Field, Button, Icon, Input, Slider, cn } from 'moraine'
+import { Field, Button, Icon, Input, InputGroup, Slider, cn } from 'moraine'
 import { createRoute } from 'solid-file-router'
 import { createMemo, createSignal, For } from 'solid-js'
 import { toast } from 'solid-toaster'
@@ -38,7 +38,7 @@ function ColorConverter() {
   const hsl = () => color().hsl
   const setRgb = (value: RGB) => setColor({ rgb: value, hsl: rgbToHsl(value) })
   const [savedColors, setSavedColors] = createSignal<string[]>([])
-  const [inputValue, setInputValue] = createSignal('')
+  const [inputValue, setInputValue] = createSignal(rgbToHex(rgb()))
 
   const handleColorPick = (hex: string) => {
     setRgb(hexToRgb(hex))
@@ -97,7 +97,7 @@ function ColorConverter() {
         <Field
           hiddenLabel="Pick color"
           classes={{
-            root: 'group border h-32 w-full cursor-pointer relative overflow-hidden rounded-lg focus-within:effect-fv',
+            root: 'group border h-64 w-full cursor-pointer relative overflow-hidden rounded-lg focus-within:effect-fv',
             container: 'h-full',
           }}
         >
@@ -117,20 +117,25 @@ function ColorConverter() {
         </Field>
 
         {/* Text Input with Clear */}
-        <Field hiddenLabel="Color value" classes={{ root: 'min-w-0', container: 'relative' }}>
-          <Input
-            value={inputValue()}
-            onValueChange={handleInputChange}
-            placeholder="Enter color..."
-            classes={{ root: 'font-mono pr-12 min-h-11 md:min-h-8 md:pr-10' }}
-          />
-          <button
-            aria-label="Clear color input"
-            class="rounded-1.5 size-11 translate-y--50% right-0 top-50% absolute hover:bg-background md:size-8 md:right-2"
-            onClick={() => handleInputChange('')}
-          >
-            <Icon name="i-lucide-x" class="size-3 inline-block" title="clear" />
-          </button>
+        <Field hiddenLabel="Color value" classes={{ root: 'min-w-0' }}>
+          <InputGroup>
+            <Input
+              value={inputValue()}
+              onValueChange={handleInputChange}
+              placeholder="Paste color here..."
+              classes={{ root: 'font-mono' }}
+            />
+            <InputGroup.Trailing compact>
+              <Button
+                variant="ghost"
+                size="icon-xs"
+                aria-label="Clear color input"
+                onClick={() => handleInputChange('')}
+              >
+                <Icon name="i-lucide-x" />
+              </Button>
+            </InputGroup.Trailing>
+          </InputGroup>
         </Field>
 
         {/* Action Buttons */}
@@ -151,7 +156,7 @@ function ColorConverter() {
         {/* Saved Colors */}
         <div class="space-y-2">
           <h3 class="text-sm text-muted-foreground font-medium select-none">Saved Colors</h3>
-          <div class="gap-2 grid grid-cols-4 max-h-40 overflow-y-auto sm:grid-cols-6">
+          <div class="gap-2 grid grid-cols-4 overflow-y-auto sm:grid-cols-6">
             <For each={Array.from({ length: MAX_COLORS })}>
               {(_, i) => {
                 const color = createMemo(() => savedColors()[i()])

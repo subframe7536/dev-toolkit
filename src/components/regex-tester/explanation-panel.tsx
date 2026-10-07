@@ -1,5 +1,5 @@
 import { Icon } from 'moraine'
-import { createMemo, For, Show } from 'solid-js'
+import { createMemo, createSignal, For, Show } from 'solid-js'
 
 import { useRegexContext } from '#/contexts/regex-context'
 import type { RegexElementType } from '#/utils/regex/explanation-engine'
@@ -90,51 +90,62 @@ function ElementBadge(props: ElementBadgeProps) {
 
 export function ExplanationPanel() {
   const { store } = useRegexContext()
-
   const explanation = createMemo(() => explainPattern(store.pattern))
-
   const hasPattern = createMemo(() => store.pattern.length > 0)
   const hasElements = createMemo(() => explanation().elements.length > 0)
+  const [isOpen, setIsOpen] = createSignal(false)
 
   return (
-    <div class="pt-4 space-y-4">
-      {/* Overall description */}
-      <div>
-        <h3 class="text-md text-foreground font-medium mb-3 flex gap-2 items-center">
-          <Icon name="i-lucide-info" class="size-4" />
-          Pattern Explanation
-        </h3>
-        <Show
-          when={hasPattern()}
-          fallback={
-            <div class="text-sm text-muted-foreground p-4 border border-border rounded-md border-dashed bg-muted/20">
-              Enter a regex pattern to see its explanation.
-            </div>
-          }
-        >
-          <div class="text-sm text-foreground p-3 border border-border rounded-md bg-muted/20">
-            {explanation().description}
-          </div>
-        </Show>
-      </div>
+    <div class="border border-border rounded-lg bg-card overflow-hidden">
+      <button
+        type="button"
+        class="px-4 py-3 text-left flex w-full cursor-pointer select-none transition-colors items-center justify-between hover:bg-muted/40"
+        onClick={() => setIsOpen(!isOpen())}
+        aria-expanded={isOpen()}
+      >
+        <div class="flex gap-2 items-center">
+          <Icon name="i-lucide-info" class="text-muted-foreground size-4" />
+          <span class="text-sm text-foreground font-medium">Pattern Explanation</span>
+          <Show when={hasElements()}>
+            <span class="text-xs text-muted-foreground font-mono px-2 py-0.5 rounded-full bg-muted">
+              {explanation().elements.length}{' '}
+              {explanation().elements.length === 1 ? 'token' : 'tokens'}
+            </span>
+          </Show>
+        </div>
+        <Icon
+          name={isOpen() ? 'i-lucide-chevron-up' : 'i-lucide-chevron-down'}
+          class="text-muted-foreground size-4"
+        />
+      </button>
 
-      {/* Element breakdown */}
-      <Show when={hasElements()}>
-        <div>
-          <h3 class="text-md text-foreground font-medium mb-3 flex gap-2 items-center">
-            <Icon name="i-lucide-list" class="size-4" />
-            Element Breakdown
-          </h3>
-
-          {/* Sequential element list */}
-          <div class="mb-4 space-y-2">
-            <div class="text-xs text-muted-foreground mb-2">Elements in order of appearance:</div>
-            <div class="max-h-64 overflow-y-auto space-y-2">
-              <For each={explanation().elements}>
-                {(element) => <ElementBadge element={element} />}
-              </For>
+      <Show when={isOpen()}>
+        <div class="px-4 pb-4 pt-2 border-t border-border/50 space-y-4">
+          {/* Overall description */}
+          <Show
+            when={hasPattern()}
+            fallback={
+              <div class="text-sm text-muted-foreground p-4 text-center border border-border rounded-md border-dashed bg-muted/20">
+                Enter a regex pattern to see its explanation.
+              </div>
+            }
+          >
+            <div class="text-sm text-foreground p-3 border border-border rounded-md bg-muted/20">
+              {explanation().description}
             </div>
-          </div>
+          </Show>
+
+          {/* Element breakdown */}
+          <Show when={hasElements()}>
+            <div class="space-y-2">
+              <div class="text-xs text-muted-foreground font-medium">Element Breakdown</div>
+              <div class="max-h-64 overflow-y-auto space-y-2">
+                <For each={explanation().elements}>
+                  {(element) => <ElementBadge element={element} />}
+                </For>
+              </div>
+            </div>
+          </Show>
         </div>
       </Show>
     </div>

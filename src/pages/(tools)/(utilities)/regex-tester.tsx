@@ -1,6 +1,6 @@
-import { Button, Dialog, Icon, Tabs } from 'moraine'
+import { Button, Dialog, Icon } from 'moraine'
 import { createRoute } from 'solid-file-router'
-import { ErrorBoundary, Suspense } from 'solid-js'
+import { ErrorBoundary, Show, Suspense } from 'solid-js'
 
 import { DebugPanel } from '#/components/regex-tester/debug-panel'
 import { DetailsPanel } from '#/components/regex-tester/details-panel'
@@ -9,7 +9,8 @@ import { ExportDialog } from '#/components/regex-tester/export-dialog'
 import { HelpPanel } from '#/components/regex-tester/help-panel'
 import { PatternLibraryDialog } from '#/components/regex-tester/pattern-library'
 import { RegexInputPanel } from '#/components/regex-tester/regex-input-panel'
-import { ReplacementPanel } from '#/components/regex-tester/replacement-panel'
+import { SubstitutionPanel } from '#/components/regex-tester/substitution-panel'
+import { TestingPanel } from '#/components/regex-tester/testing-panel'
 import { RegexProvider, useRegexContext } from '#/contexts'
 
 // Error fallback component for graceful error handling
@@ -57,10 +58,10 @@ export default createRoute({
   info: {
     title: 'Regex Tester',
     description:
-      'Test and debug regular expressions with real-time matching, detailed explanations, and code export',
+      'Test and debug regular expressions with real-time matching, substitution, detailed explanations, and code export',
     category: 'Utilities',
     icon: 'i-lucide-regex',
-    tags: ['regex', 'pattern', 'matching', 'testing', 'debugging'],
+    tags: ['regex', 'pattern', 'matching', 'testing', 'substitution', 'debugging'],
   },
   component: () => (
     <ErrorBoundary fallback={(err, reset) => <ErrorFallback error={err} reset={reset} />}>
@@ -76,81 +77,81 @@ export default createRoute({
 // Loading skeleton for the entire page
 function RegexTesterSkeleton() {
   return (
-    <div class="gap-6 grid grid-cols-1 xl:grid-cols-2">
-      <div class="space-y-4">
-        <PanelSkeleton />
-      </div>
-      <div class="space-y-4">
-        <PanelSkeleton />
-        <PanelSkeleton />
-      </div>
+    <div class="space-y-4">
+      <PanelSkeleton />
+      <PanelSkeleton />
+      <PanelSkeleton />
     </div>
   )
 }
 
 function RegexTester() {
-  const { actions } = useRegexContext()
+  const { store, actions } = useRegexContext()
   return (
     <div class="space-y-4">
-      {/* Main content area - responsive layout */}
-      <div class="tool-grid lg:grid-cols-2">
-        {/* Left column - Input with integrated replacement */}
-        <div class="space-y-4">
-          {/* Regex Input Panel with integrated Find & Replace */}
-          <div class="min-w-0">
-            <RegexInputPanel />
+      {/* 1. Regular Expression */}
+      <RegexInputPanel />
 
-            {/* Action buttons section */}
-            <div class="mt-4 tool-toolbar">
-              <Button
-                variant="default"
-                onClick={() => actions.toggleExportDialog(true)}
-                leading="i-lucide-download"
-              >
-                Export Code
-              </Button>
-              <PatternLibraryDialog />
-              <Button
-                variant="secondary"
-                onClick={() => {
-                  actions.setPattern('')
-                  actions.setTestText('')
-                }}
-                leading="i-lucide-trash-2"
-              >
-                Clear All
-              </Button>
-              {/* Reference Dialog */}
-              <Dialog classes={{ content: 'max-h-[60vh] max-w-4xl overflow-y-auto' }}>
-                <Dialog.Trigger as={Button} variant="outline" leading="i-lucide-book-open">
-                  Reference
-                </Dialog.Trigger>
-                <Dialog.Content title="Regex Syntax Reference">
-                  <Dialog.Body>
-                    <HelpPanel />
-                  </Dialog.Body>
-                </Dialog.Content>
-              </Dialog>
-            </div>
-          </div>
-        </div>
+      {/* 2. Test String and Match Information (horizontally aligned when enabled) */}
+      <div class={store.showMatchInfo ? 'grid grid-cols-1 lg:grid-cols-2 gap-4 items-start' : ''}>
+        <TestingPanel />
+        <Show when={store.showMatchInfo}>
+          <DetailsPanel />
+        </Show>
+      </div>
 
-        {/* Right column - Analysis and results */}
-        <div class="space-y-4">
-          {/* Explanation and Debug Panels */}
-          <div class="min-w-0">
-            <Tabs
-              defaultValue="matches"
-              classes={{ list: 'p-1 w-full! flex-wrap' }}
-              items={[
-                { value: 'matches', label: 'Matches', content: <DetailsPanel /> },
-                { value: 'replace', label: 'Replace', content: <ReplacementPanel /> },
-                { value: 'explanation', label: 'Explain', content: <ExplanationPanel /> },
-                { value: 'debug', label: 'Debug', content: <DebugPanel /> },
-              ]}
-            />
-          </div>
-        </div>
+      {/* 3. Substitution */}
+      <SubstitutionPanel />
+
+      {/* 4. Pattern Explanation (Collapsible) */}
+      <ExplanationPanel />
+
+      {/* 6. Action buttons toolbar */}
+      <div class="tool-toolbar">
+        <Button
+          variant="default"
+          onClick={() => actions.toggleExportDialog(true)}
+          leading="i-lucide-download"
+        >
+          Export Code
+        </Button>
+        <PatternLibraryDialog />
+        <Button
+          variant="secondary"
+          onClick={() => {
+            actions.setPattern('')
+            actions.setTestText('')
+            actions.setReplacementPattern('')
+          }}
+          leading="i-lucide-trash-2"
+        >
+          Clear All
+        </Button>
+        {/* Debug Modal Dialog */}
+        <Dialog classes={{ content: 'max-h-[85vh] max-w-4xl overflow-y-auto' }}>
+          <Dialog.Trigger as={Button} variant="outline" leading="i-lucide-circle-play">
+            Debug Regex
+          </Dialog.Trigger>
+          <Dialog.Content
+            title="Regex Match Debugger"
+            description="Interactive step-by-step regex engine execution and matching breakdown."
+          >
+            <Dialog.Body>
+              <DebugPanel />
+            </Dialog.Body>
+          </Dialog.Content>
+        </Dialog>
+        {/* Reference Dialog */}
+        <Dialog classes={{ content: 'max-h-[60vh] max-w-4xl overflow-y-auto' }}>
+          <Dialog.Trigger as={Button} variant="outline" leading="i-lucide-book-open">
+            Reference
+          </Dialog.Trigger>
+          <Dialog.Content title="Regex Syntax Reference">
+            <Dialog.Body>
+              <HelpPanel />
+            </Dialog.Body>
+          </Dialog.Content>
+        </Dialog>
       </div>
 
       {/* Export Dialog */}

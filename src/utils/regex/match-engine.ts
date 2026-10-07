@@ -376,8 +376,8 @@ export function replaceMatches(
       // Replace $$ with literal $
       processedReplacement = processedReplacement.replace(/\$\$/g, '\u0000DOLLAR\u0000')
 
-      // Replace numbered capture groups ($1, $2, etc.)
-      processedReplacement = processedReplacement.replace(/\$(\d+)/g, (_, num) => {
+      // Replace numbered capture groups ($1, $2, etc. or \1, \2, etc.)
+      processedReplacement = processedReplacement.replace(/(?:\$|\\)(\d+)/g, (_, num) => {
         const groupIndex = Number.parseInt(num, 10)
         // Groups start at index 1 in args array
         const groupValue = args[groupIndex]

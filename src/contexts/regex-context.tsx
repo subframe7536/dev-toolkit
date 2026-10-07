@@ -37,6 +37,7 @@ export interface RegexStore {
   replacementPattern: string
   replacementResult?: ReplacementResult
   showReplacementPreview: boolean
+  showMatchInfo: boolean
 }
 
 export interface RegexContextValue {
@@ -49,6 +50,7 @@ export interface RegexContextValue {
     toggleExportDialog: (show: boolean) => void
     setExportLanguage: (language: 'javascript' | 'python' | 'java') => void
     exportCode: () => string
+    toggleMatchInfo: (show?: boolean) => void
     // Validation actions
     setValidationMode: (mode: ValidationMode) => void
     // Replacement actions
@@ -93,7 +95,8 @@ export function RegexProvider(props: ParentProps) {
     // Replacement state
     replacementPattern: '',
     replacementResult: undefined,
-    showReplacementPreview: false,
+    showReplacementPreview: true,
+    showMatchInfo: true,
   })
 
   // Helper function to update matches with timing
@@ -350,6 +353,10 @@ export function RegexProvider(props: ParentProps) {
         return result.result
       }
       return untrack(() => store.testText)
+    },
+
+    toggleMatchInfo: (show?: boolean) => {
+      setStore('showMatchInfo', (prev) => (show !== undefined ? show : !prev))
     },
   }
 

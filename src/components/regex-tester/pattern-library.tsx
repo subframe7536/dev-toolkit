@@ -7,7 +7,7 @@ import type { PatternCategory, PatternDefinition } from '#/utils/regex/types'
 
 // Category icons mapping
 const CATEGORY_ICONS: Record<string, `i-lucide-${string}`> = {
-  validation: 'i-lucide-check-circle',
+  validation: 'i-lucide-circle-check',
   phone: 'i-lucide-phone',
   dates: 'i-lucide-calendar',
   identifiers: 'i-lucide-hash',

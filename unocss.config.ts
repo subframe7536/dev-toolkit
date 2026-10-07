@@ -71,7 +71,7 @@ export default defineConfig<PresetWind4Theme>({
       'bg-gutter-pattern',
       {
         'background-image':
-          'repeating-linear-gradient(135deg, color-mix(in srgb, var(--border) 50%, transparent) 0 1px, transparent 1px 8px)',
+          'repeating-linear-gradient(135deg, var(--muted) 0 1px, transparent 1px 16px)',
       },
     ],
   ],
@@ -89,7 +89,7 @@ export default defineConfig<PresetWind4Theme>({
     ['tool-actions', 'flex flex-wrap gap-2 items-center'],
     [
       'tool-controls',
-      '[&_[data-slot=button]]:min-h-11 [&_[data-slot=button]]:min-w-11 [&_[data-slot=button]]:rounded-md md:[&_[data-slot=button]]:min-h-8 md:[&_[data-slot=button]]:min-w-8 [&_[data-slot=dialog-trigger]]:min-h-11 md:[&_[data-slot=dialog-trigger]]:min-h-8 [&_[data-slot=tabs-trigger]]:min-h-11 md:[&_[data-slot=tabs-trigger]]:min-h-8',
+      '[&_[data-slot=button]]:rounded-md [&_[data-slot=dialog-trigger]]:min-h-11 md:[&_[data-slot=dialog-trigger]]:min-h-8 [&_[data-slot=tabs-trigger]]:min-h-11 md:[&_[data-slot=tabs-trigger]]:min-h-8',
     ],
     ['tool-editor-grid', 'grid grid-cols-1 gap-4 items-start md:grid-cols-2 [&>*]:min-w-0'],
     ['tool-toolbar', 'flex flex-wrap gap-3 items-center'],

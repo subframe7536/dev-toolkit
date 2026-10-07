@@ -33,7 +33,7 @@ function JSONConverter() {
   const [output, setOutput] = createSignal('')
   const [error, setError] = createSignal('')
   const [mode, setMode] = createSignal<ConversionMode>('yaml')
-  const [useRepair, setUseRepair] = createSignal(false)
+  const [useRepair, setUseRepair] = createSignal(true)
 
   const conversionModes = [
     { value: 'yaml', label: 'YAML' },

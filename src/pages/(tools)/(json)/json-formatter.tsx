@@ -223,7 +223,7 @@ function JSONFormatter() {
             />
           </Field>
           <Field
-            label="Indent Size"
+            label={`Indent Size: ${indent()}`}
             classes={{ root: 'min-w-0 w-44', label: 'text-muted-foreground font-medium text-xs' }}
           >
             <Slider
@@ -232,6 +232,8 @@ function JSONFormatter() {
               min={2}
               max={8}
               step={2}
+              variant="bold"
+              marker
             />
           </Field>
         </div>

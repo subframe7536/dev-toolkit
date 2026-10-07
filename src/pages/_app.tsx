@@ -145,7 +145,7 @@ function AppContent(props: RouteSectionProps) {
         </SidebarFrame.Sidebar>
       </Show>
       <SidebarFrame.Main>
-        <div class="flex flex-col min-h-full min-w-0 xl:bg-gutter-pattern">
+        <div class="flex flex-col min-h-full min-w-0 lg:bg-gutter-pattern">
           <AppToolbar pathname={props.location.pathname} />
           <main class="mx-auto border-x border-border/70 bg-background flex-1 max-w-5xl min-w-0 w-full">
             <ToolLayout>{props.children}</ToolLayout>
