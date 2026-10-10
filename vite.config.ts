@@ -1,26 +1,36 @@
+import path from 'node:path'
+
 import unocss from '@subf/unocss/vite'
 import { fileRouter } from 'solid-file-router/plugin'
 import { defineConfig } from 'vite'
 import { meta } from 'vite-plugin-meta-tags'
-import { VitePWA as pwa } from 'vite-plugin-pwa'
 import solid from 'vite-plugin-solid'
+
+import { manualPwa } from './vite.pwa.ts'
+
 // const base = '/dev-toolkit'
-const base = ''
+const base = process.env.BASE_URL || '/'
 
 const title = 'Dev Toolkit'
 const description = 'Tools for developers, just in browser'
 const url = 'https://tool.subf.dev'
 export default defineConfig({
   base,
+  resolve: {
+    alias: {
+      '#': path.join(import.meta.dirname, 'src'),
+    },
+  },
   plugins: [
-    unocss({ inspector: false }),
+    unocss(),
     solid(),
     fileRouter({
       infoDts: {
         title: 'string',
         description: 'string',
         category: '"Encoding" | "JSON" | "Utilities"',
-        icon: '`lucide:${string}`',
+        // oxlint-disable-next-line no-template-curly-in-string
+        icon: '`i-lucide-${string}`',
         tags: 'string[]',
       },
     }),
@@ -30,52 +40,10 @@ export default defineConfig({
       url,
       img: `${url}/og-image.jpg`,
     }),
-    pwa({
-      registerType: 'prompt',
-      devOptions: {
-        enabled: false,
-        type: 'module',
-      },
-      workbox: {
-        cleanupOutdatedCaches: true,
-        clientsClaim: true,
-        skipWaiting: false,
-      },
-      manifest: {
-        name: title,
-        short_name: title.replaceAll(' ', ''),
-        description,
-        start_url: `${base}/`,
-        display: 'standalone',
-        background_color: '#00000000',
-        theme_color: '#00000000',
-        icons: [
-          {
-            src: `${base}/pwa-192x192.png`,
-            sizes: '192x192',
-            type: 'image/png',
-            purpose: 'any',
-          },
-          {
-            src: `${base}/pwa-512x512.png`,
-            sizes: '512x512',
-            type: 'image/png',
-            purpose: 'any',
-          },
-          {
-            src: `${base}/pwa-maskable-192x192.png`,
-            sizes: '192x192',
-            type: 'image/png',
-            purpose: 'maskable',
-          },
-          {
-            src: `${base}/pwa-maskable-512x512.png`,
-            sizes: '512x512',
-            type: 'image/png',
-            purpose: 'maskable',
-          },
-        ],
-      },
+    manualPwa({
+      name: title,
+      shortName: title.replaceAll(' ', ''),
+      description,
     }),
   ],
 })

@@ -1,9 +1,11 @@
-import { ClearButton } from '#/components/clear-button'
-import { CopyButton } from '#/components/copy-button'
-import { Button, Icon, Input, Tabs } from 'moraine'
+import { Field, Button, InputNumber, Tabs } from 'moraine'
 import { createRoute } from 'solid-file-router'
 import { createSignal, For, onMount, Show } from 'solid-js'
 import { toast } from 'solid-toaster'
+
+import { ClearButton } from '#/components/clear-button'
+import { CopyButton } from '#/components/copy-button'
+import { ToolOptions } from '#/components/tool-options'
 
 const PRESET_COUNTS = [1, 5, 10, 15, 20] as const
 
@@ -12,7 +14,7 @@ export default createRoute({
     title: 'UUID Generator',
     description: 'Generate unique identifiers (UUIDs)',
     category: 'Utilities',
-    icon: 'lucide:fingerprint',
+    icon: 'i-lucide-fingerprint',
     tags: ['uuid', 'generator', 'unique', 'identifier'],
   },
   component: UUIDGenerator,
@@ -42,12 +44,12 @@ function UUIDGenerator() {
     }
   }
 
-  const handleCustomInput = (value: string) => {
-    const newCount = Number.parseInt(value) || 1
+  const handleCustomInput = (value: number) => {
+    const newCount = Math.trunc(value) || 1
     setCount(newCount)
     // Update tab selection if it matches a preset
     if (PRESET_COUNTS.includes(newCount as any)) {
-      setSelectedTab(value)
+      setSelectedTab(String(newCount))
     }
   }
 
@@ -56,57 +58,59 @@ function UUIDGenerator() {
   })
 
   return (
-    <div class="gap-6 grid grid-cols-1 lg:grid-cols-[auto_1fr]">
-      <div class="flex flex-col gap-6 lg:w-80">
-        <div>
-          <div class="text-lg font-semibold mb-4">Quick Select</div>
-          <Tabs
-            value={selectedTab()}
-            onChange={handleTabChange}
-            items={PRESET_COUNTS.map(preset => ({ value: preset.toString(), label: String(preset) }))}
-          />
-        </div>
+    <div class="space-y-4">
+      <ToolOptions>
+        <div class="tool-toolbar items-end">
+          <Field
+            label="Quick Select"
+            classes={{
+              root: 'w-full min-w-0 md:w-60 shrink-0',
+              label: 'text-muted-foreground font-medium text-xs',
+            }}
+          >
+            <Tabs
+              aria-label="Quick Select"
+              value={selectedTab()}
+              onChange={handleTabChange}
+              items={PRESET_COUNTS.map((preset) => ({
+                value: preset.toString(),
+                label: String(preset),
+              }))}
+            />
+          </Field>
 
-        <div>
-          <label class="text-sm font-medium">Custom Count</label>
-          <Input
-            type="number"
-            min="1"
-            max="100"
-            value={count().toString()}
-            onInput={e => handleCustomInput((e.target as HTMLInputElement).value)}
-            classes={{ input: 'text-center h-9' }}
-          />
+          <Field
+            label="Custom Count"
+            classes={{ root: 'min-w-0 w-32', label: 'text-muted-foreground font-medium text-xs' }}
+          >
+            <InputNumber
+              minValue={1}
+              maxValue={100}
+              rawValue={count()}
+              onRawValueChange={(val) => handleCustomInput(val)}
+              classes={{ root: 'h-13 md:h-10', input: 'text-center' }}
+            />
+          </Field>
         </div>
-
-        <div class="flex gap-2">
-          <Button classes={{ root: 'flex-1' }} onClick={generateUUIDs} leading="lucide:refresh-cw">
-            Generate
-          </Button>
-          <ClearButton
-            class="flex-1"
-            onClear={handleClear}
-            disabled={uuids().length === 0}
-          />
-        </div>
+      </ToolOptions>
+      <div class="tool-actions">
+        <Button onClick={generateUUIDs} leading="i-lucide-refresh-cw">
+          Generate
+        </Button>
+        <ClearButton class="min-w-0" onClear={handleClear} disabled={uuids().length === 0} />
       </div>
 
       <Show
         when={uuids().length > 0}
-        fallback={(
-          <div class="text-muted-foreground p-12 text-center border rounded-lg border-dashed flex items-center justify-center">
-            <div>
-              <Icon name="lucide:fingerprint" classes={{ icon: 'mx-auto mb-4 opacity-50 size-12' }} />
-              <p>Click "Generate" to create UUIDs</p>
-            </div>
-          </div>
-        )}
+        fallback={
+          <p class="text-sm text-muted-foreground py-4 border-t border-border">
+            Click "Generate" to create UUIDs
+          </p>
+        }
       >
-        <div class="flex flex-col gap-4">
-          <div class="flex items-center justify-between">
-            <h3 class="text-lg text-foreground font-semibold">
-              Generated UUIDs ({uuids().length})
-            </h3>
+        <div class="pt-4 border-t border-border flex flex-col gap-4">
+          <div class="tool-panel-heading">
+            <h3 class="text-sm text-foreground font-medium">Generated UUIDs ({uuids().length})</h3>
             <CopyButton
               content={uuids().join('\n')}
               variant="secondary"
@@ -117,15 +121,10 @@ function UUIDGenerator() {
 
           <div class="flex flex-col gap-2">
             <For each={uuids()}>
-              {uuid => (
+              {(uuid) => (
                 <div class="text-sm font-mono p-3 border rounded-md bg-muted/50 flex gap-2 items-center">
-                  <span class="flex-1 truncate">{uuid}</span>
-                  <CopyButton
-                    content={uuid}
-                    variant="ghost"
-                    size="sm"
-                    text={false}
-                  />
+                  <span class="flex-1 min-w-0 break-all">{uuid}</span>
+                  <CopyButton content={uuid} variant="ghost" size="sm" text={false} />
                 </div>
               )}
             </For>

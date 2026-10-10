@@ -3,8 +3,8 @@
  * Provides functions for converting JSON to/from various formats
  */
 
-import * as yaml from 'js-yaml'
 import Papa from 'papaparse'
+import { stringify, parse } from 'yaml'
 
 import { repairJSON } from './formatter'
 
@@ -77,7 +77,7 @@ export function csvToJSON(input: string, hasHeaders?: boolean): ConversionResult
         success: false,
         error: {
           message: 'CSV parsing error',
-          details: parseResult.errors.map(e => e.message).join(', '),
+          details: parseResult.errors.map((e) => e.message).join(', '),
         },
       }
     }
@@ -100,13 +100,13 @@ export function csvToJSON(input: string, hasHeaders?: boolean): ConversionResult
  * @param input - JSON string to convert
  * @returns ConversionResult with YAML output or error
  */
-export function jsonToYAML(input: string): ConversionResult {
+export function jsonToYAML(input: string, useRepair: boolean = false): ConversionResult {
   try {
-    const parsed = JSON.parse(input)
-    const yamlOutput = yaml.dump(parsed, {
+    const parsed = JSON.parse(useRepair ? repairJSON(input) : input)
+    const yamlOutput = stringify(parsed, {
       indent: 2,
-      lineWidth: -1, // No line wrapping
-      noRefs: true, // Don't use references
+      lineWidth: 0, // No line wrapping
+      aliasDuplicateObjects: false, // Don't use references
     })
     return { success: true, output: yamlOutput }
   } catch (error) {
@@ -127,7 +127,7 @@ export function jsonToYAML(input: string): ConversionResult {
  */
 export function yamlToJSON(input: string): ConversionResult {
   try {
-    const parsed = yaml.load(input)
+    const parsed = parse(input)
     const json = JSON.stringify(parsed, null, 2)
     return { success: true, output: json }
   } catch (error) {
@@ -146,9 +146,9 @@ export function yamlToJSON(input: string): ConversionResult {
  * @param input - JSON string to convert
  * @returns ConversionResult with query parameters output or error
  */
-export function jsonToQueryParams(input: string): ConversionResult {
+export function jsonToQueryParams(input: string, useRepair: boolean = false): ConversionResult {
   try {
-    const parsed = JSON.parse(input)
+    const parsed = JSON.parse(useRepair ? repairJSON(input) : input)
 
     // Only handle flat objects for query parameters
     if (typeof parsed !== 'object' || parsed === null || Array.isArray(parsed)) {
@@ -245,8 +245,10 @@ export function detectFormat(input: string): 'json' | 'csv' | 'yaml' | 'query' |
   }
 
   // Check for JSON
-  if ((trimmed.startsWith('{') && trimmed.endsWith('}'))
-    || (trimmed.startsWith('[') && trimmed.endsWith(']'))) {
+  if (
+    (trimmed.startsWith('{') && trimmed.endsWith('}')) ||
+    (trimmed.startsWith('[') && trimmed.endsWith(']'))
+  ) {
     try {
       JSON.parse(trimmed)
       return 'json'
@@ -268,7 +270,7 @@ export function detectFormat(input: string): 'json' | 'csv' | 'yaml' | 'query' |
   // Check for YAML (simple heuristic)
   if (trimmed.includes(':') && (trimmed.includes('\n') || trimmed.includes('- '))) {
     try {
-      yaml.load(trimmed)
+      parse(trimmed)
       return 'yaml'
     } catch {
       // Not valid YAML
@@ -389,7 +391,7 @@ function formatAsJSObject(value: any, indent: number): string {
   }
 
   if (typeof value === 'string') {
-    return `'${value.replace(/'/g, '\\\'')}'`
+    return `'${value.replace(/'/g, "\\'")}'`
   }
 
   if (typeof value === 'number' || typeof value === 'boolean') {
@@ -400,7 +402,7 @@ function formatAsJSObject(value: any, indent: number): string {
     if (value.length === 0) {
       return '[]'
     }
-    const items = value.map(item => `${nextIndentStr}${formatAsJSObject(item, indent + 1)}`)
+    const items = value.map((item) => `${nextIndentStr}${formatAsJSObject(item, indent + 1)}`)
     return `[\n${items.join(',\n')}\n${indentStr}]`
   }
 
@@ -521,7 +523,9 @@ function generateJavaClass(value: any, className: string): string {
 
     fields.push(`  private ${javaType} ${fieldName};`)
     getters.push(`  public ${javaType} get${capitalizedKey}() {\n    return ${fieldName};\n  }`)
-    setters.push(`  public void set${capitalizedKey}(${javaType} ${fieldName}) {\n    this.${fieldName} = ${fieldName};\n  }`)
+    setters.push(
+      `  public void set${capitalizedKey}(${javaType} ${fieldName}) {\n    this.${fieldName} = ${fieldName};\n  }`,
+    )
   }
 
   return `public class ${className} {\n${fields.join('\n')}\n\n${getters.join('\n\n')}\n\n${setters.join('\n\n')}\n}`

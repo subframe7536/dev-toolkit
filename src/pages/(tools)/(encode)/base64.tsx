@@ -1,15 +1,16 @@
+import { Tabs } from 'moraine'
+import { createRoute } from 'solid-file-router'
+
 import { EncoderLayout } from '#/components/encoder-layout'
 import { FileEncoder } from '#/components/file-encoder'
-import { Tabs } from 'moraine'
 import { decodeText, encodeText, fileToBase64 } from '#/utils/base64'
-import { createRoute } from 'solid-file-router'
 
 export default createRoute({
   info: {
     title: 'Base64 Encoder/Decoder',
     description: 'Encode and decode Base64 strings',
     category: 'Encoding',
-    icon: 'lucide:binary',
+    icon: 'i-lucide-binary',
     tags: ['base64', 'encode', 'decode', 'binary'],
   },
   component: Base64Encoder,
@@ -19,7 +20,7 @@ function Base64Encoder() {
   return (
     <Tabs
       defaultValue="text"
-      class="w-full"
+      classes={{ root: 'w-full', content: 'pt-4' }}
       items={[
         {
           value: 'text',

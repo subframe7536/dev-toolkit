@@ -1,8 +1,5 @@
-import type { CellValue, TableData } from './types'
-
-import { describe, expect, test } from 'bun:test'
-
 import * as fc from 'fast-check'
+import { describe, expect, test } from 'vitest'
 
 import {
   applySnakeCaseToColumns,
@@ -12,6 +9,7 @@ import {
   toggleColumnPin,
   updateCell,
 } from './operations'
+import type { CellValue, TableData } from './types'
 
 // Helper to create test table data
 function createTestTable(): TableData {
@@ -116,39 +114,38 @@ describe('reorderColumns', () => {
     )
 
     // Generator for table data with at least 2 columns and 1 row
-    const tableDataArb = fc.tuple(
-      fc.array(columnArb, { minLength: 2, maxLength: 10 }),
-      fc.integer({ min: 1, max: 20 }),
-    ).chain(([columns, numRows]) => {
-      // Ensure unique column IDs
-      const uniqueColumns = columns.map((col, idx) => ({
-        ...col,
-        id: `col${idx}`,
-      }))
+    const tableDataArb = fc
+      .tuple(fc.array(columnArb, { minLength: 2, maxLength: 10 }), fc.integer({ min: 1, max: 20 }))
+      .chain(([columns, numRows]) => {
+        // Ensure unique column IDs
+        const uniqueColumns = columns.map((col, idx) => ({
+          ...col,
+          id: `col${idx}`,
+        }))
 
-      // Generate rows with cells for each column
-      const rowsArb = fc.array(
-        fc.record({
-          id: fc.stringMatching(/^row\d+$/),
-          cells: fc.record(
-            Object.fromEntries(
-              uniqueColumns.map(col => [col.id, cellValueArb]),
-            ),
-          ),
-        }),
-        { minLength: numRows, maxLength: numRows },
-      ).map(rows =>
-        rows.map((row, rowIdx) => ({
-          ...row,
-          id: `row${rowIdx}`,
-        })),
-      )
+        // Generate rows with cells for each column
+        const rowsArb = fc
+          .array(
+            fc.record({
+              id: fc.stringMatching(/^row\d+$/),
+              cells: fc.record(
+                Object.fromEntries(uniqueColumns.map((col) => [col.id, cellValueArb])),
+              ),
+            }),
+            { minLength: numRows, maxLength: numRows },
+          )
+          .map((rows) =>
+            rows.map((row, rowIdx) => ({
+              ...row,
+              id: `row${rowIdx}`,
+            })),
+          )
 
-      return fc.record({
-        columns: fc.constant(uniqueColumns),
-        rows: rowsArb,
+        return fc.record({
+          columns: fc.constant(uniqueColumns),
+          rows: rowsArb,
+        })
       })
-    })
 
     fc.assert(
       fc.property(
@@ -163,7 +160,7 @@ describe('reorderColumns', () => {
           }
 
           // Store original row data for verification
-          const originalRowData = tableData.rows.map(row => ({
+          const originalRowData = tableData.rows.map((row) => ({
             id: row.id,
             cells: { ...row.cells },
           }))
@@ -173,13 +170,13 @@ describe('reorderColumns', () => {
 
           // Property 1: All rows should still exist with same IDs
           expect(result.rows.length).toBe(tableData.rows.length)
-          expect(result.rows.map(r => r.id).sort()).toEqual(
-            tableData.rows.map(r => r.id).sort(),
+          expect(result.rows.map((r) => r.id).sort()).toEqual(
+            tableData.rows.map((r) => r.id).sort(),
           )
 
           // Property 2: Each row should preserve all its cell values
           for (let i = 0; i < result.rows.length; i++) {
-            const originalRow = originalRowData.find(r => r.id === result.rows[i].id)
+            const originalRow = originalRowData.find((r) => r.id === result.rows[i].id)
             expect(originalRow).toBeDefined()
 
             // Check that all cell values are preserved
@@ -192,8 +189,8 @@ describe('reorderColumns', () => {
           expect(result.columns.length).toBe(tableData.columns.length)
 
           // Property 4: All columns should still exist (just reordered)
-          const originalColumnIds = tableData.columns.map(c => c.id).sort()
-          const resultColumnIds = result.columns.map(c => c.id).sort()
+          const originalColumnIds = tableData.columns.map((c) => c.id).sort()
+          const resultColumnIds = result.columns.map((c) => c.id).sort()
           expect(resultColumnIds).toEqual(originalColumnIds)
 
           // Property 5: The moved column should be at the target position
@@ -215,7 +212,7 @@ describe('sortByColumn', () => {
     expect(result.rows[0].cells.col1).toBe('Alice')
     expect(result.rows[1].cells.col1).toBe('Bob')
     expect(result.rows[2].cells.col1).toBe('Charlie')
-    expect(result.columns.find(c => c.id === 'col1')?.sortDirection).toBe('asc')
+    expect(result.columns.find((c) => c.id === 'col1')?.sortDirection).toBe('asc')
   })
 
   test('should sort rows by number column in descending order', () => {
@@ -225,7 +222,7 @@ describe('sortByColumn', () => {
     expect(result.rows[0].cells.col2).toBe(35)
     expect(result.rows[1].cells.col2).toBe(30)
     expect(result.rows[2].cells.col2).toBe(25)
-    expect(result.columns.find(c => c.id === 'col2')?.sortDirection).toBe('desc')
+    expect(result.columns.find((c) => c.id === 'col2')?.sortDirection).toBe('desc')
   })
 
   test('should handle null values by sorting them to the end', () => {
@@ -245,8 +242,8 @@ describe('sortByColumn', () => {
 
     const result = sortByColumn(table, 'col2', 'desc')
 
-    expect(result.columns.find(c => c.id === 'col1')?.sortDirection).toBeUndefined()
-    expect(result.columns.find(c => c.id === 'col2')?.sortDirection).toBe('desc')
+    expect(result.columns.find((c) => c.id === 'col1')?.sortDirection).toBeUndefined()
+    expect(result.columns.find((c) => c.id === 'col2')?.sortDirection).toBe('desc')
   })
 
   test('should throw error for non-existent column', () => {
@@ -278,45 +275,44 @@ describe('sortByColumn', () => {
     const cellValueArb = fc.oneof(
       fc.string(),
       fc.integer(),
-      fc.double().filter(n => !Number.isNaN(n)),
+      fc.double().filter((n) => !Number.isNaN(n)),
       fc.boolean(),
       fc.constant(null),
     )
 
     // Generator for table data with at least 1 column and 2 rows
-    const tableDataArb = fc.tuple(
-      fc.array(columnArb, { minLength: 1, maxLength: 10 }),
-      fc.integer({ min: 2, max: 20 }),
-    ).chain(([columns, numRows]) => {
-      // Ensure unique column IDs
-      const uniqueColumns = columns.map((col, idx) => ({
-        ...col,
-        id: `col${idx}`,
-      }))
+    const tableDataArb = fc
+      .tuple(fc.array(columnArb, { minLength: 1, maxLength: 10 }), fc.integer({ min: 2, max: 20 }))
+      .chain(([columns, numRows]) => {
+        // Ensure unique column IDs
+        const uniqueColumns = columns.map((col, idx) => ({
+          ...col,
+          id: `col${idx}`,
+        }))
 
-      // Generate rows with cells for each column
-      const rowsArb = fc.array(
-        fc.record({
-          id: fc.stringMatching(/^row\d+$/),
-          cells: fc.record(
-            Object.fromEntries(
-              uniqueColumns.map(col => [col.id, cellValueArb]),
-            ),
-          ),
-        }),
-        { minLength: numRows, maxLength: numRows },
-      ).map(rows =>
-        rows.map((row, rowIdx) => ({
-          ...row,
-          id: `row${rowIdx}`,
-        })),
-      )
+        // Generate rows with cells for each column
+        const rowsArb = fc
+          .array(
+            fc.record({
+              id: fc.stringMatching(/^row\d+$/),
+              cells: fc.record(
+                Object.fromEntries(uniqueColumns.map((col) => [col.id, cellValueArb])),
+              ),
+            }),
+            { minLength: numRows, maxLength: numRows },
+          )
+          .map((rows) =>
+            rows.map((row, rowIdx) => ({
+              ...row,
+              id: `row${rowIdx}`,
+            })),
+          )
 
-      return fc.record({
-        columns: fc.constant(uniqueColumns),
-        rows: rowsArb,
+        return fc.record({
+          columns: fc.constant(uniqueColumns),
+          rows: rowsArb,
+        })
       })
-    })
 
     fc.assert(
       fc.property(
@@ -331,20 +327,15 @@ describe('sortByColumn', () => {
           const columnToSort = tableData.columns[0] // Use first column for consistency
 
           // Store original row data for verification
-          const originalRowData = new Map(
-            tableData.rows.map(row => [
-              row.id,
-              { ...row.cells },
-            ]),
-          )
+          const originalRowData = new Map(tableData.rows.map((row) => [row.id, { ...row.cells }]))
 
           // Perform sorting
           const result = sortByColumn(tableData, columnToSort.id, direction)
 
           // Property 1: All rows should still exist with same IDs
           expect(result.rows.length).toBe(tableData.rows.length)
-          const resultRowIds = new Set(result.rows.map(r => r.id))
-          const originalRowIds = new Set(tableData.rows.map(r => r.id))
+          const resultRowIds = new Set(result.rows.map((r) => r.id))
+          const originalRowIds = new Set(tableData.rows.map((r) => r.id))
           expect(resultRowIds).toEqual(originalRowIds)
 
           // Property 2: Each row should preserve all its cell values
@@ -358,34 +349,32 @@ describe('sortByColumn', () => {
             }
 
             // Check that no extra cells were added
-            expect(Object.keys(resultRow.cells).sort()).toEqual(
-              Object.keys(originalCells!).sort(),
-            )
+            expect(Object.keys(resultRow.cells).sort()).toEqual(Object.keys(originalCells!).sort())
           }
 
           // Property 3: Column count and IDs should remain the same
           expect(result.columns.length).toBe(tableData.columns.length)
-          expect(result.columns.map(c => c.id).sort()).toEqual(
-            tableData.columns.map(c => c.id).sort(),
+          expect(result.columns.map((c) => c.id).sort()).toEqual(
+            tableData.columns.map((c) => c.id).sort(),
           )
 
           // Property 4: The sorted column should have the correct sort direction
-          const sortedColumn = result.columns.find(c => c.id === columnToSort.id)
+          const sortedColumn = result.columns.find((c) => c.id === columnToSort.id)
           expect(sortedColumn?.sortDirection).toBe(direction)
 
           // Property 5: Verify rows are actually sorted by the column
           // (excluding null values which should be at the end)
-          const nonNullRows = result.rows.filter(row => row.cells[columnToSort.id] !== null)
+          const nonNullRows = result.rows.filter((row) => row.cells[columnToSort.id] !== null)
           for (let i = 0; i < nonNullRows.length - 1; i++) {
             const currentValue = nonNullRows[i].cells[columnToSort.id]
             const nextValue = nonNullRows[i + 1].cells[columnToSort.id]
 
             if (currentValue !== null && nextValue !== null) {
-              let comparison = 0
+              let comparison: number
               if (typeof currentValue === 'number' && typeof nextValue === 'number') {
                 comparison = currentValue - nextValue
               } else if (typeof currentValue === 'boolean' && typeof nextValue === 'boolean') {
-                comparison = (currentValue === nextValue) ? 0 : currentValue ? 1 : -1
+                comparison = currentValue === nextValue ? 0 : currentValue ? 1 : -1
               } else {
                 comparison = String(currentValue).localeCompare(String(nextValue))
               }
@@ -429,7 +418,10 @@ describe('sortByColumn', () => {
       fc.tuple(
         fc.constant('decimal' as const),
         fc.array(
-          fc.oneof(fc.double().filter(n => !Number.isNaN(n)), fc.constant(null)),
+          fc.oneof(
+            fc.double().filter((n) => !Number.isNaN(n)),
+            fc.constant(null),
+          ),
           { minLength: 2, maxLength: 20 },
         ),
       ),
@@ -463,81 +455,78 @@ describe('sortByColumn', () => {
     })
 
     fc.assert(
-      fc.property(
-        tableDataArb,
-        (tableData: TableData) => {
-          const columnToSort = tableData.columns[0]
+      fc.property(tableDataArb, (tableData: TableData) => {
+        const columnToSort = tableData.columns[0]
 
-          // Sort ascending first
-          const sortedAsc = sortByColumn(tableData, columnToSort.id, 'asc')
+        // Sort ascending first
+        const sortedAsc = sortByColumn(tableData, columnToSort.id, 'asc')
 
-          // Sort descending (toggle)
-          const sortedDesc = sortByColumn(tableData, columnToSort.id, 'desc')
+        // Sort descending (toggle)
+        const sortedDesc = sortByColumn(tableData, columnToSort.id, 'desc')
 
-          // Property 1: The sort direction should be set correctly
-          const ascColumn = sortedAsc.columns.find(c => c.id === columnToSort.id)
-          const descColumn = sortedDesc.columns.find(c => c.id === columnToSort.id)
+        // Property 1: The sort direction should be set correctly
+        const ascColumn = sortedAsc.columns.find((c) => c.id === columnToSort.id)
+        const descColumn = sortedDesc.columns.find((c) => c.id === columnToSort.id)
 
-          expect(ascColumn?.sortDirection).toBe('asc')
-          expect(descColumn?.sortDirection).toBe('desc')
+        expect(ascColumn?.sortDirection).toBe('asc')
+        expect(descColumn?.sortDirection).toBe('desc')
 
-          // Property 2: Null values should be at the end in both cases
-          const ascNullRows = sortedAsc.rows.filter(row => row.cells[columnToSort.id] === null)
-          const descNullRows = sortedDesc.rows.filter(row => row.cells[columnToSort.id] === null)
+        // Property 2: Null values should be at the end in both cases
+        const ascNullRows = sortedAsc.rows.filter((row) => row.cells[columnToSort.id] === null)
+        const descNullRows = sortedDesc.rows.filter((row) => row.cells[columnToSort.id] === null)
 
-          if (ascNullRows.length > 0) {
-            const ascLastRows = sortedAsc.rows.slice(-ascNullRows.length)
-            for (const row of ascLastRows) {
-              expect(row.cells[columnToSort.id]).toBe(null)
-            }
+        if (ascNullRows.length > 0) {
+          const ascLastRows = sortedAsc.rows.slice(-ascNullRows.length)
+          for (const row of ascLastRows) {
+            expect(row.cells[columnToSort.id]).toBe(null)
           }
+        }
 
-          if (descNullRows.length > 0) {
-            const descLastRows = sortedDesc.rows.slice(-descNullRows.length)
-            for (const row of descLastRows) {
-              expect(row.cells[columnToSort.id]).toBe(null)
-            }
+        if (descNullRows.length > 0) {
+          const descLastRows = sortedDesc.rows.slice(-descNullRows.length)
+          for (const row of descLastRows) {
+            expect(row.cells[columnToSort.id]).toBe(null)
           }
+        }
 
-          // Property 3: For distinct values, the order should be reversed
-          // Group rows by their cell value to identify distinct values
-          const ascNonNullRows = sortedAsc.rows.filter(row => row.cells[columnToSort.id] !== null)
-          const descNonNullRows = sortedDesc.rows.filter(row => row.cells[columnToSort.id] !== null)
+        // Property 3: For distinct values, the order should be reversed
+        // Group rows by their cell value to identify distinct values
+        const ascNonNullRows = sortedAsc.rows.filter((row) => row.cells[columnToSort.id] !== null)
+        const descNonNullRows = sortedDesc.rows.filter((row) => row.cells[columnToSort.id] !== null)
 
-          // Get unique values in ascending order
-          const uniqueValues = Array.from(
-            new Set(ascNonNullRows.map(row => JSON.stringify(row.cells[columnToSort.id]))),
-          ).map(v => JSON.parse(v))
+        // Get unique values in ascending order
+        const uniqueValues = Array.from(
+          new Set(ascNonNullRows.map((row) => JSON.stringify(row.cells[columnToSort.id]))),
+        ).map((v) => JSON.parse(v))
 
-          // For each unique value, verify the order relationship
-          for (let i = 0; i < uniqueValues.length - 1; i++) {
-            const currentValue = uniqueValues[i]
-            const nextValue = uniqueValues[i + 1]
+        // For each unique value, verify the order relationship
+        for (let i = 0; i < uniqueValues.length - 1; i++) {
+          const currentValue = uniqueValues[i]
+          const nextValue = uniqueValues[i + 1]
 
-            // Find first occurrence of each value in asc and desc sorts
-            const ascCurrentIdx = ascNonNullRows.findIndex(
-              row => JSON.stringify(row.cells[columnToSort.id]) === JSON.stringify(currentValue),
-            )
-            const ascNextIdx = ascNonNullRows.findIndex(
-              row => JSON.stringify(row.cells[columnToSort.id]) === JSON.stringify(nextValue),
-            )
-            const descCurrentIdx = descNonNullRows.findIndex(
-              row => JSON.stringify(row.cells[columnToSort.id]) === JSON.stringify(currentValue),
-            )
-            const descNextIdx = descNonNullRows.findIndex(
-              row => JSON.stringify(row.cells[columnToSort.id]) === JSON.stringify(nextValue),
-            )
+          // Find first occurrence of each value in asc and desc sorts
+          const ascCurrentIdx = ascNonNullRows.findIndex(
+            (row) => JSON.stringify(row.cells[columnToSort.id]) === JSON.stringify(currentValue),
+          )
+          const ascNextIdx = ascNonNullRows.findIndex(
+            (row) => JSON.stringify(row.cells[columnToSort.id]) === JSON.stringify(nextValue),
+          )
+          const descCurrentIdx = descNonNullRows.findIndex(
+            (row) => JSON.stringify(row.cells[columnToSort.id]) === JSON.stringify(currentValue),
+          )
+          const descNextIdx = descNonNullRows.findIndex(
+            (row) => JSON.stringify(row.cells[columnToSort.id]) === JSON.stringify(nextValue),
+          )
 
-            // In ascending order, current should come before next
-            expect(ascCurrentIdx).toBeLessThan(ascNextIdx)
+          // In ascending order, current should come before next
+          expect(ascCurrentIdx).toBeLessThan(ascNextIdx)
 
-            // In descending order, next should come before current
-            expect(descNextIdx).toBeLessThan(descCurrentIdx)
-          }
+          // In descending order, next should come before current
+          expect(descNextIdx).toBeLessThan(descCurrentIdx)
+        }
 
-          return true
-        },
-      ),
+        return true
+      }),
       { numRuns: 100 },
     )
   })
@@ -548,7 +537,7 @@ describe('toggleColumnPin', () => {
     const table = createTestTable()
     const result = toggleColumnPin(table, 'col2')
 
-    expect(result.columns.find(c => c.id === 'col2')?.isPinned).toBe(true)
+    expect(result.columns.find((c) => c.id === 'col2')?.isPinned).toBe(true)
   })
 
   test('should unpin a pinned column', () => {
@@ -557,7 +546,7 @@ describe('toggleColumnPin', () => {
 
     const result = toggleColumnPin(table, 'col1')
 
-    expect(result.columns.find(c => c.id === 'col1')?.isPinned).toBe(false)
+    expect(result.columns.find((c) => c.id === 'col1')?.isPinned).toBe(false)
   })
 
   test('should move pinned column after other pinned columns', () => {
@@ -633,93 +622,90 @@ describe('updateCell', () => {
     )
 
     // Generator for table data with at least 1 column and 1 row
-    const tableDataArb = fc.tuple(
-      fc.array(columnArb, { minLength: 1, maxLength: 10 }),
-      fc.integer({ min: 1, max: 20 }),
-    ).chain(([columns, numRows]) => {
-      // Ensure unique column IDs
-      const uniqueColumns = columns.map((col, idx) => ({
-        ...col,
-        id: `col${idx}`,
-      }))
+    const tableDataArb = fc
+      .tuple(fc.array(columnArb, { minLength: 1, maxLength: 10 }), fc.integer({ min: 1, max: 20 }))
+      .chain(([columns, numRows]) => {
+        // Ensure unique column IDs
+        const uniqueColumns = columns.map((col, idx) => ({
+          ...col,
+          id: `col${idx}`,
+        }))
 
-      // Generate rows with cells for each column
-      const rowsArb = fc.array(
-        fc.record({
-          id: fc.stringMatching(/^row\d+$/),
-          cells: fc.record(
-            Object.fromEntries(
-              uniqueColumns.map(col => [col.id, cellValueArb]),
-            ),
-          ),
-        }),
-        { minLength: numRows, maxLength: numRows },
-      ).map(rows =>
-        rows.map((row, rowIdx) => ({
-          ...row,
-          id: `row${rowIdx}`,
-        })),
-      )
+        // Generate rows with cells for each column
+        const rowsArb = fc
+          .array(
+            fc.record({
+              id: fc.stringMatching(/^row\d+$/),
+              cells: fc.record(
+                Object.fromEntries(uniqueColumns.map((col) => [col.id, cellValueArb])),
+              ),
+            }),
+            { minLength: numRows, maxLength: numRows },
+          )
+          .map((rows) =>
+            rows.map((row, rowIdx) => ({
+              ...row,
+              id: `row${rowIdx}`,
+            })),
+          )
 
-      return fc.record({
-        columns: fc.constant(uniqueColumns),
-        rows: rowsArb,
+        return fc.record({
+          columns: fc.constant(uniqueColumns),
+          rows: rowsArb,
+        })
       })
-    })
 
     fc.assert(
-      fc.property(
-        tableDataArb,
-        cellValueArb,
-        (tableData: TableData, newValue: CellValue) => {
-          // Skip if table has no rows or columns
-          if (tableData.rows.length === 0 || tableData.columns.length === 0) {
-            return true
-          }
-
-          // Pick a random row and column to update
-          const rowToUpdate = tableData.rows[0]
-          const columnToUpdate = tableData.columns[0]
-
-          // Perform the cell update
-          const result = updateCell(tableData, rowToUpdate.id, columnToUpdate.id, newValue)
-
-          // Property 1: The updated cell should contain the exact new value
-          const updatedRow = result.rows.find(row => row.id === rowToUpdate.id)
-          expect(updatedRow).toBeDefined()
-          expect(updatedRow!.cells[columnToUpdate.id]).toBe(newValue)
-
-          // Property 2: All other cells in the same row should remain unchanged
-          for (const columnId of Object.keys(rowToUpdate.cells)) {
-            if (columnId !== columnToUpdate.id) {
-              expect(updatedRow!.cells[columnId]).toBe(rowToUpdate.cells[columnId])
-            }
-          }
-
-          // Property 3: All other rows should remain completely unchanged
-          for (const row of result.rows) {
-            if (row.id !== rowToUpdate.id) {
-              const originalRow = tableData.rows.find(r => r.id === row.id)
-              expect(originalRow).toBeDefined()
-              expect(row.cells).toEqual(originalRow!.cells)
-            }
-          }
-
-          // Property 4: Column definitions should remain unchanged
-          expect(result.columns).toEqual(tableData.columns)
-
-          // Property 5: The number of rows and columns should remain the same
-          expect(result.rows.length).toBe(tableData.rows.length)
-          expect(result.columns.length).toBe(tableData.columns.length)
-
-          // Property 6: The value should be retrievable (simulating export format access)
-          // This ensures the value would be available to all export functions
-          const retrievedValue = result.rows.find(r => r.id === rowToUpdate.id)?.cells[columnToUpdate.id]
-          expect(retrievedValue).toBe(newValue)
-
+      fc.property(tableDataArb, cellValueArb, (tableData: TableData, newValue: CellValue) => {
+        // Skip if table has no rows or columns
+        if (tableData.rows.length === 0 || tableData.columns.length === 0) {
           return true
-        },
-      ),
+        }
+
+        // Pick a random row and column to update
+        const rowToUpdate = tableData.rows[0]
+        const columnToUpdate = tableData.columns[0]
+
+        // Perform the cell update
+        const result = updateCell(tableData, rowToUpdate.id, columnToUpdate.id, newValue)
+
+        // Property 1: The updated cell should contain the exact new value
+        const updatedRow = result.rows.find((row) => row.id === rowToUpdate.id)
+        expect(updatedRow).toBeDefined()
+        expect(updatedRow!.cells[columnToUpdate.id]).toBe(newValue)
+
+        // Property 2: All other cells in the same row should remain unchanged
+        for (const columnId of Object.keys(rowToUpdate.cells)) {
+          if (columnId !== columnToUpdate.id) {
+            expect(updatedRow!.cells[columnId]).toBe(rowToUpdate.cells[columnId])
+          }
+        }
+
+        // Property 3: All other rows should remain completely unchanged
+        for (const row of result.rows) {
+          if (row.id !== rowToUpdate.id) {
+            const originalRow = tableData.rows.find((r) => r.id === row.id)
+            expect(originalRow).toBeDefined()
+            expect(row.cells).toEqual(originalRow!.cells)
+          }
+        }
+
+        // Property 4: Column definitions should remain unchanged
+        expect(result.columns).toEqual(tableData.columns)
+
+        // Property 5: The number of rows and columns should remain the same
+        expect(result.rows.length).toBe(tableData.rows.length)
+        expect(result.columns.length).toBe(tableData.columns.length)
+
+        // Property 6: The value should be retrievable (simulating export format access)
+        // This ensures the value would be available to all export functions
+        const retrievedValue = result.rows.find((r) => r.id === rowToUpdate.id)?.cells[
+          columnToUpdate.id
+        ]
+        expect(retrievedValue).toBe(newValue)
+
+        return true
+      }),
       { numRuns: 100 },
     )
   })

@@ -1,15 +1,16 @@
+import { Tabs } from 'moraine'
+import { createRoute } from 'solid-file-router'
+
 import { EncoderLayout } from '#/components/encoder-layout'
 import { FileEncoder } from '#/components/file-encoder'
-import { Tabs } from 'moraine'
 import { fileToHex, fromHex, toHex } from '#/utils/hex'
-import { createRoute } from 'solid-file-router'
 
 export default createRoute({
   info: {
     title: 'Hex Encoder/Decoder',
     description: 'Encode and decode hexadecimal strings',
     category: 'Encoding',
-    icon: 'lucide:hash',
+    icon: 'i-lucide-hash',
     tags: ['hex', 'hexadecimal', 'encode', 'decode'],
   },
   component: HexEncoder,
@@ -19,7 +20,7 @@ function HexEncoder() {
   return (
     <Tabs
       defaultValue="text"
-      class="w-full"
+      classes={{ root: 'w-full', content: 'pt-4' }}
       items={[
         {
           value: 'text',

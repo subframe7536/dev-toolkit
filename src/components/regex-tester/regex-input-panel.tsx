@@ -1,10 +1,13 @@
-import type { MatchResult } from '#/utils/regex/types'
+import { Dialog, Icon, Popover } from 'moraine'
 import type { HighlighterCore } from 'shiki'
+import { createEffect, createMemo, createResource, For, on, Show, Suspense } from 'solid-js'
+import { toast } from 'solid-toaster'
 
-import { Icon, Select } from 'moraine'
+import { HelpPanel } from '#/components/regex-tester/help-panel'
 import { useRegexContext } from '#/contexts/regex-context'
-import { useColorMode } from '@solid-hooks/core/web'
-import { createEffect, createMemo, createResource, createUniqueId, For, on, Show, Suspense } from 'solid-js'
+import { useTheme } from '#/contexts/theme-context'
+import { generateDebugSteps } from '#/utils/regex/debug-engine'
+import { flagsToString } from '#/utils/regex/match-engine'
 
 const FLAG_OPTIONS = [
   { flag: 'g', label: 'Global', key: 'global', description: 'Find all matches' },
@@ -14,27 +17,6 @@ const FLAG_OPTIONS = [
   { flag: 'u', label: 'Unicode', key: 'unicode', description: 'Full Unicode support' },
   { flag: 'y', label: 'Sticky', key: 'sticky', description: 'Match at current position only' },
 ] as const
-
-// Match highlight colors
-const MATCH_COLOR = 'bg-amber-300/60 dark:bg-amber-600/40'
-const MATCH_SELECTED_COLOR = 'bg-amber-400/80 dark:bg-amber-500/60 ring-2 ring-primary'
-const GROUP_COLORS = [
-  'bg-blue-200/70 dark:bg-blue-800/50',
-  'bg-green-200/70 dark:bg-green-800/50',
-  'bg-purple-200/70 dark:bg-purple-800/50',
-  'bg-orange-200/70 dark:bg-orange-800/50',
-  'bg-pink-200/70 dark:bg-pink-800/50',
-  'bg-cyan-200/70 dark:bg-cyan-800/50',
-] as const
-
-interface HighlightSegment {
-  start: number
-  end: number
-  text: string
-  type: 'match' | 'group' | 'text'
-  matchIndex?: number
-  groupIndex?: number
-}
 
 async function loadHighlighter(): Promise<HighlighterCore> {
   const { createHighlighterCore } = await import('shiki/core')
@@ -65,7 +47,8 @@ function PatternHighlight(props: {
       })
       // Extract inner content from <pre><code>...</code></pre>
       const match = result.match(/<code[^>]*>([\s\S]*?)<\/code>/)
-      return match ? match[1] : props.pattern
+      const content = match ? match[1] : props.pattern
+      return props.pattern.endsWith('\n') ? `${content} ` : content
     } catch {
       return props.pattern
     }
@@ -73,115 +56,21 @@ function PatternHighlight(props: {
 
   return (
     <Show when={html()} fallback={<span class="text-transparent">{props.pattern || ' '}</span>}>
-      {/* eslint-disable-next-line solid/no-innerhtml */}
+      {/* oxlint-disable-next-line subf/solid-no-innerhtml */}
       <span innerHTML={html()} />
     </Show>
   )
 }
 
-/**
- * Build highlight segments from matches
- */
-function buildHighlightSegments(text: string, matches: MatchResult[]): HighlightSegment[] {
-  if (!text || matches.length === 0) {
-    return [{ start: 0, end: text.length, text, type: 'text' }]
-  }
-
-  const ranges: Array<{
-    start: number
-    end: number
-    type: 'match' | 'group'
-    matchIndex: number
-    groupIndex?: number
-  }> = []
-
-  for (const match of matches) {
-    ranges.push({
-      start: match.start,
-      end: match.end,
-      type: 'match',
-      matchIndex: match.index,
-    })
-
-    for (const group of match.groups) {
-      if (group.value && group.start >= 0 && group.end > group.start) {
-        ranges.push({
-          start: group.start,
-          end: group.end,
-          type: 'group',
-          matchIndex: match.index,
-          groupIndex: group.index,
-        })
-      }
-    }
-  }
-
-  ranges.sort((a, b) => a.start - b.start || a.end - b.end)
-
-  const segments: HighlightSegment[] = []
-  let currentPos = 0
-
-  for (const range of ranges) {
-    if (range.end <= currentPos) {
-      continue
-    }
-
-    if (range.start > currentPos) {
-      segments.push({
-        start: currentPos,
-        end: range.start,
-        text: text.slice(currentPos, range.start),
-        type: 'text',
-      })
-    }
-
-    const effectiveStart = Math.max(range.start, currentPos)
-    segments.push({
-      start: effectiveStart,
-      end: range.end,
-      text: text.slice(effectiveStart, range.end),
-      type: range.type,
-      matchIndex: range.matchIndex,
-      groupIndex: range.groupIndex,
-    })
-
-    currentPos = range.end
-  }
-
-  if (currentPos < text.length) {
-    segments.push({
-      start: currentPos,
-      end: text.length,
-      text: text.slice(currentPos),
-      type: 'text',
-    })
-  }
-
-  return segments
-}
-
-function getSegmentClass(segment: HighlightSegment, selectedMatchIndex: number | null): string {
-  if (segment.type === 'text') {
-    return ''
-  }
-  if (segment.type === 'group' && segment.groupIndex !== undefined) {
-    return GROUP_COLORS[segment.groupIndex % GROUP_COLORS.length]
-  }
-  if (segment.matchIndex !== undefined && segment.matchIndex === selectedMatchIndex) {
-    return MATCH_SELECTED_COLOR
-  }
-  return MATCH_COLOR
-}
-
 // Format execution time for display
 function formatExecutionTime(ms: number): string {
   if (ms < 1) {
-    return `${(ms * 1000).toFixed(0)}μs`
+    return `${(ms * 1000).toFixed(0)} μs`
   }
   if (ms < 1000) {
-    return `${ms.toFixed(2)}ms`
+    return `${ms.toFixed(2)} ms`
   }
-  return `${(ms / 1000).toFixed(2)}s`
+  return `${(ms / 1000).toFixed(2)} s`
 }
 
 export function RegexInputPanel() {
@@ -189,188 +78,188 @@ export function RegexInputPanel() {
 
   let patternRef!: HTMLTextAreaElement
   let patternMirrorRef!: HTMLDivElement
-  let testRef!: HTMLTextAreaElement
-  let testMirrorRef!: HTMLDivElement
 
   const [highlighter] = createResource(loadHighlighter)
-  const errorId = createUniqueId()
+  const { isDark } = useTheme()
 
-  const [, , isDark] = useColorMode()
+  const hasInput = createMemo(() => Boolean(store.pattern && store.testText))
+  const flagString = createMemo(() => flagsToString(store.flags))
 
-  const matchCount = createMemo(() => store.matches.length)
-  const hasInput = createMemo(() => store.pattern && store.testText)
-  const segments = createMemo(() => buildHighlightSegments(store.testText, store.matches))
-
-  // Get selected flags as array for multi-select
-  const selectedFlags = createMemo(() => {
-    return FLAG_OPTIONS.filter(option => store.flags[option.key]).map(option => option.flag)
-  })
-
-  // Handle flag selection change
-  const handleFlagsChange = (flags: string[]) => {
-    const newFlags = FLAG_OPTIONS.reduce((acc, option) => {
-      acc[option.key] = flags.includes(option.flag)
-      return acc
-    }, {} as Record<string, boolean>)
-    actions.setFlags(newFlags)
-  }
-
-  // Sync scroll for test input
-  const syncTestScroll = () => {
-    if (testRef && testMirrorRef) {
-      testMirrorRef.scrollTop = testRef.scrollTop
-      testMirrorRef.scrollLeft = testRef.scrollLeft
+  const debugStepsCount = createMemo(() => {
+    if (!store.pattern || !store.testText || !store.isValid) {
+      return 0
     }
-  }
+    try {
+      const session = generateDebugSteps(store.pattern, store.flags, store.testText)
+      return session.steps.length
+    } catch {
+      return 0
+    }
+  })
 
   // Auto-resize pattern textarea
   const autoResizePattern = () => {
     if (patternRef) {
       patternRef.style.height = 'auto'
       patternRef.style.height = `${patternRef.scrollHeight}px`
-      // Sync mirror height
       if (patternMirrorRef) {
         patternMirrorRef.style.height = `${patternRef.scrollHeight}px`
       }
     }
   }
 
-  createEffect(on(() => store.pattern, () => {
-    // Delay auto-resize to ensure DOM is updated
-    requestAnimationFrame(autoResizePattern)
-  }))
+  createEffect(
+    on(
+      () => store.pattern,
+      () => {
+        requestAnimationFrame(autoResizePattern)
+      },
+    ),
+  )
 
-  // Handle pattern change from TextField
-  const handlePatternChange = (value: string) => {
-    actions.setPattern(value)
-  }
-
-  const handleMatchClick = (matchIndex: number) => {
-    if (store.selectedMatchIndex === matchIndex) {
-      actions.setSelectedMatchIndex(null)
-    } else {
-      actions.setSelectedMatchIndex(matchIndex)
-    }
+  const handleCopyRegex = async () => {
+    const fullRegex = `/${store.pattern}/${flagString()}`
+    await navigator.clipboard.writeText(fullRegex)
+    toast.success('Regular expression copied to clipboard')
   }
 
   return (
-    <div class="flex flex-col gap-4">
-      {/* Pattern Input Section */}
-      <div class="space-y-3">
-        {/* Header with stats */}
-        <div class="flex items-center justify-between">
-          <label class="text-sm font-medium">Pattern</label>
-          <div class="text-xs text-muted-foreground flex gap-3 items-center">
-            <Show when={hasInput() && store.executionTime > 0}>
-              <span class="flex gap-1 items-center">
-                <Icon name="i-lucide-clock" classes={{ icon: 'size-3' }} />
-                {formatExecutionTime(store.executionTime)}
-              </span>
-            </Show>
-            <Show when={hasInput()}>
-              <span class={matchCount() > 0 ? 'text-green-600 dark:text-green-400' : 'text-amber-600 dark:text-amber-400'}>
-                {matchCount()} match{matchCount() !== 1 ? 'es' : ''}
-              </span>
-            </Show>
-          </div>
-        </div>
-
-        {/* Pattern Input with Shiki highlighting + Flag Select */}
-        <div class="flex gap-2 items-start">
-          <div class="flex-1 relative">
-            {/* Mirror div for syntax highlighting */}
-            <div
-              ref={patternMirrorRef}
-              class="text-sm leading-relaxed font-mono p-2 b-(1 transparent) pointer-events-none whitespace-pre-wrap break-all inset-0 absolute z-10 overflow-hidden"
-              aria-hidden="true"
+    <div class="flex flex-col gap-1.5" role="region" aria-label="Regular Expression">
+      {/* Header bar outside card */}
+      <div class="flex items-center justify-between">
+        <span class="text-sm text-foreground font-medium">Regular Expression</span>
+        <div class="flex gap-1.5 items-center">
+          <Show when={hasInput()}>
+            <span class="text-xs text-muted-foreground font-mono px-2 py-0.5 rounded bg-muted/70">
+              {store.matches.length} {store.matches.length === 1 ? 'match' : 'matches'}
+            </span>
+          </Show>
+          <Show when={debugStepsCount() > 0}>
+            <span class="text-xs text-muted-foreground font-mono px-2 py-0.5 rounded bg-muted/70">
+              {debugStepsCount()} steps
+            </span>
+          </Show>
+          <Show when={hasInput() && store.executionTime > 0}>
+            <span class="text-xs text-muted-foreground font-mono px-2 py-0.5 rounded bg-muted/70">
+              {formatExecutionTime(store.executionTime)}
+            </span>
+          </Show>
+          {/* Reference Info Dialog */}
+          <Dialog classes={{ content: 'max-h-[60vh] max-w-4xl overflow-y-auto' }}>
+            <Dialog.Trigger
+              as="button"
+              type="button"
+              class="text-muted-foreground p-0.5 rounded cursor-pointer transition-colors hover:text-foreground"
+              title="Regex Syntax Reference"
             >
-              <Suspense fallback={<span>{store.pattern || ' '}</span>}>
-                <Show when={highlighter()}>
-                  {hl => <PatternHighlight pattern={store.pattern} highlighter={hl()} isDark={isDark()} />}
-                </Show>
-              </Suspense>
-            </div>
-            {/* Textarea - auto height based on content */}
-            <textarea
-              ref={patternRef}
-              placeholder="Enter regex pattern..."
-              class="text-sm c-transparent leading-relaxed font-mono caret-foreground resize-none break-all overflow-hidden !p-2 !min-h-10 w-full border rounded-md bg-transparent"
-              rows={1}
-              value={store.pattern}
-              onInput={e => handlePatternChange(e.currentTarget.value)}
-              aria-label="Regular expression pattern"
-              aria-describedby={store.parseError ? errorId : undefined}
-              aria-invalid={!store.isValid}
-            />
-          </div>
-
-          {/* Flag Select */}
-          <Select
-            multiple
-            value={selectedFlags()}
-            onChange={handleFlagsChange}
-            options={FLAG_OPTIONS.map(o => ({ value: o.flag, label: `${o.flag} - ${o.label}` }))}
-            class="pt-1 shrink-0 w-32"
-          />
+              <Icon name="i-lucide-info" class="size-4" />
+            </Dialog.Trigger>
+            <Dialog.Content title="Regex Syntax Reference">
+              <Dialog.Body>
+                <HelpPanel />
+              </Dialog.Body>
+            </Dialog.Content>
+          </Dialog>
         </div>
-
-        {/* Error display */}
-        <Show when={store.parseError}>
-          {error => (
-            <div id={errorId} class="text-sm text-red-600 flex gap-2 items-start dark:text-red-400" role="alert">
-              <Icon name="i-lucide-alert-circle" classes={{ icon: 'mt-0.5 flex-shrink-0 size-4' }} />
-              <span>{error().message}</span>
-            </div>
-          )}
-        </Show>
       </div>
 
-      {/* Test Text Section - fixed 400px height with scroll */}
-      <div>
-        <label class="text-sm font-medium">Test String</label>
-        <div class="b-(1 transparent) rounded-lg h-100 relative overflow-hidden mt-1">
-          {/* Highlight layer */}
+      {/* Enclosed Card */}
+      <div class="px-2 py-1.5 border border-border rounded-lg bg-card/60 flex gap-1 items-start focus-within:(border-primary ring-1 ring-primary)">
+        {/* Left delimiter: : / */}
+        <div class="text-sm text-muted-foreground leading-6 font-mono py-1 pl-1 flex shrink-0 select-none items-center">
+          <span class="text-muted-foreground font-semibold">/</span>
+        </div>
+
+        {/* Pattern input with Shiki highlighting */}
+        <div class="flex-1 min-w-0 relative">
+          {/* Mirror div for syntax highlighting */}
           <div
-            ref={testMirrorRef}
-            class="text-sm leading-relaxed font-mono p-(x-3 y-2) h-full pointer-events-none whitespace-pre-wrap break-words inset-0 absolute z-0 overflow-auto"
+            ref={(element) => (patternMirrorRef = element)}
+            class="text-sm leading-6 font-mono m-0 p-1 border-0 pointer-events-none select-none whitespace-pre-wrap break-all inset-0 absolute z-0 overflow-hidden"
             aria-hidden="true"
           >
-            <For each={segments()}>
-              {segment => (
-                <span
-                  class={getSegmentClass(segment, store.selectedMatchIndex)}
-                  data-match-index={segment.matchIndex}
-                >
-                  {segment.text}
-                </span>
-              )}
-            </For>
+            <Suspense fallback={<span class="text-transparent">{store.pattern || ' '}</span>}>
+              <Show when={highlighter()}>
+                {(hl) => (
+                  <PatternHighlight pattern={store.pattern} highlighter={hl()} isDark={isDark()} />
+                )}
+              </Show>
+            </Suspense>
           </div>
-          {/* Textarea - fixed height with scroll */}
+          {/* Textarea */}
           <textarea
-            ref={testRef}
-            placeholder="Enter text to test your regex..."
-            class="c-transparent leading-relaxed font-mono caret-foreground h-full resize-none break-all w-full bg-transparent border rounded-md p-2"
-            value={store.testText}
-            onInput={e => actions.setTestText(e.currentTarget.value)}
-            onScroll={syncTestScroll}
-            onClick={(e: MouseEvent) => {
-              const target = e.target as HTMLElement
-              const idx = target.getAttribute?.('data-match-index')
-              if (idx !== null && idx !== undefined) {
-                handleMatchClick(Number.parseInt(idx, 10))
-              }
+            ref={(element) => (patternRef = element)}
+            placeholder="test(.*)"
+            class="text-sm text-transparent leading-6 font-mono m-0 p-1 outline-none caret-foreground border-0 bg-transparent w-full block resize-none break-all relative z-10 overflow-hidden selection:(text-transparent bg-primary/30)"
+            rows={1}
+            value={store.pattern}
+            onInput={(e) => {
+              actions.setPattern(e.currentTarget.value)
+              autoResizePattern()
             }}
-            aria-label="Test text"
+            aria-invalid={!store.isValid}
           />
+        </div>
+
+        {/* Right suffix: / flags and copy */}
+        <div class="leading-6 py-1 flex shrink-0 gap-1 select-none items-center">
+          <span class="text-sm text-muted-foreground font-mono font-semibold">/</span>
+          {/* Flags Popover */}
+          <Popover placement="bottom" align="end">
+            <Popover.Trigger
+              as="button"
+              type="button"
+              class="text-sm text-primary font-medium font-mono px-1 py-0.5 rounded flex gap-0.5 cursor-pointer transition-colors items-center hover:bg-muted/80"
+              title="Edit regex flags"
+            >
+              {flagString() || <span class="text-muted-foreground/50">none</span>}
+            </Popover.Trigger>
+            <Popover.Content
+              classes={{
+                content:
+                  'w-60 p-2 bg-popover border border-border shadow-md rounded-lg text-xs space-y-1 z-50',
+              }}
+            >
+              <div class="text-foreground font-semibold mb-1 px-2 py-1 border-b border-border/50 flex items-center justify-between">
+                <span>Regex Flags</span>
+                <span class="text-primary font-mono font-normal">/{flagString()}</span>
+              </div>
+              <For each={FLAG_OPTIONS}>
+                {(option) => (
+                  <label class="px-2 py-1.5 rounded flex cursor-pointer select-none items-center justify-between hover:bg-muted/50">
+                    <div class="flex gap-2 items-center">
+                      <span class="text-primary font-bold font-mono w-3">{option.flag}</span>
+                      <span class="text-foreground">{option.label}</span>
+                    </div>
+                    <input
+                      type="checkbox"
+                      checked={Boolean(store.flags[option.key])}
+                      onChange={(e) => actions.setFlags({ [option.key]: e.currentTarget.checked })}
+                      class="accent-primary"
+                    />
+                  </label>
+                )}
+              </For>
+            </Popover.Content>
+          </Popover>
+
+          {/* Copy Button */}
+          <button
+            type="button"
+            class="text-muted-foreground p-1 rounded cursor-pointer transition-colors hover:text-foreground"
+            title="Copy regular expression"
+            onClick={handleCopyRegex}
+          >
+            <Icon name="i-lucide-copy" class="size-4" />
+          </button>
         </div>
       </div>
 
-      {/* No matches hint */}
-      <Show when={hasInput() && matchCount() === 0 && store.isValid}>
-        <div class="text-sm text-amber-600 p-3 border border-amber-200 rounded-lg bg-amber-50 flex gap-2 items-center dark:text-amber-400 dark:border-amber-800 dark:bg-amber-950/30">
-          <Icon name="i-lucide-info" classes={{ icon: 'size-4' }} />
-          <span>No matches found. Try adjusting your pattern.</span>
+      {/* Parse Error */}
+      <Show when={store.parseError}>
+        <div class="text-xs text-destructive mt-0.5 flex gap-1.5 items-center" role="alert">
+          <Icon name="i-lucide-circle-alert" class="size-3.5" />
+          <span>{store.parseError?.message}</span>
         </div>
       </Show>
     </div>

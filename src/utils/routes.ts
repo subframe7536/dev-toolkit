@@ -1,6 +1,5 @@
 import type { RouteDefinition } from '@solidjs/router'
 import type { FileRouteInfo, FileRoutePath } from 'solid-file-router'
-
 import { fileRoutes } from 'virtual:routes'
 
 export interface ToolRoute {
@@ -63,20 +62,61 @@ function groupToolsByCategory(tools: ToolRoute[]): CategoryGroup[] {
     grouped.get(category)!.push(route)
   })
 
-  // Convert to array and sort categories
+  // Keep navigation order explicit rather than dependent on category names.
   return Array.from(grouped.entries())
     .map(([name, tools]) => ({ name, tools }))
-    .sort((a, b) => a.name.localeCompare(b.name))
+    .sort(
+      (a, b) =>
+        ['JSON', 'Encoding', 'Utilities'].indexOf(a.name) -
+        ['JSON', 'Encoding', 'Utilities'].indexOf(b.name),
+    )
 }
 
-let count = 0
+let tools: ToolRoute[] | undefined
 let categories: CategoryGroup[] | undefined
 
+export function getTools() {
+  return (tools ??= flattenRoutes(fileRoutes))
+}
+
 export function getCategories() {
-  if (!categories) {
-    const toolRoutes = flattenRoutes(fileRoutes)
-    categories = groupToolsByCategory(toolRoutes)
-    count = toolRoutes.length
+  categories ??= groupToolsByCategory(getTools())
+  return { count: getTools().length, categories }
+}
+
+/** Rank metadata matches, preserving directory order for equally relevant tools. */
+export function searchTools(tools: ToolRoute[], query: string): ToolRoute[] {
+  const term = query.trim().toLowerCase()
+  if (!term) {
+    return tools
   }
-  return { count, categories }
+
+  const rank = (tool: ToolRoute) => {
+    const title = tool.info.title.toLowerCase()
+    if (title === term) {
+      return 0
+    }
+    if (title.startsWith(term)) {
+      return 1
+    }
+    if (title.includes(term)) {
+      return 2
+    }
+    if (tool.info.tags?.some((tag) => tag.toLowerCase().includes(term))) {
+      return 3
+    }
+    if (tool.info.category.toLowerCase().includes(term)) {
+      return 4
+    }
+    if (tool.info.description.toLowerCase().includes(term)) {
+      return 5
+    }
+    return 6
+  }
+
+  return tools
+    .map((tool, index) => ({ tool, index, rank: rank(tool) }))
+    .filter((match) => match.rank < 6)
+    .sort((a, b) => a.rank - b.rank || a.index - b.index)
+    .map((match) => match.tool)
 }

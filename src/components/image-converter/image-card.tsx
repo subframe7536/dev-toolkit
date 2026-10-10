@@ -1,6 +1,5 @@
+import { Field, Button, InputNumber } from 'moraine'
 import type { Component } from 'solid-js'
-
-import { Button, Input } from 'moraine'
 import { createEffect, on, Show } from 'solid-js'
 
 import { ClearButton } from '../clear-button'
@@ -9,7 +8,7 @@ export interface ImageFileData {
   id: string
   file: File
   previewUrl: string
-  origin?: { width: number, height: number }
+  origin?: { width: number; height: number }
   targetWidth?: number
   targetHeight?: number
 }
@@ -50,19 +49,16 @@ export const ImageCard: Component<ImageCardProps> = (props) => {
     on(
       () => props.image.origin,
       () => {
-        props.onUpdate(
-          props.image.id,
-          {
-            targetHeight: props.image.origin?.height,
-            targetWidth: props.image.origin?.width,
-          },
-        )
+        props.onUpdate(props.image.id, {
+          targetHeight: props.image.origin?.height,
+          targetWidth: props.image.origin?.width,
+        })
       },
     ),
   )
 
   return (
-    <div class="p-3 border rounded-lg flex flex-col gap-2 max-w-50 min-w-30 w-30%">
+    <div class="flex flex-col gap-2 min-w-0">
       <img
         src={props.image.previewUrl}
         alt={props.image.file.name}
@@ -78,21 +74,35 @@ export const ImageCard: Component<ImageCardProps> = (props) => {
       </Show>
 
       <div class="mt-2 space-y-2">
-        <Input
-          type="number"
-          placeholder="Width"
-          class="text-xs h-8"
-          value={props.image.targetWidth ? `${props.image.targetWidth}` : ''}
-          onInput={e => handleWidthChange(e.currentTarget.value)}
-        />
+        <Field hiddenLabel={`Width for ${props.image.file.name}`} classes={{ root: 'min-w-0' }}>
+          <InputNumber
+            orientation="vertical"
+            placeholder="Width"
+            classes={{ root: 'h-8', input: 'text-xs' }}
+            value={props.image.targetWidth ? `${props.image.targetWidth}` : ''}
+            onValueChange={handleWidthChange}
+            onInput={(event) => {
+              if (event.target instanceof HTMLInputElement && event.target.value === '') {
+                handleWidthChange('')
+              }
+            }}
+          />
+        </Field>
 
-        <Input
-          type="number"
-          placeholder="Height"
-          class="text-xs h-8"
-          value={props.image.targetHeight ? `${props.image.targetHeight}` : ''}
-          onInput={e => handleHeightChange(e.currentTarget.value)}
-        />
+        <Field hiddenLabel={`Height for ${props.image.file.name}`} classes={{ root: 'min-w-0' }}>
+          <InputNumber
+            orientation="vertical"
+            placeholder="Height"
+            classes={{ root: 'h-8', input: 'text-xs' }}
+            value={props.image.targetHeight ? `${props.image.targetHeight}` : ''}
+            onValueChange={handleHeightChange}
+            onInput={(event) => {
+              if (event.target instanceof HTMLInputElement && event.target.value === '') {
+                handleHeightChange('')
+              }
+            }}
+          />
+        </Field>
       </div>
 
       <div class="mt-2 flex gap-2">
@@ -112,11 +122,7 @@ export const ImageCard: Component<ImageCardProps> = (props) => {
         >
           Reset
         </Button>
-        <ClearButton
-          size="sm"
-          onClear={() => props.onRemove(props.image.id)}
-          class="flex-1"
-        />
+        <ClearButton size="sm" onClear={() => props.onRemove(props.image.id)} class="flex-1" />
       </div>
     </div>
   )

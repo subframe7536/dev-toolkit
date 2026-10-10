@@ -26,7 +26,11 @@ export const PATTERN_LIBRARY: PatternCategory[] = [
         description: 'Validates standard email address format with domain extension',
         examples: [
           { input: 'user@example.com', shouldMatch: true, description: 'Standard email' },
-          { input: 'test.name+tag@domain.co.uk', shouldMatch: true, description: 'Email with dots and plus' },
+          {
+            input: 'test.name+tag@domain.co.uk',
+            shouldMatch: true,
+            description: 'Email with dots and plus',
+          },
           { input: 'invalid-email', shouldMatch: false, description: 'Missing @ symbol' },
         ],
         tags: ['email', 'validation', 'form'],
@@ -34,12 +38,17 @@ export const PATTERN_LIBRARY: PatternCategory[] = [
       {
         id: 'url',
         name: 'URL',
-        pattern: 'https?:\\/\\/(?:www\\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\\.[a-zA-Z0-9()]{1,6}\\b(?:[-a-zA-Z0-9()@:%_+.~#?&/=]*)',
+        pattern:
+          'https?:\\/\\/(?:www\\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\\.[a-zA-Z0-9()]{1,6}\\b(?:[-a-zA-Z0-9()@:%_+.~#?&/=]*)',
         flags: DEFAULT_FLAGS,
         description: 'Matches HTTP and HTTPS URLs with optional www prefix',
         examples: [
           { input: 'https://example.com', shouldMatch: true, description: 'Simple HTTPS URL' },
-          { input: 'http://www.test.org/path?query=1', shouldMatch: true, description: 'URL with path and query' },
+          {
+            input: 'http://www.test.org/path?query=1',
+            shouldMatch: true,
+            description: 'URL with path and query',
+          },
           { input: 'ftp://invalid.com', shouldMatch: false, description: 'Non-HTTP protocol' },
         ],
         tags: ['url', 'web', 'validation'],
@@ -47,7 +56,8 @@ export const PATTERN_LIBRARY: PatternCategory[] = [
       {
         id: 'ipv4',
         name: 'IPv4 Address',
-        pattern: '^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$',
+        pattern:
+          '^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$',
         flags: DEFAULT_FLAGS,
         description: 'Validates IPv4 addresses with proper octet ranges (0-255)',
         examples: [
@@ -71,7 +81,11 @@ export const PATTERN_LIBRARY: PatternCategory[] = [
         flags: DEFAULT_FLAGS,
         description: 'Matches US phone numbers with optional country code and various separators',
         examples: [
-          { input: '(555) 123-4567', shouldMatch: true, description: 'Standard format with parentheses' },
+          {
+            input: '(555) 123-4567',
+            shouldMatch: true,
+            description: 'Standard format with parentheses',
+          },
           { input: '+1-555-123-4567', shouldMatch: true, description: 'With country code' },
           { input: '5551234567', shouldMatch: true, description: 'No separators' },
         ],
@@ -151,7 +165,11 @@ export const PATTERN_LIBRARY: PatternCategory[] = [
         flags: DEFAULT_FLAGS,
         description: 'Matches UUID version 4 format',
         examples: [
-          { input: '550e8400-e29b-41d4-a716-446655440000', shouldMatch: true, description: 'Valid UUID v4' },
+          {
+            input: '550e8400-e29b-41d4-a716-446655440000',
+            shouldMatch: true,
+            description: 'Valid UUID v4',
+          },
           { input: 'not-a-uuid', shouldMatch: false, description: 'Invalid format' },
         ],
         tags: ['uuid', 'identifier', 'validation'],
@@ -172,7 +190,8 @@ export const PATTERN_LIBRARY: PatternCategory[] = [
       {
         id: 'credit-card',
         name: 'Credit Card Number',
-        pattern: '^(?:4[0-9]{12}(?:[0-9]{3})?|5[1-5][0-9]{14}|3[47][0-9]{13}|6(?:011|5[0-9]{2})[0-9]{12})$',
+        pattern:
+          '^(?:4[0-9]{12}(?:[0-9]{3})?|5[1-5][0-9]{14}|3[47][0-9]{13}|6(?:011|5[0-9]{2})[0-9]{12})$',
         flags: DEFAULT_FLAGS,
         description: 'Matches Visa, MasterCard, Amex, and Discover card numbers',
         examples: [
@@ -224,7 +243,11 @@ export const PATTERN_LIBRARY: PatternCategory[] = [
         examples: [
           { input: 'my-blog-post', shouldMatch: true, description: 'Valid slug' },
           { input: 'post-123', shouldMatch: true, description: 'With numbers' },
-          { input: 'Invalid_Slug', shouldMatch: false, description: 'Contains uppercase and underscore' },
+          {
+            input: 'Invalid_Slug',
+            shouldMatch: false,
+            description: 'Contains uppercase and underscore',
+          },
         ],
         tags: ['slug', 'url', 'seo'],
       },
@@ -243,7 +266,11 @@ export const PATTERN_LIBRARY: PatternCategory[] = [
         description: 'Matches paired HTML tags with content',
         examples: [
           { input: '<div>content</div>', shouldMatch: true, description: 'Simple div' },
-          { input: '<span class="test">text</span>', shouldMatch: true, description: 'With attributes' },
+          {
+            input: '<span class="test">text</span>',
+            shouldMatch: true,
+            description: 'With attributes',
+          },
           { input: '<br/>', shouldMatch: false, description: 'Self-closing tag' },
         ],
         tags: ['html', 'parsing', 'web'],
@@ -264,7 +291,8 @@ export const PATTERN_LIBRARY: PatternCategory[] = [
       {
         id: 'semver',
         name: 'Semantic Version',
-        pattern: '^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)(?:-((?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\\.(?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\\+([0-9a-zA-Z-]+(?:\\.[0-9a-zA-Z-]+)*))?$',
+        pattern:
+          '^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)(?:-((?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\\.(?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\\+([0-9a-zA-Z-]+(?:\\.[0-9a-zA-Z-]+)*))?$',
         flags: DEFAULT_FLAGS,
         description: 'Matches semantic versioning format (major.minor.patch)',
         examples: [
@@ -291,7 +319,7 @@ export function getAllCategories(): PatternCategory[] {
  * Get a specific category by ID
  */
 export function getCategoryById(categoryId: string): PatternCategory | undefined {
-  return PATTERN_LIBRARY.find(cat => cat.id === categoryId)
+  return PATTERN_LIBRARY.find((cat) => cat.id === categoryId)
 }
 
 /**
@@ -299,7 +327,7 @@ export function getCategoryById(categoryId: string): PatternCategory | undefined
  */
 export function getPatternById(patternId: string): PatternDefinition | undefined {
   for (const category of PATTERN_LIBRARY) {
-    const pattern = category.patterns.find(p => p.id === patternId)
+    const pattern = category.patterns.find((p) => p.id === patternId)
     if (pattern) {
       return pattern
     }
@@ -318,7 +346,7 @@ export function searchPatterns(query: string): PatternDefinition[] {
     for (const pattern of category.patterns) {
       const matchesName = pattern.name.toLowerCase().includes(lowerQuery)
       const matchesDescription = pattern.description.toLowerCase().includes(lowerQuery)
-      const matchesTags = pattern.tags.some(tag => tag.toLowerCase().includes(lowerQuery))
+      const matchesTags = pattern.tags.some((tag) => tag.toLowerCase().includes(lowerQuery))
 
       if (matchesName || matchesDescription || matchesTags) {
         results.push(pattern)

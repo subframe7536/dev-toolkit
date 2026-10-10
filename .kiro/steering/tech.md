@@ -2,7 +2,7 @@
 
 # RULES FOR AGENT
 
-- Fix lint error using `bun run format`
+- Fix lint error using `pnpm run format`
 - Try to use ChromeDevTools MCP first
 
 ## Core Technologies
@@ -10,7 +10,7 @@
 - **Framework**: SolidJS 1.9.10
 - **Router**: solid-file-router (file-based routing with type generation)
 - **Build Tool**: Vite 7.2.4
-- **Package Manager**: Bun
+- **Package Manager**: pnpm
 - **Language**: TypeScript 5.9.3
 
 ## UI & Styling
@@ -30,18 +30,19 @@
 
 ```bash
 # Development
-bun run dev          # Start dev server
-bun run build        # Build for production
-bun run preview      # Preview production build
+pnpm run dev          # Start dev server
+pnpm run build        # Build for production
+pnpm run preview      # Preview production build
 
 # Code Quality
-bun run lint         # Lint code
-bun run format       # Format code with ESLint --fix
-bun run test --run   # Run all tests
-bun run test <file>  # Run specific test file
+pnpm run lint         # Lint code
+pnpm run format       # Format code with oxfmt
+pnpm test             # Run all tests once
+pnpm test:watch       # Watch tests during development
+pnpm test <file>      # Run specific test file
 
 # Package Management
-bun add <package>    # Add dependency
+pnpm add <package>    # Add dependency
 ```
 
 ## Configuration Files
@@ -69,6 +70,7 @@ This project uses `solid-file-router`, a type-safe file-based routing system for
    - `pages/blog/[id].tsx` → `/blog/:id`
 
 2. **Route Definition**: All page files MUST export a default route created with `createRoute()`:
+
    ```tsx
    import { createRoute } from 'solid-file-router'
 

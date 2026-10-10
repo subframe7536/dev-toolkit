@@ -1,7 +1,10 @@
-import { Button, Select, Switch } from 'moraine'
+import { Field, Button, MultiSelect, Switch } from 'moraine'
+
+import { ToolOptions } from '#/components/tool-options'
 import { useTableEditorContext } from '#/contexts/table-editor-context'
 
 import { ClearButton } from '../clear-button'
+
 import { ExportDialog } from './export-dialog'
 
 export function TableActions() {
@@ -16,24 +19,27 @@ export function TableActions() {
   }
 
   return (
-    <div class="flex gap-2 items-center justify-between">
-      <div class="flex gap-4 items-center">
-        <Select
-          multiple
-          value={computed.visibleColumnIds()}
-          onChange={handleColumnVisibilityChange}
-          options={store.tableData.columns.map(col => ({ value: col.id, label: col.name }))}
-          classes={{ root: 'w-48' }}
-        />
+    <div class="space-y-4">
+      <ToolOptions>
+        <div class="tool-toolbar">
+          <Field hiddenLabel="Visible columns" classes={{ root: 'min-w-0' }}>
+            <MultiSelect
+              value={computed.visibleColumnIds()}
+              onValueChange={handleColumnVisibilityChange}
+              items={store.tableData.columns.map((col) => ({ value: col.id, label: col.name }))}
+              classes={{ control: 'w-48' }}
+            />
+          </Field>
 
-        <Switch
-          label="First row is header"
-          checked={store.hasHeaders}
-          onChange={actions.toggleHeaders}
-        />
-      </div>
+          <Switch
+            label="First row is header"
+            checked={store.hasHeaders}
+            onCheckedChange={actions.toggleHeaders}
+          />
+        </div>
+      </ToolOptions>
 
-      <div class="flex gap-2">
+      <div class="tool-actions">
         <ExportDialog />
 
         <Button variant="secondary" onClick={actions.reset} leading="i-lucide-rotate-ccw">

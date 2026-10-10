@@ -1,13 +1,15 @@
+import { Field, Dialog, Icon, Input, Select, Switch, Textarea } from 'moraine'
+import { createEffect, createSignal, Show } from 'solid-js'
+
 import { CopyButton } from '#/components/copy-button'
 import { DownloadButton } from '#/components/download-button'
-import { Dialog, Icon, Input, Select, Switch, Textarea } from 'moraine'
+import { ToolOptions } from '#/components/tool-options'
 import { useRegexContext } from '#/contexts'
 import { generateExportCode } from '#/utils/regex/export-generator'
-import { createEffect, createSignal, createUniqueId, Show } from 'solid-js'
 
 type ExportLanguage = 'javascript' | 'python' | 'java'
 
-const languageOptions: Array<{ value: ExportLanguage, label: string }> = [
+const languageOptions: Array<{ value: ExportLanguage; label: string }> = [
   { value: 'javascript', label: 'JavaScript' },
   { value: 'python', label: 'Python' },
   { value: 'java', label: 'Java' },
@@ -19,9 +21,6 @@ export function ExportDialog() {
   const [variableName, setVariableName] = createSignal('regex')
   const [includeComments, setIncludeComments] = createSignal(true)
   const [exportOutput, setExportOutput] = createSignal('')
-
-  const languageLabelId = createUniqueId()
-  const outputLabelId = createUniqueId()
 
   // Generate export code when dialog opens or settings change
   createEffect(() => {
@@ -56,87 +55,106 @@ export function ExportDialog() {
   }
 
   return (
-    <Dialog
-      open={store.showExportDialog}
-      onOpenChange={handleClose}
-      title="Export Regex Pattern"
-      description="Export your regex pattern as code for different programming languages"
-      body={(
-        <div class="space-y-4">
-          {/* Language and Variable Name Row */}
-          <div class="gap-4 grid grid-cols-1 sm:grid-cols-2">
-            <div class="flex flex-col gap-2">
-              <label id={languageLabelId} class="text-sm font-medium">Language</label>
-              <Select
-                value={store.selectedExportLanguage}
-                onChange={lang => lang && actions.setExportLanguage(lang as ExportLanguage)}
-                options={languageOptions.map(o => ({ value: o.value, label: o.label }))}
-              />
-            </div>
+    <Dialog open={store.showExportDialog} onOpenChange={handleClose}>
+      <Dialog.Content
+        title="Export Regex Pattern"
+        description="Export your regex pattern as code for different programming languages"
+      >
+        <Dialog.Body>
+          <div class="space-y-4">
+            {/* Language and Variable Name Row */}
+            <ToolOptions>
+              <div class="gap-4 grid grid-cols-1 sm:grid-cols-2">
+                <Field
+                  label="Language"
+                  classes={{ root: 'min-w-0', label: 'text-muted-foreground font-medium text-xs' }}
+                >
+                  <Select
+                    value={store.selectedExportLanguage}
+                    onValueChange={(lang) =>
+                      lang && actions.setExportLanguage(lang as ExportLanguage)
+                    }
+                    items={languageOptions.map((o) => ({ value: o.value, label: o.label }))}
+                  />
+                </Field>
 
-            <div>
-              <label class="text-sm font-medium">Variable Name</label>
-              <Input
-                value={variableName()}
-                onInput={e => setVariableName(e.currentTarget.value)}
-                placeholder="regex"
-                aria-describedby="variable-name-hint"
-                class="mt-1"
-              />
-              <span id="variable-name-hint" class="sr-only">
-                The name of the variable in the exported code
-              </span>
-            </div>
-          </div>
-
-          {/* Options */}
-          <div class="flex items-center">
-            <Switch
-              label="Include comments"
-              checked={includeComments()}
-              onChange={setIncludeComments}
-            />
-          </div>
-
-          {/* Code Output */}
-          <Show
-            when={store.pattern}
-            fallback={(
-              <div class="text-muted-foreground p-4 text-center border rounded-md bg-muted/50" role="status">
-                <Icon name="i-lucide-code" classes={{ icon: 'mx-auto mb-2 opacity-50 size-8' }} aria-hidden="true" />
-                <p>No pattern to export</p>
+                <Field
+                  label="Variable Name"
+                  help="The name of the variable in the exported code"
+                  classes={{
+                    root: 'min-w-0',
+                    label: 'text-muted-foreground font-medium text-xs',
+                    help: 'sr-only',
+                  }}
+                >
+                  <Input
+                    value={variableName()}
+                    onValueChange={setVariableName}
+                    placeholder="regex"
+                  />
+                </Field>
               </div>
-            )}
-          >
-            <div class="space-y-2">
-              <div class="flex gap-2 items-center justify-between">
-                <label id={outputLabelId} class="text-sm font-medium">Generated Code</label>
-                <div class="flex gap-2">
-                  <CopyButton
-                    content={exportOutput()}
-                    size="sm"
-                    aria-label="Copy generated code to clipboard"
+              <div class="flex items-center">
+                <Switch
+                  label="Include comments"
+                  checked={includeComments()}
+                  onCheckedChange={setIncludeComments}
+                />
+              </div>
+            </ToolOptions>
+
+            {/* Code Output */}
+            <Show
+              when={store.pattern}
+              fallback={
+                <div
+                  class="text-muted-foreground p-4 text-center border rounded-md bg-muted/50"
+                  role="status"
+                >
+                  <Icon
+                    name="i-lucide-code"
+                    class="mx-auto mb-2 opacity-50 size-8"
+                    aria-hidden="true"
                   />
-                  <DownloadButton
-                    content={exportOutput()}
-                    filename={getExportFilename()}
-                    mimeType="text/plain"
-                    size="sm"
-                    aria-label={`Download as ${getExportFilename()}`}
-                  />
+                  <p>No pattern to export</p>
                 </div>
-              </div>
-              <Textarea
-                classes={{ input: 'text-sm font-mono resize-none h-48' }}
-                readOnly
-                value={exportOutput()}
-                aria-labelledby={outputLabelId}
-                aria-readonly="true"
-              />
-            </div>
-          </Show>
-        </div>
-      )}
-    />
+              }
+            >
+              <Field
+                label="Generated Code"
+                classes={{
+                  root: 'min-w-0',
+                  label: 'text-muted-foreground font-medium text-xs',
+                  labelWrapper: 'tool-panel-heading',
+                }}
+                hint={
+                  <span class="tool-actions">
+                    <CopyButton
+                      text="Copy Output"
+                      content={exportOutput()}
+                      size="sm"
+                      aria-label="Copy generated code to clipboard"
+                    />
+                    <DownloadButton
+                      content={exportOutput()}
+                      filename={getExportFilename()}
+                      mimeType="text/plain"
+                      size="sm"
+                      aria-label={`Download as ${getExportFilename()}`}
+                    />
+                  </span>
+                }
+              >
+                <Textarea
+                  classes={{ root: 'text-sm font-mono resize-none h-48' }}
+                  readOnly
+                  value={exportOutput()}
+                />
+              </Field>
+            </Show>
+          </div>
+        </Dialog.Body>
+      </Dialog.Content>
+    </Dialog>
   )
 }

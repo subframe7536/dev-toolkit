@@ -1,15 +1,15 @@
-import { downloadFile } from '#/utils/download'
+import { Button } from 'moraine'
 import { createMemo, Show } from 'solid-js'
 import { toast } from 'solid-toaster'
 
-import { Button } from 'moraine'
+import { downloadFile } from '#/utils/download'
 
 interface DownloadButtonProps {
   content: string | Blob
   filename: string
   mimeType?: string
   variant?: 'default' | 'outline' | 'ghost' | 'secondary'
-  size?: 'sm' | 'default' | 'lg'
+  size?: 'sm' | 'md' | 'lg'
   disabled?: boolean
   class?: string
   text?: boolean | string
@@ -32,9 +32,7 @@ export function DownloadButton(props: DownloadButtonProps) {
       onClick={props.onClick || handleDownload}
       leading={text() ? 'i-lucide-download' : undefined}
     >
-      <Show when={text()}>
-        {text() === true ? 'Download' : text()}
-      </Show>
+      <Show when={text()}>{text() === true ? 'Download' : text()}</Show>
     </Button>
   )
 }

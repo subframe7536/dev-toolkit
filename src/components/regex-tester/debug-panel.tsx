@@ -1,14 +1,14 @@
-import type { DebugSession, DebugStep } from '#/utils/regex/types'
-
 import { Button, Icon } from 'moraine'
-import { useRegexContext } from '#/contexts/regex-context'
-import { generateDebugSteps, getActionBgColor, getActionColor, getActionIcon } from '#/utils/regex/debug-engine'
 import { createEffect, createMemo, createSignal, For, on, onCleanup, Show } from 'solid-js'
 
-// Highlight colors for pattern and text positions
-const PATTERN_HIGHLIGHT = 'bg-primary/30 ring-2 ring-primary'
-const TEXT_HIGHLIGHT = 'bg-amber-300/60 dark:bg-amber-600/40'
-const TEXT_MATCHED = 'bg-green-300/60 dark:bg-green-600/40'
+import { useRegexContext } from '#/contexts/regex-context'
+import {
+  generateDebugSteps,
+  getActionBgColor,
+  getActionColor,
+  getActionIcon,
+} from '#/utils/regex/debug-engine'
+import type { DebugSession, DebugStep } from '#/utils/regex/types'
 
 interface DebugControlsProps {
   session: DebugSession
@@ -17,6 +17,9 @@ interface DebugControlsProps {
   onPlay: () => void
   onPause: () => void
   onReset: () => void
+  onGoToStep: (index: number) => void
+  speed: number
+  onToggleSpeed: () => void
 }
 
 function DebugControls(props: DebugControlsProps) {
@@ -25,69 +28,91 @@ function DebugControls(props: DebugControlsProps) {
   const isComplete = createMemo(() => props.session.finalResult !== 'pending' && isAtEnd())
 
   return (
-    <div class="flex flex-wrap gap-2 items-center" role="toolbar" aria-label="Debug controls">
+    <div
+      class="p-2.5 border border-border rounded-lg bg-card/60 flex flex-wrap gap-3 items-center justify-between"
+      role="toolbar"
+      aria-label="Debug controls"
+    >
       {/* Playback controls */}
-      <div class="flex gap-1" role="group" aria-label="Playback">
+      <div class="flex gap-1 items-center" role="group" aria-label="Playback controls">
         <Button
           variant="outline"
-          size="sm"
+          size="icon-sm"
           onClick={props.onReset}
           disabled={isAtStart()}
           title="Reset to start"
           aria-label="Reset to start"
-        >
-          <span class="i-lucide-skip-back size-4" aria-hidden="true" />
-        </Button>
+          leading="i-lucide-skip-back"
+        />
         <Button
           variant="outline"
-          size="sm"
+          size="icon-sm"
           onClick={props.onStepBackward}
           disabled={isAtStart()}
           title="Step backward"
           aria-label="Step backward"
-        >
-          <span class="i-lucide-step-back size-4" aria-hidden="true" />
-        </Button>
+          leading="i-lucide-step-back"
+        />
         <Show
           when={props.session.isPlaying}
-          fallback={(
+          fallback={
             <Button
               variant="outline"
-              size="sm"
+              size="icon-sm"
               onClick={props.onPlay}
               disabled={isComplete()}
-              title="Play"
+              title="Play automatic stepping"
               aria-label="Play automatic stepping"
-            >
-              <span class="i-lucide-play size-4" aria-hidden="true" />
-            </Button>
-          )}
+              leading="i-lucide-play"
+            />
+          }
         >
           <Button
             variant="outline"
-            size="sm"
+            size="icon-sm"
             onClick={props.onPause}
-            title="Pause"
+            title="Pause automatic stepping"
             aria-label="Pause automatic stepping"
-          >
-            <span class="i-lucide-pause size-4" aria-hidden="true" />
-          </Button>
+            leading="i-lucide-pause"
+          />
         </Show>
         <Button
           variant="outline"
-          size="sm"
+          size="icon-sm"
           onClick={props.onStepForward}
           disabled={isAtEnd()}
           title="Step forward"
           aria-label="Step forward"
-        >
-          <span class="i-lucide-step-forward size-4" aria-hidden="true" />
-        </Button>
+          leading="i-lucide-step-forward"
+        />
       </div>
 
-      {/* Progress indicator */}
-      <div class="text-xs text-muted-foreground ml-auto" aria-live="polite">
-        Step {props.session.currentStepIndex + 1} / {props.session.steps.length}
+      {/* Progress scrubber */}
+      <div class="flex flex-1 gap-2 max-w-xs min-w-[120px] items-center">
+        <input
+          type="range"
+          min={0}
+          max={Math.max(props.session.steps.length - 1, 0)}
+          value={props.session.currentStepIndex}
+          onInput={(e) => props.onGoToStep(Number.parseInt(e.currentTarget.value, 10))}
+          class="accent-primary rounded bg-muted h-1.5 w-full cursor-pointer"
+          aria-label="Step scrubber"
+        />
+      </div>
+
+      {/* Counter and speed toggle */}
+      <div class="flex gap-2 items-center">
+        <span class="text-xs text-foreground font-medium font-mono px-2 py-0.5 rounded bg-muted/80 shrink-0">
+          Step {props.session.currentStepIndex + 1} / {props.session.steps.length}
+        </span>
+        <button
+          type="button"
+          class="text-xs text-muted-foreground font-mono px-2 py-0.5 border border-border/60 rounded cursor-pointer transition-colors hover:text-foreground hover:bg-muted/40"
+          onClick={() => props.onToggleSpeed()}
+          title="Click to toggle playback speed"
+        >
+          {props.speed}ms
+        </button>
       </div>
     </div>
   )
@@ -109,7 +134,7 @@ function PatternVisualizer(props: PatternVisualizerProps) {
       return [{ text: pattern, highlighted: false }]
     }
 
-    const segments: Array<{ text: string, highlighted: boolean }> = []
+    const segments: Array<{ text: string; highlighted: boolean }> = []
 
     if (pos > 0) {
       segments.push({ text: pattern.slice(0, pos), highlighted: false })
@@ -126,10 +151,16 @@ function PatternVisualizer(props: PatternVisualizerProps) {
   })
 
   return (
-    <div class="text-sm font-mono p-2 border rounded bg-muted/30 overflow-x-auto">
+    <div class="text-sm font-mono p-2.5 border border-border rounded-lg bg-card/60 whitespace-pre overflow-x-auto">
       <For each={segments()}>
-        {segment => (
-          <span class={segment.highlighted ? PATTERN_HIGHLIGHT : ''}>
+        {(segment) => (
+          <span
+            class={
+              segment.highlighted
+                ? 'bg-primary/30 ring-1 ring-primary rounded-xs px-0.5 font-bold text-foreground'
+                : 'text-foreground/90'
+            }
+          >
             {segment.text}
           </span>
         )}
@@ -147,7 +178,7 @@ interface TextVisualizerProps {
 
 function TextVisualizer(props: TextVisualizerProps) {
   type SegmentType = 'normal' | 'current' | 'matched'
-  type Segment = { text: string, type: SegmentType }
+  type Segment = { text: string; type: SegmentType }
 
   const segments = createMemo((): Segment[] => {
     const text = props.text
@@ -161,7 +192,6 @@ function TextVisualizer(props: TextVisualizerProps) {
 
     const segments: Segment[] = []
 
-    // If we have a complete match, show it
     if (matchStart !== undefined && matchEnd !== undefined && matchEnd > matchStart) {
       if (matchStart > 0) {
         segments.push({ text: text.slice(0, matchStart), type: 'normal' })
@@ -173,7 +203,6 @@ function TextVisualizer(props: TextVisualizerProps) {
       return segments
     }
 
-    // Otherwise show current position
     if (pos < 0 || pos >= text.length) {
       return [{ text, type: 'normal' }]
     }
@@ -192,22 +221,18 @@ function TextVisualizer(props: TextVisualizerProps) {
   const getSegmentClass = (type: SegmentType) => {
     switch (type) {
       case 'current':
-        return TEXT_HIGHLIGHT
+        return 'bg-amber-300/60 dark:bg-amber-600/50 ring-1 ring-amber-500 rounded-xs px-0.5 font-bold'
       case 'matched':
-        return TEXT_MATCHED
+        return 'bg-green-300/60 dark:bg-green-600/50 ring-1 ring-green-500 rounded-xs px-0.5 font-bold'
       default:
-        return ''
+        return 'text-foreground/90'
     }
   }
 
   return (
-    <div class="text-sm font-mono p-2 border rounded bg-muted/30 whitespace-pre-wrap break-all overflow-x-auto">
+    <div class="text-sm font-mono p-2.5 border border-border rounded-lg bg-card/60 max-h-36 whitespace-pre-wrap break-all overflow-y-auto">
       <For each={segments()}>
-        {segment => (
-          <span class={getSegmentClass(segment.type)}>
-            {segment.text}
-          </span>
-        )}
+        {(segment) => <span class={getSegmentClass(segment.type)}>{segment.text}</span>}
       </For>
       <Show when={!props.text}>
         <span class="text-muted-foreground italic">No test text</span>
@@ -225,7 +250,6 @@ interface StepListProps {
 function StepList(props: StepListProps) {
   let containerRef: HTMLDivElement | undefined
 
-  // Auto-scroll to current step
   createEffect(() => {
     const index = props.currentIndex
     if (containerRef && index >= 0) {
@@ -238,8 +262,8 @@ function StepList(props: StepListProps) {
 
   return (
     <div
-      ref={containerRef}
-      class="max-h-48 overflow-y-auto space-y-1"
+      ref={(element) => (containerRef = element)}
+      class="pr-1 flex-1 overflow-y-auto space-y-1"
       role="listbox"
       aria-label="Debug steps"
       aria-activedescendant={`step-${props.currentIndex}`}
@@ -249,10 +273,10 @@ function StepList(props: StepListProps) {
           <div
             id={`step-${index()}`}
             data-step-index={index()}
-            class={`text-sm p-2 rounded cursor-pointer transition-colors ${
+            class={`text-xs p-2 border rounded-md cursor-pointer transition-colors ${
               index() === props.currentIndex
-                ? getActionBgColor(step.action)
-                : 'hover:bg-muted/50'
+                ? `${getActionBgColor(step.action)} border-primary/50 shadow-xs ring-1 ring-primary/40`
+                : 'border-transparent hover:bg-muted/40'
             }`}
             onClick={() => props.onStepClick(index())}
             onKeyDown={(e) => {
@@ -265,16 +289,19 @@ function StepList(props: StepListProps) {
             aria-selected={index() === props.currentIndex}
             tabIndex={index() === props.currentIndex ? 0 : -1}
           >
-            <div class="flex gap-2 items-center">
-              <Icon name={getActionIcon(step.action).replace("lucide:", "i-lucide-") as any} classes={{ icon: getActionColor(step.action) }} />
-              <span class={`font-medium ${getActionColor(step.action)}`}>
-                {step.action.charAt(0).toUpperCase() + step.action.slice(1)}
+            <div class="flex gap-1.5 items-center">
+              <Icon
+                name={getActionIcon(step.action)}
+                class={`shrink-0 size-3.5 ${getActionColor(step.action)}`}
+              />
+              <span class={`font-semibold truncate capitalize ${getActionColor(step.action)}`}>
+                {step.action}
               </span>
-              <span class="text-xs text-muted-foreground ml-auto">
+              <span class="text-[11px] text-muted-foreground font-mono ml-auto shrink-0">
                 #{step.stepNumber}
               </span>
             </div>
-            <p class="text-xs text-muted-foreground ml-6 mt-1">
+            <p class="text-[11px] text-muted-foreground leading-relaxed mt-1 line-clamp-2">
               {step.description}
             </p>
           </div>
@@ -288,43 +315,30 @@ export function DebugPanel() {
   const { store } = useRegexContext()
 
   const [debugSession, setDebugSession] = createSignal<DebugSession | null>(null)
-  const [isDebugMode, setIsDebugMode] = createSignal(false)
+  const [speed, setSpeed] = createSignal<number>(500)
 
   let playIntervalId: ReturnType<typeof setInterval> | null = null
 
-  // Generate debug steps when entering debug mode
-  const startDebug = () => {
-    if (!store.pattern || !store.testText) {
-      return
-    }
+  const canStartDebug = createMemo(() => Boolean(store.pattern && store.testText && store.isValid))
 
-    const session = generateDebugSteps(store.pattern, store.flags, store.testText)
-    setDebugSession(session)
-    setIsDebugMode(true)
-  }
+  createEffect(
+    on(
+      () => [store.pattern, store.testText, store.flags, store.isValid] as const,
+      ([pattern, testText, flags, isValid]) => {
+        if (playIntervalId) {
+          clearInterval(playIntervalId)
+          playIntervalId = null
+        }
+        if (pattern && testText && isValid) {
+          const session = generateDebugSteps(pattern, flags, testText)
+          setDebugSession(session)
+        } else {
+          setDebugSession(null)
+        }
+      },
+    ),
+  )
 
-  const stopDebug = () => {
-    if (playIntervalId) {
-      clearInterval(playIntervalId)
-      playIntervalId = null
-    }
-    setDebugSession(null)
-    setIsDebugMode(false)
-  }
-
-  // Regenerate steps when pattern or text changes during debug mode
-  createEffect(on(
-    () => [store.pattern, store.testText, store.flags] as const,
-    () => {
-      if (isDebugMode() && store.pattern && store.testText) {
-        const session = generateDebugSteps(store.pattern, store.flags, store.testText)
-        setDebugSession(session)
-      }
-    },
-    { defer: true },
-  ))
-
-  // Cleanup on unmount
   onCleanup(() => {
     if (playIntervalId) {
       clearInterval(playIntervalId)
@@ -400,7 +414,7 @@ export function DebugPanel() {
         ...currentSession,
         currentStepIndex: currentSession.currentStepIndex + 1,
       })
-    }, 1000)
+    }, speed())
   }
 
   const pause = () => {
@@ -425,6 +439,17 @@ export function DebugPanel() {
     })
   }
 
+  const toggleSpeed = () => {
+    const speeds = [250, 500, 1000]
+    const nextIndex = (speeds.indexOf(speed()) + 1) % speeds.length
+    const nextSpeed = speeds[nextIndex]
+    setSpeed(nextSpeed)
+    if (debugSession()?.isPlaying) {
+      pause()
+      play()
+    }
+  }
+
   const currentStep = createMemo(() => {
     const session = debugSession()
     if (!session || session.currentStepIndex < 0) {
@@ -433,55 +458,28 @@ export function DebugPanel() {
     return session.steps[session.currentStepIndex]
   })
 
-  const canStartDebug = createMemo(() => store.pattern && store.testText && store.isValid)
-
   return (
-    <div class="p-4" role="region" aria-labelledby="debug-heading">
-      <div class="mb-3 flex items-center justify-between">
-        <div class="flex gap-2 items-center">
-          <span class="i-lucide-bug size-5" aria-hidden="true" />
-          <h3 id="debug-heading" class="font-medium">Step-by-Step Debug</h3>
-        </div>
-        <Show
-          when={isDebugMode()}
-          fallback={(
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={startDebug}
-              disabled={!canStartDebug()}
-              aria-describedby={!canStartDebug() ? 'debug-disabled-hint' : undefined}
-            >
-              Start Debug
-            </Button>
-          )}
-        >
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={stopDebug}
-          >
-            Exit Debug
-          </Button>
-        </Show>
-      </div>
-
+    <div class="space-y-4" role="region" aria-label="Regex Match Debugger">
       <Show
-        when={isDebugMode() && debugSession()}
-        fallback={(
-          <p class="text-sm text-muted-foreground" id="debug-disabled-hint">
-            <Show
-              when={canStartDebug()}
-              fallback="Enter a valid pattern and test text to enable debug mode."
-            >
-              Click "Start Debug" to step through the regex matching process.
-            </Show>
-          </p>
-        )}
+        when={canStartDebug() && debugSession()}
+        fallback={
+          <div class="p-8 text-center border border-border rounded-lg border-dashed bg-muted/20">
+            <Icon name="i-lucide-bug" class="text-muted-foreground mx-auto mb-2 size-8" />
+            <p class="text-sm text-foreground font-medium">
+              {canStartDebug()
+                ? 'Initializing debugger...'
+                : 'Enter a valid pattern and test string to enable debugging.'}
+            </p>
+            <p class="text-xs text-muted-foreground mt-1">
+              Step-by-step engine execution breakdown requires both a regular expression and test
+              string.
+            </p>
+          </div>
+        }
       >
-        {session => (
+        {(session) => (
           <div class="space-y-4">
-            {/* Controls */}
+            {/* Top Control Bar */}
             <DebugControls
               session={session()}
               onStepForward={stepForward}
@@ -489,76 +487,121 @@ export function DebugPanel() {
               onPlay={play}
               onPause={pause}
               onReset={reset}
+              onGoToStep={goToStep}
+              speed={speed()}
+              onToggleSpeed={toggleSpeed}
             />
 
-            {/* Current step info */}
-            <Show when={currentStep()}>
-              {step => (
-                <div class={`p-3 rounded-md ${getActionBgColor(step().action)}`} role="status" aria-live="polite">
-                  <div class="mb-2 flex gap-2 items-center">
-                    <Icon name={getActionIcon(step().action).replace("lucide:", "i-lucide-") as any} classes={{ icon: getActionColor(step().action) }} />
-                    <span class={`font-medium ${getActionColor(step().action)}`}>
-                      {step().action.charAt(0).toUpperCase() + step().action.slice(1)}
-                    </span>
+            {/* Main 2-column debug workspace */}
+            <div class="gap-4 grid grid-cols-1 items-start md:grid-cols-12">
+              {/* Left Column: Visualizer & Step details (7 cols) */}
+              <div class="space-y-3 md:col-span-7">
+                {/* Current step info */}
+                <Show when={currentStep()}>
+                  {(step) => (
+                    <div
+                      class={`p-3.5 border border-border/80 rounded-lg ${getActionBgColor(step().action)}`}
+                      role="status"
+                      aria-live="polite"
+                    >
+                      <div class="mb-1.5 flex gap-2 items-center">
+                        <Icon
+                          name={getActionIcon(step().action)}
+                          class={getActionColor(step().action)}
+                        />
+                        <span
+                          class={`text-sm font-semibold capitalize ${getActionColor(step().action)}`}
+                        >
+                          {step().action}
+                        </span>
+                        <span class="text-xs text-muted-foreground font-mono ml-auto">
+                          Step #{step().stepNumber}
+                        </span>
+                      </div>
+                      <p class="text-xs text-foreground/90 leading-relaxed">{step().description}</p>
+                      <Show when={step().matchedText}>
+                        <div class="text-xs font-mono mt-1.5 p-1 border border-border/40 rounded bg-background/60 inline-block">
+                          Matched: <span class="font-semibold">"{step().matchedText}"</span>
+                        </div>
+                      </Show>
+                    </div>
+                  )}
+                </Show>
+
+                {/* Pattern visualization */}
+                <div class="space-y-1">
+                  <div class="text-xs text-muted-foreground font-medium" id="pattern-viz-label">
+                    Pattern Element
                   </div>
-                  <p class="text-sm">{step().description}</p>
-                  <Show when={step().matchedText}>
-                    <p class="text-xs text-muted-foreground mt-1">
-                      Matched: "{step().matchedText}"
-                    </p>
-                  </Show>
+                  <PatternVisualizer
+                    pattern={store.pattern || ' '}
+                    currentPosition={currentStep()?.patternPosition ?? 0}
+                    highlightLength={currentStep()?.patternElement.length ?? 1}
+                  />
                 </div>
-              )}
-            </Show>
 
-            {/* Pattern visualization */}
-            <div>
-              <div class="text-xs text-muted-foreground mb-1" id="pattern-viz-label">Pattern</div>
-              <PatternVisualizer
-                pattern={store.pattern || ' '}
-                currentPosition={currentStep()?.patternPosition ?? 0}
-                highlightLength={currentStep()?.patternElement.length ?? 1}
-              />
-            </div>
+                {/* Text visualization */}
+                <div class="space-y-1">
+                  <div class="text-xs text-muted-foreground font-medium" id="text-viz-label">
+                    Test String Match Position
+                  </div>
+                  <TextVisualizer
+                    text={store.testText}
+                    currentPosition={currentStep()?.textPosition ?? 0}
+                    matchStart={
+                      session().finalResult === 'success' && currentStep()?.action === 'success'
+                        ? session().matchStart
+                        : undefined
+                    }
+                    matchEnd={
+                      session().finalResult === 'success' && currentStep()?.action === 'success'
+                        ? session().matchEnd
+                        : undefined
+                    }
+                  />
+                </div>
 
-            {/* Text visualization */}
-            <div>
-              <div class="text-xs text-muted-foreground mb-1" id="text-viz-label">Test Text</div>
-              <TextVisualizer
-                text={store.testText}
-                currentPosition={currentStep()?.textPosition ?? 0}
-                matchStart={session().finalResult === 'success' && currentStep()?.action === 'success' ? session().matchStart : undefined}
-                matchEnd={session().finalResult === 'success' && currentStep()?.action === 'success' ? session().matchEnd : undefined}
-              />
-            </div>
-
-            {/* Step history */}
-            <div>
-              <div class="text-xs text-muted-foreground mb-1">Step History</div>
-              <StepList
-                steps={session().steps}
-                currentIndex={session().currentStepIndex}
-                onStepClick={goToStep}
-              />
-            </div>
-
-            {/* Final result indicator */}
-            <Show when={session().currentStepIndex === session().steps.length - 1}>
-              <div
-                class={`p-3 text-center rounded-md ${
-                  session().finalResult === 'success'
-                    ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300'
-                    : 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300'
-                }`}
-                role="status"
-                aria-live="assertive"
-              >
-                <span class={`${session().finalResult === 'success' ? 'i-lucide-check-circle' : 'i-lucide-x-circle'} mx-auto mb-2 size-6`} aria-hidden="true" />
-                <p class="font-medium">
-                  {session().finalResult === 'success' ? 'Match Found!' : 'No Match'}
-                </p>
+                {/* Final result indicator */}
+                <Show when={session().currentStepIndex === session().steps.length - 1}>
+                  <div
+                    class={`p-3 text-center border rounded-lg ${
+                      session().finalResult === 'success'
+                        ? 'bg-green-100 dark:bg-green-950/30 text-green-700 dark:text-green-300 border-green-300 dark:border-green-800'
+                        : 'bg-red-100 dark:bg-red-950/30 text-red-700 dark:text-red-300 border-red-300 dark:border-red-800'
+                    }`}
+                    role="status"
+                    aria-live="assertive"
+                  >
+                    <Icon
+                      name={
+                        session().finalResult === 'success'
+                          ? 'i-lucide-circle-check'
+                          : 'i-lucide-circle-x'
+                      }
+                      class="mx-auto mb-1 size-6"
+                    />
+                    <p class="text-sm font-semibold">
+                      {session().finalResult === 'success' ? 'Match Found!' : 'No Match Found'}
+                    </p>
+                  </div>
+                </Show>
               </div>
-            </Show>
+
+              {/* Right Column: Step history list (5 cols) */}
+              <div class="flex flex-col gap-1.5 md:col-span-5">
+                <div class="text-xs text-muted-foreground font-medium flex items-center justify-between">
+                  <span>Step History</span>
+                  <span class="font-mono">{session().steps.length} steps</span>
+                </div>
+                <div class="p-2 border border-border rounded-lg bg-card/60 flex flex-col h-[340px] overflow-hidden">
+                  <StepList
+                    steps={session().steps}
+                    currentIndex={session().currentStepIndex}
+                    onStepClick={goToStep}
+                  />
+                </div>
+              </div>
+            </div>
           </div>
         )}
       </Show>

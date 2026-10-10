@@ -1,6 +1,5 @@
-import type { MatchResult, PerformanceResult, PerformanceWarning, RegexFlags } from './types'
-
 import { flagsToString } from './match-engine'
+import type { MatchResult, PerformanceResult, PerformanceWarning, RegexFlags } from './types'
 
 // Timeout threshold in milliseconds
 const EXECUTION_TIMEOUT_MS = 5000
@@ -22,8 +21,14 @@ const CATASTROPHIC_PATTERNS = [
 // Patterns that may cause performance issues
 const RISKY_PATTERNS = [
   // Greedy quantifiers followed by similar patterns
-  { pattern: /\.\*[^$]/, message: 'Greedy .* followed by more content may cause excessive backtracking' },
-  { pattern: /\.\+[^$]/, message: 'Greedy .+ followed by more content may cause excessive backtracking' },
+  {
+    pattern: /\.\*[^$]/,
+    message: 'Greedy .* followed by more content may cause excessive backtracking',
+  },
+  {
+    pattern: /\.\+[^$]/,
+    message: 'Greedy .+ followed by more content may cause excessive backtracking',
+  },
   // Nested groups with quantifiers
   { pattern: /\([^()]*\([^)]*[+*]/, message: 'Nested groups with quantifiers can be slow' },
   // Multiple alternations
@@ -44,7 +49,8 @@ export function detectBacktrackingRisk(pattern: string): PerformanceWarning[] {
       warnings.push({
         type: 'backtracking',
         message: 'Pattern may cause catastrophic backtracking',
-        suggestion: 'Consider using atomic groups, possessive quantifiers, or restructuring the pattern',
+        suggestion:
+          'Consider using atomic groups, possessive quantifiers, or restructuring the pattern',
       })
       break
     }
@@ -56,7 +62,8 @@ export function detectBacktrackingRisk(pattern: string): PerformanceWarning[] {
       warnings.push({
         type: 'complexity',
         message,
-        suggestion: 'Consider using non-greedy quantifiers (*?, +?) or more specific character classes',
+        suggestion:
+          'Consider using non-greedy quantifiers (*?, +?) or more specific character classes',
       })
     }
   }
@@ -67,7 +74,7 @@ export function detectBacktrackingRisk(pattern: string): PerformanceWarning[] {
 /**
  * Analyze pattern complexity
  */
-export function analyzePatternComplexity(pattern: string): { score: number, factors: string[] } {
+export function analyzePatternComplexity(pattern: string): { score: number; factors: string[] } {
   const factors: string[] = []
   let score = 0
 
@@ -115,7 +122,7 @@ export function analyzePatternComplexity(pattern: string): { score: number, fact
 function executeWithTimeout<T>(
   fn: () => T,
   timeoutMs: number,
-): { result: T | null, timedOut: boolean, executionTime: number } {
+): { result: T | null; timedOut: boolean; executionTime: number } {
   const startTime = performance.now()
 
   try {
@@ -143,7 +150,7 @@ export function findMatchesWithPerformance(
   pattern: string,
   flags: RegexFlags,
   text: string,
-): { matches: MatchResult[], performance: PerformanceResult } {
+): { matches: MatchResult[]; performance: PerformanceResult } {
   const warnings: PerformanceWarning[] = []
 
   // Pre-execution analysis
@@ -161,7 +168,6 @@ export function findMatchesWithPerformance(
 
   // Execute with timing
   const flagString = flagsToString(flags)
-  let matches: MatchResult[] = []
   let steps = 0
 
   const { result, timedOut, executionTime } = executeWithTimeout(() => {
@@ -224,14 +230,12 @@ export function findMatchesWithPerformance(
     })
   }
 
-  matches = result || []
-
   // Estimate backtracking based on execution time vs input size
   const expectedTime = text.length * 0.001 // ~1ms per 1000 chars baseline
   const backtrackingDetected = executionTime > expectedTime * 10 && executionTime > 10
 
   return {
-    matches,
+    matches: result || [],
     performance: {
       executionTime,
       steps,

@@ -1,71 +1,51 @@
-import { Card } from '#/components/card'
-import { getCategories } from '#/utils/routes'
 import { A } from '@solidjs/router'
+import { Icon } from 'moraine'
 import { createRoute } from 'solid-file-router'
-import { For, Show } from 'solid-js'
+import { For } from 'solid-js'
 
-export default createRoute({
-  component: Index,
-})
+import { getCategories } from '#/utils/routes'
+
+export default createRoute({ component: Index })
 
 function Index() {
-  const { categories, count } = getCategories()
+  const { categories } = getCategories()
   return (
-    <div class="flex flex-col gap-8 items-center">
-      <div class="text-center">
-        <h1 class="text-4xl text-foreground tracking-tight font-bold sm:text-5xl">
+    <div class="min-w-0 w-full">
+      <header class="px-4 py-8 border-b border-border/70 sm:(px-6 py-10)">
+        <h1 class="text-3xl text-foreground leading-tight tracking-tight font-semibold sm:text-4xl">
           Developer Toolkit
         </h1>
-        <p class="text-lg text-muted-foreground mt-4">
-          A collection of
-          {' '}
-          {count}
-          {' '}
-          essential tools for developers
+        <p class="text-sm text-muted-foreground leading-6 mt-3 sm:text-base">
+          Fast, local utilities for everyday development.
         </p>
-      </div>
-
-      <div class="flex flex-col gap-12 max-w-7xl w-full">
-        <For each={categories}>
-          {category => (
-            <div class="flex flex-col gap-4">
-              <h2 class="text-2xl text-foreground font-semibold">{category.name}</h2>
-              <div class="gap-4 grid lg:grid-cols-2 xl:grid-cols-3">
-                <For each={category.tools}>
-                  {tool => (
-                    <A href={tool.path}>
-                      <Card
-                        title={tool.info.title}
-                        icon={tool.info.icon}
-                        description={tool.info.description}
-                        class="h-full cursor-pointer transition-all hover:shadow-md"
-                        content={(
-                          <Show when={tool.info.tags?.length}>
-                            <div class="flex flex-wrap gap-1.5">
-                              <For each={tool.info.tags}>
-                                {tag => (
-                                  <span class="text-xs text-muted-foreground px-1.5 py-0.5 border border-border/50 rounded bg-muted/20">
-                                    {tag}
-                                  </span>
-                                )}
-                              </For>
-                            </div>
-                          </Show>
-                        )}
-                      />
-                    </A>
-                  )}
-                </For>
-              </div>
+      </header>
+      <For each={categories}>
+        {(category) => (
+          <section class="px-4 py-6 border-b border-border/70 sm:(px-6 py-8) last:border-b-0">
+            <h2 class="text-xs text-muted-foreground tracking-wide font-medium mb-4 uppercase">
+              {category.name}
+            </h2>
+            <div class="gap-3 grid grid-cols-1 lg:grid-cols-3 sm:grid-cols-2">
+              <For each={category.tools}>
+                {(tool) => (
+                  <A
+                    href={tool.path}
+                    class="group px-5 py-5 border border-border rounded-lg bg-card flex flex-col gap-1.5 min-w-0 transition-colors justify-center sm:px-6 focus-visible:effect-fv hover:(border-foreground/30 bg-muted/40)"
+                  >
+                    <h3 class="text-sm text-foreground leading-5 font-medium flex gap-2 items-center">
+                      <Icon name={tool.info.icon} class="text-muted-foreground shrink-0 size-4" />
+                      <span>{tool.info.title}</span>
+                    </h3>
+                    <p class="text-sm text-muted-foreground leading-5 line-clamp-2">
+                      {tool.info.description}
+                    </p>
+                  </A>
+                )}
+              </For>
             </div>
-          )}
-        </For>
-      </div>
-
-      <div class="text-lg text-muted-foreground m-(b-12 t-12)">
-        More tools coming soon
-      </div>
-
+          </section>
+        )}
+      </For>
     </div>
   )
 }

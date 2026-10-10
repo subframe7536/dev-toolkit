@@ -1,13 +1,13 @@
-import type { PatternCategory, PatternDefinition } from '#/utils/regex/types'
-
 import { Button, Dialog, Icon } from 'moraine'
+import { createSignal, For } from 'solid-js'
+
 import { useRegexContext } from '#/contexts'
 import { getAllCategories } from '#/utils/regex/pattern-library'
-import { createSignal, For } from 'solid-js'
+import type { PatternCategory, PatternDefinition } from '#/utils/regex/types'
 
 // Category icons mapping
 const CATEGORY_ICONS: Record<string, `i-lucide-${string}`> = {
-  validation: 'i-lucide-check-circle',
+  validation: 'i-lucide-circle-check',
   phone: 'i-lucide-phone',
   dates: 'i-lucide-calendar',
   identifiers: 'i-lucide-hash',
@@ -47,7 +47,7 @@ function PatternItem(props: PatternItemProps) {
         <div class="text-xs text-muted-foreground font-medium mb-1">Examples:</div>
         <div class="space-y-1">
           <For each={props.pattern.examples.slice(0, 2)}>
-            {example => (
+            {(example) => (
               <div class="text-xs flex gap-2 items-center">
                 <Icon
                   name={example.shouldMatch ? 'i-lucide-check' : 'i-lucide-x'}
@@ -63,7 +63,7 @@ function PatternItem(props: PatternItemProps) {
       {/* Tags */}
       <div class="flex flex-wrap gap-1">
         <For each={props.pattern.tags.slice(0, 3)}>
-          {tag => (
+          {(tag) => (
             <span class="text-xs text-muted-foreground px-1.5 py-0.5 rounded bg-muted/50">
               {tag}
             </span>
@@ -85,7 +85,7 @@ function CategorySection(props: CategorySectionProps) {
   return (
     <div class="mb-6">
       <div class="mb-3 flex gap-2 items-center">
-        <Icon name={icon()} classes={{ icon: 'text-muted-foreground size-4' }} />
+        <Icon name={icon()} class="text-muted-foreground size-4" />
         <h3 class="text-sm text-foreground font-semibold">{props.category.name}</h3>
         <span class="text-xs text-muted-foreground">({props.category.patterns.length})</span>
       </div>
@@ -93,9 +93,7 @@ function CategorySection(props: CategorySectionProps) {
 
       <div class="gap-4 grid grid-cols-1 md:grid-cols-2">
         <For each={props.category.patterns}>
-          {pattern => (
-            <PatternItem pattern={pattern} onSelect={props.onSelectPattern} />
-          )}
+          {(pattern) => <PatternItem pattern={pattern} onSelect={props.onSelectPattern} />}
         </For>
       </div>
     </div>
@@ -122,7 +120,7 @@ export function PatternLibraryDialog(props: PatternLibraryDialogProps) {
     actions.setFlags(pattern.flags)
 
     // Load all examples as test text (matching and non-matching)
-    const allExamples = pattern.examples.map(ex => ex.input).join('\n')
+    const allExamples = pattern.examples.map((ex) => ex.input).join('\n')
     actions.setTestText(allExamples)
 
     // Notify parent if callback provided
@@ -136,30 +134,38 @@ export function PatternLibraryDialog(props: PatternLibraryDialogProps) {
     <Dialog
       open={isOpen()}
       onOpenChange={setIsOpen}
-      title={(
-        <span class="flex gap-2 items-center">
-          <Icon name="i-lucide-library" classes={{ icon: 'size-5' }} />
-          Pattern Library
-        </span>
-      ) as any}
-      description="Browse and load common regex patterns for validation, parsing, and more. Click any pattern to load it directly."
-      body={(
-        <div class="mt-6">
-          <For each={categories}>
-            {category => (
-              <CategorySection category={category} onSelectPattern={handleSelectPattern} />
-            )}
-          </For>
-          <div class="text-xs text-muted-foreground pt-4 text-center border-t border-border">
-            {categories.reduce((sum, cat) => sum + cat.patterns.length, 0)} patterns across {categories.length} categories
-          </div>
-        </div>
-      )}
       classes={{ content: 'max-h-[80vh] max-w-6xl overflow-y-auto' }}
     >
-      <Button variant="secondary" leading="i-lucide-library">
+      <Dialog.Trigger as={Button} variant="secondary" leading="i-lucide-library">
         Load Example
-      </Button>
+      </Dialog.Trigger>
+      <Dialog.Content>
+        <Dialog.Header>
+          <Dialog.Title>
+            <span class="flex gap-2 items-center">
+              <Icon name="i-lucide-library" class="size-5" />
+              Pattern Library
+            </span>
+          </Dialog.Title>
+          <Dialog.Description>
+            Browse and load common regex patterns for validation, parsing, and more. Click any
+            pattern to load it directly.
+          </Dialog.Description>
+        </Dialog.Header>
+        <Dialog.Body>
+          <div class="mt-6">
+            <For each={categories}>
+              {(category) => (
+                <CategorySection category={category} onSelectPattern={handleSelectPattern} />
+              )}
+            </For>
+            <div class="text-xs text-muted-foreground pt-4 text-center border-t border-border">
+              {categories.reduce((sum, cat) => sum + cat.patterns.length, 0)} patterns across{' '}
+              {categories.length} categories
+            </div>
+          </div>
+        </Dialog.Body>
+      </Dialog.Content>
     </Dialog>
   )
 }

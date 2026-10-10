@@ -1,14 +1,16 @@
-import { EncoderLayout } from '#/components/encoder-layout'
 import { Switch } from 'moraine'
 import { createRoute } from 'solid-file-router'
 import { createSignal } from 'solid-js'
+
+import { EncoderLayout } from '#/components/encoder-layout'
+import { ToolOptions } from '#/components/tool-options'
 
 export default createRoute({
   info: {
     title: 'URL Encoder/Decoder',
     description: 'Encode and decode URL strings',
     category: 'Encoding',
-    icon: 'lucide:link',
+    icon: 'i-lucide-link',
     tags: ['url', 'encode', 'decode', 'percent-encoding'],
   },
   component: URLEncoder,
@@ -27,16 +29,14 @@ function URLEncoder() {
 
   return (
     <div class="flex flex-col gap-4">
-      <Switch
-        checked={useComponent()}
-        onChange={setUseComponent}
-        label="Regard as URL component"
-      />
-      <EncoderLayout
-        mode="URL"
-        onEncode={encode}
-        onDecode={decode}
-      />
+      <EncoderLayout mode="URL" onEncode={encode} onDecode={decode} />
+      <ToolOptions>
+        <Switch
+          label="Regard as URL component"
+          checked={useComponent()}
+          onCheckedChange={setUseComponent}
+        />
+      </ToolOptions>
     </div>
   )
 }

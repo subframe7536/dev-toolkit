@@ -1,9 +1,11 @@
-import { CopyButton } from '#/components/copy-button'
-import { DownloadButton } from '#/components/download-button'
-import { FileUpload } from '#/components/file-upload'
 import { Switch } from 'moraine'
 import { createMemo, createSignal, Show } from 'solid-js'
 import { toast } from 'solid-toaster'
+
+import { CopyButton } from '#/components/copy-button'
+import { DownloadButton } from '#/components/download-button'
+import { FileUpload } from '#/components/file-upload'
+import { ToolOptions } from '#/components/tool-options'
 
 import { ClearButton } from './clear-button'
 
@@ -34,7 +36,9 @@ export function FileEncoder(props: FileEncoderProps) {
       const result = await props.onEncode(file)
       setOutput(result)
     } catch (error) {
-      toast.error(`Failed to encode file: ${error instanceof Error ? error.message : 'Unknown error'}`)
+      toast.error(
+        `Failed to encode file: ${error instanceof Error ? error.message : 'Unknown error'}`,
+      )
       setOutput('')
     }
   }
@@ -51,51 +55,50 @@ export function FileEncoder(props: FileEncoderProps) {
   }
 
   return (
-    <div class="space-y-8">
+    <div class="space-y-4">
       <div class="space-y-4">
         <FileUpload
           file={file()}
           setFile={processFile}
-          icon="lucide:file"
+          icon="i-lucide-file"
           info={props.uploadInfo || `Upload any file to encode to ${props.mode}`}
         />
         <Show when={file()}>
-          <div class="p-4 border rounded-lg bg-input/50 flex flex-wrap gap-4 w-fit items-center">
-            <span>{file()?.name}</span>
-            <ClearButton
-              onClear={clearFile}
-              disabled={!file() && !output()}
-            />
+          <div class="text-sm text-muted-foreground flex flex-wrap gap-3 items-center">
+            <span class="min-w-0 break-all">{file()?.name}</span>
+            <ClearButton onClear={clearFile} disabled={!file() && !output()} />
           </div>
         </Show>
       </div>
 
       <Show when={output()}>
         <div class="space-y-4">
-          <div class="flex items-center justify-between">
-            <h3 class="text-lg text-foreground font-semibold">
+          <div class="tool-panel-heading">
+            <h3 class="text-sm text-foreground font-medium">
               {props.outputTitle || `${props.mode} Output`}
             </h3>
-            <div class="flex gap-4">
-              <Show when={props.showDataURLSwitch}>
-                <Switch
-                  checked={includeDataURL()}
-                  onChange={setIncludeDataURL}
-                  label="Include Data URL prefix"
-                />
-              </Show>
-              <CopyButton content={targetOutput()} variant="secondary" size="sm" />
-              <DownloadButton
-                content={targetOutput()}
-                filename={outputFilename()}
-                variant="secondary"
-                size="sm"
-              />
-            </div>
           </div>
-          <div class="text-sm font-mono p-4 border rounded-md bg-muted/50 max-h-96 break-all of-y-auto">
+          <div class="text-sm font-mono p-3 border rounded-md bg-muted/50 max-h-96 break-all of-y-auto">
             {targetOutput()}
           </div>
+          <div class="tool-toolbar">
+            <CopyButton text="Copy Output" content={targetOutput()} variant="secondary" size="sm" />
+            <DownloadButton
+              content={targetOutput()}
+              filename={outputFilename()}
+              variant="secondary"
+              size="sm"
+            />
+          </div>
+          <Show when={props.showDataURLSwitch}>
+            <ToolOptions>
+              <Switch
+                label="Include Data URL prefix"
+                checked={includeDataURL()}
+                onCheckedChange={setIncludeDataURL}
+              />
+            </ToolOptions>
+          </Show>
         </div>
       </Show>
     </div>

@@ -1,17 +1,17 @@
+import { createRoute } from 'solid-file-router'
+import { Show } from 'solid-js'
+
 import { DataTable } from '#/components/data-table'
 import { InputSection } from '#/components/table-editor/input-section'
 import { TableActions } from '#/components/table-editor/table-actions'
-import { useSidebar } from '#/components/ui/sidebar'
 import { TableEditorProvider, useTableEditorContext } from '#/contexts/table-editor-context'
-import { createRoute } from 'solid-file-router'
-import { Show } from 'solid-js'
 
 export default createRoute({
   info: {
     title: 'Table Editor',
     description: 'Parse, edit, and export tabular data from MySQL output, CSV or Excel files',
     category: 'Utilities',
-    icon: 'lucide:table',
+    icon: 'i-lucide-table',
     tags: ['table', 'editor', 'mysql', 'excel', 'csv', 'sql', 'markdown'],
   },
   component: () => (
@@ -22,21 +22,19 @@ export default createRoute({
 })
 
 function TableEditor() {
-  const { store, actions: { setData }, computed } = useTableEditorContext()
-  const { isMobile, open } = useSidebar()
+  const {
+    store,
+    actions: { setData },
+    computed,
+  } = useTableEditorContext()
 
   return (
     <Show
       when={!computed.hasData()}
-      fallback={(
+      fallback={
         <div class="space-y-4">
           <TableActions />
-          <div
-            class="border rounded-lg max-w-400 overflow-x-scroll"
-            style={{
-              width: !isMobile() && open() ? 'calc(100vw - 12rem - var(--sidebar-width))' : 'calc(100vw - 12rem)',
-            }}
-          >
+          <div class="rounded-lg min-w-0 w-full overflow-x-auto">
             <DataTable
               data={store.tableData}
               onDataChange={setData}
@@ -45,7 +43,7 @@ function TableEditor() {
             />
           </div>
         </div>
-      )}
+      }
     >
       <InputSection />
     </Show>

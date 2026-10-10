@@ -1,3 +1,7 @@
+import { Button, Dialog, Icon } from 'moraine'
+import { createRoute } from 'solid-file-router'
+import { ErrorBoundary, Show, Suspense } from 'solid-js'
+
 import { DebugPanel } from '#/components/regex-tester/debug-panel'
 import { DetailsPanel } from '#/components/regex-tester/details-panel'
 import { ExplanationPanel } from '#/components/regex-tester/explanation-panel'
@@ -5,18 +9,19 @@ import { ExportDialog } from '#/components/regex-tester/export-dialog'
 import { HelpPanel } from '#/components/regex-tester/help-panel'
 import { PatternLibraryDialog } from '#/components/regex-tester/pattern-library'
 import { RegexInputPanel } from '#/components/regex-tester/regex-input-panel'
-import { ReplacementPanel } from '#/components/regex-tester/replacement-panel'
-import { Button, Dialog, Icon, Tabs } from 'moraine'
+import { SubstitutionPanel } from '#/components/regex-tester/substitution-panel'
+import { TestingPanel } from '#/components/regex-tester/testing-panel'
 import { RegexProvider, useRegexContext } from '#/contexts'
-import { createRoute } from 'solid-file-router'
-import { ErrorBoundary, Suspense } from 'solid-js'
 
 // Error fallback component for graceful error handling
-function ErrorFallback(props: { error: Error, reset: () => void }) {
+function ErrorFallback(props: { error: Error; reset: () => void }) {
   return (
-    <div class="p-6 border border-red-200 rounded-lg bg-red-50 dark:border-red-800 dark:bg-red-950/30" role="alert">
+    <div
+      class="p-6 border border-red-200 rounded-lg bg-red-50 dark:border-red-800 dark:bg-red-950/30"
+      role="alert"
+    >
       <div class="flex gap-3 items-start">
-        <Icon name="lucide:alert-triangle" classes={{ icon: 'text-red-600 mt-0.5 size-5 dark:text-red-400' }} />
+        <Icon name="i-lucide-alert-triangle" class="text-red-600 mt-0.5 size-5 dark:text-red-400" />
         <div class="flex-1">
           <h3 class="text-red-800 font-medium dark:text-red-200">Something went wrong</h3>
           <p class="text-sm text-red-600 mt-1 dark:text-red-400">{props.error.message}</p>
@@ -25,7 +30,7 @@ function ErrorFallback(props: { error: Error, reset: () => void }) {
             size="sm"
             classes={{ root: 'mt-3' }}
             onClick={() => props.reset()}
-            leading="lucide:refresh-cw"
+            leading="i-lucide-refresh-cw"
           >
             Try Again
           </Button>
@@ -52,10 +57,11 @@ function PanelSkeleton() {
 export default createRoute({
   info: {
     title: 'Regex Tester',
-    description: 'Test and debug regular expressions with real-time matching, detailed explanations, and code export',
+    description:
+      'Test and debug regular expressions with real-time matching, substitution, detailed explanations, and code export',
     category: 'Utilities',
-    icon: 'lucide:regex',
-    tags: ['regex', 'pattern', 'matching', 'testing', 'debugging'],
+    icon: 'i-lucide-regex',
+    tags: ['regex', 'pattern', 'matching', 'testing', 'substitution', 'debugging'],
   },
   component: () => (
     <ErrorBoundary fallback={(err, reset) => <ErrorFallback error={err} reset={reset} />}>
@@ -71,76 +77,81 @@ export default createRoute({
 // Loading skeleton for the entire page
 function RegexTesterSkeleton() {
   return (
-    <div class="gap-6 grid grid-cols-1 xl:grid-cols-2">
-      <div class="space-y-4">
-        <PanelSkeleton />
-      </div>
-      <div class="space-y-4">
-        <PanelSkeleton />
-        <PanelSkeleton />
-      </div>
+    <div class="space-y-4">
+      <PanelSkeleton />
+      <PanelSkeleton />
+      <PanelSkeleton />
     </div>
   )
 }
 
 function RegexTester() {
-  const { actions } = useRegexContext()
+  const { store, actions } = useRegexContext()
   return (
-    <div class="space-y-6">
-      {/* Main content area - responsive layout */}
-      <div class="gap-6 grid grid-cols-1 xl:grid-cols-2">
-        {/* Left column - Input with integrated replacement */}
-        <div class="space-y-6">
-          {/* Regex Input Panel with integrated Find & Replace */}
-          <div class="text-card-foreground p-6 border rounded-lg bg-card shadow-sm">
-            <RegexInputPanel />
+    <div class="space-y-4">
+      {/* 1. Regular Expression */}
+      <RegexInputPanel />
 
-            {/* Action buttons section */}
-            <div class="mt-6 flex flex-wrap gap-3">
-              <Button variant="default" onClick={() => actions.toggleExportDialog(true)} leading="lucide:download">
-                Export Code
-              </Button>
-              <PatternLibraryDialog />
-              <Button
-                variant="secondary"
-                onClick={() => {
-                  actions.setPattern('')
-                  actions.setTestText('')
-                }}
-                leading="lucide:trash-2"
-              >
-                Clear All
-              </Button>
-              {/* Reference Dialog */}
-              <Dialog
-                title="Regex Syntax Reference"
-                classes={{ content: 'max-h-[60vh] max-w-4xl overflow-y-auto' }}
-                body={<HelpPanel />}
-              >
-                <Button variant="outline" leading="lucide:book-open">
-                  Reference
-                </Button>
-              </Dialog>
-            </div>
-          </div>
-        </div>
+      {/* 2. Test String and Match Information (horizontally aligned when enabled) */}
+      <div class={store.showMatchInfo ? 'grid grid-cols-1 lg:grid-cols-2 gap-4 items-start' : ''}>
+        <TestingPanel />
+        <Show when={store.showMatchInfo}>
+          <DetailsPanel />
+        </Show>
+      </div>
 
-        {/* Right column - Analysis and results */}
-        <div class="space-y-6">
-          {/* Explanation and Debug Panels */}
-          <div class="text-card-foreground border rounded-lg bg-card shadow-sm">
-            <Tabs
-              defaultValue="matches"
-              classes={{ list: 'm-4 mb-0 p-1' }}
-              items={[
-                { value: 'matches', label: 'Matches', content: <DetailsPanel /> },
-                { value: 'replace', label: 'Replace', content: <ReplacementPanel /> },
-                { value: 'explanation', label: 'Explain', content: <ExplanationPanel /> },
-                { value: 'debug', label: 'Debug', content: <DebugPanel /> },
-              ]}
-            />
-          </div>
-        </div>
+      {/* 3. Substitution */}
+      <SubstitutionPanel />
+
+      {/* 4. Pattern Explanation (Collapsible) */}
+      <ExplanationPanel />
+
+      {/* 6. Action buttons toolbar */}
+      <div class="tool-toolbar">
+        <Button
+          variant="default"
+          onClick={() => actions.toggleExportDialog(true)}
+          leading="i-lucide-download"
+        >
+          Export Code
+        </Button>
+        <PatternLibraryDialog />
+        <Button
+          variant="secondary"
+          onClick={() => {
+            actions.setPattern('')
+            actions.setTestText('')
+            actions.setReplacementPattern('')
+          }}
+          leading="i-lucide-trash-2"
+        >
+          Clear All
+        </Button>
+        {/* Debug Modal Dialog */}
+        <Dialog classes={{ content: 'max-h-[85vh] max-w-4xl overflow-y-auto' }}>
+          <Dialog.Trigger as={Button} variant="outline" leading="i-lucide-circle-play">
+            Debug Regex
+          </Dialog.Trigger>
+          <Dialog.Content
+            title="Regex Match Debugger"
+            description="Interactive step-by-step regex engine execution and matching breakdown."
+          >
+            <Dialog.Body>
+              <DebugPanel />
+            </Dialog.Body>
+          </Dialog.Content>
+        </Dialog>
+        {/* Reference Dialog */}
+        <Dialog classes={{ content: 'max-h-[60vh] max-w-4xl overflow-y-auto' }}>
+          <Dialog.Trigger as={Button} variant="outline" leading="i-lucide-book-open">
+            Reference
+          </Dialog.Trigger>
+          <Dialog.Content title="Regex Syntax Reference">
+            <Dialog.Body>
+              <HelpPanel />
+            </Dialog.Body>
+          </Dialog.Content>
+        </Dialog>
       </div>
 
       {/* Export Dialog */}

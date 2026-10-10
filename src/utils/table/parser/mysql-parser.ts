@@ -1,11 +1,6 @@
-import type {
-  CellValue,
-  ColumnDefinition,
-  ParseResult,
-  TableRow,
-} from '../types'
-
 import { generateId } from '#/utils/random'
+
+import type { CellValue, ColumnDefinition, ParseResult, TableRow } from '../types'
 
 import { inferDataType } from './type-inference'
 
@@ -18,8 +13,8 @@ export function parseMySQLOutput(tableStr: string): ParseResult {
     // Normalize line endings and remove empty lines
     const lines = tableStr
       .split(/(?<!\n)\r?\n(?!\r?\n)/g) // preserve multiple wrap line
-      .map(line => line.replace(/\r/g, ''))
-      .filter(line => line.trim() !== '')
+      .map((line) => line.replace(/\r/g, ''))
+      .filter((line) => line.trim() !== '')
 
     if (lines.length < 3) {
       return {
@@ -36,11 +31,7 @@ export function parseMySQLOutput(tableStr: string): ParseResult {
     for (let i = 0; i < lines.length; i++) {
       const lineTrim = lines[i].trim()
       // Must start and end with '+', and contain only '+', '-', '=', and spaces
-      if (
-        lineTrim.startsWith('+')
-        && lineTrim.endsWith('+')
-        && !/[^+\-=\s]/.test(lineTrim)
-      ) {
+      if (lineTrim.startsWith('+') && lineTrim.endsWith('+') && !/[^+\-=\s]/.test(lineTrim)) {
         separatorIndices.push(i)
       }
     }
@@ -62,7 +53,7 @@ export function parseMySQLOutput(tableStr: string): ParseResult {
     const separatorParts = lines[firstSepIndex]
       .trim()
       .split('+')
-      .filter(part => part.trim() !== '')
+      .filter((part) => part.trim() !== '')
     const columnCount = separatorParts.length
 
     if (columnCount === 0) {
@@ -89,9 +80,9 @@ export function parseMySQLOutput(tableStr: string): ParseResult {
 
     const headerParts = headerLine
       .split('|')
-      .map(part => part.trim())
-      .filter((part, index, array) =>
-        index > 0 && index < array.length - 1, // Remove first and last empty parts
+      .map((part) => part.trim())
+      .filter(
+        (part, index, array) => index > 0 && index < array.length - 1, // Remove first and last empty parts
       )
 
     if (headerParts.length !== columnCount) {
@@ -114,7 +105,11 @@ export function parseMySQLOutput(tableStr: string): ParseResult {
 
       // Check for end of table: line like "+----+------+"
       const trimmedLine = line.trim()
-      if (trimmedLine.startsWith('+') && trimmedLine.endsWith('+') && !/[^+\-=\s]/.test(trimmedLine)) {
+      if (
+        trimmedLine.startsWith('+') &&
+        trimmedLine.endsWith('+') &&
+        !/[^+\-=\s]/.test(trimmedLine)
+      ) {
         break
       }
 
@@ -141,9 +136,9 @@ export function parseMySQLOutput(tableStr: string): ParseResult {
       const line = dataLines[i]
       const parts = line
         .split('|')
-        .map(part => part.trim())
-        .filter((_, index, array) =>
-          index > 0 && index < array.length - 1, // Remove first and last empty parts
+        .map((part) => part.trim())
+        .filter(
+          (_, index, array) => index > 0 && index < array.length - 1, // Remove first and last empty parts
         )
 
       if (parts.length !== columnCount) {

@@ -1,16 +1,17 @@
-import { ClearButton } from '#/components/clear-button'
-import { CopyButton } from '#/components/copy-button'
-import { Button, Textarea } from 'moraine'
-import { fillSqlParams, splitSqlAndParams } from '#/utils/sql'
+import { Field, Button, Textarea } from 'moraine'
 import { createRoute } from 'solid-file-router'
 import { createEffect, createSignal } from 'solid-js'
+
+import { ClearButton } from '#/components/clear-button'
+import { CopyButton } from '#/components/copy-button'
+import { fillSqlParams, splitSqlAndParams } from '#/utils/sql'
 
 export default createRoute({
   info: {
     title: 'SQL Parameter Fill',
     description: 'Fill SQL template with MyBatis-style parameters',
     category: 'Utilities',
-    icon: 'lucide:database',
+    icon: 'i-lucide-database',
     tags: ['sql', 'mybatis', 'parameters', 'database'],
   },
   component: SqlParamFill,
@@ -74,70 +75,82 @@ function SqlParamFill() {
   })
 
   return (
-    <div class="flex flex-col gap-4 h-full relative">
-
-      <Button onClick={loadSample} variant="outline" size="sm" classes={{ root: 'right-0 top--2 absolute' }}>
-        Load Sample
-      </Button>
-
-      <div class="flex-1 gap-4 grid grid-cols-1 lg:gap-6 lg:grid-cols-2">
-        <div>
-          <label class="text-sm font-medium">SQL Template</label>
+    <div class="flex flex-col gap-4">
+      <div class="tool-editor-grid">
+        <Field
+          label="SQL Template"
+          classes={{ root: 'min-w-0', label: 'text-muted-foreground font-medium text-xs' }}
+        >
           <Textarea
             value={sqlInput()}
-            onInput={e => setSqlInput(e.currentTarget.value)}
+            onValueChange={setSqlInput}
             placeholder={`All Mybatis logs\n\nor\n\nSELECT * FROM T WHERE id = ? AND name = ?`}
-            classes={{ input: 'font-mono h-48 resize-none' }}
+            classes={{ root: 'tool-editor' }}
           />
-        </div>
+        </Field>
 
-        <div>
-          <label class="text-sm font-medium">Parameters</label>
+        <Field
+          label="Parameters"
+          classes={{ root: 'min-w-0', label: 'text-muted-foreground font-medium text-xs' }}
+        >
           <Textarea
             value={paramsInput()}
-            onInput={e => setParamsInput(e.currentTarget.value)}
+            onValueChange={setParamsInput}
             placeholder="1(Integer), zhangshan(String)"
-            classes={{ input: 'font-mono h-48 resize-none' }}
+            classes={{ root: 'tool-editor' }}
           />
-        </div>
+        </Field>
       </div>
 
       <div class="relative">
-        <div>
-          <label class="text-sm font-medium">Output</label>
+        <Field
+          label="Output"
+          classes={{ root: 'min-w-0', label: 'text-muted-foreground font-medium text-xs' }}
+        >
           <Textarea
+            aria-invalid={!!error()}
             value={error() || output()}
             readOnly
             placeholder="SELECT * FROM T WHERE id=1 AND name='zhangshan'"
-            classes={{ input: 'font-mono h-48 resize-none' }}
-            classList={{ 'text-red-500': !!error() }}
+            classes={{
+              root: [error() && 'text-destructive', 'tool-editor bg-muted/30'],
+            }}
           />
-        </div>
-        <div class="mt-4 flex gap-4 justify-end">
+        </Field>
+        <div class="mt-4 tool-toolbar">
+          <Button onClick={loadSample} variant="outline">
+            Load Sample
+          </Button>
           <CopyButton
+            text="Copy Output"
             content={output()}
-            disabled={!output() || !error()}
+            disabled={!output() || !!error()}
             variant="secondary"
           />
-          <ClearButton
-            onClear={handleClear}
-            disabled={!sqlInput() && !paramsInput()}
-          />
+          <ClearButton onClear={handleClear} disabled={!sqlInput() && !paramsInput()} />
         </div>
       </div>
 
-      <div class="text-muted-foreground p-4 rounded-lg bg-muted space-y-3">
+      <div class="text-sm text-muted-foreground leading-relaxed pt-4 border-t border-border rounded-lg space-y-3">
         <div>
           <strong>How to use:</strong>
           <ul class="mt-1 list-disc list-inside space-y-0.5">
             <li>Paste MyBatis log directly in the top left textarea</li>
-            <li>Or enter SQL template (with <code class="px-1 rounded bg-muted">?</code> placeholders) and parameters separately</li>
+            <li>
+              Or enter SQL template (with <code class="px-1 rounded bg-muted">?</code> placeholders)
+              and parameters separately
+            </li>
           </ul>
         </div>
         <div>
           <strong>Parameter format:</strong>
           <code class="text-xs px-1.5 py-0.5 rounded bg-muted">value(Type), value(Type), ...</code>
-          <div class="mt-1">Supported types: <code class="text-xs px-1 rounded bg-muted">String</code>, <code class="text-xs px-1 rounded bg-muted">Integer</code>, <code class="text-xs px-1 rounded bg-muted">Long</code>, <code class="text-xs px-1 rounded bg-muted">Timestamp</code></div>
+          <div class="mt-1">
+            Supported types: <code class="text-xs px-1 rounded bg-muted">String</code>,{' '}
+            <code class="text-xs px-1 rounded bg-muted">Integer</code>,{' '}
+            <code class="text-xs px-1 rounded bg-muted">Long</code>,{' '}
+            <code class="text-xs px-1 rounded bg-muted">Timestamp</code>
+          </div>
         </div>
       </div>
     </div>

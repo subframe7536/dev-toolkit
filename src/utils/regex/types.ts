@@ -76,11 +76,6 @@ export interface ExportConfig {
 }
 
 // Business logic interfaces
-export interface ValidationResult {
-  isValid: boolean
-  error?: ParseError
-}
-
 export interface RegexParser {
   validate: (pattern: string) => ValidationResult
   getExplanation: (pattern: string) => ExplanationResult
@@ -95,7 +90,7 @@ export interface RegexElement {
   type: string
   value: string
   description: string
-  position: { start: number, end: number }
+  position: { start: number; end: number }
 }
 
 export interface MatchEngine {

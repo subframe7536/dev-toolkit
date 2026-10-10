@@ -1,10 +1,10 @@
-import type { ImageFormat } from '#/utils/image'
+import { Field, InputNumber, Select, Slider, Switch } from 'moraine'
 import type { Component } from 'solid-js'
-
-import { Input, Select, Slider, Switch } from 'moraine'
 import { Show } from 'solid-js'
 
-const FORMAT_OPTIONS: { value: ImageFormat, label: string }[] = [
+import type { ImageFormat } from '#/utils/image'
+
+const FORMAT_OPTIONS: { value: ImageFormat; label: string }[] = [
   { value: 'png', label: 'PNG' },
   { value: 'jpg', label: 'JPEG' },
   { value: 'webp', label: 'WebP' },
@@ -30,61 +30,77 @@ export const OutputSettings: Component<OutputSettingsProps> = (props) => {
   }
 
   return (
-    <div class="flex flex-col gap-6">
-      <div>
-        <label class="text-sm font-medium">Output Format</label>
+    <div class="flex flex-col gap-4">
+      <Field
+        label="Output Format"
+        classes={{ root: 'min-w-0', label: 'text-muted-foreground font-medium text-xs' }}
+      >
         <Select
           value={props.targetFormat}
-          onChange={props.onFormatChange}
-          options={FORMAT_OPTIONS.map(o => ({ value: o.value, label: o.label }))}
+          onValueChange={(value) => value && props.onFormatChange(value)}
+          items={FORMAT_OPTIONS.map((o) => ({ value: o.value, label: o.label }))}
         />
-      </div>
+      </Field>
 
       <Show when={showQualitySlider()}>
-        <div>
-          <label class="text-sm font-medium">{`${props.targetFormat.toUpperCase()} Quality: ${props.quality}`}</label>
+        <Field
+          label={`${props.targetFormat.toUpperCase()} Quality: ${props.quality}`}
+          classes={{ root: 'min-w-0', label: 'text-muted-foreground font-medium text-xs' }}
+        >
           <Slider
             value={[props.quality]}
-            onChange={value => props.onQualityChange(value[0])}
+            onValueChange={(value) => props.onQualityChange(value[0])}
             min={1}
             max={100}
             step={1}
           />
-        </div>
+        </Field>
       </Show>
 
       <Switch
-        checked={props.ratio}
-        onChange={props.onRatioChange}
         label="Keep aspect ratio"
+        checked={props.ratio}
+        onCheckedChange={props.onRatioChange}
       />
 
       <div>
-        <label class="text-sm font-medium mb-2 block">Global Dimensions</label>
+        <h3 class="text-sm font-medium mb-2">Global Dimensions</h3>
         <p class="text-xs text-muted-foreground mb-3">
           Apply to all images without individual settings
         </p>
         <div class="flex gap-2">
-          <Input
-            classes={{ root: 'flex-1' }}
-            type="number"
-            placeholder="Width"
-            value={props.globalWidth ? `${props.globalWidth}` : ''}
-            onInput={(e) => {
-              const val = e.currentTarget.value
-              props.onGlobalWidthChange(val ? Number.parseInt(val) : undefined)
-            }}
-          />
-          <Input
-            classes={{ root: 'flex-1' }}
-            type="number"
-            placeholder="Height"
-            value={props.globalHeight ? `${props.globalHeight}` : ''}
-            onInput={(e) => {
-              const val = e.currentTarget.value
-              props.onGlobalHeightChange(val ? Number.parseInt(val) : undefined)
-            }}
-          />
+          <Field hiddenLabel="Global Width" classes={{ root: 'min-w-0 flex-1' }}>
+            <InputNumber
+              classes={{ root: 'min-w-0 flex-1' }}
+              orientation="vertical"
+              placeholder="Width"
+              value={props.globalWidth ? `${props.globalWidth}` : ''}
+              onValueChange={(value) =>
+                props.onGlobalWidthChange(value ? Number.parseInt(value) : undefined)
+              }
+              onInput={(event) => {
+                if (event.target instanceof HTMLInputElement && event.target.value === '') {
+                  props.onGlobalWidthChange(undefined)
+                }
+              }}
+            />
+          </Field>
+          <Field hiddenLabel="Global Height" classes={{ root: 'min-w-0 flex-1' }}>
+            <InputNumber
+              classes={{ root: 'min-w-0 flex-1' }}
+              orientation="vertical"
+              placeholder="Height"
+              value={props.globalHeight ? `${props.globalHeight}` : ''}
+              onValueChange={(value) =>
+                props.onGlobalHeightChange(value ? Number.parseInt(value) : undefined)
+              }
+              onInput={(event) => {
+                if (event.target instanceof HTMLInputElement && event.target.value === '') {
+                  props.onGlobalHeightChange(undefined)
+                }
+              }}
+            />
+          </Field>
         </div>
       </div>
     </div>

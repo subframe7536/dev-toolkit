@@ -1,0 +1,240 @@
+import path from 'node:path'
+
+import type { Plugin, ResolvedConfig } from 'vite'
+
+export interface ManualPwaOptions {
+  name: string
+  shortName: string
+  description: string
+  themeColor?: string
+  backgroundColor?: string
+}
+
+export const PUBLIC_ASSETS = [
+  'manifest.webmanifest',
+  'favicon.ico',
+  'favicon.svg',
+  'apple-touch-icon.png',
+  'pwa-192x192.png',
+  'pwa-512x512.png',
+  'pwa-maskable-192x192.png',
+  'pwa-maskable-512x512.png',
+]
+
+export function manualPwa(options: ManualPwaOptions): Plugin {
+  let config: ResolvedConfig
+
+  return {
+    name: 'manual-pwa',
+    configResolved(resolvedConfig) {
+      config = resolvedConfig
+    },
+    configureServer(server) {
+      server.middlewares.use((request, response, next) => {
+        if (request.url?.split('?')[0] !== getManifestPath(config.base)) {
+          next()
+          return
+        }
+
+        response.setHeader('Content-Type', 'application/manifest+json')
+        response.end(serializeManifest(createManifest(options)))
+      })
+    },
+    generateBundle(_, bundle) {
+      const manifest = createManifest(options)
+      const bundleAssets = getBundleAssets(bundle)
+      const precacheUrls = unique(['.', ...PUBLIC_ASSETS, ...bundleAssets])
+      const buildId = new Date().toISOString()
+
+      this.emitFile({
+        type: 'asset',
+        fileName: 'manifest.webmanifest',
+        source: serializeManifest(manifest),
+      })
+
+      this.emitFile({
+        type: 'asset',
+        fileName: 'sw.js',
+        source: createServiceWorker({
+          buildId,
+          cachePrefix: path.basename(config.root) || 'app',
+          precacheUrls,
+        }),
+      })
+    },
+  }
+}
+
+export function serializeManifest(manifest: ReturnType<typeof createManifest>) {
+  return `${JSON.stringify(manifest, null, 2)}\n`
+}
+
+export function getManifestPath(base: string) {
+  const normalizedBase = base === '' || base === './' ? '/' : base.endsWith('/') ? base : `${base}/`
+
+  return new URL('manifest.webmanifest', `http://localhost${normalizedBase}`).pathname
+}
+
+export function createManifest(options: ManualPwaOptions) {
+  return {
+    name: options.name,
+    short_name: options.shortName,
+    description: options.description,
+    id: '.',
+    start_url: '.',
+    scope: '.',
+    display: 'standalone',
+    background_color: options.backgroundColor ?? '#f6f7f3',
+    theme_color: options.themeColor ?? '#f6f7f3',
+    icons: [
+      {
+        src: 'pwa-192x192.png',
+        sizes: '192x192',
+        type: 'image/png',
+        purpose: 'any',
+      },
+      {
+        src: 'pwa-512x512.png',
+        sizes: '512x512',
+        type: 'image/png',
+        purpose: 'any',
+      },
+      {
+        src: 'pwa-maskable-192x192.png',
+        sizes: '192x192',
+        type: 'image/png',
+        purpose: 'maskable',
+      },
+      {
+        src: 'pwa-maskable-512x512.png',
+        sizes: '512x512',
+        type: 'image/png',
+        purpose: 'maskable',
+      },
+    ],
+  }
+}
+
+export function getBundleAssets(bundle: Record<string, unknown>) {
+  return Object.values(bundle)
+    .flatMap((output) => (hasFileName(output) ? [output.fileName] : []))
+    .filter((fileName) => !fileName.endsWith('.map') && fileName !== 'sw.js')
+}
+
+export function unique(values: string[]) {
+  return [...new Set(values)]
+}
+
+function hasFileName(output: unknown): output is { fileName: string } {
+  return (
+    typeof output === 'object' &&
+    output !== null &&
+    'fileName' in output &&
+    typeof output.fileName === 'string'
+  )
+}
+
+export function createServiceWorker(options: {
+  buildId: string
+  cachePrefix: string
+  precacheUrls: string[]
+}) {
+  const cacheName = `${options.cachePrefix}-precache-${options.buildId}`
+  const cachePrefixPattern = `${options.cachePrefix}-precache-`
+
+  return `const CACHE_NAME = ${JSON.stringify(cacheName)}
+const PRECACHE_URLS = ${JSON.stringify(options.precacheUrls, null, 2)}
+
+const resolveUrl = url => new URL(url, self.registration.scope).toString()
+
+self.addEventListener('install', event => {
+  event.waitUntil(
+    caches
+      .open(CACHE_NAME)
+      .then(cache =>
+        cache.addAll(PRECACHE_URLS.map(url => new Request(resolveUrl(url), { cache: 'reload' }))),
+      ),
+  )
+})
+
+self.addEventListener('activate', event => {
+  event.waitUntil(
+    Promise.all([
+      self.clients.claim(),
+      caches
+        .keys()
+        .then(cacheNames =>
+          Promise.all(
+            cacheNames
+              .filter(cacheName => cacheName.startsWith(${JSON.stringify(cachePrefixPattern)}) && cacheName !== CACHE_NAME)
+              .map(cacheName => caches.delete(cacheName).catch(() => {})),
+          ),
+        ),
+    ]),
+  )
+})
+
+self.addEventListener('message', event => {
+  if (event.data?.type === 'SKIP_WAITING') {
+    self.skipWaiting()
+  }
+})
+
+self.addEventListener('fetch', event => {
+  const { request } = event
+  const requestUrl = new URL(request.url)
+
+  if (
+    request.method !== 'GET' ||
+    requestUrl.origin !== self.location.origin ||
+    requestUrl.pathname === new URL('sw.js', self.registration.scope).pathname
+  ) {
+    return
+  }
+
+  if (request.mode === 'navigate') {
+    event.respondWith(networkFirstNavigation(request))
+    return
+  }
+
+  event.respondWith(cacheFirst(request))
+})
+
+async function networkFirstNavigation(request) {
+  const cache = await caches.open(CACHE_NAME)
+
+  try {
+    const response = await fetch(request)
+
+    if (response.status === 200) {
+      await cache.put(request, response.clone())
+    }
+
+    return response
+  } catch {
+    return (await cache.match(request)) ?? (await cache.match(resolveUrl('.'))) ?? Response.error()
+  }
+}
+
+async function cacheFirst(request) {
+  const cache = await caches.open(CACHE_NAME)
+  const cachedResponse = await cache.match(request)
+
+  if (cachedResponse) {
+    return cachedResponse
+  }
+
+  try {
+    const response = await fetch(request)
+
+    if (response.status === 200) {
+      await cache.put(request, response.clone())
+    }
+
+    return response
+  } catch {
+    return Response.error()
+  }
+}
+`
+}

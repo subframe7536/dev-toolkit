@@ -1,9 +1,9 @@
+import { Field, Button, Textarea } from 'moraine'
 import type { JSX } from 'solid-js'
+import { batch, createEffect, createSignal, onCleanup } from 'solid-js'
+import { toast } from 'solid-toaster'
 
 import { CopyButton } from '#/components/copy-button'
-import { Button, Icon, Textarea } from 'moraine'
-import { batch, createSignal, onCleanup } from 'solid-js'
-import { toast } from 'solid-toaster'
 
 import { ClearButton } from './clear-button'
 
@@ -38,10 +38,13 @@ export function EncoderLayout(props: EncoderLayoutProps): JSX.Element {
     }, 500)
   }
 
-  // Process input whenever it changes
-  const handleInput = (value: string) => {
-    setInputText(value)
-
+  // Track conversion options read by the callbacks as well as the input and mode.
+  createEffect(() => {
+    const value = inputText()
+    if (errorToastTimer) {
+      clearTimeout(errorToastTimer)
+      errorToastTimer = null
+    }
     if (!value) {
       setOutputText('')
       setError(null)
@@ -49,9 +52,7 @@ export function EncoderLayout(props: EncoderLayoutProps): JSX.Element {
     }
 
     try {
-      const result = isEncode()
-        ? props.onEncode(value)
-        : props.onDecode(value)
+      const result = isEncode() ? props.onEncode(value) : props.onDecode(value)
       setOutputText(result)
       setError(null)
     } catch (err) {
@@ -60,17 +61,14 @@ export function EncoderLayout(props: EncoderLayoutProps): JSX.Element {
       setError(errorMsg)
       showErrorToast(errorMsg)
     }
-  }
+  })
 
   // Toggle between encode/decode and swap input/output
   const toggleMode = () => {
     batch(() => {
       setIsEncode(!isEncode())
       // Swap input and output
-      const temp = inputText()
       setInputText(outputText())
-      setOutputText(temp)
-      setError(null)
     })
   }
 
@@ -82,84 +80,58 @@ export function EncoderLayout(props: EncoderLayoutProps): JSX.Element {
     })
   }
 
-  const inputLabel = () => isEncode() ? 'Plain Text' : props.mode
-  const outputLabel = () => isEncode() ? props.mode : 'Plain Text'
-  const inputPlaceholder = () => isEncode()
-    ? `Enter text to encode to ${props.mode}...`
-    : `Enter ${props.mode} to decode...`
-  const outputPlaceholder = () => isEncode()
-    ? `${props.mode} output will appear here...`
-    : 'Decoded text will appear here...'
+  const inputLabel = () => (isEncode() ? 'Plain Text' : props.mode)
+  const outputLabel = () => (isEncode() ? props.mode : 'Plain Text')
+  const inputPlaceholder = () =>
+    isEncode() ? `Enter text to encode to ${props.mode}...` : `Enter ${props.mode} to decode...`
+  const outputPlaceholder = () =>
+    isEncode() ? `${props.mode} output will appear here...` : 'Decoded text will appear here...'
 
   return (
-    <div class="space-y-6 lg:space-y-0">
-      <div class="gap-6 grid relative lg:grid-cols-2">
-
-        {/* Left Panel (Input) */}
-        <div class="space-y-4">
-          <label class="text-lg font-medium">{inputLabel()}</label>
+    <div class="space-y-4">
+      <div class="tool-editor-grid">
+        <Field
+          label={inputLabel()}
+          classes={{ root: 'min-w-0', label: 'text-muted-foreground font-medium text-xs' }}
+        >
           <Textarea
-            classes={{
-              root: 'h-80 md:h-100',
-              input: 'text-sm font-mono resize-none',
-            }}
+            classes={{ root: 'tool-editor' }}
             placeholder={inputPlaceholder()}
             value={inputText()}
-            onInput={e => handleInput(e.currentTarget.value)}
+            onValueChange={setInputText}
           />
-          <div class="flex gap-2 items-center justify-between lg:justify-start">
-            {/* Mobile Swap Button */}
-            <Button
-              onClick={toggleMode}
-              size="icon-md"
-              variant="outline"
-              classes={{ root: 'p-1.5 rounded-full bg-background block shadow-md lg:hidden' }}
-              title={`Switch to ${isEncode() ? 'decode' : 'encode'} mode`}
-            >
-              <Icon name="i-lucide-arrow-up-down" />
-            </Button>
-            <ClearButton
-              onClear={clear}
-              disabled={!inputText()}
-            />
-          </div>
-        </div>
-
-        {/* Desktop Swap Button */}
-        <div class="hidden left-1/2 top-1/3 absolute z-10 lg:block -translate-x-1/2 -translate-y-1/2">
-          <Button
-            onClick={toggleMode}
-            size="icon-md"
-            variant="outline"
-            classes={{ root: 'rounded-full bg-background shadow-md' }}
-            title={`Switch to ${isEncode() ? 'decode' : 'encode'} mode`}
-          >
-            <Icon name="i-lucide-arrow-right-left" />
-          </Button>
-        </div>
-
-        {/* Right Panel (Output) */}
-        <div class="flex flex-col gap-4 items-end lg:items-start">
-          <label class="text-lg font-medium">{outputLabel()}</label>
+        </Field>
+        <Field
+          label={outputLabel()}
+          classes={{ root: 'min-w-0', label: 'text-muted-foreground font-medium text-xs' }}
+        >
           <Textarea
+            aria-invalid={!!error()}
             classes={{
-              root: ['w-full h-80 md:h-100', error() && 'border-destructive'],
-              input: [
-                'text-sm font-mono resize-none focus-visible:ring-0',
-                error() ? 'text-destructive' : !outputText() && 'text-muted-foreground',
-              ],
+              root: ['tool-editor bg-muted/30', error() && 'border-destructive text-destructive'],
             }}
             readOnly
             placeholder={outputPlaceholder()}
             value={error() || outputText()}
           />
-          <CopyButton
-            class="w-fit"
-            content={outputText()}
-            disabled={!outputText()}
-            variant="secondary"
-          />
-        </div>
+        </Field>
+      </div>
+      <div class="tool-toolbar">
+        <Button
+          onClick={toggleMode}
+          variant="outline"
+          leading="i-lucide-arrow-right-left"
+          title={`Switch to ${isEncode() ? 'decode' : 'encode'} mode`}
+        >
+          Switch to {isEncode() ? 'decode' : 'encode'}
+        </Button>
+        <CopyButton
+          text="Copy Output"
+          content={outputText()}
+          disabled={!outputText()}
+          variant="secondary"
+        />
+        <ClearButton onClear={clear} disabled={!inputText()} />
       </div>
     </div>
   )

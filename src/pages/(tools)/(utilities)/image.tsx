@@ -1,25 +1,26 @@
-import type { ImageFileData } from '#/components/image-converter/image-card'
-import type { ImageFormat } from '#/utils/image'
-
-import { Card } from '#/components/card'
-import { FileUpload } from '#/components/file-upload'
-import { ImageCard } from '#/components/image-converter/image-card'
-import { OutputSettings } from '#/components/image-converter/output-settings'
-import { SvgOptions } from '#/components/image-converter/svg-options'
 import { Button, Icon } from 'moraine'
-import { downloadFile } from '#/utils/download'
-import { convertImage, getFileExtension } from '#/utils/image'
 import { createRoute } from 'solid-file-router'
 import { createEffect, createSignal, For, onCleanup, Show } from 'solid-js'
 import { createStore } from 'solid-js/store'
 import { toast } from 'solid-toaster'
+
+import { Card } from '#/components/card'
+import { FileUpload } from '#/components/file-upload'
+import type { ImageFileData } from '#/components/image-converter/image-card'
+import { ImageCard } from '#/components/image-converter/image-card'
+import { OutputSettings } from '#/components/image-converter/output-settings'
+import { SvgOptions } from '#/components/image-converter/svg-options'
+import { ToolOptions } from '#/components/tool-options'
+import { downloadFile } from '#/utils/download'
+import type { ImageFormat } from '#/utils/image'
+import { convertImage, getFileExtension } from '#/utils/image'
 
 export default createRoute({
   info: {
     title: 'Image Converter',
     description: 'Convert images between SVG, PNG, JPG, and WebP formats with quality control',
     category: 'Utilities',
-    icon: 'lucide:image',
+    icon: 'i-lucide-image',
     tags: ['image', 'convert', 'svg', 'png', 'jpg', 'webp', 'format'],
   },
   component: ImageConverter,
@@ -40,7 +41,7 @@ function ImageConverter() {
   const [globalHeight, setGlobalHeight] = createSignal<number>()
 
   const addFiles = (newFiles: File[]) => {
-    const imageFiles = newFiles.filter(f => f.type.startsWith('image/'))
+    const imageFiles = newFiles.filter((f) => f.type.startsWith('image/'))
 
     if (imageFiles.length === 0) {
       return
@@ -53,17 +54,16 @@ function ImageConverter() {
       // Load image to get dimensions
       const htmlImg = new Image()
       htmlImg.onload = () => {
-        setImages(
-          prev => prev.id === id,
-          { origin: { width: htmlImg.naturalWidth, height: htmlImg.naturalHeight } },
-        )
+        setImages((prev) => prev.id === id, {
+          origin: { width: htmlImg.naturalWidth, height: htmlImg.naturalHeight },
+        })
       }
       htmlImg.src = url
 
       return { id, file, previewUrl: url, maintainAspectRatio: true }
     })
 
-    setImages(prev => [...prev, ...newImages])
+    setImages((prev) => [...prev, ...newImages])
   }
 
   const handleFilesChange = (newFiles: File[]) => {
@@ -73,7 +73,7 @@ function ImageConverter() {
 
   // Generate SVG preview when SVG options change
   createEffect(() => {
-    const svgImage = images.find(img => img.file.type.includes('svg'))
+    const svgImage = images.find((img) => img.file.type.includes('svg'))
     if (!svgImage) {
       setSvgPreviewUrl(undefined)
       return
@@ -107,7 +107,7 @@ function ImageConverter() {
 
   // Cleanup preview URLs on unmount
   onCleanup(() => {
-    images.forEach(img => URL.revokeObjectURL(img.previewUrl))
+    images.forEach((img) => URL.revokeObjectURL(img.previewUrl))
     const previewUrl = svgPreviewUrl()
     if (previewUrl) {
       URL.revokeObjectURL(previewUrl)
@@ -153,18 +153,18 @@ function ImageConverter() {
     }
   }
 
-  const hasSvgFiles = () => images.some(img => img.file.type.includes('svg'))
+  const hasSvgFiles = () => images.some((img) => img.file.type.includes('svg'))
 
   const updateImage = (id: string, updates: Partial<ImageFileData>) => {
-    setImages(prev => prev.id === id, updates)
+    setImages((prev) => prev.id === id, updates)
   }
 
   const handleRemoveImage = (id: string) => {
-    const img = images.find(i => i.id === id)
+    const img = images.find((i) => i.id === id)
     if (img) {
       URL.revokeObjectURL(img.previewUrl)
-      setImages(prev => prev.filter(i => i.id !== id))
-      setFiles(prev => prev.filter(f => f !== img.file))
+      setImages((prev) => prev.filter((i) => i.id !== id))
+      setFiles((prev) => prev.filter((f) => f !== img.file))
     }
   }
 
@@ -181,11 +181,12 @@ function ImageConverter() {
 
     // Calculate average aspect ratio from all images with origin data
     if (ratio() && images.length > 0) {
-      const imagesWithOrigin = images.filter(img => img.origin)
+      const imagesWithOrigin = images.filter((img) => img.origin)
       if (imagesWithOrigin.length > 0) {
-        const avgAspectRatio = imagesWithOrigin.reduce((sum, img) => {
-          return sum + (img.origin!.width / img.origin!.height)
-        }, 0) / imagesWithOrigin.length
+        const avgAspectRatio =
+          imagesWithOrigin.reduce((sum, img) => {
+            return sum + img.origin!.width / img.origin!.height
+          }, 0) / imagesWithOrigin.length
         setGlobalHeight(Math.round(width / avgAspectRatio))
       }
     }
@@ -218,11 +219,12 @@ function ImageConverter() {
 
     // Calculate average aspect ratio from all images with origin data
     if (ratio() && images.length > 0) {
-      const imagesWithOrigin = images.filter(img => img.origin)
+      const imagesWithOrigin = images.filter((img) => img.origin)
       if (imagesWithOrigin.length > 0) {
-        const avgAspectRatio = imagesWithOrigin.reduce((sum, img) => {
-          return sum + (img.origin!.width / img.origin!.height)
-        }, 0) / imagesWithOrigin.length
+        const avgAspectRatio =
+          imagesWithOrigin.reduce((sum, img) => {
+            return sum + img.origin!.width / img.origin!.height
+          }, 0) / imagesWithOrigin.length
         setGlobalWidth(Math.round(height * avgAspectRatio))
       }
     }
@@ -243,11 +245,12 @@ function ImageConverter() {
   }
 
   return (
-    <div class="gap-6 grid grid-cols-1 xl:grid-cols-[1fr_450px]">
+    <div class="gap-6 grid grid-cols-1 items-start lg:grid-cols-[minmax(0,1fr)_18rem] [&>*]:min-w-0">
       {/* Left side - Images */}
       <Card
+        variant="section"
         title="Upload Images"
-        content={(
+        content={
           <>
             <FileUpload
               files={files()}
@@ -255,12 +258,12 @@ function ImageConverter() {
               accept={['image/*']}
               multiple
               info="Supports JPEG, PNG, WebP, GIF, AVIF, TIFF, SVG"
-              icon="lucide:image"
+              icon="i-lucide-image"
             />
             <Show when={images.length > 0}>
-              <div class="mt-6 flex flex-wrap gap-4 justify-evenly">
+              <div class="mt-4 gap-4 grid grid-cols-[repeat(auto-fill,minmax(min(100%,14rem),1fr))]">
                 <For each={images}>
-                  {img => (
+                  {(img) => (
                     <ImageCard
                       image={img}
                       aspectRatio={ratio()}
@@ -272,49 +275,43 @@ function ImageConverter() {
               </div>
             </Show>
           </>
-        )}
+        }
       />
 
       {/* Right side - Settings */}
-      <div class="space-y-6">
-        <Card
-          title="Output Settings"
-          content={(
-            <OutputSettings
-              targetFormat={targetFormat()}
-              onFormatChange={setTargetFormat}
-              quality={quality()}
-              onQualityChange={setQuality}
-              ratio={ratio()}
-              onRatioChange={setRatio}
-              globalWidth={globalWidth()}
-              onGlobalWidthChange={handleGlobalWidthChange}
-              globalHeight={globalHeight()}
-              onGlobalHeightChange={handleGlobalHeightChange}
-            />
-          )}
-        />
+      <div class="space-y-4">
+        <ToolOptions>
+          <OutputSettings
+            targetFormat={targetFormat()}
+            onFormatChange={setTargetFormat}
+            quality={quality()}
+            onQualityChange={setQuality}
+            ratio={ratio()}
+            onRatioChange={setRatio}
+            globalWidth={globalWidth()}
+            onGlobalWidthChange={handleGlobalWidthChange}
+            globalHeight={globalHeight()}
+            onGlobalHeightChange={handleGlobalHeightChange}
+          />
+        </ToolOptions>
 
         <Show when={hasSvgFiles()}>
-          <Card
-            title="SVG Options"
-            content={(
-              <SvgOptions
-                previewUrl={svgPreviewUrl()}
-                backgroundColor={svgBackgroundColor()}
-                onBackgroundColorChange={setSvgBackgroundColor}
-                fillColor={svgColor()}
-                onFillColorChange={setSvgColor}
-                strokeColor={svgStrokeColor()}
-                onStrokeColorChange={setSvgStrokeColor}
-                onReset={() => {
-                  setSvgBackgroundColor('')
-                  setSvgColor('')
-                  setSvgStrokeColor('')
-                }}
-              />
-            )}
-          />
+          <ToolOptions title="SVG Options">
+            <SvgOptions
+              previewUrl={svgPreviewUrl()}
+              backgroundColor={svgBackgroundColor()}
+              onBackgroundColorChange={setSvgBackgroundColor}
+              fillColor={svgColor()}
+              onFillColorChange={setSvgColor}
+              strokeColor={svgStrokeColor()}
+              onStrokeColorChange={setSvgStrokeColor}
+              onReset={() => {
+                setSvgBackgroundColor('')
+                setSvgColor('')
+                setSvgStrokeColor('')
+              }}
+            />
+          </ToolOptions>
         </Show>
 
         <Button
@@ -323,12 +320,16 @@ function ImageConverter() {
           size="lg"
           classes={{ root: 'w-full' }}
           leading={
-            converting()
-              ? <Icon name="lucide:loader-2" classes={{ icon: 'animate-spin' }} />
-              : 'lucide:download'
+            converting() ? (
+              <Icon name="i-lucide-loader-2" class="animate-spin" />
+            ) : (
+              'i-lucide-download'
+            )
           }
         >
-          {converting() ? 'Converting...' : `Convert & Download ${images.length > 0 ? `(${images.length})` : ''}`}
+          {converting()
+            ? 'Converting...'
+            : `Convert & Download ${images.length > 0 ? `(${images.length})` : ''}`}
         </Button>
       </div>
     </div>

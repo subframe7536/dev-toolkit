@@ -29,8 +29,19 @@ A privacy-first web-based developer toolset providing 14+ essential utilities. A
 - Table editor (CSV/Excel/Markdown/SQL)
 - Text case converter
 
+### Testing
+
+Tests use Vitest with the default Node.js environment. Component tests opt into jsdom.
+
+```bash
+pnpm test              # Run all tests once
+pnpm test:watch        # Watch tests during development
+pnpm test text-case    # Run tests matching a file name
+```
+
 ### Todo
 
+- [ ] jwt analyze
 - [ ] regex input misalign and redudant scrollbar
 - [ ] regex tester page scrollbar eliminate
 - [ ] json object to python/java class

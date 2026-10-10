@@ -1,6 +1,5 @@
-import type { DebugSession, DebugStep, RegexFlags } from './types'
-
 import { flagsToString } from './match-engine'
+import type { DebugSession, DebugStep, RegexFlags } from './types'
 
 /**
  * Simulates regex matching step-by-step for educational visualization.
@@ -9,7 +8,15 @@ import { flagsToString } from './match-engine'
  */
 
 interface PatternToken {
-  type: 'literal' | 'charClass' | 'quantifier' | 'anchor' | 'group' | 'alternation' | 'escape' | 'dot'
+  type:
+    | 'literal'
+    | 'charClass'
+    | 'quantifier'
+    | 'anchor'
+    | 'group'
+    | 'alternation'
+    | 'escape'
+    | 'dot'
   value: string
   position: number
   length: number
@@ -75,7 +82,9 @@ function tokenizePattern(pattern: string): PatternToken[] {
         value: classContent,
         position: i,
         length: end - i,
-        description: isNegated ? `any character NOT in ${classContent}` : `any character in ${classContent}`,
+        description: isNegated
+          ? `any character NOT in ${classContent}`
+          : `any character in ${classContent}`,
       })
       i = end
       continue
@@ -148,7 +157,7 @@ function tokenizePattern(pattern: string): PatternToken[] {
       const match = pattern.slice(i).match(/^\{(\d+)(,(\d*))?\}\??/)
       if (match) {
         const isLazy = match[0].endsWith('?')
-        let desc = ''
+        let desc: string
         if (match[2] === undefined) {
           desc = `exactly ${match[1]} times`
         } else if (match[3] === '') {
@@ -237,11 +246,7 @@ function tokenizePattern(pattern: string): PatternToken[] {
  * Generate debug steps for a regex pattern matching against text.
  * This simulates the matching process for educational purposes.
  */
-export function generateDebugSteps(
-  pattern: string,
-  flags: RegexFlags,
-  text: string,
-): DebugSession {
+export function generateDebugSteps(pattern: string, flags: RegexFlags, text: string): DebugSession {
   const steps: DebugStep[] = []
 
   if (!pattern || !text) {
@@ -307,9 +312,11 @@ export function generateDebugSteps(
 
           // Handle anchors
           if (token.type === 'anchor') {
-            const anchorSuccess = token.value === '^'
-              ? (currentTextPos === 0 || (flags.multiline && text[currentTextPos - 1] === '\n'))
-              : (currentTextPos === text.length || (flags.multiline && text[currentTextPos] === '\n'))
+            const anchorSuccess =
+              token.value === '^'
+                ? currentTextPos === 0 || (flags.multiline && text[currentTextPos - 1] === '\n')
+                : currentTextPos === text.length ||
+                  (flags.multiline && text[currentTextPos] === '\n')
 
             steps.push({
               stepNumber: steps.length,
@@ -404,15 +411,17 @@ export function generateDebugSteps(
     }
   } catch {
     return {
-      steps: [{
-        stepNumber: 0,
-        patternPosition: 0,
-        textPosition: 0,
-        action: 'fail',
-        description: 'Invalid regex pattern',
-        patternElement: pattern,
-        isBacktrack: false,
-      }],
+      steps: [
+        {
+          stepNumber: 0,
+          patternPosition: 0,
+          textPosition: 0,
+          action: 'fail',
+          description: 'Invalid regex pattern',
+          patternElement: pattern,
+          isBacktrack: false,
+        },
+      ],
       currentStepIndex: 0,
       isPlaying: false,
       playSpeed: 500,
@@ -446,22 +455,22 @@ export function getActionColor(action: DebugStep['action']): string {
 /**
  * Get the action icon for visualization
  */
-export function getActionIcon(action: DebugStep['action']): `lucide:${string}` {
+export function getActionIcon(action: DebugStep['action']): `i-lucide-${string}` {
   switch (action) {
     case 'match':
-      return 'lucide:check'
+      return 'i-lucide-check'
     case 'backtrack':
-      return 'lucide:undo-2'
+      return 'i-lucide-undo-2'
     case 'advance':
-      return 'lucide:arrow-right'
+      return 'i-lucide-arrow-right'
     case 'fail':
-      return 'lucide:x'
+      return 'i-lucide-x'
     case 'success':
-      return 'lucide:check-circle'
+      return 'i-lucide-circle-check'
     case 'start':
-      return 'lucide:play'
+      return 'i-lucide-play'
     default:
-      return 'lucide:circle'
+      return 'i-lucide-circle'
   }
 }
 

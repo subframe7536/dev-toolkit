@@ -1,6 +1,25 @@
-import { describe, expect, test } from 'bun:test'
+import { describe, expect, test } from 'vitest'
 
-import { jsonToJavaClass, jsonToJSObject, jsonToTSDefinition } from './converter'
+import {
+  jsonToJavaClass,
+  jsonToJSObject,
+  jsonToTSDefinition,
+  jsonToYAML,
+  jsonToQueryParams,
+} from './converter'
+
+describe('JSON repair in data exports', () => {
+  test.each([
+    ['YAML', jsonToYAML, 'name: Alice'],
+    ['query parameters', jsonToQueryParams, 'name=Alice'],
+  ] as const)('repairs malformed input for %s only when enabled', (_, convert, expected) => {
+    const input = '{name: "Alice",}'
+    expect(convert(input).success).toBe(false)
+    const result = convert(input, true)
+    expect(result.success).toBe(true)
+    expect(result.output).toContain(expected)
+  })
+})
 
 describe('jsonToJSObject', () => {
   test('converts simple JSON to JS object', () => {
@@ -8,7 +27,7 @@ describe('jsonToJSObject', () => {
     const result = jsonToJSObject(input)
 
     expect(result.success).toBe(true)
-    expect(result.output).toContain('name: \'John\'')
+    expect(result.output).toContain("name: 'John'")
     expect(result.output).toContain('age: 30')
   })
 
@@ -18,7 +37,7 @@ describe('jsonToJSObject', () => {
 
     expect(result.success).toBe(true)
     expect(result.output).toContain('user: {')
-    expect(result.output).toContain('name: \'John\'')
+    expect(result.output).toContain("name: 'John'")
   })
 
   test('handles arrays', () => {
