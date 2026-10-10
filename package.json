@@ -20,7 +20,7 @@
     "@solid-primitives/clipboard": "^1.6.6",
     "@solid-primitives/scheduled": "^1.5.3",
     "@tanstack/solid-table": "^9.2.6",
-    "moraine": "^0.6.0",
+    "moraine": "^0.6.1",
     "papaparse": "^5.7.0",
     "shiki": "^4.5.0",
     "solid-js": "^1.9.15",
