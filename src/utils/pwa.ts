@@ -1,5 +1,4 @@
-import { createEventListener } from 'moraine/utils'
-import { createEffect, createSignal } from 'solid-js'
+import { createEffect, createSignal, onCleanup } from 'solid-js'
 import { toast } from 'solid-toaster'
 
 // Type definition for the non-standard event
@@ -10,38 +9,56 @@ interface BeforeInstallPromptEvent extends Event {
 
 let isServiceWorkerRegistered = false
 let shouldReloadAfterActivation = false
+let stashedPromptEvent: BeforeInstallPromptEvent | null = null
+
+if (typeof window !== 'undefined') {
+  window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault()
+    stashedPromptEvent = e as BeforeInstallPromptEvent
+  })
+}
+
+export function isStandalone(): boolean {
+  if (typeof window === 'undefined') {
+    return false
+  }
+
+  return (
+    window.matchMedia?.('(display-mode: standalone)').matches ||
+    Boolean((window.navigator as { standalone?: boolean }).standalone)
+  )
+}
+
+function listenWindow(type: string, listener: EventListenerOrEventListenerObject) {
+  window.addEventListener(type, listener)
+  onCleanup(() => window.removeEventListener(type, listener))
+}
 
 export function registPWA() {
   const [deferredPrompt, setDeferredPrompt] = createSignal<BeforeInstallPromptEvent | null>(null)
   const [needRefresh, setNeedRefresh] = createSignal(false)
   const [registration, setRegistration] = createSignal<ServiceWorkerRegistration | null>(null)
+  let installToastId: string | number | undefined
 
-  createEventListener<EventTarget, 'beforeinstallprompt'>(window, 'beforeinstallprompt', (e) => {
-    // 1. Prevent the mini-infobar from appearing on mobile
-    e.preventDefault()
+  const promptInstall = (promptEvent: BeforeInstallPromptEvent) => {
+    if (isStandalone()) {
+      return
+    }
 
-    // 2. Stash the event so it can be triggered later
-    setDeferredPrompt(e as BeforeInstallPromptEvent)
-
-    // 3. Trigger the Sonner Toast
-    toast('Install App', {
+    setDeferredPrompt(promptEvent)
+    installToastId = toast('Install App', {
       description: 'Install this application on your device for a better experience.',
-      duration: 10000, // Show for 10 seconds
+      duration: 10000,
       action: {
         label: 'Install',
         onClick: async () => {
-          const promptEvent = deferredPrompt()
-          if (!promptEvent) {
+          const event = deferredPrompt()
+          if (!event) {
             return
           }
 
-          // Show the native install prompt
-          await promptEvent.prompt()
-
-          // Wait for the user to respond to the prompt
-          await promptEvent.userChoice
-
-          // We've used the prompt, so clear it
+          await event.prompt()
+          await event.userChoice
           setDeferredPrompt(null)
         },
       },
@@ -52,6 +69,24 @@ export function registPWA() {
       onDismiss: () => setDeferredPrompt(null),
       onAutoClose: () => setDeferredPrompt(null),
     })
+  }
+
+  if (stashedPromptEvent) {
+    promptInstall(stashedPromptEvent)
+    stashedPromptEvent = null
+  }
+
+  listenWindow('beforeinstallprompt', (e) => {
+    e.preventDefault()
+    promptInstall(e as BeforeInstallPromptEvent)
+  })
+
+  listenWindow('appinstalled', () => {
+    setDeferredPrompt(null)
+    if (installToastId !== undefined) {
+      toast.dismiss(installToastId)
+      installToastId = undefined
+    }
   })
 
   registerServiceWorker((nextRegistration) => {
@@ -63,7 +98,7 @@ export function registPWA() {
     if (needRefresh()) {
       toast('New Version Available', {
         description: 'Click "Refresh" button to apply the update',
-        duration: 10000, // Show for 10 seconds
+        duration: Number.POSITIVE_INFINITY,
         action: {
           label: 'Refresh',
           onClick: () => activateWaitingServiceWorker(registration()),
@@ -131,10 +166,14 @@ export async function registerServiceWorkerOnLoad(
       onUpdateReady(nextRegistration)
     }
 
+    const listenedWorkers = new WeakSet<ServiceWorker>()
+
     const listenInstallingWorker = (worker: ServiceWorker | null) => {
-      if (!worker) {
+      if (!worker || listenedWorkers.has(worker)) {
         return
       }
+
+      listenedWorkers.add(worker)
 
       worker.addEventListener('statechange', () => {
         if (worker.state === 'installed' && navigator.serviceWorker.controller) {
@@ -150,16 +189,49 @@ export async function registerServiceWorkerOnLoad(
     nextRegistration.addEventListener('updatefound', () => {
       listenInstallingWorker(nextRegistration.installing)
     })
+
+    const checkForUpdates = () => {
+      if (navigator.onLine) {
+        void nextRegistration.update().catch(() => {})
+      }
+    }
+
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'visible') {
+        checkForUpdates()
+      }
+    })
+
+    window.addEventListener('online', checkForUpdates)
+    setInterval(checkForUpdates, 60 * 60 * 1000)
+
+    return nextRegistration
   } catch (error) {
     console.warn('Service worker registration failed.', error)
   }
 }
 
-export function activateWaitingServiceWorker(registration: ServiceWorkerRegistration | null) {
-  if (!registration?.waiting) {
-    return
-  }
+export function activateWaitingServiceWorker(registration?: ServiceWorkerRegistration | null) {
+  const targetWorker =
+    registration?.waiting ??
+    (registration?.installing?.state === 'installed' ? registration.installing : null)
 
   shouldReloadAfterActivation = true
-  registration.waiting.postMessage({ type: 'SKIP_WAITING' })
+
+  if (targetWorker) {
+    targetWorker.postMessage({ type: 'SKIP_WAITING' })
+  } else if ('serviceWorker' in navigator) {
+    void navigator.serviceWorker.getRegistration().then((reg) => {
+      if (reg?.waiting) {
+        reg.waiting.postMessage({ type: 'SKIP_WAITING' })
+      }
+    })
+  }
+
+  setTimeout(() => {
+    if (shouldReloadAfterActivation) {
+      shouldReloadAfterActivation = false
+      window.location.reload()
+    }
+  }, 1500)
 }

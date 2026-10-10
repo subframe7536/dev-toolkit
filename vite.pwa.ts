@@ -6,6 +6,8 @@ export interface ManualPwaOptions {
   name: string
   shortName: string
   description: string
+  themeColor?: string
+  backgroundColor?: string
 }
 
 export const PUBLIC_ASSETS = [
@@ -78,11 +80,12 @@ export function createManifest(options: ManualPwaOptions) {
     name: options.name,
     short_name: options.shortName,
     description: options.description,
+    id: '.',
     start_url: '.',
     scope: '.',
     display: 'standalone',
-    background_color: '#00000000',
-    theme_color: '#00000000',
+    background_color: options.backgroundColor ?? '#f6f7f3',
+    theme_color: options.themeColor ?? '#f6f7f3',
     icons: [
       {
         src: 'pwa-192x192.png',
@@ -156,12 +159,18 @@ self.addEventListener('install', event => {
 
 self.addEventListener('activate', event => {
   event.waitUntil(
-    caches
-      .keys()
-      .then(cacheNames =>
-        Promise.all(cacheNames.filter(cacheName => cacheName.startsWith(${JSON.stringify(cachePrefixPattern)}) && cacheName !== CACHE_NAME).map(cacheName => caches.delete(cacheName))),
-      )
-      .then(() => self.clients.claim()),
+    Promise.all([
+      self.clients.claim(),
+      caches
+        .keys()
+        .then(cacheNames =>
+          Promise.all(
+            cacheNames
+              .filter(cacheName => cacheName.startsWith(${JSON.stringify(cachePrefixPattern)}) && cacheName !== CACHE_NAME)
+              .map(cacheName => caches.delete(cacheName).catch(() => {})),
+          ),
+        ),
+    ]),
   )
 })
 
@@ -175,7 +184,11 @@ self.addEventListener('fetch', event => {
   const { request } = event
   const requestUrl = new URL(request.url)
 
-  if (request.method !== 'GET' || requestUrl.origin !== self.location.origin) {
+  if (
+    request.method !== 'GET' ||
+    requestUrl.origin !== self.location.origin ||
+    requestUrl.pathname === new URL('sw.js', self.registration.scope).pathname
+  ) {
     return
   }
 
@@ -193,18 +206,19 @@ async function networkFirstNavigation(request) {
   try {
     const response = await fetch(request)
 
-    if (response.ok) {
+    if (response.status === 200) {
       await cache.put(request, response.clone())
     }
 
     return response
   } catch {
-    return (await caches.match(request)) ?? (await caches.match(resolveUrl('.'))) ?? Response.error()
+    return (await cache.match(request)) ?? (await cache.match(resolveUrl('.'))) ?? Response.error()
   }
 }
 
 async function cacheFirst(request) {
-  const cachedResponse = await caches.match(request)
+  const cache = await caches.open(CACHE_NAME)
+  const cachedResponse = await cache.match(request)
 
   if (cachedResponse) {
     return cachedResponse
@@ -213,8 +227,7 @@ async function cacheFirst(request) {
   try {
     const response = await fetch(request)
 
-    if (response.ok) {
-      const cache = await caches.open(CACHE_NAME)
+    if (response.status === 200) {
       await cache.put(request, response.clone())
     }
 
