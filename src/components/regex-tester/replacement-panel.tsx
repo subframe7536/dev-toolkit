@@ -1,4 +1,4 @@
-import { Field, Button, Icon, Input } from 'moraine'
+import { Button, CopyButton, Field, Icon, Input } from 'moraine'
 import { createMemo, Show } from 'solid-js'
 
 import { useRegexContext } from '#/contexts/regex-context'
@@ -13,13 +13,6 @@ export function ReplacementPanel() {
   const handleApplyReplace = () => {
     const result = actions.applyReplacement()
     actions.setTestText(result)
-  }
-
-  const handleCopyResult = async () => {
-    const result = replacementResult()
-    if (result) {
-      await navigator.clipboard.writeText(result.result)
-    }
   }
 
   return (
@@ -105,18 +98,17 @@ export function ReplacementPanel() {
 
             {/* Action Buttons */}
             <div class="flex gap-2">
-              <Button
-                variant="secondary"
+              <CopyButton
+                variant="solid"
+                tone="secondary"
                 size="sm"
-                onClick={handleCopyResult}
+                value={() => replacementResult()?.result ?? ''}
                 disabled={!replacementResult()}
                 aria-label="Copy replacement result to clipboard"
-                leading="i-lucide-copy"
               >
                 Copy Result
-              </Button>
+              </CopyButton>
               <Button
-                variant="default"
                 size="sm"
                 onClick={handleApplyReplace}
                 disabled={!replacementResult() || replacementResult()?.replacementCount === 0}

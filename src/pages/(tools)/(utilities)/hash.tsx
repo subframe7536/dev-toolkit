@@ -1,11 +1,10 @@
-import { Field, Button, Icon, Tabs, Textarea, cn } from 'moraine'
+import { Field, Button, Icon, Tabs, Textarea, cn, CopyButton } from 'moraine'
 import { createRoute } from 'solid-file-router'
 import { createMemo, createSignal, For, Show } from 'solid-js'
 import { toast } from 'solid-toaster'
 
 import { Card } from '#/components/card'
 import { ClearButton } from '#/components/clear-button'
-import { CopyButton } from '#/components/copy-button'
 import { FileUpload } from '#/components/file-upload'
 import { ToolOptions } from '#/components/tool-options'
 import type { HashAlgorithm } from '#/utils/hash'
@@ -88,7 +87,7 @@ function HashGenerator() {
       <div class="flex flex-col gap-4">
         <Tabs
           value={inputMode()}
-          onChange={handleInputModeChange}
+          onValueChange={handleInputModeChange}
           items={[
             {
               value: 'text',
@@ -191,12 +190,7 @@ function HashGenerator() {
                             </div>
                             <code class="text-sm font-mono break-all">{result.hash}</code>
                           </div>
-                          <CopyButton
-                            content={result.hash}
-                            variant="ghost"
-                            size="sm"
-                            text={false}
-                          />
+                          <CopyButton value={result.hash} size="sm" />
                         </div>
                       )
                     }}

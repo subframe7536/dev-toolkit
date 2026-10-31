@@ -1,4 +1,4 @@
-import { Field, Button, Input, Select } from 'moraine'
+import { Field, Button, Input, Select, CopyButton } from 'moraine'
 import { createRoute } from 'solid-file-router'
 import {
   batch,
@@ -14,7 +14,6 @@ import { createStore } from 'solid-js/store'
 import { toast } from 'solid-toaster'
 
 import { Card } from '#/components/card'
-import { CopyButton } from '#/components/copy-button'
 import { ToolOptions } from '#/components/tool-options'
 import {
   commonTimeZones,
@@ -203,7 +202,7 @@ function DateTimeTool() {
                     <Select
                       value={selectedLocale()}
                       onValueChange={(value) => {
-                        if (value !== null) {
+                        if (value !== undefined) {
                           setSelectedLocale(value)
                         }
                       }}
@@ -220,7 +219,7 @@ function DateTimeTool() {
                     <Select
                       value={selectedTimeZone()}
                       onValueChange={(value) => {
-                        if (value !== null) {
+                        if (value !== undefined) {
                           setSelectedTimeZone(value)
                         }
                       }}
@@ -296,12 +295,7 @@ function DateTimeTool() {
                           {manipulatedTime()}
                         </div>
                       </div>
-                      <CopyButton
-                        content={manipulatedTime()!}
-                        size="sm"
-                        variant="ghost"
-                        text={false}
-                      />
+                      <CopyButton value={manipulatedTime()!} size="sm" />
                     </div>
                   </div>
                 </Show>
@@ -329,10 +323,8 @@ function DateTimeTool() {
                       </div>
                     </div>
                     <CopyButton
-                      content={formatWithPattern(customDate() || currentTime(), customFormat())}
+                      value={formatWithPattern(customDate() || currentTime(), customFormat())}
                       size="sm"
-                      variant="ghost"
-                      text={false}
                     />
                   </div>
                 </div>
@@ -349,12 +341,7 @@ function DateTimeTool() {
                           <div class="text-xs text-muted-foreground">{format().label}</div>
                           <div class="text-sm font-mono break-all">{format().value}</div>
                         </div>
-                        <CopyButton
-                          content={format().value}
-                          size="sm"
-                          variant="ghost"
-                          text={false}
-                        />
+                        <CopyButton value={format().value} size="sm" />
                       </div>
                     )}
                   </Index>

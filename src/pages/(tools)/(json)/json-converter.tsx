@@ -1,9 +1,8 @@
-import { Field, Select, Switch, Textarea } from 'moraine'
+import { Field, Select, Switch, Textarea, CopyButton } from 'moraine'
 import { createRoute } from 'solid-file-router'
 import { createEffect, createSignal, on } from 'solid-js'
 
 import { ClearButton } from '#/components/clear-button'
-import { CopyButton } from '#/components/copy-button'
 import { DownloadButton } from '#/components/download-button'
 import { ToolOptions } from '#/components/tool-options'
 import type { ConversionResult } from '#/utils/json/converter'
@@ -140,7 +139,7 @@ function JSONConverter() {
           classes={{ root: 'min-w-0', label: 'text-muted-foreground font-medium text-xs' }}
         >
           <Textarea
-            classes={{ root: ['tool-editor bg-muted/30', error() && 'text-destructive'] }}
+            classes={{ root: ['tool-editor bg-muted/30', error() && 'text-danger'] }}
             aria-invalid={Boolean(error())}
             readOnly
             placeholder="Converted output will appear here..."
@@ -149,18 +148,16 @@ function JSONConverter() {
         </Field>
       </div>
       <div class="tool-toolbar">
-        <CopyButton
-          text="Copy Output"
-          content={output()}
-          variant="secondary"
-          disabled={!output()}
-        />
+        <CopyButton value={output()} variant="solid" tone="secondary" disabled={!output()}>
+          Copy Output
+        </CopyButton>
         <DownloadButton
           content={output()}
           filename={`converted.${getFileExtension()}`}
           mimeType={getMimeType()}
           disabled={!output()}
-          variant="secondary"
+          variant="solid"
+          tone="secondary"
         />
         <ClearButton onClear={handleClear} disabled={!input()} />
       </div>
@@ -173,7 +170,7 @@ function JSONConverter() {
             <Select
               value={mode()}
               onValueChange={(value) => {
-                if (value !== null) {
+                if (value !== undefined) {
                   setMode(value)
                 }
               }}

@@ -1,10 +1,9 @@
-import { Field, Input, Switch, Textarea } from 'moraine'
+import { Field, Input, Switch, Textarea, CopyButton } from 'moraine'
 import { createRoute } from 'solid-file-router'
 import { createEffect, createSignal, on } from 'solid-js'
 import { toast } from 'solid-toaster'
 
 import { ClearButton } from '#/components/clear-button'
-import { CopyButton } from '#/components/copy-button'
 import { DownloadButton } from '#/components/download-button'
 import { ToolOptions } from '#/components/tool-options'
 import { generateJsonSchema } from '#/utils/json/schema-generator'
@@ -83,18 +82,16 @@ function JSONSchemaGenerator() {
         </Field>
       </div>
       <div class="tool-toolbar">
-        <CopyButton
-          text="Copy Output"
-          content={output()}
-          disabled={!output()}
-          variant="secondary"
-        />
+        <CopyButton value={output()} disabled={!output()} variant="solid" tone="secondary">
+          Copy Output
+        </CopyButton>
         <DownloadButton
           content={output()}
           disabled={!output()}
           filename="schema.json"
           mimeType="application/json"
-          variant="secondary"
+          variant="solid"
+          tone="secondary"
         />
         <ClearButton onClear={handleClear} disabled={!input() && !output()} />
       </div>

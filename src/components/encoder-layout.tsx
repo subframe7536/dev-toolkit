@@ -1,9 +1,7 @@
-import { Field, Button, Textarea } from 'moraine'
+import { Field, Button, Textarea, CopyButton } from 'moraine'
 import type { JSX } from 'solid-js'
 import { batch, createEffect, createSignal, onCleanup } from 'solid-js'
 import { toast } from 'solid-toaster'
-
-import { CopyButton } from '#/components/copy-button'
 
 import { ClearButton } from './clear-button'
 
@@ -108,7 +106,7 @@ export function EncoderLayout(props: EncoderLayoutProps): JSX.Element {
           <Textarea
             aria-invalid={!!error()}
             classes={{
-              root: ['tool-editor bg-muted/30', error() && 'border-destructive text-destructive'],
+              root: ['tool-editor bg-muted/30', error() && 'border-danger text-danger'],
             }}
             readOnly
             placeholder={outputPlaceholder()}
@@ -125,12 +123,9 @@ export function EncoderLayout(props: EncoderLayoutProps): JSX.Element {
         >
           Switch to {isEncode() ? 'decode' : 'encode'}
         </Button>
-        <CopyButton
-          text="Copy Output"
-          content={outputText()}
-          disabled={!outputText()}
-          variant="secondary"
-        />
+        <CopyButton value={outputText()} disabled={!outputText()} variant="solid" tone="secondary">
+          Copy Output
+        </CopyButton>
         <ClearButton onClear={clear} disabled={!inputText()} />
       </div>
     </div>

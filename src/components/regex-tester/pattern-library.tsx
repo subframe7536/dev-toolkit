@@ -136,7 +136,7 @@ export function PatternLibraryDialog(props: PatternLibraryDialogProps) {
       onOpenChange={setIsOpen}
       classes={{ content: 'max-h-[80vh] max-w-6xl overflow-y-auto' }}
     >
-      <Dialog.Trigger as={Button} variant="secondary" leading="i-lucide-library">
+      <Dialog.Trigger as={Button} variant="solid" tone="secondary" leading="i-lucide-library">
         Load Example
       </Dialog.Trigger>
       <Dialog.Content>

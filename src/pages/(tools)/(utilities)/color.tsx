@@ -1,10 +1,9 @@
-import { Field, Button, Icon, Input, InputGroup, Slider, cn } from 'moraine'
+import { Field, Button, Icon, Input, InputGroup, Slider, cn, CopyButton } from 'moraine'
 import { createRoute } from 'solid-file-router'
 import { createMemo, createSignal, For } from 'solid-js'
 import { toast } from 'solid-toaster'
 
 import { Card } from '#/components/card'
-import { CopyButton } from '#/components/copy-button'
 import { ToolOptions } from '#/components/tool-options'
 import type { ColorFormat, RGB } from '#/utils/color'
 import {
@@ -145,7 +144,8 @@ function ColorConverter() {
           </Button>
           <Button
             onClick={handleSaveColor}
-            variant="secondary"
+            variant="solid"
+            tone="secondary"
             classes={{ root: 'flex-1' }}
             leading="i-lucide-save"
           >
@@ -312,7 +312,7 @@ function ColorConverter() {
                         </div>
                         <code class="text-sm font-mono break-all">{value()}</code>
                       </div>
-                      <CopyButton content={value()} variant="ghost" size="sm" text={false} />
+                      <CopyButton value={value()} size="sm" />
                     </div>
                   )
                 }}

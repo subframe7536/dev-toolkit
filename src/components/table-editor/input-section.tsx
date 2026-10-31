@@ -245,7 +245,8 @@ export function InputSection() {
                 <ToolOptions>
                   <div class="tool-toolbar">
                     <Button
-                      variant="secondary"
+                      variant="solid"
+                      tone="secondary"
                       onClick={() => {
                         setTextInput(MYSQL_EXAMPLE)
                         setReplaceLineWrap(true)
@@ -255,7 +256,8 @@ export function InputSection() {
                       MySQL Example
                     </Button>
                     <Button
-                      variant="secondary"
+                      variant="solid"
+                      tone="secondary"
                       onClick={() => {
                         setTextInput(CSV_EXAMPLE)
                         setReplaceLineWrap(true)
@@ -265,7 +267,8 @@ export function InputSection() {
                       CSV Example
                     </Button>
                     <Button
-                      variant="secondary"
+                      variant="solid"
+                      tone="secondary"
                       onClick={() => {
                         setTextInput(EXCEL_EXAMPLE)
                         setReplaceLineWrap(true)
@@ -330,7 +333,7 @@ export function InputSection() {
                       <Select
                         value={selectedSheet()}
                         onValueChange={(value) => {
-                          if (value !== null) {
+                          if (value !== undefined) {
                             setSelectedSheet(value)
                           }
                         }}

@@ -1,32 +1,10 @@
-import type { ColumnDef, ColumnPinningState, SortingState } from '@tanstack/solid-table'
-import {
-  columnOrderingFeature,
-  columnPinningFeature,
-  columnVisibilityFeature,
-  createSortedRowModel,
-  createTable,
-  FlexRender,
-  rowSortingFeature,
-  sortFn_alphanumeric,
-  sortFn_text,
-  tableFeatures,
-} from '@tanstack/solid-table'
-import { Field, Icon, Textarea, Tooltip, cn } from 'moraine'
-import { createEffect, createMemo, createSignal, For, onCleanup, onMount, Show } from 'solid-js'
+import type { CellContext } from '@tanstack/solid-table'
+import { Button, Textarea } from 'moraine'
+import type { DataTableT } from 'moraine/data-table'
+import { DataTable as MoraineDataTable, createDataTable } from 'moraine/data-table'
+import { createMemo, createSignal, Show } from 'solid-js'
 
-import type { CellValue, TableData, TableRow } from '#/utils/table/types'
-
-const features = tableFeatures({
-  columnOrderingFeature,
-  columnPinningFeature,
-  columnVisibilityFeature,
-  rowSortingFeature,
-  sortedRowModel: createSortedRowModel(),
-  sortFns: {
-    alphanumeric: sortFn_alphanumeric,
-    text: sortFn_text,
-  },
-})
+import type { CellValue, ColumnDefinition, TableData, TableRow } from '#/utils/table/types'
 
 export interface DataTableProps {
   data: TableData
@@ -35,419 +13,199 @@ export interface DataTableProps {
   columnVisibility?: Record<string, boolean>
 }
 
+interface EditingCell {
+  rowId: string
+  columnId: string
+}
+
+function parseCellValue(value: string): CellValue {
+  const lower = value.toLowerCase()
+  if (value.trim() !== '' && !Number.isNaN(Number(value))) {
+    return Number(value)
+  }
+  if (lower === 'true') {
+    return true
+  }
+  if (lower === 'false') {
+    return false
+  }
+  if (lower === 'null' || value === '') {
+    return null
+  }
+  return value
+}
+
 export function DataTable(props: DataTableProps) {
-  // Table state
-  const [columnOrder, setColumnOrder] = createSignal<string[]>([])
-  const [sorting, setSorting] = createSignal<SortingState>([])
-  const [columnPinning, setColumnPinning] = createSignal<ColumnPinningState>({
-    start: [],
-    end: [],
-  })
-  const [internalColumnVisibility, setInternalColumnVisibility] = createSignal<
-    Record<string, boolean>
-  >({})
-  const [columnWidths, setColumnWidths] = createSignal<Record<string, number>>({})
-  const headers = new Map<string, HTMLTableCellElement>()
-  let resizeObserver: ResizeObserver | undefined
+  const [editing, setEditing] = createSignal<EditingCell>()
 
-  onMount(() => {
-    resizeObserver = new ResizeObserver(() => {
-      setColumnWidths(
-        Object.fromEntries(
-          [...headers]
-            .filter(([, el]) => el.isConnected)
-            .map(([id, el]) => [id, el.getBoundingClientRect().width]),
-        ),
-      )
-    })
-    headers.forEach((header) => resizeObserver!.observe(header))
-  })
-  onCleanup(() => resizeObserver?.disconnect())
+  const updateColumns = (update: (col: ColumnDefinition) => ColumnDefinition) => {
+    props.onDataChange({ ...props.data, columns: props.data.columns.map(update) })
+  }
 
-  // Cell editing state
-  const [editingCell, setEditingCell] = createSignal<{ rowId: string; columnId: string } | null>(
-    null,
-  )
-  const [editValue, setEditValue] = createSignal<string>('')
-
-  // Focused cell for keyboard navigation
-  const [focusedCell, setFocusedCell] = createSignal<{
-    rowIndex: number
-    columnIndex: number
-  } | null>(null)
-
-  // Initialize column order from data
-  createEffect(() => {
-    const colIds = props.data.columns.map((col) => col.id)
-    if (colIds.length > 0 && columnOrder().length === 0) {
-      setColumnOrder(colIds)
-    }
-  })
-
-  // Initialize column pinning from data
-  createEffect(() => {
-    const pinnedCols = props.data.columns.filter((col) => col.isPinned).map((col) => col.id)
-    setColumnPinning({ start: pinnedCols, end: [] })
-  })
-
-  // Initialize sorting from data
-  createEffect(() => {
-    const sortedCols = props.data.columns.filter((col) => col.sortDirection)
-    const sortingState: SortingState = sortedCols.map((col) => ({
-      id: col.id,
-      desc: col.sortDirection === 'desc',
-    }))
-    setSorting(sortingState)
-  })
-
-  // Sync external column visibility
-  createEffect(() => {
-    if (props.columnVisibility) {
-      setInternalColumnVisibility(props.columnVisibility)
-    }
-  })
-
-  // Handle cell save
-  const handleCellSave = (rowId: string, columnId: string, value: string) => {
-    setEditingCell(null)
-
-    // Parse value to appropriate type
-    let parsedValue: CellValue = value
-
-    // Try to parse as number
-    if (value.trim() !== '' && !Number.isNaN(Number(value))) {
-      parsedValue = Number(value)
-    } else if (value.toLowerCase() === 'true') {
-      // Try to parse as boolean
-      parsedValue = true
-    } else if (value.toLowerCase() === 'false') {
-      parsedValue = false
-    } else if (value.toLowerCase() === 'null' || value === '') {
-      // Try to parse as null
-      parsedValue = null
-    }
-
-    // Update table data
-    const newRows = props.data.rows.map((row) => {
-      if (row.id === rowId) {
-        return {
-          ...row,
-          cells: {
-            ...row.cells,
-            [columnId]: parsedValue,
-          },
-        }
-      }
-      return row
-    })
-
+  const saveCell = (rowId: string, columnId: string, draft: string) => {
+    setEditing(undefined)
     props.onDataChange({
       ...props.data,
-      rows: newRows,
+      rows: props.data.rows.map((row) =>
+        row.id === rowId
+          ? { ...row, cells: { ...row.cells, [columnId]: parseCellValue(draft) } }
+          : row,
+      ),
     })
   }
 
-  // Create column definitions
-  const columns = createMemo((): ColumnDef<typeof features, TableRow>[] => {
-    return props.data.columns.map((col): ColumnDef<typeof features, TableRow> => ({
+  function PinnableHeader(headerProps: { column: ColumnDefinition }) {
+    const label = () => headerProps.column.name
+    return (
+      <span class="flex gap-2 items-center justify-between">
+        <span class="truncate">{label()}</span>
+        <Button
+          variant="ghost"
+          size="icon-xs"
+          tone={headerProps.column.isPinned ? 'primary' : 'neutral'}
+          leading={headerProps.column.isPinned ? 'i-lucide-pin-off' : 'i-lucide-pin'}
+          aria-label={`${headerProps.column.isPinned ? 'Unpin' : 'Pin'} ${label()} column`}
+          title={headerProps.column.isPinned ? 'Unpin column' : 'Pin column'}
+          onClick={(event) => {
+            event.stopPropagation()
+            const columnId = headerProps.column.id
+            updateColumns((col) =>
+              col.id === columnId ? { ...col, isPinned: !col.isPinned } : col,
+            )
+          }}
+        />
+      </span>
+    )
+  }
+
+  function EditableCell(cellProps: {
+    context: CellContext<DataTableT.Features, TableRow>
+    name: string
+  }) {
+    const rowId = () => cellProps.context.row.original.id
+    const columnId = () => cellProps.context.column.id
+    const value = () => cellProps.context.getValue() as CellValue
+    const isEditing = () => editing()?.rowId === rowId() && editing()?.columnId === columnId()
+    const [draft, setDraft] = createSignal('')
+
+    const start = () => {
+      if (props.editable) {
+        setDraft(value()?.toString() ?? '')
+        setEditing({ rowId: rowId(), columnId: columnId() })
+      }
+    }
+    const save = () => {
+      // Removing the textarea fires `blur` after Enter or Escape already finished the edit.
+      if (isEditing()) {
+        saveCell(rowId(), columnId(), draft())
+      }
+    }
+
+    return (
+      <Show
+        when={isEditing()}
+        fallback={
+          <div
+            role={props.editable ? 'button' : undefined}
+            tabIndex={props.editable ? 0 : undefined}
+            aria-label={`${cellProps.name}: ${value()?.toString() ?? 'empty'}`}
+            class="px-1 py-0.5 rounded min-h-6 cursor-text -mx-1 focus-visible:(outline-none ring-2 ring-ring/50) hover:bg-accent/60"
+            onDblClick={start}
+            onKeyDown={(event) => {
+              if (event.key === 'Enter' || event.key === 'F2') {
+                event.preventDefault()
+                start()
+              }
+            }}
+          >
+            <Show
+              when={value() !== null}
+              fallback={<span class="text-muted-foreground italic">NULL</span>}
+            >
+              {value()!.toString()}
+            </Show>
+          </div>
+        }
+      >
+        <Textarea
+          aria-label={`Editing ${cellProps.name}`}
+          class="min-h-0 w-full"
+          rows={2}
+          autofocus
+          value={draft()}
+          onValueChange={setDraft}
+          onBlur={save}
+          onKeyDown={(event: KeyboardEvent) => {
+            if (event.key === 'Enter' && !event.shiftKey) {
+              event.preventDefault()
+              save()
+            } else if (event.key === 'Escape') {
+              event.preventDefault()
+              setEditing(undefined)
+            }
+          }}
+        />
+      </Show>
+    )
+  }
+
+  const columns = createMemo(() =>
+    props.data.columns.map((col): DataTableT.Column<TableRow> => ({
       id: col.id,
       accessorFn: (row) => row.cells[col.id],
-      header: col.name,
-      enableSorting: true,
-      enablePinning: true,
-      cell: (info) => {
-        const rowId = info.row.original.id
-        const columnId = col.id
-        const value = info.getValue() as CellValue
-        const isEditing = createMemo(
-          () => editingCell()?.rowId === rowId && editingCell()?.columnId === columnId,
-        )
-        const rowIndex = info.row.index
-        const columnIndex = info.table.getVisibleLeafColumns().findIndex((c) => c.id === columnId)
-        const isFocused = createMemo(
-          () => focusedCell()?.rowIndex === rowIndex && focusedCell()?.columnIndex === columnIndex,
-        )
+      header: () => <PinnableHeader column={col} />,
+      cell: (context) => <EditableCell context={context} name={col.name} />,
+      size: 180,
+      minSize: 120,
+    })),
+  )
 
-        const startEditing = () => {
-          if (props.editable) {
-            setEditingCell({ rowId, columnId })
-            setEditValue(value?.toString() ?? '')
-          }
-        }
-
-        return (
-          <Show
-            when={isEditing()}
-            fallback={
-              <div
-                class={cn(
-                  'px-3 py-2 outline-none h-full cursor-text',
-                  props.editable && 'hover:bg-accent/50',
-                  isFocused() && 'rounded select-none ring-2 ring-primary ring-inset',
-                )}
-                tabIndex={0}
-                role="gridcell"
-                aria-label={`${col.name}: ${value?.toString() ?? 'empty'}`}
-                onDblClick={startEditing}
-                onFocus={() => setFocusedCell({ rowIndex, columnIndex })}
-                onBlur={() => setFocusedCell({ columnIndex: -1, rowIndex: -1 })}
-              >
-                <Show when={value === null} fallback={value!.toString()}>
-                  <span class="text-muted-foreground font-italic">NULL</span>
-                </Show>
-              </div>
-            }
-          >
-            <Field hiddenLabel={`Editing ${col.name}`} classes={{ root: 'min-w-0' }}>
-              <Textarea
-                classes={{ root: 'px-3 py-2 border-2 border-primary bg-control min-h-0 w-full' }}
-                rows={2}
-                value={editValue()}
-                ref={(r) => setTimeout(() => r.focus(), 0)}
-                onValueChange={setEditValue}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter') {
-                    handleCellSave(rowId, columnId, editValue())
-                  } else if (e.key === 'Escape') {
-                    setEditingCell(null)
-                  }
-                }}
-                onBlur={() => handleCellSave(rowId, columnId, editValue())}
-              />
-            </Field>
-          </Show>
-        )
-      },
-    }))
-  })
-
-  // Create table instance
-  const table = createTable({
-    features,
+  const table = createDataTable({
     get data() {
       return props.data.rows
     },
     get columns() {
       return columns()
     },
+    getRowId: (row) => row.id,
     state: {
-      get columnOrder() {
-        return columnOrder()
-      },
       get sorting() {
-        return sorting()
+        return props.data.columns
+          .filter((col) => col.sortDirection)
+          .map((col) => ({ id: col.id, desc: col.sortDirection === 'desc' }))
       },
       get columnPinning() {
-        return columnPinning()
+        return {
+          start: props.data.columns.filter((col) => col.isPinned).map((col) => col.id),
+          end: [],
+        }
       },
       get columnVisibility() {
-        return internalColumnVisibility()
+        return props.columnVisibility ?? {}
       },
     },
-    onColumnOrderChange: setColumnOrder,
-    onSortingChange: setSorting,
-    onColumnPinningChange: setColumnPinning,
-    onColumnVisibilityChange: setInternalColumnVisibility,
-    enableSorting: true,
-    enableColumnPinning: true,
+    onSortingChange: (sorting) => {
+      updateColumns((col) => {
+        const sort = sorting.find((s) => s.id === col.id)
+        return { ...col, sortDirection: sort ? (sort.desc ? 'desc' : 'asc') : undefined }
+      })
+    },
+    onColumnPinningChange: (pinning) => {
+      const pinned = new Set(pinning.start ?? [])
+      updateColumns((col) => ({ ...col, isPinned: pinned.has(col.id) }))
+    },
+    tableOptions: {
+      enableMultiSort: false,
+      sortDescFirst: false,
+    },
   })
 
-  const pinnedOffset = (columnId: string) => {
-    let offset = 0
-    for (const column of table.getVisibleLeafColumns()) {
-      if (column.id === columnId) {
-        break
-      }
-      if (columnPinning().start.includes(column.id)) {
-        offset += columnWidths()[column.id] ?? 0
-      }
-    }
-    return `${offset}px`
-  }
-
-  // Handle column pin toggle
-  const handlePinToggle = (columnId: string) => {
-    const currentPinned = columnPinning().start
-    const isPinned = currentPinned.includes(columnId)
-
-    const newPinned = isPinned
-      ? currentPinned.filter((id) => id !== columnId)
-      : [...currentPinned, columnId]
-
-    setColumnPinning({ start: newPinned, end: [] })
-
-    // Update column isPinned in data
-    const newColumns = props.data.columns.map((col) => {
-      if (col.id === columnId) {
-        return { ...col, isPinned: !isPinned }
-      }
-      return col
-    })
-
-    props.onDataChange({
-      ...props.data,
-      columns: newColumns,
-    })
-  }
-
-  // Handle column sort
-  const handleSort = (columnId: string) => {
-    const currentSort = sorting().find((s) => s.id === columnId)
-    let newSorting: SortingState
-
-    if (!currentSort) {
-      newSorting = [{ id: columnId, desc: false }]
-    } else if (!currentSort.desc) {
-      newSorting = [{ id: columnId, desc: true }]
-    } else {
-      newSorting = []
-    }
-
-    setSorting(newSorting)
-
-    // Update column sortDirection in data
-    const newColumns = props.data.columns.map((col) => {
-      if (col.id === columnId) {
-        const sortState = newSorting.find((s) => s.id === columnId)
-        return {
-          ...col,
-          sortDirection: sortState
-            ? sortState.desc
-              ? ('desc' as const)
-              : ('asc' as const)
-            : undefined,
-        }
-      }
-      return { ...col, sortDirection: undefined }
-    })
-
-    props.onDataChange({
-      ...props.data,
-      columns: newColumns,
-    })
-  }
-
   return (
-    <div class="border rounded-lg">
-      <table class="w-full border-collapse" role="grid" aria-label="Data table">
-        <thead class="bg-muted/50" role="rowgroup">
-          <For each={table.getHeaderGroups()}>
-            {(headerGroup) => {
-              return (
-                <tr role="row">
-                  <For each={headerGroup.headers}>
-                    {(header) => {
-                      const columnId = header.column.id
-                      const isPinned = createMemo(() => columnPinning().start.includes(columnId))
-                      const sortState = createMemo(() => sorting().find((s) => s.id === columnId))
-
-                      return (
-                        <th
-                          class={cn(
-                            'text-sm font-semibold text-left b-(b r border) min-w-30 select-none',
-                            isPinned() ? 'bg-muted sticky z-10' : 'bg-muted/50',
-                          )}
-                          ref={(element) => {
-                            const previous = headers.get(columnId)
-                            if (previous) {
-                              resizeObserver?.unobserve(previous)
-                            }
-                            headers.set(columnId, element)
-                            resizeObserver?.observe(element)
-                          }}
-                          style={{ left: isPinned() ? pinnedOffset(columnId) : undefined }}
-                          role="columnheader"
-                          aria-sort={
-                            sortState() ? (sortState()!.desc ? 'descending' : 'ascending') : 'none'
-                          }
-                        >
-                          <div class="px-3 py-2 flex gap-2 items-center">
-                            <div
-                              class="flex-1 cursor-pointer hover:text-primary"
-                              onClick={() => handleSort(columnId)}
-                            >
-                              <span>
-                                <FlexRender header={header} />
-                              </span>
-                              <Show when={sortState()}>
-                                <Icon
-                                  name={
-                                    sortState()?.desc ? 'i-lucide-arrow-down' : 'i-lucide-arrow-up'
-                                  }
-                                  class="ml-1 size-3 inline-block"
-                                />
-                              </Show>
-                            </div>
-
-                            <Tooltip>
-                              <Tooltip.Trigger
-                                class="px-1 rounded hover:bg-accent"
-                                onClick={() => handlePinToggle(columnId)}
-                                aria-label={
-                                  isPinned()
-                                    ? `Unpin ${header.column.columnDef.header} column`
-                                    : `Pin ${header.column.columnDef.header} column`
-                                }
-                              >
-                                <Icon
-                                  name={isPinned() ? 'i-lucide-pin-off' : 'i-lucide-pin'}
-                                  class={['mt-1', isPinned() && 'text-primary']}
-                                  title=""
-                                />
-                              </Tooltip.Trigger>
-                              <Tooltip.Content text={isPinned() ? 'Unpin column' : 'Pin column'} />
-                            </Tooltip>
-                          </div>
-                        </th>
-                      )
-                    }}
-                  </For>
-                </tr>
-              )
-            }}
-          </For>
-        </thead>
-        <tbody role="rowgroup">
-          <For each={table.getRowModel().rows}>
-            {(row, index) => {
-              return (
-                <tr
-                  class={cn('b-(b border)', index() % 2 === 0 ? 'bg-background/20' : 'bg-muted/20')}
-                  role="row"
-                >
-                  <For each={row.getVisibleCells()}>
-                    {(cell) => {
-                      const columnId = cell.column.id
-                      const isPinned = createMemo(() => columnPinning().start.includes(columnId))
-
-                      return (
-                        <td
-                          class={cn(
-                            'text-sm b-(r border) min-w-30',
-                            isPinned() && [
-                              'sticky z-10',
-                              index() % 2 === 0 ? 'bg-background' : 'bg-muted',
-                            ],
-                          )}
-                          style={{ left: isPinned() ? pinnedOffset(columnId) : undefined }}
-                        >
-                          <FlexRender cell={cell} />
-                        </td>
-                      )
-                    }}
-                  </For>
-                </tr>
-              )
-            }}
-          </For>
-        </tbody>
-      </table>
-
-      <Show when={props.data.rows.length === 0}>
-        <div class="text-muted-foreground flex min-h-[200px] items-center justify-center">
-          <p>No data available</p>
-        </div>
-      </Show>
-    </div>
+    <MoraineDataTable
+      table={table}
+      aria-label="Data table"
+      size="sm"
+      emptyRender="No data available"
+    />
   )
 }

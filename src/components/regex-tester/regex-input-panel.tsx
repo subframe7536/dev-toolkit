@@ -1,7 +1,6 @@
-import { Dialog, Icon, Popover } from 'moraine'
+import { CopyButton, Dialog, Icon, Popover } from 'moraine'
 import type { HighlighterCore } from 'shiki'
 import { createEffect, createMemo, createResource, For, on, Show, Suspense } from 'solid-js'
-import { toast } from 'solid-toaster'
 
 import { HelpPanel } from '#/components/regex-tester/help-panel'
 import { useRegexContext } from '#/contexts/regex-context'
@@ -117,12 +116,6 @@ export function RegexInputPanel() {
     ),
   )
 
-  const handleCopyRegex = async () => {
-    const fullRegex = `/${store.pattern}/${flagString()}`
-    await navigator.clipboard.writeText(fullRegex)
-    toast.success('Regular expression copied to clipboard')
-  }
-
   return (
     <div class="flex flex-col gap-1.5" role="region" aria-label="Regular Expression">
       {/* Header bar outside card */}
@@ -205,7 +198,14 @@ export function RegexInputPanel() {
         <div class="leading-6 py-1 flex shrink-0 gap-1 select-none items-center">
           <span class="text-sm text-muted-foreground font-mono font-semibold">/</span>
           {/* Flags Popover */}
-          <Popover placement="bottom" align="end">
+          <Popover
+            placement="bottom"
+            align="end"
+            classes={{
+              content:
+                'w-60 p-2 bg-popover border border-border shadow-md rounded-lg text-xs space-y-1 z-50',
+            }}
+          >
             <Popover.Trigger
               as="button"
               type="button"
@@ -214,12 +214,7 @@ export function RegexInputPanel() {
             >
               {flagString() || <span class="text-muted-foreground/50">none</span>}
             </Popover.Trigger>
-            <Popover.Content
-              classes={{
-                content:
-                  'w-60 p-2 bg-popover border border-border shadow-md rounded-lg text-xs space-y-1 z-50',
-              }}
-            >
+            <Popover.Content>
               <div class="text-foreground font-semibold mb-1 px-2 py-1 border-b border-border/50 flex items-center justify-between">
                 <span>Regex Flags</span>
                 <span class="text-primary font-mono font-normal">/{flagString()}</span>
@@ -244,20 +239,17 @@ export function RegexInputPanel() {
           </Popover>
 
           {/* Copy Button */}
-          <button
-            type="button"
-            class="text-muted-foreground p-1 rounded cursor-pointer transition-colors hover:text-foreground"
+          <CopyButton
+            size="xs"
             title="Copy regular expression"
-            onClick={handleCopyRegex}
-          >
-            <Icon name="i-lucide-copy" class="size-4" />
-          </button>
+            value={() => `/${store.pattern}/${flagString()}`}
+          />
         </div>
       </div>
 
       {/* Parse Error */}
       <Show when={store.parseError}>
-        <div class="text-xs text-destructive mt-0.5 flex gap-1.5 items-center" role="alert">
+        <div class="text-xs text-danger mt-0.5 flex gap-1.5 items-center" role="alert">
           <Icon name="i-lucide-circle-alert" class="size-3.5" />
           <span>{store.parseError?.message}</span>
         </div>

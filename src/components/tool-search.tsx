@@ -1,5 +1,6 @@
 import { useNavigate } from '@solidjs/router'
-import { Button, CommandPalette, Dialog, Icon, useSidebarFrame } from 'moraine'
+import type { KbdGroupT } from 'moraine'
+import { Button, CommandPalette, Dialog, Icon, KbdGroup, Sidebar } from 'moraine'
 import type { Accessor, ParentProps } from 'solid-js'
 import {
   createContext,
@@ -18,17 +19,17 @@ const ToolSearchContext = createContext<{
   open: () => void
   isOpen: Accessor<boolean>
   setOpen: (open: boolean) => void
-  shortcut: Accessor<string>
+  shortcut: Accessor<KbdGroupT.Item[]>
 }>()
 
 export function ToolSearchProvider(props: ParentProps) {
   const [open, setOpen] = createSignal(false)
-  const [shortcut, setShortcut] = createSignal('Ctrl K')
+  const [shortcut, setShortcut] = createSignal<KbdGroupT.Item[]>(['ctrl', 'k'])
   const show = () => setOpen(true)
 
   onMount(() => {
     const mac = /Mac|iPhone|iPad/.test(navigator.platform)
-    setShortcut(mac ? '⌘ K' : 'Ctrl K')
+    setShortcut(mac ? ['meta', 'k'] : ['ctrl', 'k'])
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.isComposing || event.repeat || event.altKey || event.shiftKey) {
         return
@@ -55,7 +56,7 @@ export function ToolSearchDialog() {
     throw new Error('ToolSearchDialog must be inside ToolSearchProvider.')
   }
   const navigate = useNavigate()
-  const sidebar = useSidebarFrame()
+  const sidebar = Sidebar.useContext()
   const [query, setQuery] = createSignal('')
   const tools = getTools()
   const groups = createMemo(() => [
@@ -82,12 +83,10 @@ export function ToolSearchDialog() {
     <Dialog
       open={context.isOpen()}
       onOpenChange={context.setOpen}
-      ariaLabel="Find a tool"
-      close={false}
+      closable={false}
+      classes={{ content: 'p-0 w-[calc(100vw-2rem)] max-w-xl min-w-0 overflow-hidden' }}
     >
-      <Dialog.Content
-        classes={{ content: 'p-0 w-[calc(100vw-2rem)] max-w-xl min-w-0 overflow-hidden' }}
-      >
+      <Dialog.Content aria-label="Find a tool">
         <CommandPalette
           groups={groups()}
           searchTerm={query()}
@@ -96,7 +95,7 @@ export function ToolSearchDialog() {
           placeholder="Search tools by name or task..."
           inputProps={{ 'aria-label': 'Search tools' }}
           listboxProps={{ 'aria-label': 'Tools' }}
-          showClose
+          closable
           onClose={() => context.setOpen(false)}
           onSelect={(item) => {
             context.setOpen(false)
@@ -145,9 +144,7 @@ export function ToolSearchTrigger(props: { compact?: boolean }) {
     >
       <Icon name="i-lucide-search" class="shrink-0 size-4" />
       <span class={props.compact ? 'truncate hidden sm:block' : 'truncate'}>Search tools...</span>
-      <kbd class="text-[11px] font-sans ml-auto pl-3 shrink-0 hidden sm:block">
-        {context.shortcut()}
-      </kbd>
+      <KbdGroup items={context.shortcut()} size="sm" class="ml-auto pl-3 shrink-0 hidden sm:flex" />
     </Button>
   )
 }

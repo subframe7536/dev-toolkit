@@ -108,16 +108,13 @@ function RegexTester() {
 
       {/* 6. Action buttons toolbar */}
       <div class="tool-toolbar">
-        <Button
-          variant="default"
-          onClick={() => actions.toggleExportDialog(true)}
-          leading="i-lucide-download"
-        >
+        <Button onClick={() => actions.toggleExportDialog(true)} leading="i-lucide-download">
           Export Code
         </Button>
         <PatternLibraryDialog />
         <Button
-          variant="secondary"
+          variant="solid"
+          tone="secondary"
           onClick={() => {
             actions.setPattern('')
             actions.setTestText('')

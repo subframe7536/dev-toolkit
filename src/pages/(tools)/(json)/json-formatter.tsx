@@ -1,10 +1,9 @@
-import { Field, Button, Dialog, Select, Slider, Switch, Textarea } from 'moraine'
+import { BoldSlider, Button, CopyButton, Dialog, Field, Select, Switch, Textarea } from 'moraine'
 import { createRoute } from 'solid-file-router'
 import { createEffect, createSignal, on } from 'solid-js'
 import { toast } from 'solid-toaster'
 
 import { ClearButton } from '#/components/clear-button'
-import { CopyButton } from '#/components/copy-button'
 import { DownloadButton } from '#/components/download-button'
 import { ToolOptions } from '#/components/tool-options'
 import type { JSONError } from '#/utils/json/formatter'
@@ -163,17 +162,15 @@ function JSONFormatter() {
         </Field>
       </div>
       <div class="tool-toolbar">
-        <CopyButton
-          text="Copy Output"
-          content={output()}
-          variant="secondary"
-          disabled={!output()}
-        />
+        <CopyButton value={output()} variant="solid" tone="secondary" disabled={!output()}>
+          Copy Output
+        </CopyButton>
         <DownloadButton
           content={output()}
           filename="formatted.json"
           mimeType="application/json"
-          variant="secondary"
+          variant="solid"
+          tone="secondary"
           disabled={!output()}
         />
         <Button
@@ -214,7 +211,7 @@ function JSONFormatter() {
             <Select
               value={targetCase()}
               onValueChange={(value) => {
-                if (value !== null) {
+                if (value !== undefined) {
                   setTargetCase(value)
                 }
               }}
@@ -222,20 +219,16 @@ function JSONFormatter() {
               classes={{ control: 'w-full' }}
             />
           </Field>
-          <Field
-            label={`Indent Size: ${indent()}`}
-            classes={{ root: 'min-w-0 w-44', label: 'text-muted-foreground font-medium text-xs' }}
-          >
-            <Slider
-              value={[indent()]}
-              onValueChange={(value) => setIndent(value[0])}
-              min={2}
-              max={8}
-              step={2}
-              variant="bold"
-              marker
-            />
-          </Field>
+          <BoldSlider
+            label="Indent Size"
+            value={indent()}
+            onValueChange={setIndent}
+            min={2}
+            max={8}
+            step={2}
+            marker
+            class="min-w-0 w-44 self-end"
+          />
         </div>
       </ToolOptions>
       <Dialog

@@ -1,7 +1,6 @@
-import { Field, Dialog, Icon, Input, Select, Switch, Textarea } from 'moraine'
+import { Field, Dialog, Icon, Input, Select, Switch, Textarea, CopyButton } from 'moraine'
 import { createEffect, createSignal, Show } from 'solid-js'
 
-import { CopyButton } from '#/components/copy-button'
 import { DownloadButton } from '#/components/download-button'
 import { ToolOptions } from '#/components/tool-options'
 import { useRegexContext } from '#/contexts'
@@ -130,11 +129,13 @@ export function ExportDialog() {
                 hint={
                   <span class="tool-actions">
                     <CopyButton
-                      text="Copy Output"
-                      content={exportOutput()}
+                      value={exportOutput()}
                       size="sm"
+                      variant="outline"
                       aria-label="Copy generated code to clipboard"
-                    />
+                    >
+                      Copy Output
+                    </CopyButton>
                     <DownloadButton
                       content={exportOutput()}
                       filename={getExportFilename()}

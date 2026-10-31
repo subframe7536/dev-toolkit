@@ -1,8 +1,7 @@
-import { Field, Button, Checkbox, Dialog, Input, Select, Textarea } from 'moraine'
+import { Field, Button, Checkbox, Dialog, Input, Select, Textarea, CopyButton } from 'moraine'
 import { createEffect, createSignal, For, Show } from 'solid-js'
 import { toast } from 'solid-toaster'
 
-import { CopyButton } from '#/components/copy-button'
 import { DownloadButton } from '#/components/download-button'
 import { ToolOptions } from '#/components/tool-options'
 import { useTableEditorContext } from '#/contexts'
@@ -217,7 +216,7 @@ export function ExportDialog() {
                   <Select
                     value={exportFormat()}
                     onValueChange={(value) => {
-                      if (value !== null) {
+                      if (value !== undefined) {
                         setExportFormat(value)
                       }
                     }}
@@ -278,19 +277,16 @@ export function ExportDialog() {
               hint={
                 <span class="tool-actions">
                   <Show when={exportFormat() !== 'excel'}>
-                    <CopyButton
-                      text="Copy Output"
-                      content={exportOutput()}
-                      size="sm"
-                      variant="outline"
-                    />
+                    <CopyButton value={exportOutput()} size="sm" variant="outline">
+                      Copy Output
+                    </CopyButton>
                   </Show>
                   <DownloadButton
                     content={exportOutput()}
                     filename={getExportFilename()}
                     mimeType={getExportMimeType()}
                     size="sm"
-                    variant={exportFormat() === 'excel' ? 'default' : 'outline'}
+                    variant={exportFormat() === 'excel' ? 'solid' : 'outline'}
                     onClick={exportFormat() === 'excel' ? handleExcelExport : undefined}
                   />
                 </span>

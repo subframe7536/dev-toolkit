@@ -1,38 +1,39 @@
+import type { ButtonProps } from 'moraine'
 import { Button } from 'moraine'
-import { createMemo, Show } from 'solid-js'
+import { splitProps } from 'solid-js'
 import { toast } from 'solid-toaster'
 
 import { downloadFile } from '#/utils/download'
 
-interface DownloadButtonProps {
+type DownloadButtonProps = Omit<ButtonProps, 'onClick'> & {
   content: string | Blob
   filename: string
   mimeType?: string
-  variant?: 'default' | 'outline' | 'ghost' | 'secondary'
-  size?: 'sm' | 'md' | 'lg'
-  disabled?: boolean
-  class?: string
-  text?: boolean | string
+  /** Replaces the default download behavior. */
   onClick?: () => void
 }
 
 export function DownloadButton(props: DownloadButtonProps) {
+  const [local, rest] = splitProps(props, [
+    'content',
+    'filename',
+    'mimeType',
+    'onClick',
+    'children',
+  ])
+
   const handleDownload = () => {
-    downloadFile(props.content, props.filename, props.mimeType ?? 'text/plain')
+    if (local.onClick) {
+      local.onClick()
+      return
+    }
+    downloadFile(local.content, local.filename, local.mimeType ?? 'text/plain')
     toast.success('Downloaded successfully')
   }
 
-  const text = createMemo(() => props.text ?? true)
   return (
-    <Button
-      variant={props.variant ?? 'outline'}
-      size={props.size}
-      classes={{ root: props.class }}
-      disabled={props.disabled}
-      onClick={props.onClick || handleDownload}
-      leading={text() ? 'i-lucide-download' : undefined}
-    >
-      <Show when={text()}>{text() === true ? 'Download' : text()}</Show>
+    <Button variant="outline" leading="i-lucide-download" {...rest} onClick={handleDownload}>
+      {local.children ?? 'Download'}
     </Button>
   )
 }

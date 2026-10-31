@@ -1,10 +1,9 @@
-import { Field, Textarea } from 'moraine'
+import { Field, Textarea, CopyButton } from 'moraine'
 import { createRoute } from 'solid-file-router'
 import { createMemo, createSignal, For } from 'solid-js'
 
 import { Card } from '#/components/card'
 import { ClearButton } from '#/components/clear-button'
-import { CopyButton } from '#/components/copy-button'
 import type { TextCaseStyle } from '#/utils/text-case'
 import { convertTextCase } from '#/utils/text-case'
 
@@ -83,10 +82,8 @@ function TextCase() {
                     </div>
                     <CopyButton
                       class="shrink-0"
-                      content={converted()}
+                      value={converted()}
                       disabled={!input()}
-                      text={false}
-                      variant="ghost"
                       size="sm"
                     />
                   </div>

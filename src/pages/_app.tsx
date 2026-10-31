@@ -1,6 +1,6 @@
 import type { RouteSectionProps } from '@solidjs/router'
 import { A, useBeforeLeave, useNavigate } from '@solidjs/router'
-import { Button, cn, DropdownMenu, Icon, SidebarFrame, useSidebarFrame } from 'moraine'
+import { Button, DropdownMenu, Icon, Sidebar } from 'moraine'
 import { createRoute } from 'solid-file-router'
 import { For, Show } from 'solid-js'
 
@@ -44,89 +44,70 @@ function App(props: RouteSectionProps) {
   return (
     <ToolSearchProvider>
       <ThemeProvider>
-        <SidebarFrame
-          variant="default"
+        <Sidebar
+          width="15rem"
+          class="h-dvh"
           classes={{
-            root: 'bg-background h-[100dvh]',
-            sidebar: 'bg-sidebar text-sidebar-foreground w-60 duration-200 ease-out',
-            sidebarHeader: 'px-3 py-3 flex-col gap-3',
-            sidebarBody: 'px-2 pb-2',
-            main: 'bg-background min-w-0',
+            panel: 'bg-sidebar text-sidebar-foreground',
+            header: 'px-3 py-3 flex-col items-stretch gap-3',
+            groupLabel:
+              'text-[11px] text-sidebar-muted-foreground tracking-wide font-semibold uppercase',
+            menuButton: 'text-[13px] text-sidebar-foreground md:h-8',
           }}
         >
           <AppContent {...props} />
-        </SidebarFrame>
+        </Sidebar>
       </ThemeProvider>
     </ToolSearchProvider>
   )
 }
 
 function AppContent(props: RouteSectionProps) {
-  const sidebar = useSidebarFrame()
+  const sidebar = Sidebar.useContext()
   const { categories, count } = getCategories()
 
   return (
     <>
       <Show when={sidebar.isMobile()}>
-        <SidebarFrame.Sidebar ariaLabel="Tools navigation">
-          <SidebarFrame.SidebarHeader>
+        <Sidebar.Panel aria-label="Tools navigation">
+          <Sidebar.Header>
             <A
               href="/"
               class="rounded-sm flex flex-col min-h-11 justify-center focus-visible:effect-fv"
-              onClick={() => {
-                if (sidebar.isMobile()) {
-                  sidebar.setOpen(false)
-                }
-              }}
+              onClick={() => sidebar.setOpen(false)}
             >
               <h2 class="text-base text-sidebar-foreground font-semibold">Dev Toolkit</h2>
               <p class="text-xs text-sidebar-muted-foreground">{count} tools</p>
             </A>
             <ToolSearchTrigger />
-          </SidebarFrame.SidebarHeader>
-          <SidebarFrame.SidebarBody>
-            <div class="mt-2 flex flex-col gap-3">
-              <For each={categories}>
-                {(category) => (
-                  <section class="flex flex-col gap-1">
-                    <h3 class="text-[11px] text-sidebar-muted-foreground tracking-wide font-semibold px-2 uppercase">
-                      {category.name}
-                    </h3>
-                    <div class="flex flex-col gap-0.5">
-                      <For each={category.tools}>
-                        {(tool) => (
-                          <A
+          </Sidebar.Header>
+          <Sidebar.Content>
+            <For each={categories}>
+              {(category) => (
+                <Sidebar.Group>
+                  <Sidebar.GroupLabel as="h3">{category.name}</Sidebar.GroupLabel>
+                  <Sidebar.Menu>
+                    <For each={category.tools}>
+                      {(tool) => (
+                        <Sidebar.MenuItem>
+                          <Sidebar.MenuButton
+                            as={A}
                             href={tool.path}
                             title={tool.info.title}
-                            aria-current={
-                              props.location.pathname === tool.path ? 'page' : undefined
-                            }
-                            class={cn(
-                              'group text-[13px] text-sidebar-foreground leading-5 px-2 py-1 rounded-md flex gap-2 min-h-11 transition-colors duration-200 ease-out items-center hover:(text-sidebar-accent-foreground bg-sidebar-accent) focus-visible:effect-fv md:min-h-8',
-                              props.location.pathname === tool.path &&
-                                'text-sidebar-accent-foreground font-semibold bg-sidebar-accent',
-                            )}
-                            onClick={() => {
-                              if (sidebar.isMobile()) {
-                                sidebar.setOpen(false)
-                              }
-                            }}
+                            leading={tool.info.icon}
+                            isActive={props.location.pathname === tool.path}
                           >
-                            <Icon
-                              name={tool.info.icon as any}
-                              class="text-sidebar-muted-foreground shrink-0 size-4 transition-colors duration-200 group-hover:text-sidebar-accent-foreground"
-                            />
-                            <span class="truncate">{tool.info.title}</span>
-                          </A>
-                        )}
-                      </For>
-                    </div>
-                  </section>
-                )}
-              </For>
-            </div>
-          </SidebarFrame.SidebarBody>
-          <SidebarFrame.SidebarFooter>
+                            {tool.info.title}
+                          </Sidebar.MenuButton>
+                        </Sidebar.MenuItem>
+                      )}
+                    </For>
+                  </Sidebar.Menu>
+                </Sidebar.Group>
+              )}
+            </For>
+          </Sidebar.Content>
+          <Sidebar.Footer>
             <Button
               variant="ghost"
               as="a"
@@ -134,17 +115,15 @@ function AppContent(props: RouteSectionProps) {
               target="_blank"
               rel="noopener noreferrer"
               leading="i-lucide-github"
-              classes={{
-                root: 'min-h-11 min-w-0 flex-1 justify-start text-sidebar-muted-foreground md:min-h-8',
-              }}
+              class="text-sidebar-muted-foreground flex-1 min-h-11 min-w-0 justify-start md:min-h-8"
             >
               GitHub
             </Button>
             <ThemeToggle />
-          </SidebarFrame.SidebarFooter>
-        </SidebarFrame.Sidebar>
+          </Sidebar.Footer>
+        </Sidebar.Panel>
       </Show>
-      <SidebarFrame.Main>
+      <Sidebar.Inset as="div">
         <div class="flex flex-col min-h-full min-w-0 lg:bg-gutter-pattern">
           <AppToolbar pathname={props.location.pathname} />
           <main class="mx-auto border-x border-border/70 bg-background flex-1 max-w-5xl min-w-0 w-full">
@@ -165,13 +144,13 @@ function AppContent(props: RouteSectionProps) {
           <ToolSearchDialog />
           <Toaster />
         </div>
-      </SidebarFrame.Main>
+      </Sidebar.Inset>
     </>
   )
 }
 
 function AppToolbar(props: { pathname: string }) {
-  const sidebar = useSidebarFrame()
+  const sidebar = Sidebar.useContext()
   const navigate = useNavigate()
   const { categories } = getCategories()
 
@@ -192,7 +171,7 @@ function AppToolbar(props: { pathname: string }) {
           <Show
             when={!sidebar.isMobile()}
             fallback={
-              <SidebarFrame.Trigger
+              <Sidebar.Trigger
                 as={Button}
                 variant="ghost"
                 size="icon-md"
@@ -202,10 +181,18 @@ function AppToolbar(props: { pathname: string }) {
               >
                 <Icon name="i-lucide-menu" />
                 <span class="sr-only">Browse tools</span>
-              </SidebarFrame.Trigger>
+              </Sidebar.Trigger>
             }
           >
-            <DropdownMenu align="end" gutter={8}>
+            <DropdownMenu
+              align="end"
+              gutter={8}
+              classes={{
+                content: 'w-72 max-h-[calc(100dvh-5rem)] overflow-y-auto',
+                groupLabel: 'text-[11px] tracking-wide uppercase',
+                item: 'min-h-9',
+              }}
+            >
               <DropdownMenu.Trigger
                 as={Button}
                 variant="ghost"
@@ -223,18 +210,10 @@ function AppToolbar(props: { pathname: string }) {
                     label: tool.info.title,
                     icon: tool.info.icon,
                     value: tool.path,
+                    class: tool.path === props.pathname ? 'font-semibold bg-accent' : undefined,
                     onSelect: () => navigate(tool.path),
                   })),
                 }))}
-                itemProps={({ item }) => ({
-                  'aria-current': item.value === props.pathname ? 'page' : undefined,
-                  class: item.value === props.pathname ? 'font-semibold bg-accent' : undefined,
-                })}
-                classes={{
-                  content: 'w-72 max-h-[calc(100dvh-5rem)] overflow-y-auto',
-                  groupLabel: 'text-[11px] tracking-wide uppercase',
-                  item: 'min-h-9',
-                }}
               />
             </DropdownMenu>
           </Show>

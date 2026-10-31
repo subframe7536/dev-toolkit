@@ -1,4 +1,4 @@
-import { Icon } from 'moraine'
+import { CopyButton, Icon } from 'moraine'
 import { createMemo, createSignal, Show } from 'solid-js'
 import { toast } from 'solid-toaster'
 
@@ -10,13 +10,6 @@ export function SubstitutionPanel() {
 
   const replacementCount = createMemo(() => store.replacementResult?.replacementCount ?? 0)
   const resultText = createMemo(() => store.replacementResult?.result ?? store.testText)
-
-  const handleCopyResult = async () => {
-    if (resultText()) {
-      await navigator.clipboard.writeText(resultText())
-      toast.success('Substitution result copied to clipboard')
-    }
-  }
 
   const handleApplyToText = () => {
     const res = actions.applyReplacement()
@@ -78,15 +71,12 @@ export function SubstitutionPanel() {
             >
               <Icon name="i-lucide-arrow-down-to-dot" class="size-4" />
             </button>
-            <button
-              type="button"
-              class="text-muted-foreground p-1 rounded cursor-pointer transition-colors hover:text-foreground disabled:opacity-40"
+            <CopyButton
+              size="xs"
               title="Copy substitution result"
-              onClick={handleCopyResult}
+              value={resultText}
               disabled={!resultText()}
-            >
-              <Icon name="i-lucide-copy" class="size-4" />
-            </button>
+            />
           </div>
         </div>
 

@@ -42,7 +42,12 @@ export function TableActions() {
       <div class="tool-actions">
         <ExportDialog />
 
-        <Button variant="secondary" onClick={actions.reset} leading="i-lucide-rotate-ccw">
+        <Button
+          variant="solid"
+          tone="secondary"
+          onClick={actions.reset}
+          leading="i-lucide-rotate-ccw"
+        >
           Reset
         </Button>
 

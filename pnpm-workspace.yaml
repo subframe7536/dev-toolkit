@@ -1,4 +1,4 @@
 minimumReleaseAgeExclude:
-  - moraine@0.6.1
+  - moraine@0.8.0
 publicHoistPattern:
   - '*oxlint*'

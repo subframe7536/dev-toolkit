@@ -1,8 +1,7 @@
-import { Switch } from 'moraine'
+import { Switch, CopyButton } from 'moraine'
 import { createMemo, createSignal, Show } from 'solid-js'
 import { toast } from 'solid-toaster'
 
-import { CopyButton } from '#/components/copy-button'
 import { DownloadButton } from '#/components/download-button'
 import { FileUpload } from '#/components/file-upload'
 import { ToolOptions } from '#/components/tool-options'
@@ -82,11 +81,14 @@ export function FileEncoder(props: FileEncoderProps) {
             {targetOutput()}
           </div>
           <div class="tool-toolbar">
-            <CopyButton text="Copy Output" content={targetOutput()} variant="secondary" size="sm" />
+            <CopyButton value={targetOutput()} variant="solid" tone="secondary" size="sm">
+              Copy Output
+            </CopyButton>
             <DownloadButton
               content={targetOutput()}
               filename={outputFilename()}
-              variant="secondary"
+              variant="solid"
+              tone="secondary"
               size="sm"
             />
           </div>

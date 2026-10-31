@@ -1,9 +1,8 @@
-import { Field, Button, Textarea } from 'moraine'
+import { Field, Button, Textarea, CopyButton } from 'moraine'
 import { createRoute } from 'solid-file-router'
 import { createEffect, createSignal } from 'solid-js'
 
 import { ClearButton } from '#/components/clear-button'
-import { CopyButton } from '#/components/copy-button'
 import { fillSqlParams, splitSqlAndParams } from '#/utils/sql'
 
 export default createRoute({
@@ -113,7 +112,7 @@ function SqlParamFill() {
             readOnly
             placeholder="SELECT * FROM T WHERE id=1 AND name='zhangshan'"
             classes={{
-              root: [error() && 'text-destructive', 'tool-editor bg-muted/30'],
+              root: [error() && 'text-danger', 'tool-editor bg-muted/30'],
             }}
           />
         </Field>
@@ -122,11 +121,13 @@ function SqlParamFill() {
             Load Sample
           </Button>
           <CopyButton
-            text="Copy Output"
-            content={output()}
+            value={output()}
             disabled={!output() || !!error()}
-            variant="secondary"
-          />
+            variant="solid"
+            tone="secondary"
+          >
+            Copy Output
+          </CopyButton>
           <ClearButton onClear={handleClear} disabled={!sqlInput() && !paramsInput()} />
         </div>
       </div>

@@ -1,10 +1,9 @@
-import { Field, Button, InputNumber, Tabs } from 'moraine'
+import { Field, Button, InputNumber, Tabs, CopyButton } from 'moraine'
 import { createRoute } from 'solid-file-router'
 import { createSignal, For, onMount, Show } from 'solid-js'
 import { toast } from 'solid-toaster'
 
 import { ClearButton } from '#/components/clear-button'
-import { CopyButton } from '#/components/copy-button'
 import { ToolOptions } from '#/components/tool-options'
 
 const PRESET_COUNTS = [1, 5, 10, 15, 20] as const
@@ -71,7 +70,7 @@ function UUIDGenerator() {
             <Tabs
               aria-label="Quick Select"
               value={selectedTab()}
-              onChange={handleTabChange}
+              onValueChange={handleTabChange}
               items={PRESET_COUNTS.map((preset) => ({
                 value: preset.toString(),
                 label: String(preset),
@@ -111,12 +110,9 @@ function UUIDGenerator() {
         <div class="pt-4 border-t border-border flex flex-col gap-4">
           <div class="tool-panel-heading">
             <h3 class="text-sm text-foreground font-medium">Generated UUIDs ({uuids().length})</h3>
-            <CopyButton
-              content={uuids().join('\n')}
-              variant="secondary"
-              size="sm"
-              text="Copy All"
-            />
+            <CopyButton value={uuids().join('\n')} variant="solid" tone="secondary" size="sm">
+              Copy All
+            </CopyButton>
           </div>
 
           <div class="flex flex-col gap-2">
@@ -124,7 +120,7 @@ function UUIDGenerator() {
               {(uuid) => (
                 <div class="text-sm font-mono p-3 border rounded-md bg-muted/50 flex gap-2 items-center">
                   <span class="flex-1 min-w-0 break-all">{uuid}</span>
-                  <CopyButton content={uuid} variant="ghost" size="sm" text={false} />
+                  <CopyButton value={uuid} size="sm" />
                 </div>
               )}
             </For>
