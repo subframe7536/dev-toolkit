@@ -1,4 +1,4 @@
-import { createEffect, createSignal, onCleanup } from 'solid-js'
+import { createSignal, onCleanup } from 'solid-js'
 import { toast } from 'solid-toaster'
 
 // Type definition for the non-standard event
@@ -36,8 +36,6 @@ function listenWindow(type: string, listener: EventListenerOrEventListenerObject
 
 export function registPWA() {
   const [deferredPrompt, setDeferredPrompt] = createSignal<BeforeInstallPromptEvent | null>(null)
-  const [needRefresh, setNeedRefresh] = createSignal(false)
-  const [registration, setRegistration] = createSignal<ServiceWorkerRegistration | null>(null)
   let installToastId: string | number | undefined
 
   const promptInstall = (promptEvent: BeforeInstallPromptEvent) => {
@@ -89,31 +87,40 @@ export function registPWA() {
     }
   })
 
-  registerServiceWorker((nextRegistration) => {
-    setRegistration(nextRegistration)
-    setNeedRefresh(true)
-  })
-
-  createEffect(() => {
-    if (needRefresh()) {
-      toast('New Version Available', {
-        description: 'Click "Refresh" button to apply the update',
-        duration: Number.POSITIVE_INFINITY,
-        action: {
-          label: 'Refresh',
-          onClick: () => activateWaitingServiceWorker(registration()),
-        },
-        cancel: {
-          label: 'Cancel',
-          onClick: () => setNeedRefresh(false),
-        },
-        onDismiss: () => setNeedRefresh(false),
-        onAutoClose: () => setNeedRefresh(false),
-      })
-    }
-  })
+  registerServiceWorker(showUpdateToast)
 
   return null
+}
+
+let updateToastId: string | number | undefined
+
+/**
+ * Called from service worker events, outside any reactive scope. Calling `toast()` inside an
+ * effect makes the effect track the toaster's own signals, so it re-runs on every toast update
+ * and creates toasts until the page freezes.
+ */
+export function showUpdateToast(registration: ServiceWorkerRegistration) {
+  if (updateToastId !== undefined) {
+    return
+  }
+
+  const clear = () => {
+    updateToastId = undefined
+  }
+  updateToastId = toast('New Version Available', {
+    description: 'Click "Refresh" button to apply the update',
+    duration: Number.POSITIVE_INFINITY,
+    action: {
+      label: 'Refresh',
+      onClick: () => activateWaitingServiceWorker(registration),
+    },
+    cancel: {
+      label: 'Cancel',
+      onClick: clear,
+    },
+    onDismiss: clear,
+    onAutoClose: clear,
+  })
 }
 
 export const registerPWA = registPWA

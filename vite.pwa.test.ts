@@ -1,4 +1,6 @@
-import { describe, expect, test } from 'vitest'
+import { runInNewContext } from 'node:vm'
+
+import { describe, expect, test, vi } from 'vitest'
 
 import {
   createManifest,
@@ -102,6 +104,82 @@ describe('vite.pwa', () => {
       expect(sw).toContain('networkFirstNavigation')
       expect(sw).toContain('cacheFirst')
       expect(sw).toContain("pathname === new URL('sw.js', self.registration.scope).pathname")
+    })
+  })
+
+  describe('createServiceWorker lifecycle', () => {
+    const LEGACY_CACHE = 'workbox-precache-v2-https://tool.subf.dev/'
+    const OLD_CACHE = 'dev-toolkit-precache-2026-01-01T00:00:00.000Z'
+    const CURRENT_CACHE = 'dev-toolkit-precache-2026-10-10T00:00:00.000Z'
+
+    function setup(initialCaches: string[]) {
+      const cacheNames = new Set(initialCaches)
+      const listeners: Record<string, (event: unknown) => void> = {}
+      const windowClient = { url: 'https://tool.subf.dev/json-formatter', navigate: vi.fn() }
+      windowClient.navigate.mockResolvedValue(windowClient)
+
+      const self = {
+        registration: { scope: 'https://tool.subf.dev/' },
+        location: { origin: 'https://tool.subf.dev' },
+        addEventListener: (type: string, listener: (event: unknown) => void) => {
+          listeners[type] = listener
+        },
+        skipWaiting: vi.fn(async () => {}),
+        clients: {
+          claim: vi.fn(async () => {}),
+          matchAll: vi.fn(async () => [windowClient]),
+        },
+      }
+      const caches = {
+        keys: async () => [...cacheNames],
+        open: async (name: string) => {
+          cacheNames.add(name)
+          return { addAll: async () => {} }
+        },
+        delete: async (name: string) => cacheNames.delete(name),
+      }
+
+      runInNewContext(
+        createServiceWorker({
+          buildId: '2026-10-10T00:00:00.000Z',
+          cachePrefix: 'dev-toolkit',
+          precacheUrls: ['.'],
+        }),
+        { self, caches, URL, Request: class {} },
+      )
+
+      const dispatch = async (type: string) => {
+        let pending: Promise<unknown> = Promise.resolve()
+        listeners[type]({ waitUntil: (promise: Promise<unknown>) => (pending = promise) })
+        await pending
+        // Page reloads run after activation, outside waitUntil.
+        await new Promise((resolve) => setTimeout(resolve, 0))
+      }
+
+      return { self, cacheNames, windowClient, dispatch }
+    }
+
+    test('takes over from the legacy Workbox worker and reloads its pages', async () => {
+      const { self, cacheNames, windowClient, dispatch } = setup([LEGACY_CACHE])
+
+      await dispatch('install')
+      expect(self.skipWaiting).toHaveBeenCalled()
+
+      await dispatch('activate')
+      expect(self.clients.claim).toHaveBeenCalled()
+      expect([...cacheNames]).toEqual([CURRENT_CACHE])
+      expect(windowClient.navigate).toHaveBeenCalledWith(windowClient.url)
+    })
+
+    test('waits for the update prompt when replacing one of its own versions', async () => {
+      const { self, cacheNames, windowClient, dispatch } = setup([OLD_CACHE])
+
+      await dispatch('install')
+      expect(self.skipWaiting).not.toHaveBeenCalled()
+
+      await dispatch('activate')
+      expect([...cacheNames]).toEqual([CURRENT_CACHE])
+      expect(windowClient.navigate).not.toHaveBeenCalled()
     })
   })
 })

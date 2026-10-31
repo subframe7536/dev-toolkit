@@ -134,6 +134,9 @@ function hasFileName(output: unknown): output is { fileName: string } {
   )
 }
 
+/** Cache name prefix used by the Workbox worker that vite-plugin-pwa generated before. */
+export const LEGACY_CACHE_PREFIX = 'workbox-'
+
 export function createServiceWorker(options: {
   buildId: string
   cachePrefix: string
@@ -147,31 +150,55 @@ const PRECACHE_URLS = ${JSON.stringify(options.precacheUrls, null, 2)}
 
 const resolveUrl = url => new URL(url, self.registration.scope).toString()
 
+// Caches left by the previous vite-plugin-pwa (Workbox) worker. That worker answers every
+// navigation with its precached index.html and waits for a SKIP_WAITING message that its
+// page only offers in a 10 second toast, so its clients never reach a new version by reloading.
+const isLegacyCache = cacheName => cacheName.startsWith(${JSON.stringify(LEGACY_CACHE_PREFIX)})
+const hasLegacyCaches = () => caches.keys().then(cacheNames => cacheNames.some(isLegacyCache))
+
 self.addEventListener('install', event => {
   event.waitUntil(
-    caches
-      .open(CACHE_NAME)
-      .then(cache =>
-        cache.addAll(PRECACHE_URLS.map(url => new Request(resolveUrl(url), { cache: 'reload' }))),
-      ),
+    (async () => {
+      const cache = await caches.open(CACHE_NAME)
+      await cache.addAll(PRECACHE_URLS.map(url => new Request(resolveUrl(url), { cache: 'reload' })))
+
+      // Replace the legacy worker without waiting for a prompt its clients may never show.
+      if (await hasLegacyCaches()) {
+        await self.skipWaiting()
+      }
+    })(),
   )
 })
 
 self.addEventListener('activate', event => {
-  event.waitUntil(
-    Promise.all([
-      self.clients.claim(),
-      caches
-        .keys()
-        .then(cacheNames =>
-          Promise.all(
-            cacheNames
-              .filter(cacheName => cacheName.startsWith(${JSON.stringify(cachePrefixPattern)}) && cacheName !== CACHE_NAME)
-              .map(cacheName => caches.delete(cacheName).catch(() => {})),
-          ),
-        ),
-    ]),
-  )
+  const activation = (async () => {
+    const cacheNames = await caches.keys()
+
+    await self.clients.claim()
+    await Promise.all(
+      cacheNames
+        .filter(
+          cacheName =>
+            isLegacyCache(cacheName) ||
+            (cacheName.startsWith(${JSON.stringify(cachePrefixPattern)}) && cacheName !== CACHE_NAME),
+        )
+        .map(cacheName => caches.delete(cacheName).catch(() => {})),
+    )
+
+    return cacheNames.some(isLegacyCache)
+  })()
+
+  event.waitUntil(activation)
+
+  // Pages still run the legacy bundle, so reload them onto the current version. This stays out
+  // of waitUntil: a page that never finishes navigating must not hold the worker in
+  // "activating", which would queue every fetch, including those of newly opened pages.
+  activation.then(async migratedFromLegacy => {
+    if (migratedFromLegacy) {
+      const windowClients = await self.clients.matchAll({ type: 'window' })
+      windowClients.forEach(client => client.navigate(client.url).catch(() => {}))
+    }
+  })
 })
 
 self.addEventListener('message', event => {
