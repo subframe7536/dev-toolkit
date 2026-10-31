@@ -1,8 +1,7 @@
-import { Button, Icon } from 'moraine'
+import { Button, Icon, Toast } from 'moraine'
 import { createRoute } from 'solid-file-router'
 import { createEffect, createSignal, For, onCleanup, Show } from 'solid-js'
 import { createStore } from 'solid-js/store'
-import { toast } from 'solid-toaster'
 
 import { Card } from '#/components/card'
 import { FileUpload } from '#/components/file-upload'
@@ -116,7 +115,7 @@ function ImageConverter() {
 
   const handleConvertAll = async () => {
     if (images.length === 0) {
-      toast.error('Please select images first')
+      Toast.error({ title: 'Please select images first' })
       return
     }
 
@@ -143,9 +142,10 @@ function ImageConverter() {
         downloadFile(result.blob, filename)
       }
 
-      toast.success(`Downloaded ${images.length} image${images.length > 1 ? 's' : ''}`)
+      Toast.success({ title: `Downloaded ${images.length} image${images.length > 1 ? 's' : ''}` })
     } catch (error) {
-      toast.error('Conversion failed', {
+      Toast.error({
+        title: 'Conversion failed',
         description: error instanceof Error ? error.message : 'Unknown error',
       })
     } finally {

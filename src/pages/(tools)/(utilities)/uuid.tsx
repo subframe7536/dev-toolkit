@@ -1,7 +1,6 @@
-import { Field, Button, InputNumber, Tabs, CopyButton } from 'moraine'
+import { Field, Button, InputNumber, Tabs, CopyButton, Toast } from 'moraine'
 import { createRoute } from 'solid-file-router'
 import { createSignal, For, onMount, Show } from 'solid-js'
-import { toast } from 'solid-toaster'
 
 import { ClearButton } from '#/components/clear-button'
 import { ToolOptions } from '#/components/tool-options'
@@ -27,12 +26,12 @@ function UUIDGenerator() {
   const generateUUIDs = () => {
     const newUuids = Array.from({ length: count() }, () => crypto.randomUUID())
     setUuids(newUuids)
-    toast.success(`Generated ${count()} UUID${count() > 1 ? 's' : ''}`)
+    Toast.success({ title: `Generated ${count()} UUID${count() > 1 ? 's' : ''}` })
   }
 
   const handleClear = () => {
     setUuids([])
-    toast.info('Cleared all UUIDs')
+    Toast.info({ title: 'Cleared all UUIDs' })
   }
 
   const handleTabChange = (value: string) => {

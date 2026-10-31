@@ -1,7 +1,6 @@
-import { Field, Button, Textarea, CopyButton } from 'moraine'
+import { Field, Button, Textarea, CopyButton, Toast } from 'moraine'
 import type { JSX } from 'solid-js'
 import { batch, createEffect, createSignal, onCleanup } from 'solid-js'
-import { toast } from 'solid-toaster'
 
 import { ClearButton } from './clear-button'
 
@@ -31,7 +30,7 @@ export function EncoderLayout(props: EncoderLayoutProps): JSX.Element {
       clearTimeout(errorToastTimer)
     }
     errorToastTimer = setTimeout(() => {
-      toast.error(message)
+      Toast.error({ title: message })
       errorToastTimer = null
     }, 500)
   }

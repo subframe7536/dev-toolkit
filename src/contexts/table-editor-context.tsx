@@ -1,7 +1,7 @@
+import { Toast } from 'moraine'
 import type { ParentProps } from 'solid-js'
 import { batch, createContext, createSignal, useContext } from 'solid-js'
 import { createStore } from 'solid-js/store'
-import { toast } from 'solid-toaster'
 
 import type { ColumnDefinition, TableData } from '#/utils/table/types'
 
@@ -96,13 +96,13 @@ export function TableEditorProvider(props: ParentProps) {
         setTableData('columns', {}, { isPinned: false, sortDirection: undefined })
         setColumnVisibility({})
       })
-      toast.success('Table reset to original state')
+      Toast.success({ title: 'Table reset to original state' })
     },
 
     clear: () => {
       setTableData({ columns: [], rows: [] })
       setColumnVisibility({})
-      toast.success('All data cleared')
+      Toast.success({ title: 'All data cleared' })
     },
   }
 

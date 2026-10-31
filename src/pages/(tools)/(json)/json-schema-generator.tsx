@@ -1,7 +1,6 @@
-import { Field, Input, Switch, Textarea, CopyButton } from 'moraine'
+import { Field, Input, Switch, Textarea, CopyButton, Toast } from 'moraine'
 import { createRoute } from 'solid-file-router'
 import { createEffect, createSignal, on } from 'solid-js'
-import { toast } from 'solid-toaster'
 
 import { ClearButton } from '#/components/clear-button'
 import { DownloadButton } from '#/components/download-button'
@@ -43,7 +42,7 @@ function JSONSchemaGenerator() {
         setOutput(schema)
       } catch {
         setOutput('')
-        toast.error('Invalid JSON input')
+        Toast.error({ title: 'Invalid JSON input' })
       }
     }),
   )

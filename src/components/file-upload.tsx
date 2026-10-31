@@ -1,7 +1,6 @@
 import type { FileUploadProps, FileUploadT } from 'moraine'
-import { Field, FileUpload as MoraineFileUpload } from 'moraine'
+import { Field, FileUpload as MoraineFileUpload, Toast } from 'moraine'
 import { createMemo } from 'solid-js'
-import { toast } from 'solid-toaster'
 
 interface SingleFileProps {
   file: File | undefined
@@ -44,7 +43,8 @@ export function FileUpload(props: Props) {
 
   const handleFileReject = (info: FileRejections) => {
     for (const i of info) {
-      toast.error(`Failed to upload ${i.file.name}`, {
+      Toast.error({
+        title: `Failed to upload ${i.file.name}`,
         description: i.errors.join(', '),
       })
     }

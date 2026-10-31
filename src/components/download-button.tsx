@@ -1,7 +1,6 @@
 import type { ButtonProps } from 'moraine'
-import { Button } from 'moraine'
+import { Button, Toast } from 'moraine'
 import { splitProps } from 'solid-js'
-import { toast } from 'solid-toaster'
 
 import { downloadFile } from '#/utils/download'
 
@@ -28,7 +27,7 @@ export function DownloadButton(props: DownloadButtonProps) {
       return
     }
     downloadFile(local.content, local.filename, local.mimeType ?? 'text/plain')
-    toast.success('Downloaded successfully')
+    Toast.success({ title: 'Downloaded successfully' })
   }
 
   return (

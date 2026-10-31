@@ -1,7 +1,16 @@
-import { BoldSlider, Button, CopyButton, Dialog, Field, Select, Switch, Textarea } from 'moraine'
+import {
+  BoldSlider,
+  Button,
+  CopyButton,
+  Dialog,
+  Field,
+  Select,
+  Switch,
+  Textarea,
+  Toast,
+} from 'moraine'
 import { createRoute } from 'solid-file-router'
 import { createEffect, createSignal, on } from 'solid-js'
-import { toast } from 'solid-toaster'
 
 import { ClearButton } from '#/components/clear-button'
 import { DownloadButton } from '#/components/download-button'
@@ -118,7 +127,7 @@ function JSONFormatter() {
         error.line && error.column
           ? `${error.message} (Line ${error.line}, Column ${error.column})`
           : error.message
-      toast.error('Invalid JSON', { description: message })
+      Toast.error({ title: 'Invalid JSON', description: message })
       setOutput('')
     }
   }

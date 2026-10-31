@@ -1,7 +1,6 @@
-import { Field, Button, Icon, Tabs, Textarea, cn, CopyButton } from 'moraine'
+import { Field, Button, Icon, Tabs, Textarea, cn, CopyButton, Toast } from 'moraine'
 import { createRoute } from 'solid-file-router'
 import { createMemo, createSignal, For, Show } from 'solid-js'
-import { toast } from 'solid-toaster'
 
 import { Card } from '#/components/card'
 import { ClearButton } from '#/components/clear-button'
@@ -41,7 +40,7 @@ function HashGenerator() {
     const input = mode === 'text' ? textInput() : file()
 
     if (!input) {
-      toast.error(mode === 'text' ? 'Please enter text to hash' : 'Please select a file')
+      Toast.error({ title: mode === 'text' ? 'Please enter text to hash' : 'Please select a file' })
       return
     }
 
@@ -55,7 +54,7 @@ function HashGenerator() {
       )
       setResults(hashes)
     } catch (error) {
-      toast.error('Failed to generate hashes')
+      Toast.error({ title: 'Failed to generate hashes' })
       console.error(error)
     } finally {
       setIsGenerating(false)
@@ -67,7 +66,7 @@ function HashGenerator() {
     setFile(undefined)
     setResults([])
     setVerifyHash('')
-    toast.info('Cleared all data')
+    Toast.info({ title: 'Cleared all data' })
   }
 
   const isHashMatch = (hash: string) => {

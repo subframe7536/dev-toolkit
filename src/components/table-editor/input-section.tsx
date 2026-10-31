@@ -1,6 +1,5 @@
-import { Field, Button, Icon, Select, Switch, Tabs, Textarea } from 'moraine'
+import { Field, Button, Icon, Select, Switch, Tabs, Textarea, Toast } from 'moraine'
 import { createSignal, Show } from 'solid-js'
-import { toast } from 'solid-toaster'
 
 import { FileUpload } from '#/components/file-upload'
 import { ToolOptions } from '#/components/tool-options'
@@ -77,7 +76,7 @@ export function InputSection() {
   const handleParseText = () => {
     const input = textInput().trim()
     if (!input) {
-      toast.error('Please paste text input.')
+      Toast.error({ title: 'Please paste text input.' })
       return
     }
 
@@ -87,33 +86,27 @@ export function InputSection() {
       const result = parseMySQLOutput(input)
       if (result.success && result.data) {
         actions.setData(result.data)
-        toast.success('MySQL output parsed successfully!')
+        Toast.success({ title: 'MySQL output parsed successfully!' })
       } else if (result.error) {
-        toast.error(result.error.message, {
-          description: result.error.details,
-        })
+        Toast.error({ title: result.error.message, description: result.error.details })
       }
     } else if (detectTSVFormat(input)) {
       // Tab-separated values (Excel copy/paste)
       const result = parseTSVText(input)
       if (result.success && result.data) {
         actions.setData(result.data)
-        toast.success('Excel table data parsed successfully!')
+        Toast.success({ title: 'Excel table data parsed successfully!' })
       } else if (result.error) {
-        toast.error(result.error.message, {
-          description: result.error.details,
-        })
+        Toast.error({ title: result.error.message, description: result.error.details })
       }
     } else {
       // Default to CSV format
       const result = parseCSVText(input)
       if (result.success && result.data) {
         actions.setData(result.data)
-        toast.success('CSV text parsed successfully!')
+        Toast.success({ title: 'CSV text parsed successfully!' })
       } else if (result.error) {
-        toast.error(result.error.message, {
-          description: result.error.details,
-        })
+        Toast.error({ title: result.error.message, description: result.error.details })
       }
     }
   }
@@ -137,7 +130,8 @@ export function InputSection() {
           setSelectedSheet(names[0])
         }
       } catch (error) {
-        toast.error('Failed to read Excel file', {
+        Toast.error({
+          title: 'Failed to read Excel file',
           description: error instanceof Error ? error.message : 'Unknown error',
         })
         setUploadedFile(undefined)
@@ -154,7 +148,7 @@ export function InputSection() {
   const handleParseFile = async () => {
     const file = uploadedFile()
     if (!file) {
-      toast.error('Please upload a file.')
+      Toast.error({ title: 'Please upload a file.' })
       return
     }
 
@@ -168,26 +162,23 @@ export function InputSection() {
 
         if (result.success && result.data) {
           actions.setData(result.data)
-          toast.success('Excel file parsed successfully!')
+          Toast.success({ title: 'Excel file parsed successfully!' })
         } else if (result.error) {
-          toast.error(result.error.message, {
-            description: result.error.details,
-          })
+          Toast.error({ title: result.error.message, description: result.error.details })
         }
       } else {
         const result = await parseCSVFile(file)
 
         if (result.success && result.data) {
           actions.setData(result.data)
-          toast.success('CSV file parsed successfully!')
+          Toast.success({ title: 'CSV file parsed successfully!' })
         } else if (result.error) {
-          toast.error(result.error.message, {
-            description: result.error.details,
-          })
+          Toast.error({ title: result.error.message, description: result.error.details })
         }
       }
     } catch (error) {
-      toast.error('Failed to parse file', {
+      Toast.error({
+        title: 'Failed to parse file',
         description: error instanceof Error ? error.message : 'Unknown error',
       })
     } finally {

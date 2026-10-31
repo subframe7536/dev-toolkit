@@ -1,4 +1,3 @@
-import 'solid-toaster/style.css'
 import 'uno.css'
 
 import { Router } from '@solidjs/router'

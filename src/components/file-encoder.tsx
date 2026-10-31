@@ -1,6 +1,5 @@
-import { Switch, CopyButton } from 'moraine'
+import { Switch, CopyButton, Toast } from 'moraine'
 import { createMemo, createSignal, Show } from 'solid-js'
-import { toast } from 'solid-toaster'
 
 import { DownloadButton } from '#/components/download-button'
 import { FileUpload } from '#/components/file-upload'
@@ -35,9 +34,9 @@ export function FileEncoder(props: FileEncoderProps) {
       const result = await props.onEncode(file)
       setOutput(result)
     } catch (error) {
-      toast.error(
-        `Failed to encode file: ${error instanceof Error ? error.message : 'Unknown error'}`,
-      )
+      Toast.error({
+        title: `Failed to encode file: ${error instanceof Error ? error.message : 'Unknown error'}`,
+      })
       setOutput('')
     }
   }

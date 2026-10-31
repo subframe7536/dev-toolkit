@@ -1,6 +1,5 @@
-import { CopyButton, Icon } from 'moraine'
+import { CopyButton, Icon, Toast } from 'moraine'
 import { createMemo, createSignal, Show } from 'solid-js'
-import { toast } from 'solid-toaster'
 
 import { useRegexContext } from '#/contexts/regex-context'
 
@@ -14,7 +13,7 @@ export function SubstitutionPanel() {
   const handleApplyToText = () => {
     const res = actions.applyReplacement()
     actions.setTestText(res)
-    toast.success('Applied substitution to test string')
+    Toast.success({ title: 'Applied substitution to test string' })
   }
 
   const updateCursorFromText = () => {

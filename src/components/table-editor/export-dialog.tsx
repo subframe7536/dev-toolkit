@@ -1,6 +1,15 @@
-import { Field, Button, Checkbox, Dialog, Input, Select, Textarea, CopyButton } from 'moraine'
+import {
+  Field,
+  Button,
+  Checkbox,
+  Dialog,
+  Input,
+  Select,
+  Textarea,
+  CopyButton,
+  Toast,
+} from 'moraine'
 import { createEffect, createSignal, For, Show } from 'solid-js'
-import { toast } from 'solid-toaster'
 
 import { DownloadButton } from '#/components/download-button'
 import { ToolOptions } from '#/components/tool-options'
@@ -115,7 +124,8 @@ export function ExportDialog() {
       setExportOutput(output)
     } catch (error) {
       setExportOutput('')
-      toast.error('Failed to export', {
+      Toast.error({
+        title: 'Failed to export',
         description: error instanceof Error ? error.message : 'Unknown error',
       })
     }
@@ -131,7 +141,7 @@ export function ExportDialog() {
     const visibleColumns = computed.visibleColumns()
 
     if (visibleColumns.length === 0) {
-      toast.error('No visible columns to export')
+      Toast.error({ title: 'No visible columns to export' })
       return
     }
 
@@ -148,9 +158,10 @@ export function ExportDialog() {
     try {
       const blob = await exportToExcel(filteredData, namePattern(), store.hasHeaders)
       downloadFile(blob, `${name || 'table'}.xlsx`)
-      toast.success('Excel file downloaded')
+      Toast.success({ title: 'Excel file downloaded' })
     } catch (error) {
-      toast.error('Failed to export Excel', {
+      Toast.error({
+        title: 'Failed to export Excel',
         description: error instanceof Error ? error.message : 'Unknown error',
       })
     }

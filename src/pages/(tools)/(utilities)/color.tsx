@@ -1,7 +1,6 @@
-import { Field, Button, Icon, Input, InputGroup, Slider, cn, CopyButton } from 'moraine'
+import { Field, Button, Icon, Input, InputGroup, Slider, cn, CopyButton, Toast } from 'moraine'
 import { createRoute } from 'solid-file-router'
 import { createMemo, createSignal, For } from 'solid-js'
-import { toast } from 'solid-toaster'
 
 import { Card } from '#/components/card'
 import { ToolOptions } from '#/components/tool-options'
@@ -65,10 +64,10 @@ function ColorConverter() {
         return prev
       }
       if (prev.length >= MAX_COLORS) {
-        toast.info('Maximum colors saved')
+        Toast.info({ title: 'Maximum colors saved' })
         return prev
       }
-      toast.success('Color saved!')
+      Toast.success({ title: 'Color saved!' })
       return [...prev, hex]
     })
   }

@@ -1,4 +1,4 @@
-import { Field, Button, Input, Select, CopyButton } from 'moraine'
+import { Field, Button, Input, Select, CopyButton, Toast } from 'moraine'
 import { createRoute } from 'solid-file-router'
 import {
   batch,
@@ -11,7 +11,6 @@ import {
   Show,
 } from 'solid-js'
 import { createStore } from 'solid-js/store'
-import { toast } from 'solid-toaster'
 
 import { Card } from '#/components/card'
 import { ToolOptions } from '#/components/tool-options'
@@ -90,7 +89,7 @@ function DateTimeTool() {
   const handleParseCustomDate = () => {
     const input = customInput().trim()
     if (!input && !customDate()) {
-      toast.error('Please enter a date')
+      Toast.error({ title: 'Please enter a date' })
       return
     }
 
@@ -98,16 +97,16 @@ function DateTimeTool() {
       // Reset mode
       setCustomDate(null)
       setCustomInput('')
-      toast.success('Reset to current time')
+      Toast.success({ title: 'Reset to current time' })
       return
     }
 
     const parsed = parseDate(input)
     if (parsed) {
       setCustomDate(parsed)
-      toast.success('Date parsed successfully')
+      Toast.success({ title: 'Date parsed successfully' })
     } else {
-      toast.error('Invalid date format')
+      Toast.error({ title: 'Invalid date format' })
     }
   }
 

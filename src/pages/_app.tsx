@@ -1,11 +1,10 @@
 import type { RouteSectionProps } from '@solidjs/router'
 import { A, useBeforeLeave, useNavigate } from '@solidjs/router'
-import { Button, DropdownMenu, Icon, Sidebar } from 'moraine'
+import { Button, DropdownMenu, Icon, Sidebar, Toast } from 'moraine'
 import { createRoute } from 'solid-file-router'
 import { For, Show } from 'solid-js'
 
 import { ThemeToggle } from '#/components/theme-toggle'
-import { Toaster } from '#/components/toaster'
 import { ToolLayout } from '#/components/tool-layout'
 import { ToolSearchDialog, ToolSearchProvider, ToolSearchTrigger } from '#/components/tool-search'
 import { ThemeProvider } from '#/contexts/theme-context'
@@ -142,7 +141,7 @@ function AppContent(props: RouteSectionProps) {
             </a>
           </footer>
           <ToolSearchDialog />
-          <Toaster />
+          <Toast visibleToasts={4} preventDuplicate />
         </div>
       </Sidebar.Inset>
     </>

@@ -18,7 +18,7 @@
 - **Component Library**: Kobalte Core (accessible primitives)
 - **Styling**: UnoCSS with Variant Group Transformer (e.g. use `b-(1 red)` instead of `b-1 b-red`)
 - **Icons**: Iconify with Lucide icon set
-- **Notifications**: solid-sonner (toast notifications, port from `sonner`)
+- **Notifications**: Moraine `Toast` (mounted once in `_app.tsx`; call `Toast.success({ title })` etc.)
 
 ## Key Libraries
 
