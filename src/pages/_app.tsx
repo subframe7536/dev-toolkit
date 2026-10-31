@@ -14,15 +14,23 @@ import { getCategories } from '#/utils/routes'
 export default createRoute({
   component: App,
   errorComponent: Catch,
-  loadingComponent: () => <div class="p-4">Loading...</div>,
+  loadingComponent: () => (
+    <div class="text-sm text-muted-foreground p-6 flex gap-2 items-center" role="status">
+      <Icon name="i-lucide-loader-circle" class="size-4 animate-spin motion-reduce:animate-none" />
+      Loading...
+    </div>
+  ),
 })
 
 function Catch(props: { error: Error; reset: () => void }) {
   console.error(props)
   return (
-    <div>
-      Something went wrong: {props.error.message}
-      <Button onClick={() => props.reset()}>Reset</Button>
+    <div role="alert" class="p-6 flex flex-col gap-3 items-start">
+      <h1 class="text-lg text-foreground font-semibold">Something went wrong</h1>
+      <p class="text-sm text-muted-foreground max-w-68ch break-words">{props.error.message}</p>
+      <Button variant="outline" leading="i-lucide-rotate-ccw" onClick={() => props.reset()}>
+        Try again
+      </Button>
     </div>
   )
 }
@@ -124,8 +132,18 @@ function AppContent(props: RouteSectionProps) {
       </Show>
       <Sidebar.Inset as="div">
         <div class="flex flex-col min-h-full min-w-0 lg:bg-gutter-pattern">
+          <a
+            href="#main"
+            class="text-sm text-foreground px-3 py-2 rounded-md bg-background left-3 top-3 fixed z-50 sr-only focus:(effect-fv not-sr-only)"
+          >
+            Skip to content
+          </a>
           <AppToolbar pathname={props.location.pathname} />
-          <main class="mx-auto border-x border-border/70 bg-background flex-1 max-w-5xl min-w-0 w-full">
+          <main
+            id="main"
+            tabindex="-1"
+            class="mx-auto outline-none border-x border-border/70 bg-background flex-1 max-w-5xl min-w-0 w-full"
+          >
             <ToolLayout>{props.children}</ToolLayout>
           </main>
           <footer class="text-xs text-muted-foreground mx-auto px-4 py-5 border-x border-t border-border/70 bg-background flex flex-wrap gap-2 max-w-5xl w-full items-center justify-between sm:px-6">
