@@ -1,5 +1,3 @@
-import { utils, write } from 'xlsx'
-
 import { convertCase } from '#/utils/json/key-converter'
 
 import type { CellValue, DataType, TableData } from './types'
@@ -318,6 +316,8 @@ export async function exportToExcel(
   namePattern: NamePattern = 'original',
   includeHeaders: boolean = true,
 ): Promise<Blob> {
+  const { utils, write } = await import('xlsx')
+
   // Get column names based on naming pattern
   const columnNames = getColumnNames(data, namePattern)
 

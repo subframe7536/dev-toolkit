@@ -1,5 +1,4 @@
 import type { WorkBook } from 'xlsx'
-import { read, utils } from 'xlsx'
 
 import { generateId } from '#/utils/random'
 
@@ -13,6 +12,7 @@ import type { CellValue, ColumnDefinition, ParseResult, TableData, TableRow } fr
  */
 export async function getExcelSheetNames(file: File): Promise<string[]> {
   try {
+    const { read } = await import('xlsx')
     const arrayBuffer = await file.arrayBuffer()
     const workbook = read(arrayBuffer, { type: 'array' })
     return workbook.SheetNames
@@ -62,6 +62,7 @@ export async function parseExcelFile(
 
   try {
     // Read file as array buffer
+    const { read, utils } = await import('xlsx')
     const arrayBuffer = await file.arrayBuffer()
 
     // Parse workbook

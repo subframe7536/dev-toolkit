@@ -1,6 +1,7 @@
 import { CopyButton, Dialog, Icon, Popover } from 'moraine'
 import type { HighlighterCore } from 'shiki'
 import { createEffect, createMemo, createResource, For, on, Show, Suspense } from 'solid-js'
+import { isServer } from 'solid-js/web'
 
 import { HelpPanel } from '#/components/regex-tester/help-panel'
 import { useRegexContext } from '#/contexts/regex-context'
@@ -78,7 +79,7 @@ export function RegexInputPanel() {
   let patternRef!: HTMLTextAreaElement
   let patternMirrorRef!: HTMLDivElement
 
-  const [highlighter] = createResource(loadHighlighter)
+  const [highlighter] = createResource(() => !isServer, loadHighlighter)
   const { isDark } = useTheme()
 
   const hasInput = createMemo(() => Boolean(store.pattern && store.testText))

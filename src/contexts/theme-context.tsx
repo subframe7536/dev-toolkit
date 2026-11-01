@@ -1,6 +1,7 @@
 import { createMediaQuery } from 'moraine/utils'
 import type { Accessor, ParentProps, Setter } from 'solid-js'
 import { createContext, createMemo, createRenderEffect, createSignal, useContext } from 'solid-js'
+import { isServer } from 'solid-js/web'
 
 type ColorMode = 'auto' | 'light' | 'dark'
 
@@ -24,6 +25,9 @@ export function ThemeProvider(props: ParentProps) {
   const isDark = createMemo(() => (mode() === 'auto' ? prefersDark() : mode() === 'dark'))
 
   createRenderEffect(() => {
+    if (isServer) {
+      return
+    }
     document.documentElement.classList.toggle('dark', isDark())
     document.documentElement.classList.toggle('light', !isDark())
   })
