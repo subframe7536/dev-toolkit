@@ -1,14 +1,13 @@
-import type { HashAlgorithm } from '#/utils/hash'
+import { Field, Button, Icon, Tabs, Textarea, cn, CopyButton, Toast } from 'moraine'
+import { createRoute } from 'solid-file-router'
+import { createMemo, createSignal, For, Show } from 'solid-js'
 
 import { Card } from '#/components/card'
 import { ClearButton } from '#/components/clear-button'
-import { CopyButton } from '#/components/copy-button'
 import { FileUpload } from '#/components/file-upload'
-import { Button, Icon, Tabs, Textarea, cn } from 'moraine'
+import { ToolOptions } from '#/components/tool-options'
+import type { HashAlgorithm } from '#/utils/hash'
 import { generateHash } from '#/utils/hash'
-import { createRoute } from 'solid-file-router'
-import { createMemo, createSignal, For, Show } from 'solid-js'
-import { toast } from 'solid-toaster'
 
 const ALGORITHMS: HashAlgorithm[] = ['MD5', 'SHA-1', 'SHA-256', 'SHA-384', 'SHA-512']
 
@@ -22,7 +21,7 @@ export default createRoute({
     title: 'Hash Generator',
     description: 'Generate hash strings using various algorithms',
     category: 'Utilities',
-    icon: 'lucide:hash',
+    icon: 'i-lucide-hash',
     tags: ['hash', 'sha', 'md5', 'checksum', 'digest'],
   },
   component: HashGenerator,
@@ -41,7 +40,7 @@ function HashGenerator() {
     const input = mode === 'text' ? textInput() : file()
 
     if (!input) {
-      toast.error(mode === 'text' ? 'Please enter text to hash' : 'Please select a file')
+      Toast.error({ title: mode === 'text' ? 'Please enter text to hash' : 'Please select a file' })
       return
     }
 
@@ -55,7 +54,7 @@ function HashGenerator() {
       )
       setResults(hashes)
     } catch (error) {
-      toast.error('Failed to generate hashes')
+      Toast.error({ title: 'Failed to generate hashes' })
       console.error(error)
     } finally {
       setIsGenerating(false)
@@ -67,7 +66,7 @@ function HashGenerator() {
     setFile(undefined)
     setResults([])
     setVerifyHash('')
-    toast.info('Cleared all data')
+    Toast.info({ title: 'Cleared all data' })
   }
 
   const isHashMatch = (hash: string) => {
@@ -83,24 +82,26 @@ function HashGenerator() {
   }
 
   return (
-    <div class="gap-6 grid grid-cols-1 lg:grid-cols-[auto_1fr]">
-      <div class="flex flex-col gap-3 lg:w-96">
+    <div class="space-y-4">
+      <div class="flex flex-col gap-4">
         <Tabs
           value={inputMode()}
-          onChange={handleInputModeChange}
+          onValueChange={handleInputModeChange}
           items={[
             {
               value: 'text',
               label: 'Text Input',
               content: (
                 <div class="mt-4">
-                  <Textarea
-                    value={textInput()}
-                    onInput={e => setTextInput((e.target as HTMLTextAreaElement).value)}
-                    placeholder="Enter text to generate hash..."
-                    rows={10}
-                    classes={{ input: 'text-sm font-mono h-120 resize-y' }}
-                  />
+                  <Field hiddenLabel="Text Input" classes={{ root: 'min-w-0' }}>
+                    <Textarea
+                      value={textInput()}
+                      onValueChange={setTextInput}
+                      placeholder="Enter text to generate hash..."
+                      rows={10}
+                      classes={{ root: 'tool-editor' }}
+                    />
+                  </Field>
                 </div>
               ),
             },
@@ -109,11 +110,7 @@ function HashGenerator() {
               label: 'File Upload',
               content: (
                 <div class="mt-4">
-                  <FileUpload
-                    file={file()}
-                    setFile={setFile}
-                    multiple={false}
-                  />
+                  <FileUpload file={file()} setFile={setFile} multiple={false} />
                   <Show when={file()}>
                     <div class="text-sm text-muted-foreground mt-2">
                       Selected: {file()!.name} ({(file()!.size / 1024).toFixed(2)} KB)
@@ -125,17 +122,12 @@ function HashGenerator() {
           ]}
         />
 
-        <div class="flex gap-3">
-          <Button
-            classes={{ root: 'flex-1' }}
-            onClick={handleGenerate}
-            disabled={isGenerating()}
-            leading="lucide:refresh-cw"
-          >
+        <div class="tool-toolbar">
+          <Button onClick={handleGenerate} disabled={isGenerating()} leading="i-lucide-refresh-cw">
             {isGenerating() ? 'Generating...' : 'Generate'}
           </Button>
           <ClearButton
-            class="flex-1"
+            class="min-w-0"
             onClear={handleClear}
             disabled={results().length === 0 && !textInput() && !file()}
           />
@@ -144,70 +136,69 @@ function HashGenerator() {
 
       <Show
         when={results().length > 0}
-        fallback={(
-          <div class="text-muted-foreground p-12 text-center border rounded-lg border-dashed flex items-center justify-center">
-            <div>
-              <Icon name="lucide:hash" classes={{ icon: 'mx-auto mb-4 opacity-50 size-12' }} />
-              <p>Enter text or upload a file, then click "Generate"</p>
-            </div>
-          </div>
-        )}
+        fallback={
+          <p class="text-sm text-muted-foreground py-4 border-t border-border">
+            Enter text or upload a file, then click "Generate"
+          </p>
+        }
       >
-        <Card
-          title="Generated Hashes"
-          content={(
-            <div class="flex flex-col gap-4">
-              <div>
-                <label class="text-sm font-medium">Verify Hash (Optional)</label>
-                <Textarea
-                  value={verifyHash()}
-                  onInput={e => setVerifyHash((e.target as HTMLTextAreaElement).value)}
-                  placeholder="Paste a hash to verify against generated hashes..."
-                  rows={2}
-                  classes={{ input: 'text-sm font-mono resize-y' }}
-                />
-              </div>
-
-              <div class="flex flex-col gap-3">
-                <For each={results()}>
-                  {(result) => {
-                    const match = createMemo(() => isHashMatch(result.hash))
-                    return (
-                      <div
-                        class={cn(
-                          'p-2 border rounded-lg flex gap-2 items-center',
-                          match() === true
-                            ? 'bg-green-500/10 border-green-500/50'
-                            : match() === false
-                              ? 'bg-red-500/5 border-red-500/20'
-                              : 'bg-muted/30',
-                        )}
-                      >
-                        <div class="flex-1">
-                          <div class="mb-0.5 flex gap-1 items-center">
-                            <div class="text-sm text-muted-foreground font-medium select-none uppercase">
-                              {result.algorithm}
+        <>
+          <ToolOptions>
+            <Field
+              label="Verify Hash (Optional)"
+              classes={{ root: 'min-w-0', label: 'text-muted-foreground font-medium text-xs' }}
+            >
+              <Textarea
+                value={verifyHash()}
+                onValueChange={setVerifyHash}
+                placeholder="Paste a hash to verify against generated hashes..."
+                rows={2}
+                classes={{ root: 'text-sm font-mono resize-y' }}
+              />
+            </Field>
+          </ToolOptions>
+          <Card
+            variant="section"
+            title="Generated Hashes"
+            class="border-border pt-4! border-t!"
+            content={
+              <div class="flex flex-col gap-4">
+                <div class="flex flex-col gap-3">
+                  <For each={results()}>
+                    {(result) => {
+                      const match = createMemo(() => isHashMatch(result.hash))
+                      return (
+                        <div
+                          class={cn(
+                            'p-2 border rounded-lg flex gap-2 items-center',
+                            match() === true
+                              ? 'border-green-500/50 bg-green-500/10'
+                              : match() === false
+                                ? 'bg-red-500/5 border-red-500/20'
+                                : 'bg-muted/30',
+                          )}
+                        >
+                          <div class="flex-1 min-w-0">
+                            <div class="mb-0.5 flex gap-1 items-center">
+                              <div class="text-sm text-muted-foreground font-medium select-none uppercase">
+                                {result.algorithm}
+                              </div>
+                              <Show when={match()}>
+                                <Icon name="i-lucide-check" class="text-sm text-green-600" />
+                              </Show>
                             </div>
-                            <Show when={match()}>
-                              <Icon name="lucide:check" classes={{ icon: 'text-sm text-green-600' }} />
-                            </Show>
+                            <code class="text-sm font-mono break-all">{result.hash}</code>
                           </div>
-                          <code class="text-sm font-mono break-all">{result.hash}</code>
+                          <CopyButton value={result.hash} size="sm" />
                         </div>
-                        <CopyButton
-                          content={result.hash}
-                          variant="ghost"
-                          size="sm"
-                          text={false}
-                        />
-                      </div>
-                    )
-                  }}
-                </For>
+                      )
+                    }}
+                  </For>
+                </div>
               </div>
-            </div>
-          )}
-        />
+            }
+          />
+        </>
       </Show>
     </div>
   )

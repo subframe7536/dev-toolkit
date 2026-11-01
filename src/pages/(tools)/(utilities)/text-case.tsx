@@ -1,14 +1,13 @@
-import type { TextCaseStyle } from '#/utils/text-case'
-
-import { Card } from '#/components/card'
-import { ClearButton } from '#/components/clear-button'
-import { CopyButton } from '#/components/copy-button'
-import { Textarea } from 'moraine'
-import { convertTextCase } from '#/utils/text-case'
+import { Field, Textarea, CopyButton } from 'moraine'
 import { createRoute } from 'solid-file-router'
 import { createMemo, createSignal, For } from 'solid-js'
 
-const CASE_STYLES: Array<{ value: TextCaseStyle, label: string, example: string }> = [
+import { Card } from '#/components/card'
+import { ClearButton } from '#/components/clear-button'
+import type { TextCaseStyle } from '#/utils/text-case'
+import { convertTextCase } from '#/utils/text-case'
+
+const CASE_STYLES: Array<{ value: TextCaseStyle; label: string; example: string }> = [
   { value: 'camelCase', label: 'camelCase', example: 'helloWorld' },
   { value: 'PascalCase', label: 'PascalCase', example: 'HelloWorld' },
   { value: 'snake_case', label: 'snake_case', example: 'hello_world' },
@@ -28,7 +27,7 @@ export default createRoute({
     title: 'Text Case Converter',
     description: 'Convert text between different case styles',
     category: 'Utilities',
-    icon: 'lucide:case-sensitive',
+    icon: 'i-lucide-case-sensitive',
     tags: ['text', 'case', 'converter', 'camelCase', 'snake_case', 'kebab-case'],
   },
   component: TextCase,
@@ -42,55 +41,56 @@ function TextCase() {
   }
 
   return (
-    <div class="flex flex-col gap-6">
-      <div class="relative">
-        <div>
-          <label class="text-sm font-medium">Input Text</label>
-          <Textarea
-            value={input()}
-            onChange={setInput}
-            classes={{ input: 'font-mono h-36 resize-none' }}
-            placeholder="Enter text to convert..."
-          />
-        </div>
-        <ClearButton
-          onClear={handleClear}
-          disabled={!input()}
-          size="sm"
-          class="right-0 top--2 absolute"
+    <div class="flex flex-col gap-4">
+      <Field
+        label="Input Text"
+        classes={{
+          root: 'min-w-0',
+          label: 'text-muted-foreground font-medium text-xs',
+          labelWrapper: 'tool-panel-heading',
+        }}
+      >
+        <Textarea
+          value={input()}
+          modelModifiers={{ lazy: true }}
+          onValueChange={setInput}
+          classes={{ root: 'tool-editor' }}
+          placeholder="Enter text to convert..."
         />
-      </div>
+      </Field>
 
-      <div class="gap-4 grid grid-cols-1 2xl:grid-cols-4 lg:grid-cols-2 xl:grid-cols-3">
+      <div class="tool-toolbar">
+        <ClearButton onClear={handleClear} disabled={!input()} size="sm" />
+      </div>
+      <div class="pt-4 border-t border-border gap-4 grid grid-cols-1 md:grid-cols-2">
         <For each={CASE_STYLES}>
           {(style) => {
-            const converted = createMemo(
-              () => input() ? convertTextCase(input(), style.value) : '...',
+            const converted = createMemo(() =>
+              input() ? convertTextCase(input(), style.value) : '...',
             )
 
             return (
               <Card
+                variant="section"
                 title={style.label}
-                class="flex flex-col relative"
+                class="flex flex-col"
                 description={`Example: ${style.example}`}
-                content={(
-                  <>
-                    <div class="font-mono p-3 rounded-md bg-muted min-h-16 break-all">
+                content={
+                  <div class="p-3 rounded-md bg-muted flex gap-2 min-h-16 items-start">
+                    <div class="text-sm leading-relaxed font-mono flex-1 min-w-0 break-all">
                       {converted()}
                     </div>
                     <CopyButton
-                      class="right-6 top-7 absolute"
-                      content={converted()}
-                      disabled={converted() !== '...'}
-                      text={false}
-                      variant="ghost"
+                      class="shrink-0"
+                      value={converted()}
+                      disabled={!input()}
                       size="sm"
                     />
-                  </>
-                )}
+                  </div>
+                }
               />
             )
-          } }
+          }}
         </For>
       </div>
     </div>

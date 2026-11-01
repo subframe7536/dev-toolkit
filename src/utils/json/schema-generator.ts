@@ -29,9 +29,9 @@ function inferType(value: any, options: SchemaOptions): any {
       return { type: 'array', items: {} }
     }
 
-    const itemSchemas = value.map(item => inferType(item, options))
+    const itemSchemas = value.map((item) => inferType(item, options))
     const firstSchema = itemSchemas[0]
-    const allSameType = itemSchemas.every(s => s.type === firstSchema.type)
+    const allSameType = itemSchemas.every((s) => s.type === firstSchema.type)
 
     return {
       type: 'array',

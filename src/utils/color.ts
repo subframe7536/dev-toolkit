@@ -215,13 +215,13 @@ export function rgbToOklch(rgb: RGB): OKLCH {
   const s_nl = Math.cbrt(s_)
 
   // 4. LMS to OKLab
-  const L = 0.2104542553 * l_nl + 0.7936177850 * m_nl - 0.0040720468 * s_nl
-  const a = 1.9779984951 * l_nl - 2.4285922050 * m_nl + 0.4505937099 * s_nl
-  const bl = 0.0259040371 * l_nl + 0.7827717662 * m_nl - 0.8086757660 * s_nl
+  const L = 0.2104542553 * l_nl + 0.793617785 * m_nl - 0.0040720468 * s_nl
+  const a = 1.9779984951 * l_nl - 2.428592205 * m_nl + 0.4505937099 * s_nl
+  const bl = 0.0259040371 * l_nl + 0.7827717662 * m_nl - 0.808675766 * s_nl
 
   // 5. OKLab to OKLCH
   const C = Math.sqrt(a * a + bl * bl)
-  let H = Math.atan2(bl, a) * 180 / Math.PI
+  let H = (Math.atan2(bl, a) * 180) / Math.PI
   if (H < 0) {
     H += 360
   }
@@ -235,7 +235,7 @@ export function oklchToRgb(oklch: OKLCH): RGB {
   // Input scaling: library uses 0-100 for L and C, converting back to standard units
   const L = oklch.l / 100
   const C = oklch.c / 100
-  const H = oklch.h * Math.PI / 180
+  const H = (oklch.h * Math.PI) / 180
 
   // 1. OKLCH to OKLab
   const a = C * Math.cos(H)
@@ -244,7 +244,7 @@ export function oklchToRgb(oklch: OKLCH): RGB {
   // 2. OKLab to LMS
   const l_nl = L + 0.3963377774 * a + 0.2158037573 * b_lab
   const m_nl = L - 0.1055613458 * a - 0.0638541728 * b_lab
-  const s_nl = L - 0.0894841775 * a - 1.2914855480 * b_lab
+  const s_nl = L - 0.0894841775 * a - 1.291485548 * b_lab
 
   // 3. LMS to Linear LMS (Cube)
   const l_ = l_nl * l_nl * l_nl
@@ -254,7 +254,7 @@ export function oklchToRgb(oklch: OKLCH): RGB {
   // 4. Linear LMS to Linear RGB
   let r = +4.0767416621 * l_ - 3.3077115913 * m_ + 0.2309699292 * s_
   let g = -1.2684380046 * l_ + 2.6097574011 * m_ - 0.3413193965 * s_
-  let b = -0.0041960863 * l_ - 0.7034186147 * m_ + 1.7076147010 * s_
+  let b = -0.0041960863 * l_ - 0.7034186147 * m_ + 1.707614701 * s_
 
   // 5. Linear RGB to sRGB
   const toSRGB = (c: number) => {
@@ -306,13 +306,17 @@ export function randomColor(): RGB {
 // Regex constants (Compiled once)
 const HEX_RE = /^#?(?:[0-9a-f]{3}|[0-9a-f]{6})$/i
 // Supports: rgb(r, g, b) | rgb(r g b)
-const RGB_RE = /^rgba?\s*(?:\(\s*)?(\d+(?:\.\d+)?)(?:,|\s)\s*(\d+(?:\.\d+)?)(?:,|\s)\s*(\d+(?:\.\d+)?)(?:\s*\/\s*\d+(?:\.\d+)?%?|,\s*\d+(?:\.\d+)?%?)?\)?$/i
+const RGB_RE =
+  /^rgba?\s*(?:\(\s*)?(\d+(?:\.\d+)?)(?:,|\s)\s*(\d+(?:\.\d+)?)(?:,|\s)\s*(\d+(?:\.\d+)?)(?:\s*\/\s*\d+(?:\.\d+)?%?|,\s*\d+(?:\.\d+)?%?)?\)?$/i
 // Supports: hsl(h, s, l) | hsl(h s l)
-const HSL_RE = /^hsla?\s*\(\s*(\d+(?:\.\d+)?)(?:\s*,\s*|\s+)(\d+(?:\.\d+)?)%?(?:\s*,\s*|\s+)(\d+(?:\.\d+)?)%?(?:\s*\/\s*\d+(?:\.\d+)?%?|,\s*\d+(?:\.\d+)?%?)?\)?$/i
+const HSL_RE =
+  /^hsla?\s*\(\s*(\d+(?:\.\d+)?)(?:\s*,\s*|\s+)(\d+(?:\.\d+)?)%?(?:\s*,\s*|\s+)(\d+(?:\.\d+)?)%?(?:\s*\/\s*\d+(?:\.\d+)?%?|,\s*\d+(?:\.\d+)?%?)?\)?$/i
 // Supports: hwb(h w b)
-const HWB_RE = /^hwb\s*\(\s*(\d+(?:\.\d+)?)\s+(\d+(?:\.\d+)?)%?\s+(\d+(?:\.\d+)?)%?(?:\s*\/\s*\d+(?:\.\d+)?%?|,\s*\d+(?:\.\d+)?%?)?\)?$/i
+const HWB_RE =
+  /^hwb\s*\(\s*(\d+(?:\.\d+)?)\s+(\d+(?:\.\d+)?)%?\s+(\d+(?:\.\d+)?)%?(?:\s*\/\s*\d+(?:\.\d+)?%?|,\s*\d+(?:\.\d+)?%?)?\)?$/i
 // Supports: oklch(l c h)
-const OKLCH_RE = /^oklch\s*\(\s*(\d+(?:\.\d+)?%?)\s+(\d+(?:\.\d+)?)\s+(\d+(?:\.\d+)?)(?:\s*\/\s*\d+(?:\.\d+)?%?|,\s*\d+(?:\.\d+)?%?)?\)?$/i
+const OKLCH_RE =
+  /^oklch\s*\(\s*(\d+(?:\.\d+)?%?)\s+(\d+(?:\.\d+)?)\s+(\d+(?:\.\d+)?)(?:\s*\/\s*\d+(?:\.\d+)?%?|,\s*\d+(?:\.\d+)?%?)?\)?$/i
 
 export function parseColor(input: string): RGB | null {
   const cleaned = input.trim().toLowerCase()

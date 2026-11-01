@@ -5,7 +5,15 @@
 
 import { repairJSON } from './formatter'
 
-export type CaseStyle = 'As is' | 'camelCase' | 'snake_case' | 'kebab-case' | 'PascalCase' | 'CONSTANT_CASE' | 'lowercase' | 'UPPERCASE'
+export type CaseStyle =
+  | 'As is'
+  | 'camelCase'
+  | 'snake_case'
+  | 'kebab-case'
+  | 'PascalCase'
+  | 'CONSTANT_CASE'
+  | 'lowercase'
+  | 'UPPERCASE'
 
 export interface ConversionError {
   message: string
@@ -25,7 +33,11 @@ export interface ConversionResult {
  * @param repair - If true, attempt to repair JSON before parsing (default: false)
  * @returns ConversionResult with converted JSON or error
  */
-export function convertKeys(input: string, targetCase: CaseStyle, repair: boolean = false): ConversionResult {
+export function convertKeys(
+  input: string,
+  targetCase: CaseStyle,
+  repair: boolean = false,
+): ConversionResult {
   try {
     let jsonToParse = input
 
@@ -76,7 +88,7 @@ function convertObjectKeys(obj: any, targetCase: CaseStyle): any {
   }
 
   if (Array.isArray(obj)) {
-    return obj.map(item => convertObjectKeys(item, targetCase))
+    return obj.map((item) => convertObjectKeys(item, targetCase))
   }
 
   const converted: Record<string, any> = {}
@@ -110,24 +122,24 @@ export function convertCase(str: string, targetCase: CaseStyle): string {
         .join('')
 
     case 'snake_case':
-      return words.map(word => word.toLowerCase()).join('_')
+      return words.map((word) => word.toLowerCase()).join('_')
 
     case 'kebab-case':
-      return words.map(word => word.toLowerCase()).join('-')
+      return words.map((word) => word.toLowerCase()).join('-')
 
     case 'PascalCase':
       return words
-        .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+        .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
         .join('')
 
     case 'CONSTANT_CASE':
-      return words.map(word => word.toUpperCase()).join('_')
+      return words.map((word) => word.toUpperCase()).join('_')
 
     case 'lowercase':
-      return words.map(word => word.toLowerCase()).join('')
+      return words.map((word) => word.toLowerCase()).join('')
 
     case 'UPPERCASE':
-      return words.map(word => word.toUpperCase()).join('')
+      return words.map((word) => word.toUpperCase()).join('')
 
     default:
       return str
@@ -152,7 +164,7 @@ export function splitIntoWords(str: string): string[] {
     .replace(/([A-Z]+)([A-Z][a-z])/g, '$1 $2') // Handle acronyms like "XMLParser" -> "XML Parser"
 
   // Split by spaces and filter out empty strings
-  const words = normalized.split(/\s+/).filter(word => word.length > 0)
+  const words = normalized.split(/\s+/).filter((word) => word.length > 0)
 
   return words
 }

@@ -1,9 +1,18 @@
-import { FileUpload } from '#/components/file-upload'
-import { Button, Icon, Select, Switch, Tabs, Textarea } from 'moraine'
-import { useTableEditorContext } from '#/contexts/table-editor-context'
-import { detectTSVFormat, getExcelSheetNames, parseCSVFile, parseCSVText, parseExcelFile, parseMySQLOutput, parseTSVText } from '#/utils/table/parser'
+import { Field, Button, Icon, Select, Switch, Tabs, Textarea, Toast } from 'moraine'
 import { createSignal, Show } from 'solid-js'
-import { toast } from 'solid-toaster'
+
+import { FileUpload } from '#/components/file-upload'
+import { ToolOptions } from '#/components/tool-options'
+import { useTableEditorContext } from '#/contexts/table-editor-context'
+import {
+  detectTSVFormat,
+  getExcelSheetNames,
+  parseCSVFile,
+  parseCSVText,
+  parseExcelFile,
+  parseMySQLOutput,
+  parseTSVText,
+} from '#/utils/table/parser'
 
 import { ClearButton } from '../clear-button'
 
@@ -47,8 +56,12 @@ export function InputSection() {
     const name = file.name.toLowerCase()
     const mime = file.type.toLowerCase()
 
-    if (name.endsWith('.xlsx') || name.endsWith('.xls')
-      || mime.includes('spreadsheet') || mime.includes('excel')) {
+    if (
+      name.endsWith('.xlsx') ||
+      name.endsWith('.xls') ||
+      mime.includes('spreadsheet') ||
+      mime.includes('excel')
+    ) {
       return 'excel'
     }
     return 'csv'
@@ -56,14 +69,14 @@ export function InputSection() {
 
   const handleReplaceLineWrap = (replace: boolean) => {
     setReplaceLineWrap(replace)
-    setTextInput(t => replace ? t.replace(/(?:\\r)?\\n/g, '\n') : t.replace(/\r?\n/g, '\\n'))
+    setTextInput((t) => (replace ? t.replace(/(?:\\r)?\\n/g, '\n') : t.replace(/\r?\n/g, '\\n')))
   }
 
   // Handle text input parsing (auto-detects MySQL vs CSV vs TSV)
   const handleParseText = () => {
     const input = textInput().trim()
     if (!input) {
-      toast.error('Please paste text input.')
+      Toast.error({ title: 'Please paste text input.' })
       return
     }
 
@@ -73,33 +86,27 @@ export function InputSection() {
       const result = parseMySQLOutput(input)
       if (result.success && result.data) {
         actions.setData(result.data)
-        toast.success('MySQL output parsed successfully!')
+        Toast.success({ title: 'MySQL output parsed successfully!' })
       } else if (result.error) {
-        toast.error(result.error.message, {
-          description: result.error.details,
-        })
+        Toast.error({ title: result.error.message, description: result.error.details })
       }
     } else if (detectTSVFormat(input)) {
       // Tab-separated values (Excel copy/paste)
       const result = parseTSVText(input)
       if (result.success && result.data) {
         actions.setData(result.data)
-        toast.success('Excel table data parsed successfully!')
+        Toast.success({ title: 'Excel table data parsed successfully!' })
       } else if (result.error) {
-        toast.error(result.error.message, {
-          description: result.error.details,
-        })
+        Toast.error({ title: result.error.message, description: result.error.details })
       }
     } else {
       // Default to CSV format
       const result = parseCSVText(input)
       if (result.success && result.data) {
         actions.setData(result.data)
-        toast.success('CSV text parsed successfully!')
+        Toast.success({ title: 'CSV text parsed successfully!' })
       } else if (result.error) {
-        toast.error(result.error.message, {
-          description: result.error.details,
-        })
+        Toast.error({ title: result.error.message, description: result.error.details })
       }
     }
   }
@@ -123,7 +130,8 @@ export function InputSection() {
           setSelectedSheet(names[0])
         }
       } catch (error) {
-        toast.error('Failed to read Excel file', {
+        Toast.error({
+          title: 'Failed to read Excel file',
           description: error instanceof Error ? error.message : 'Unknown error',
         })
         setUploadedFile(undefined)
@@ -140,7 +148,7 @@ export function InputSection() {
   const handleParseFile = async () => {
     const file = uploadedFile()
     if (!file) {
-      toast.error('Please upload a file.')
+      Toast.error({ title: 'Please upload a file.' })
       return
     }
 
@@ -154,26 +162,23 @@ export function InputSection() {
 
         if (result.success && result.data) {
           actions.setData(result.data)
-          toast.success('Excel file parsed successfully!')
+          Toast.success({ title: 'Excel file parsed successfully!' })
         } else if (result.error) {
-          toast.error(result.error.message, {
-            description: result.error.details,
-          })
+          Toast.error({ title: result.error.message, description: result.error.details })
         }
       } else {
         const result = await parseCSVFile(file)
 
         if (result.success && result.data) {
           actions.setData(result.data)
-          toast.success('CSV file parsed successfully!')
+          Toast.success({ title: 'CSV file parsed successfully!' })
         } else if (result.error) {
-          toast.error(result.error.message, {
-            description: result.error.details,
-          })
+          Toast.error({ title: result.error.message, description: result.error.details })
         }
       }
     } catch (error) {
-      toast.error('Failed to parse file', {
+      Toast.error({
+        title: 'Failed to parse file',
         description: error instanceof Error ? error.message : 'Unknown error',
       })
     } finally {
@@ -202,67 +207,75 @@ export function InputSection() {
             label: 'Text Input',
             content: (
               <div class="mt-4 flex flex-col gap-3">
-                <div class="flex gap-4 justify-between">
+                <div class="flex flex-wrap gap-3 items-start justify-between">
                   <p class="text-sm text-muted-foreground">
                     Paste MySQL CLI output (starts with +-), CSV text, or Excel table data here.
                   </p>
-                  <Switch
-                    class="whitespace-nowrap"
-                    label="Replace \n"
-                    checked={replaceLineWrap()}
-                    onChange={handleReplaceLineWrap}
-                  />
                 </div>
-                <Textarea
-                  classes={{ input: 'text-sm font-mono h-120 resize-none whitespace-nowrap overflow-x-scroll placeholder:whitespace-pre-wrap' }}
-                  placeholder={PLACEHOLDER}
-                  value={textInput()}
-                  onValueChange={setTextInput}
-                />
-                <div class="flex flex-wrap gap-2 items-center">
+                <Field hiddenLabel="Table input" classes={{ root: 'min-w-0' }}>
+                  <Textarea
+                    classes={{
+                      root: 'tool-editor whitespace-nowrap overflow-x-auto placeholder:whitespace-pre-wrap',
+                    }}
+                    placeholder={PLACEHOLDER}
+                    value={textInput()}
+                    onValueChange={setTextInput}
+                  />
+                </Field>
+                <div class="tool-toolbar">
                   <Button
                     onClick={handleParseText}
                     disabled={!textInput().trim()}
-                    classes={{ root: 'flex-1 min-w-48' }}
+                    classes={{ root: 'min-w-24' }}
                     leading="i-lucide-play"
                   >
                     Parse
                   </Button>
-                  <Button
-                    variant="secondary"
-                    onClick={() => {
-                      setTextInput(MYSQL_EXAMPLE)
-                      setReplaceLineWrap(true)
-                    }}
-                    leading="i-lucide-database"
-                  >
-                    MySQL Example
-                  </Button>
-                  <Button
-                    variant="secondary"
-                    onClick={() => {
-                      setTextInput(CSV_EXAMPLE)
-                      setReplaceLineWrap(true)
-                    }}
-                    leading="i-lucide-table"
-                  >
-                    CSV Example
-                  </Button>
-                  <Button
-                    variant="secondary"
-                    onClick={() => {
-                      setTextInput(EXCEL_EXAMPLE)
-                      setReplaceLineWrap(true)
-                    }}
-                    leading="i-lucide-file-spreadsheet"
-                  >
-                    Excel Example
-                  </Button>
-                  <ClearButton
-                    onClear={() => setTextInput('')}
-                    disabled={!textInput().trim()}
-                  />
+                  <ClearButton onClear={() => setTextInput('')} disabled={!textInput().trim()} />
                 </div>
+                <ToolOptions>
+                  <div class="tool-toolbar">
+                    <Button
+                      variant="solid"
+                      tone="secondary"
+                      onClick={() => {
+                        setTextInput(MYSQL_EXAMPLE)
+                        setReplaceLineWrap(true)
+                      }}
+                      leading="i-lucide-database"
+                    >
+                      MySQL Example
+                    </Button>
+                    <Button
+                      variant="solid"
+                      tone="secondary"
+                      onClick={() => {
+                        setTextInput(CSV_EXAMPLE)
+                        setReplaceLineWrap(true)
+                      }}
+                      leading="i-lucide-table"
+                    >
+                      CSV Example
+                    </Button>
+                    <Button
+                      variant="solid"
+                      tone="secondary"
+                      onClick={() => {
+                        setTextInput(EXCEL_EXAMPLE)
+                        setReplaceLineWrap(true)
+                      }}
+                      leading="i-lucide-file-spreadsheet"
+                    >
+                      Excel Example
+                    </Button>
+                  </div>
+                  <Switch
+                    label="Replace \n"
+                    classes={{ root: 'whitespace-nowrap' }}
+                    checked={replaceLineWrap()}
+                    onCheckedChange={handleReplaceLineWrap}
+                  />
+                </ToolOptions>
               </div>
             ),
           },
@@ -271,9 +284,7 @@ export function InputSection() {
             label: 'File Upload',
             content: (
               <div class="mt-4 flex flex-col gap-3">
-                <p class="text-sm text-muted-foreground">
-                  {getFileDescription()}
-                </p>
+                <p class="text-sm text-muted-foreground">{getFileDescription()}</p>
                 <FileUpload
                   file={uploadedFile()}
                   setFile={handleFileSelect}
@@ -281,26 +292,17 @@ export function InputSection() {
                   icon="i-lucide-file-spreadsheet"
                 />
 
-                <Show when={sheetNames().length > 1}>
-                  <div class="flex flex-col gap-2">
-                    <label class="text-sm font-medium">Select Sheet</label>
-                    <Select
-                      value={selectedSheet()}
-                      onChange={setSelectedSheet}
-                      options={sheetNames().map(s => ({ value: s, label: s }))}
-                    />
-                  </div>
-                </Show>
-
                 <div class="flex gap-2 items-center">
                   <Button
                     onClick={handleParseFile}
                     disabled={!uploadedFile() || isParsing()}
                     classes={{ root: 'flex-1' }}
                     leading={
-                      isParsing()
-                        ? <Icon name="i-lucide-loader" classes={{ icon: 'animate-spin' }} />
-                        : 'i-lucide-play'
+                      isParsing() ? (
+                        <Icon name="i-lucide-loader" class="animate-spin" />
+                      ) : (
+                        'i-lucide-play'
+                      )
                     }
                   >
                     {isParsing() ? 'Parsing...' : 'Parse'}
@@ -310,6 +312,27 @@ export function InputSection() {
                     disabled={!uploadedFile()}
                   />
                 </div>
+                <Show when={sheetNames().length > 1}>
+                  <ToolOptions>
+                    <Field
+                      label="Select Sheet"
+                      classes={{
+                        root: 'min-w-0',
+                        label: 'text-muted-foreground font-medium text-xs',
+                      }}
+                    >
+                      <Select
+                        value={selectedSheet()}
+                        onValueChange={(value) => {
+                          if (value !== undefined) {
+                            setSelectedSheet(value)
+                          }
+                        }}
+                        items={sheetNames().map((s) => ({ value: s, label: s }))}
+                      />
+                    </Field>
+                  </ToolOptions>
+                </Show>
               </div>
             ),
           },

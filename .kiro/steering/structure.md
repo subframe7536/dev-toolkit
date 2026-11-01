@@ -13,17 +13,17 @@ src/
       (utilities)/    # Utility tools category
       (encode)/       # Encoding/decoding tools category
       (json)/         # JSON tools category
-  
+
   components/         # Reusable components
     ui/               # UI component library (Kobalte-based, ShadCN like)
     [feature]/        # Feature-specific component folders
       index.ts        # Re-exports all components for the feature
       *.tsx           # Individual component files
     [shared].tsx      # Shared components (card, copy-button, etc.)
-  
+
   contexts/           # SolidJS contexts for global state management
     [feature]-context.tsx  # Feature-specific context providers
-  
+
   utils/              # Pure utility functions (business logic)
     [feature]/        # Feature-specific utilities
       *.test.ts       # Unit tests for utilities
@@ -53,6 +53,7 @@ components/
 ```
 
 Import pattern for feature components:
+
 ```tsx
 import { DetailsPanel, PatternInput } from '#/components/regex-tester'
 ```

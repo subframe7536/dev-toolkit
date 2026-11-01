@@ -1,7 +1,8 @@
-import type { CellValue, DataType, TableData } from './types'
+import { utils, write } from 'xlsx'
 
 import { convertCase } from '#/utils/json/key-converter'
-import { utils, write } from 'xlsx'
+
+import type { CellValue, DataType, TableData } from './types'
 
 type NamePattern = 'snake_case' | 'camelCase' | 'original'
 
@@ -10,15 +11,15 @@ type NamePattern = 'snake_case' | 'camelCase' | 'original'
  */
 function getColumnNames(data: TableData, pattern: NamePattern): string[] {
   if (pattern === 'original') {
-    return data.columns.map(col => col.originalName)
+    return data.columns.map((col) => col.originalName)
   }
 
   if (pattern === 'snake_case') {
-    return data.columns.map(col => col.name)
+    return data.columns.map((col) => col.name)
   }
 
   // camelCase
-  return data.columns.map(col => convertCase(col.originalName, 'camelCase'))
+  return data.columns.map((col) => convertCase(col.originalName, 'camelCase'))
 }
 
 /**
@@ -29,7 +30,7 @@ export function escapeSQLString(value: string): string {
   // Also handle backslashes for MySQL compatibility
   return value
     .replace(/\\/g, '\\\\') // Escape backslashes first
-    .replace(/'/g, '\'\'') // Escape single quotes
+    .replace(/'/g, "''") // Escape single quotes
     .replace(/\n/g, '\\n') // Escape newlines
     .replace(/\r/g, '\\r') // Escape carriage returns
     .replace(/\t/g, '\\t') // Escape tabs
@@ -94,18 +95,20 @@ export function generateSQLInsert(
 
   // Get column names based on naming pattern
   const columnNames = getColumnNames(data, namePattern)
-  const columnIds = data.columns.map(col => col.id)
+  const columnIds = data.columns.map((col) => col.id)
 
   // Build column list
-  const columnList = columnNames.map(name => `\`${name}\``).join(', ')
+  const columnList = columnNames.map((name) => `\`${name}\``).join(', ')
 
   // Generate INSERT statements for each row
   const statements = data.rows.map((row) => {
-    const values = columnIds.map((colId, index) => {
-      const value = row.cells[colId]
-      const dataType = data.columns[index].dataType
-      return formatSQLValue(value, dataType)
-    }).join(', ')
+    const values = columnIds
+      .map((colId, index) => {
+        const value = row.cells[colId]
+        const dataType = data.columns[index].dataType
+        return formatSQLValue(value, dataType)
+      })
+      .join(', ')
 
     return `INSERT INTO \`${tableName}\` (${columnList}) VALUES (${values});`
   })
@@ -131,8 +134,11 @@ export function generateSQLUpdate(
   }
 
   // Find key column definitions
-  const keyColumnDefs = data.columns.filter(col =>
-    keyColumns.includes(col.id) || keyColumns.includes(col.name) || keyColumns.includes(col.originalName),
+  const keyColumnDefs = data.columns.filter(
+    (col) =>
+      keyColumns.includes(col.id) ||
+      keyColumns.includes(col.name) ||
+      keyColumns.includes(col.originalName),
   )
 
   if (keyColumnDefs.length === 0) {
@@ -140,8 +146,8 @@ export function generateSQLUpdate(
   }
 
   // Get non-key columns for SET clause
-  const nonKeyColumns = data.columns.filter(col =>
-    !keyColumnDefs.some(keyCol => keyCol.id === col.id),
+  const nonKeyColumns = data.columns.filter(
+    (col) => !keyColumnDefs.some((keyCol) => keyCol.id === col.id),
   )
 
   if (nonKeyColumns.length === 0) {
@@ -151,20 +157,24 @@ export function generateSQLUpdate(
   // Generate UPDATE statements for each row
   const statements = data.rows.map((row) => {
     // Build SET clause with non-key columns
-    const setClauses = nonKeyColumns.map((col) => {
-      const columnName = getColumnNames({ columns: [col], rows: [] }, namePattern)[0]
-      const value = row.cells[col.id]
-      const formattedValue = formatSQLValue(value, col.dataType)
-      return `\`${columnName}\` = ${formattedValue}`
-    }).join(', ')
+    const setClauses = nonKeyColumns
+      .map((col) => {
+        const columnName = getColumnNames({ columns: [col], rows: [] }, namePattern)[0]
+        const value = row.cells[col.id]
+        const formattedValue = formatSQLValue(value, col.dataType)
+        return `\`${columnName}\` = ${formattedValue}`
+      })
+      .join(', ')
 
     // Build WHERE clause with key columns
-    const whereClauses = keyColumnDefs.map((col) => {
-      const columnName = getColumnNames({ columns: [col], rows: [] }, namePattern)[0]
-      const value = row.cells[col.id]
-      const formattedValue = formatSQLValue(value, col.dataType)
-      return `\`${columnName}\` = ${formattedValue}`
-    }).join(' AND ')
+    const whereClauses = keyColumnDefs
+      .map((col) => {
+        const columnName = getColumnNames({ columns: [col], rows: [] }, namePattern)[0]
+        const value = row.cells[col.id]
+        const formattedValue = formatSQLValue(value, col.dataType)
+        return `\`${columnName}\` = ${formattedValue}`
+      })
+      .join(' AND ')
 
     return `UPDATE \`${tableName}\` SET ${setClauses} WHERE ${whereClauses};`
   })
@@ -185,11 +195,13 @@ export function generateCreateTable(
   }
 
   // Build column definitions
-  const columnDefs = data.columns.map((col) => {
-    const columnName = getColumnNames({ columns: [col], rows: [] }, namePattern)[0]
-    const sqlType = getSQLType(col.dataType)
-    return `  \`${columnName}\` ${sqlType}`
-  }).join(',\n')
+  const columnDefs = data.columns
+    .map((col) => {
+      const columnName = getColumnNames({ columns: [col], rows: [] }, namePattern)[0]
+      const sqlType = getSQLType(col.dataType)
+      return `  \`${columnName}\` ${sqlType}`
+    })
+    .join(',\n')
 
   return `CREATE TABLE \`${tableName}\` (\n${columnDefs}\n);`
 }
@@ -238,7 +250,7 @@ export function exportToCSV(
 
   // Build data rows
   const dataRows = data.rows.map((row) => {
-    const values = data.columns.map(col => row.cells[col.id])
+    const values = data.columns.map((col) => row.cells[col.id])
     return values.map(escapeCSVValue).join(',')
   })
 
@@ -260,10 +272,7 @@ export function escapeMarkdownValue(value: CellValue): string {
   const stringValue = String(value)
 
   // Escape pipe characters and replace newlines with spaces
-  return stringValue
-    .replace(/\|/g, '\\|')
-    .replace(/\n/g, ' ')
-    .replace(/\r/g, '')
+  return stringValue.replace(/\|/g, '\\|').replace(/\n/g, ' ').replace(/\r/g, '')
 }
 
 /**
@@ -289,7 +298,7 @@ export function exportToMarkdown(
 
   // Build data rows
   const dataRows = data.rows.map((row) => {
-    const values = data.columns.map(col => row.cells[col.id])
+    const values = data.columns.map((col) => row.cells[col.id])
     return `| ${values.map(escapeMarkdownValue).join(' | ')} |`
   })
 
@@ -379,7 +388,7 @@ export function exportToJSON(
 
   // Get column names based on naming pattern
   const columnNames = getColumnNames(data, namePattern)
-  const columnIds = data.columns.map(col => col.id)
+  const columnIds = data.columns.map((col) => col.id)
 
   // Build JSON array of objects
   const jsonArray = data.rows.map((row) => {

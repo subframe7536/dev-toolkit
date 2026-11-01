@@ -1,4 +1,4 @@
-import { describe, expect, test } from 'bun:test'
+import { describe, expect, test } from 'vitest'
 
 import { detectTSVFormat, parseCSVText, parseTSVText } from './csv-parser'
 
@@ -33,8 +33,8 @@ describe('parseTSVText', () => {
     expect(secondRow).toBeDefined()
 
     // Check that empty cells are null
-    const ageCol = result.data?.columns.find(c => c.name === 'age')
-    const nameCol = result.data?.columns.find(c => c.name === 'name')
+    const ageCol = result.data?.columns.find((c) => c.name === 'age')
+    const nameCol = result.data?.columns.find((c) => c.name === 'name')
 
     expect(ageCol).toBeDefined()
     expect(nameCol).toBeDefined()

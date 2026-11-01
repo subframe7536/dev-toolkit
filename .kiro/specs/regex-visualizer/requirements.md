@@ -11,7 +11,7 @@ The Regex Tester is a web-based developer tool that provides interactive testing
 - **Match Highlighter**: The component that highlights matching text segments in the test input
 - **Regex Engine**: The JavaScript RegExp implementation used for pattern matching and testing
 - **Capture Groups**: Parenthesized subpatterns in regex that capture matched text for extraction
-- **Quantifiers**: Regex operators that specify how many times a pattern should match (*, +, ?, {n,m})
+- **Quantifiers**: Regex operators that specify how many times a pattern should match (\*, +, ?, {n,m})
 - **Character Classes**: Predefined or custom sets of characters that can match (e.g., \d, \w, [a-z])
 - **Anchors**: Regex tokens that match positions rather than characters (^, $, \b, \B)
 - **Flags**: Regex modifiers that change matching behavior (global, case-insensitive, multiline, etc.)

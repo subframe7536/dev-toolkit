@@ -3,8 +3,7 @@
 // ----------------------------------------------------------------------------
 
 // Array of '00'..'ff'
-const byteToHex: string[] = Array.from({ length: 256 }, (_, i) =>
-  i.toString(16).padStart(2, '0'))
+const byteToHex: string[] = Array.from({ length: 256 }, (_, i) => i.toString(16).padStart(2, '0'))
 
 // Map of charCode -> 0-15 (0-9, a-f, A-F)
 const hexToByte = new Int8Array(256).fill(-1)
@@ -46,7 +45,6 @@ export function toHex(input: string | Uint8Array): string {
   // 2. Map bytes to hex strings
   // Pre-allocating the array size helps V8/SpiderMonkey optimization
   const len = bytes.length
-  // eslint-disable-next-line unicorn/no-new-array
   const hexArr = new Array(len)
 
   for (let i = 0; i < len; i++) {
@@ -73,8 +71,8 @@ export function fromHex(input: string): string {
 
   for (let i = 0, j = 0; i < len; i += 2, j++) {
     // Read char codes directly (faster than input[i])
-    const high = hexToByte[input.charCodeAt(i)]
-    const low = hexToByte[input.charCodeAt(i + 1)]
+    const high = hexToByte[input.codePointAt(i)!]
+    const low = hexToByte[input.codePointAt(i + 1)!]
 
     if (high === -1 || low === -1) {
       throw new Error(`Invalid hex character at index ${i}`)

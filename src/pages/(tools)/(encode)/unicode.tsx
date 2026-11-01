@@ -1,12 +1,13 @@
-import { EncoderLayout } from '#/components/encoder-layout'
 import { createRoute } from 'solid-file-router'
+
+import { EncoderLayout } from '#/components/encoder-layout'
 
 export default createRoute({
   info: {
     title: 'Unicode Encoder/Decoder',
     description: 'Encode and decode Unicode escape sequences',
     category: 'Encoding',
-    icon: 'lucide:globe',
+    icon: 'i-lucide-globe',
     tags: ['unicode', 'encode', 'decode', 'escape'],
   },
   component: UnicodeEncoder,
@@ -18,7 +19,7 @@ function UnicodeEncoder() {
   const encodeToUnicode = (input: string) => {
     return Array.from(input)
       .map((char) => {
-        const code = char.charCodeAt(0)
+        const code = char.codePointAt(0)!
         if (code > 127) {
           return `\\u${code.toString(16).padStart(4, '0')}`
         }
@@ -28,15 +29,8 @@ function UnicodeEncoder() {
   }
 
   const decodeFromUnicode = (input: string) => {
-    return input.replace(REG_DECODE, (_, hex) =>
-      String.fromCharCode(Number.parseInt(hex, 16)))
+    return input.replace(REG_DECODE, (_, hex) => String.fromCodePoint(Number.parseInt(hex, 16)))
   }
 
-  return (
-    <EncoderLayout
-      mode="Unicode"
-      onEncode={encodeToUnicode}
-      onDecode={decodeFromUnicode}
-    />
-  )
+  return <EncoderLayout mode="Unicode" onEncode={encodeToUnicode} onDecode={decodeFromUnicode} />
 }

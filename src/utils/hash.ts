@@ -22,6 +22,6 @@ export async function generateHash(
   const buf = await crypto.subtle.digest(algorithm, data)
   const byteArray = new Uint8Array(buf)
   return Array.from(byteArray)
-    .map(byte => byte.toString(16).padStart(2, '0'))
+    .map((byte) => byte.toString(16).padStart(2, '0'))
     .join('')
 }

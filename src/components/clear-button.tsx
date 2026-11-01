@@ -1,30 +1,17 @@
-import { Show } from 'solid-js'
+import type { ButtonProps } from 'moraine'
+import { Button } from 'moraine'
+import { splitProps } from 'solid-js'
 
-import { Button, Icon } from 'moraine'
-
-interface ClearButtonProps {
+type ClearButtonProps = Omit<ButtonProps, 'onClick' | 'children'> & {
   onClear: () => void
-  size?: 'sm' | 'default' | 'lg'
-  disabled?: boolean
-  class?: string
-  text?: boolean
 }
 
 export function ClearButton(props: ClearButtonProps) {
-  const showText = () => props.text ?? true
+  const [local, rest] = splitProps(props, ['onClear'])
 
   return (
-    <Button
-      variant="destructive"
-      size={props.size}
-      classes={{ root: props.class }}
-      disabled={props.disabled}
-      onClick={props.onClear}
-      leading={showText() ? 'i-lucide-x' : undefined}
-    >
-      <Show when={showText()} fallback={<Icon name="i-lucide-x" />}>
-        Clear
-      </Show>
+    <Button tone="danger" leading="i-lucide-x" {...rest} onClick={() => local.onClear()}>
+      Clear
     </Button>
   )
 }

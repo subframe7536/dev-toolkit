@@ -70,7 +70,7 @@ const PREDEFINED_CLASS_DESCRIPTIONS: Record<string, string> = {
  */
 const ANCHOR_DESCRIPTIONS: Record<string, string> = {
   '^': 'Matches the start of the string (or line in multiline mode)',
-  '$': 'Matches the end of the string (or line in multiline mode)',
+  $: 'Matches the end of the string (or line in multiline mode)',
 }
 
 /**
@@ -83,7 +83,8 @@ function parseQuantifierRange(value: string): string {
   }
 
   const [, min, max, modifier] = match
-  const modifierText = modifier === '?' ? ' (non-greedy)' : modifier === '+' ? ' (possessive)' : ' (greedy)'
+  const modifierText =
+    modifier === '?' ? ' (non-greedy)' : modifier === '+' ? ' (possessive)' : ' (greedy)'
 
   if (max === undefined) {
     return `Matches exactly ${min} of the preceding element${modifierText}`
@@ -110,7 +111,7 @@ function parseCharacterClass(value: string): string {
 /**
  * Parse group type and provide description
  */
-function parseGroup(value: string): { description: string, details?: string } {
+function parseGroup(value: string): { description: string; details?: string } {
   // Named capture group (?<name>...)
   const namedMatch = value.match(/^\(\?<([^>]+)>/)
   if (namedMatch) {
@@ -132,7 +133,8 @@ function parseGroup(value: string): { description: string, details?: string } {
   if (value.startsWith('(?=')) {
     return {
       description: 'Positive lookahead assertion',
-      details: 'Matches if the pattern inside would match at this position, without consuming characters',
+      details:
+        'Matches if the pattern inside would match at this position, without consuming characters',
     }
   }
 
@@ -140,7 +142,8 @@ function parseGroup(value: string): { description: string, details?: string } {
   if (value.startsWith('(?!')) {
     return {
       description: 'Negative lookahead assertion',
-      details: 'Matches if the pattern inside would NOT match at this position, without consuming characters',
+      details:
+        'Matches if the pattern inside would NOT match at this position, without consuming characters',
     }
   }
 
@@ -148,7 +151,8 @@ function parseGroup(value: string): { description: string, details?: string } {
   if (value.startsWith('(?<=')) {
     return {
       description: 'Positive lookbehind assertion',
-      details: 'Matches if the pattern inside would match before this position, without consuming characters',
+      details:
+        'Matches if the pattern inside would match before this position, without consuming characters',
     }
   }
 
@@ -156,7 +160,8 @@ function parseGroup(value: string): { description: string, details?: string } {
   if (value.startsWith('(?<!')) {
     return {
       description: 'Negative lookbehind assertion',
-      details: 'Matches if the pattern inside would NOT match before this position, without consuming characters',
+      details:
+        'Matches if the pattern inside would NOT match before this position, without consuming characters',
     }
   }
 
@@ -466,12 +471,12 @@ function generateOverallDescription(tokens: Token[]): string {
   const parts: string[] = []
 
   // Check for common patterns
-  const hasStartAnchor = tokens.some(t => t.type === 'anchor' && t.value === '^')
-  const hasEndAnchor = tokens.some(t => t.type === 'anchor' && t.value === '$')
-  const hasAlternation = tokens.some(t => t.type === 'alternation')
-  const hasLookahead = tokens.some(t => t.type === 'lookahead')
-  const hasLookbehind = tokens.some(t => t.type === 'lookbehind')
-  const captureGroups = tokens.filter(t => t.type === 'group' && !t.value.startsWith('(?:'))
+  const hasStartAnchor = tokens.some((t) => t.type === 'anchor' && t.value === '^')
+  const hasEndAnchor = tokens.some((t) => t.type === 'anchor' && t.value === '$')
+  const hasAlternation = tokens.some((t) => t.type === 'alternation')
+  const hasLookahead = tokens.some((t) => t.type === 'lookahead')
+  const hasLookbehind = tokens.some((t) => t.type === 'lookbehind')
+  const captureGroups = tokens.filter((t) => t.type === 'group' && !t.value.startsWith('(?:'))
 
   if (hasStartAnchor && hasEndAnchor) {
     parts.push('Matches the entire string')
@@ -490,7 +495,9 @@ function generateOverallDescription(tokens: Token[]): string {
   }
 
   if (captureGroups.length > 0) {
-    parts.push(`Contains ${captureGroups.length} capture group${captureGroups.length > 1 ? 's' : ''}`)
+    parts.push(
+      `Contains ${captureGroups.length} capture group${captureGroups.length > 1 ? 's' : ''}`,
+    )
   }
 
   if (parts.length === 0) {
@@ -504,7 +511,7 @@ function generateOverallDescription(tokens: Token[]): string {
  * Convert tokens to RegexElement format for the UI
  */
 function tokensToElements(tokens: Token[]): RegexElement[] {
-  return tokens.map(token => ({
+  return tokens.map((token) => ({
     type: token.type,
     value: token.value,
     description: token.description + (token.details ? ` - ${token.details}` : ''),
@@ -545,18 +552,18 @@ export function explainPattern(pattern: string): ExplanationResult {
  */
 export function getElementTypeDescription(type: RegexElementType): string {
   const descriptions: Record<RegexElementType, string> = {
-    'literal': 'Literal characters match themselves exactly in the text.',
-    'quantifier': 'Quantifiers specify how many times the preceding element should match.',
+    literal: 'Literal characters match themselves exactly in the text.',
+    quantifier: 'Quantifiers specify how many times the preceding element should match.',
     'character-class': 'Character classes match any single character from a set of characters.',
     'predefined-class': 'Predefined classes are shortcuts for common character sets.',
-    'anchor': 'Anchors match positions in the text rather than characters.',
-    'group': 'Groups combine multiple elements and can capture matched text.',
-    'lookahead': 'Lookahead assertions check what follows without consuming characters.',
-    'lookbehind': 'Lookbehind assertions check what precedes without consuming characters.',
-    'alternation': 'Alternation allows matching one pattern or another.',
-    'escape': 'Escape sequences represent special or literal characters.',
-    'backreference': 'Backreferences match the same text as a previous capture group.',
-    'flag': 'Flags modify the overall behavior of the regex pattern.',
+    anchor: 'Anchors match positions in the text rather than characters.',
+    group: 'Groups combine multiple elements and can capture matched text.',
+    lookahead: 'Lookahead assertions check what follows without consuming characters.',
+    lookbehind: 'Lookbehind assertions check what precedes without consuming characters.',
+    alternation: 'Alternation allows matching one pattern or another.',
+    escape: 'Escape sequences represent special or literal characters.',
+    backreference: 'Backreferences match the same text as a previous capture group.',
+    flag: 'Flags modify the overall behavior of the regex pattern.',
   }
   return descriptions[type]
 }

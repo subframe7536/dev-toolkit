@@ -1,12 +1,13 @@
-import { EncoderLayout } from '#/components/encoder-layout'
 import { createRoute } from 'solid-file-router'
+
+import { EncoderLayout } from '#/components/encoder-layout'
 
 export default createRoute({
   info: {
     title: 'HTML Entity Encoder/Decoder',
     description: 'Encode and decode HTML entities',
     category: 'Encoding',
-    icon: 'lucide:code',
+    icon: 'i-lucide-code',
     tags: ['html', 'entities', 'encode', 'decode', 'escape'],
   },
   component: HTMLEncoder,
@@ -31,11 +32,5 @@ function HTMLEncoder() {
     return div.textContent || ''
   }
 
-  return (
-    <EncoderLayout
-      mode="HTML"
-      onEncode={encodeToHTML}
-      onDecode={decodeFromHTML}
-    />
-  )
+  return <EncoderLayout mode="HTML" onEncode={encodeToHTML} onDecode={decodeFromHTML} />
 }

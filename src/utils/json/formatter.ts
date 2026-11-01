@@ -143,7 +143,7 @@ function parseJSONError(error: unknown, input: string): JSONError {
  * @param position - Character position
  * @returns Line and column numbers (1-indexed)
  */
-function getLineAndColumn(input: string, position: number): { line: number, column: number } {
+function getLineAndColumn(input: string, position: number): { line: number; column: number } {
   const lines = input.substring(0, position).split('\n')
   return {
     line: lines.length,
@@ -205,9 +205,11 @@ function parseNestedJSON(obj: any): any {
 
   const result: Record<string, any> = {}
   for (const [key, value] of Object.entries(obj)) {
-    if (typeof value === 'string'
-      && value.trim().length > 0
-      && ((value.startsWith('[') && value.endsWith(']')) || (value.startsWith('{') && value.endsWith('}')))
+    if (
+      typeof value === 'string' &&
+      value.trim().length > 0 &&
+      ((value.startsWith('[') && value.endsWith(']')) ||
+        (value.startsWith('{') && value.endsWith('}')))
     ) {
       // Try to parse string as JSON
       try {

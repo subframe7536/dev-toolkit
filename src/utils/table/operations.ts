@@ -54,7 +54,7 @@ export function sortByColumn(
   direction: 'asc' | 'desc',
 ): TableData {
   // Find the column
-  const column = data.columns.find(col => col.id === columnId)
+  const column = data.columns.find((col) => col.id === columnId)
   if (!column) {
     throw new Error(`Column not found: ${columnId}`)
   }
@@ -76,11 +76,11 @@ export function sortByColumn(
     }
 
     // Compare values based on type
-    let comparison = 0
+    let comparison: number
     if (typeof aValue === 'number' && typeof bValue === 'number') {
       comparison = aValue - bValue
     } else if (typeof aValue === 'boolean' && typeof bValue === 'boolean') {
-      comparison = (aValue === bValue) ? 0 : aValue ? 1 : -1
+      comparison = aValue === bValue ? 0 : aValue ? 1 : -1
     } else {
       // Convert to string for comparison
       comparison = String(aValue).localeCompare(String(bValue))
@@ -91,7 +91,7 @@ export function sortByColumn(
   })
 
   // Update columns to reflect sort state
-  const newColumns = data.columns.map(col => ({
+  const newColumns = data.columns.map((col) => ({
     ...col,
     sortDirection: col.id === columnId ? direction : undefined,
   }))
@@ -110,12 +110,9 @@ export function sortByColumn(
  * @param columnId - The ID of the column to toggle
  * @returns New TableData with updated pin state
  */
-export function toggleColumnPin(
-  data: TableData,
-  columnId: string,
-): TableData {
+export function toggleColumnPin(data: TableData, columnId: string): TableData {
   // Find the column
-  const columnIndex = data.columns.findIndex(col => col.id === columnId)
+  const columnIndex = data.columns.findIndex((col) => col.id === columnId)
   if (columnIndex === -1) {
     throw new Error(`Column not found: ${columnId}`)
   }
@@ -124,10 +121,8 @@ export function toggleColumnPin(
   const newPinState = !column.isPinned
 
   // Update the column's pin state
-  const newColumns = data.columns.map(col =>
-    col.id === columnId
-      ? { ...col, isPinned: newPinState }
-      : col,
+  const newColumns = data.columns.map((col) =>
+    col.id === columnId ? { ...col, isPinned: newPinState } : col,
   )
 
   // If pinning, move column to the end of pinned columns
@@ -169,19 +164,19 @@ export function updateCell(
   value: CellValue,
 ): TableData {
   // Validate column exists
-  const columnExists = data.columns.some(col => col.id === columnId)
+  const columnExists = data.columns.some((col) => col.id === columnId)
   if (!columnExists) {
     throw new Error(`Column not found: ${columnId}`)
   }
 
   // Validate row exists
-  const rowIndex = data.rows.findIndex(row => row.id === rowId)
+  const rowIndex = data.rows.findIndex((row) => row.id === rowId)
   if (rowIndex === -1) {
     throw new Error(`Row not found: ${rowId}`)
   }
 
   // Create new rows array with updated cell
-  const newRows = data.rows.map(row =>
+  const newRows = data.rows.map((row) =>
     row.id === rowId
       ? {
           ...row,
@@ -207,17 +202,19 @@ export function updateCell(
  * @returns The snake_case version of the column name
  */
 export function convertToSnakeCase(columnName: string): string {
-  return columnName
-    // Replace spaces with underscores
-    .replace(/\s+/g, '_')
-    // Convert to lowercase
-    .toLowerCase()
-    // Remove or replace special characters (keep alphanumeric and underscores)
-    .replace(/[^a-z0-9_]/g, '_')
-    // Remove consecutive underscores
-    .replace(/_+/g, '_')
-    // Remove leading/trailing underscores
-    .replace(/^_+|_+$/g, '')
+  return (
+    columnName
+      // Replace spaces with underscores
+      .replace(/\s+/g, '_')
+      // Convert to lowercase
+      .toLowerCase()
+      // Remove or replace special characters (keep alphanumeric and underscores)
+      .replace(/[^a-z0-9_]/g, '_')
+      // Remove consecutive underscores
+      .replace(/_+/g, '_')
+      // Remove leading/trailing underscores
+      .replace(/^_+|_+$/g, '')
+  )
 }
 
 /**
@@ -227,7 +224,7 @@ export function convertToSnakeCase(columnName: string): string {
  * @returns New TableData with snake_case column names
  */
 export function applySnakeCaseToColumns(data: TableData): TableData {
-  const newColumns = data.columns.map(col => ({
+  const newColumns = data.columns.map((col) => ({
     ...col,
     name: convertToSnakeCase(col.name),
   }))

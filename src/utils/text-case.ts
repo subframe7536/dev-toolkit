@@ -41,47 +41,45 @@ export function convertTextCase(text: string, targetCase: TextCaseStyle): string
         .join('')
 
     case 'snake_case':
-      return words.map(word => word.toLowerCase()).join('_')
+      return words.map((word) => word.toLowerCase()).join('_')
 
     case 'kebab-case':
-      return words.map(word => word.toLowerCase()).join('-')
+      return words.map((word) => word.toLowerCase()).join('-')
 
     case 'PascalCase':
       return words
-        .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+        .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
         .join('')
 
     case 'CONSTANT_CASE':
-      return words.map(word => word.toUpperCase()).join('_')
+      return words.map((word) => word.toUpperCase()).join('_')
 
     case 'lowercase':
-      return words.map(word => word.toLowerCase()).join('')
+      return words.map((word) => word.toLowerCase()).join('')
 
     case 'UPPERCASE':
-      return words.map(word => word.toUpperCase()).join('')
+      return words.map((word) => word.toUpperCase()).join('')
 
     case 'Title Case':
       return words
-        .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+        .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
         .join(' ')
 
     case 'Sentence case': {
-      const sentence = words.map(word => word.toLowerCase()).join(' ')
+      const sentence = words.map((word) => word.toLowerCase()).join(' ')
       return sentence.charAt(0).toUpperCase() + sentence.slice(1)
     }
 
     case 'dot.case':
-      return words.map(word => word.toLowerCase()).join('.')
+      return words.map((word) => word.toLowerCase()).join('.')
 
     case 'path/case':
-      return words.map(word => word.toLowerCase()).join('/')
+      return words.map((word) => word.toLowerCase()).join('/')
 
     case 'aLtErNaTiNg CaSe':
       return text
         .split('')
-        .map((char, index) =>
-          index % 2 === 0 ? char.toLowerCase() : char.toUpperCase(),
-        )
+        .map((char, index) => (index % 2 === 0 ? char.toLowerCase() : char.toUpperCase()))
         .join('')
 
     default:

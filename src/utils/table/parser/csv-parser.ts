@@ -1,7 +1,8 @@
-import type { CellValue, ColumnDefinition, ParseResult, TableData, TableRow } from '../types'
+import Papa from 'papaparse'
 
 import { generateId } from '#/utils/random'
-import Papa from 'papaparse'
+
+import type { CellValue, ColumnDefinition, ParseResult, TableData, TableRow } from '../types'
 
 import { inferDataType } from './type-inference'
 
@@ -42,7 +43,7 @@ function parseDelimitedText(
 
     // Check for parsing errors
     if (parseResult.errors.length > 0) {
-      const errorMessages = parseResult.errors.map(e => e.message).join(', ')
+      const errorMessages = parseResult.errors.map((e) => e.message).join(', ')
       return {
         success: false,
         error: {
@@ -117,7 +118,7 @@ function parseDelimitedText(
     }
 
     // Create column definitions (data types will be inferred later)
-    const columns: ColumnDefinition[] = columnNames.map(name => ({
+    const columns: ColumnDefinition[] = columnNames.map((name) => ({
       id: generateId(),
       name,
       originalName: name,
@@ -133,7 +134,7 @@ function parseDelimitedText(
       const rowData = rawData[i]
 
       // Skip completely empty rows
-      if (!rowData || rowData.every(cell => cell === null || cell === undefined || cell === '')) {
+      if (!rowData || rowData.every((cell) => cell === null || cell === undefined || cell === '')) {
         continue
       }
 
@@ -179,13 +180,17 @@ function parseDelimitedText(
     }
 
     // Infer data types for each column
-    const columnsWithTypes = columns.map((col, index) => ({
-      ...col,
-      dataType: inferDataType(columnValues[index]),
-    }))
+    const columnsWithTypes = columns.map((col, index) => {
+      return {
+        id: col.id,
+        name: col.name,
+        dataType: inferDataType(columnValues[index]),
+      }
+    })
 
     const tableData: TableData = {
-      columns: columnsWithTypes,
+      // todo)) fix type here
+      columns: columnsWithTypes as any,
       rows,
     }
 

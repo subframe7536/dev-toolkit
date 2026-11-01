@@ -95,11 +95,11 @@
   - Add `applySnakeCaseToColumns` function to apply conversion to all columns
   - _Requirements: 13.1, 13.2, 13.3, 13.4, 13.5_
 
-- [ ]* 6.1 Write property test for snake_case conversion
+- [ ]\* 6.1 Write property test for snake_case conversion
   - **Property 24: Snake_case conversion**
   - **Validates: Requirements 13.1**
 
-- [ ]* 6.2 Write example tests for snake_case conversion
+- [ ]\* 6.2 Write example tests for snake_case conversion
   - Test space to underscore conversion (Requirement 13.2)
   - Test uppercase to lowercase conversion (Requirement 13.3)
   - Test special character handling (Requirement 13.4)
@@ -161,11 +161,11 @@
   - **Property 19: CSV special character escaping**
   - **Validates: Requirements 10.3**
 
-- [ ]* 8.3 Write property test for CSV format compliance
+- [ ]\* 8.3 Write property test for CSV format compliance
   - **Property 20: CSV format compliance**
   - **Validates: Requirements 10.4**
 
-- [ ]* 8.4 Write property test for Markdown table structure
+- [ ]\* 8.4 Write property test for Markdown table structure
   - **Property 21: Markdown table structure**
   - **Validates: Requirements 11.1, 11.2, 11.3, 11.4**
 
@@ -177,7 +177,7 @@
   - Return Blob for browser download
   - _Requirements: 9.1, 9.2, 9.3, 9.4, 9.5_
 
-- [ ]* 9.1 Write property test for Excel round-trip preservation
+- [ ]\* 9.1 Write property test for Excel round-trip preservation
   - **Property 17: Excel round-trip preservation**
   - **Validates: Requirements 9.2, 9.3**
 
@@ -186,7 +186,7 @@
   - Ensure SQL, CSV, Excel, and Markdown exports use converted column names when enabled
   - _Requirements: 13.5, 13.6_
 
-- [ ]* 10.1 Write property test for snake_case export consistency
+- [ ]\* 10.1 Write property test for snake_case export consistency
   - **Property 25: Snake_case export consistency**
   - **Validates: Requirements 13.5**
 

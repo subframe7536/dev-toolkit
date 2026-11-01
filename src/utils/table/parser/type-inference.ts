@@ -9,9 +9,8 @@ import type { CellValue, DataType } from '../types'
  */
 export function inferDataType(values: CellValue[]): DataType {
   // Filter out nulls and empty strings for type inference
-  const nonEmptyValues = values.filter(v =>
-    v !== null
-    && (typeof v !== 'string' || v.trim() !== ''),
+  const nonEmptyValues = values.filter(
+    (v) => v !== null && (typeof v !== 'string' || v.trim() !== ''),
   )
 
   // If all values are empty/null, default to string

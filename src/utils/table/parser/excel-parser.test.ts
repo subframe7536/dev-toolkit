@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'bun:test'
+import { describe, expect, it } from 'vitest'
 
 import { parseExcelFile } from './excel-parser'
 
@@ -93,7 +93,7 @@ describe('parseExcelFile', () => {
 
   it('should handle corrupted Excel files', async () => {
     // Create a file with truly invalid binary content that xlsx can't parse
-    const invalidData = new Uint8Array([0xFF, 0xFE, 0xFD, 0xFC, 0xFB])
+    const invalidData = new Uint8Array([0xff, 0xfe, 0xfd, 0xfc, 0xfb])
     const file = new File([invalidData], 'test.xlsx', {
       type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
     })

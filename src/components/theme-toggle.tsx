@@ -1,10 +1,10 @@
-import { useColorMode } from '@solid-hooks/core/web'
+import { Button } from 'moraine'
 import { createMemo } from 'solid-js'
 
-import { Button } from 'moraine'
+import { useTheme } from '#/contexts/theme-context'
 
 export function ThemeToggle(props: { class?: string }) {
-  const [mode, setMode] = useColorMode()
+  const { mode, setMode } = useTheme()
 
   const themeIcon = createMemo(() => {
     const current = mode()
@@ -19,18 +19,18 @@ export function ThemeToggle(props: { class?: string }) {
   })
 
   const handleToggle = () => {
-    setMode(m => m === 'auto' ? 'light' : m === 'light' ? 'dark' : 'auto')
+    setMode((m) => (m === 'auto' ? 'light' : m === 'light' ? 'dark' : 'auto'))
   }
 
   return (
     <Button
       onClick={handleToggle}
       variant="ghost"
-      aria-label="Toggle theme"
-      classes={{ root: props.class }}
+      aria-label={`Theme: ${mode()}. Switch to ${mode() === 'auto' ? 'light' : mode() === 'light' ? 'dark' : 'auto'} mode`}
+      title={`Theme: ${mode()}`}
+      size="icon-md"
+      classes={{ root: ['size-11 md:size-8', props.class] }}
       leading={themeIcon() as any}
-    >
-      {mode()}
-    </Button>
+    />
   )
 }
