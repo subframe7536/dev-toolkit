@@ -15,15 +15,15 @@ export function ToolLayout(props: ParentProps) {
       }
     >
       <Show when={tool()?.title}>
-        <header class="mb-6 flex gap-3 items-start">
-          <div class="text-muted-foreground mt-1 shrink-0">
+        <header class="mb-8 pb-6 border-b border-border/70 flex gap-3 items-start">
+          <div class="text-muted-foreground rounded-md bg-muted shrink-0 grid size-9 place-items-center">
             <Icon name={tool()?.icon as any} class="size-5" />
           </div>
           <div class="min-w-0">
             <h1 class="text-xl text-foreground leading-tight tracking-tight font-semibold sm:text-2xl">
               {tool()?.title}
             </h1>
-            <p class="text-sm text-muted-foreground leading-5 mt-1 max-w-90ch">
+            <p class="text-sm text-muted-foreground leading-6 mt-1.5 max-w-68ch">
               {tool()?.description}
             </p>
           </div>
