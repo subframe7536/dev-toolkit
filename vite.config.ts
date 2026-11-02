@@ -23,7 +23,7 @@ export default defineConfig({
   },
   plugins: [
     unocss(),
-    solid({ ssr: true }),
+    solid(),
     fileRouter({
       infoDts: {
         title: 'string',
@@ -33,7 +33,6 @@ export default defineConfig({
         icon: '`i-lucide-${string}`',
         tags: 'string[]',
       },
-      ssg: {},
     }),
     meta({
       title,
