@@ -316,32 +316,27 @@ export async function exportToExcel(
   namePattern: NamePattern = 'original',
   includeHeaders: boolean = true,
 ): Promise<Blob> {
-  const { utils, write } = await import('xlsx')
+  const { writeXlsx } = await import('hucre/xlsx')
 
   // Get column names based on naming pattern
   const columnNames = getColumnNames(data, namePattern)
 
   // Build worksheet data as array of arrays
   // First row is the header
-  const worksheetData: any[][] = includeHeaders ? [columnNames] : []
+  const worksheetData: CellValue[][] = includeHeaders ? [columnNames] : []
 
   // Add data rows
   for (const row of data.rows) {
     const rowData = data.columns.map((col) => {
-      const value = row.cells[col.id]
       // Return the raw value (null, number, string, boolean)
-      // xlsx library will handle the type conversion
-      return value
+      // hucre will handle the type conversion
+      return row.cells[col.id]
     })
     worksheetData.push(rowData)
   }
 
-  // Create worksheet from array of arrays
-  const worksheet = utils.aoa_to_sheet(worksheetData)
-
-  // Apply basic formatting to header row (bold)
   // Set column widths based on content
-  const columnWidths = columnNames.map((name, colIndex) => {
+  const columns = columnNames.map((name, colIndex) => {
     // Calculate max width for this column
     let maxWidth = name.length
 
@@ -356,20 +351,15 @@ export async function exportToExcel(
     }
 
     // Add some padding and cap at reasonable max
-    return { wch: Math.min(maxWidth + 2, 50) }
+    return { width: Math.min(maxWidth + 2, 50) }
   })
 
-  worksheet['!cols'] = columnWidths
-
-  // Create workbook and add worksheet
-  const workbook = utils.book_new()
-  utils.book_append_sheet(workbook, worksheet, 'Sheet1')
-
-  // Write workbook to binary string
-  const excelBuffer = write(workbook, { bookType: 'xlsx', type: 'array' })
+  const excelBuffer = await writeXlsx({
+    sheets: [{ name: 'Sheet1', columns, rows: worksheetData }],
+  })
 
   // Create Blob from buffer
-  return new Blob([excelBuffer], {
+  return new Blob([new Uint8Array(excelBuffer)], {
     type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
   })
 }

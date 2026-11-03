@@ -22,7 +22,7 @@
 
 ## Key Libraries
 
-- **Table Processing**: @tanstack/solid-table, papaparse, xlsx
+- **Table Processing**: @tanstack/solid-table, papaparse, hucre
 - **Data Parsing**: js-yaml, jsonrepair
 - **Testing**: vitest
 

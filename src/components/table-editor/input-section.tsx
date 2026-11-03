@@ -5,6 +5,7 @@ import { FileUpload } from '#/components/file-upload'
 import { ToolOptions } from '#/components/tool-options'
 import { useTableEditorContext } from '#/contexts/table-editor-context'
 import {
+  DEFAULT_DATE_FORMAT,
   detectTSVFormat,
   getExcelSheetNames,
   parseCSVFile,
@@ -29,6 +30,14 @@ const CSV_EXAMPLE = `id,name,age
 
 const EXCEL_EXAMPLE = 'id\tname\tage\n1\tAlice\t30\n2\tBob\t25'
 
+const DATE_FORMAT_ITEMS = [
+  DEFAULT_DATE_FORMAT,
+  'YYYY-MM-DD',
+  'MM/DD/YYYY',
+  'DD/MM/YYYY',
+  'YYYY/MM/DD',
+].map((format) => ({ value: format, label: format }))
+
 const PLACEHOLDER = `Example (MySQL Cli Output):
 
 ${MYSQL_EXAMPLE}
@@ -49,6 +58,7 @@ export function InputSection() {
   const [uploadedFile, setUploadedFile] = createSignal<File | undefined>(undefined)
   const [sheetNames, setSheetNames] = createSignal<string[]>([])
   const [selectedSheet, setSelectedSheet] = createSignal<string>('')
+  const [dateFormat, setDateFormat] = createSignal(DEFAULT_DATE_FORMAT)
   const [isParsing, setIsParsing] = createSignal(false)
 
   // Auto-detect file type based on extension or mime type
@@ -65,6 +75,11 @@ export function InputSection() {
       return 'excel'
     }
     return 'csv'
+  }
+
+  const isExcelFile = () => {
+    const file = uploadedFile()
+    return file !== undefined && detectFileType(file) === 'excel'
   }
 
   const handleReplaceLineWrap = (replace: boolean) => {
@@ -158,7 +173,12 @@ export function InputSection() {
 
       if (fileType === 'excel') {
         const sheetIndex = sheetNames().indexOf(selectedSheet())
-        const result = await parseExcelFile(file, sheetIndex >= 0 ? sheetIndex : 0)
+        const result = await parseExcelFile(
+          file,
+          sheetIndex >= 0 ? sheetIndex : 0,
+          true,
+          dateFormat(),
+        )
 
         if (result.success && result.data) {
           actions.setData(result.data)
@@ -312,23 +332,42 @@ export function InputSection() {
                     disabled={!uploadedFile()}
                   />
                 </div>
-                <Show when={sheetNames().length > 1}>
+                <Show when={isExcelFile()}>
                   <ToolOptions>
+                    <Show when={sheetNames().length > 1}>
+                      <Field
+                        label="Select Sheet"
+                        classes={{
+                          root: 'min-w-0',
+                          label: 'text-muted-foreground font-medium text-xs',
+                        }}
+                      >
+                        <Select
+                          value={selectedSheet()}
+                          onValueChange={(value) => {
+                            if (value !== undefined) {
+                              setSelectedSheet(value)
+                            }
+                          }}
+                          items={sheetNames().map((s) => ({ value: s, label: s }))}
+                        />
+                      </Field>
+                    </Show>
                     <Field
-                      label="Select Sheet"
+                      label="Date Format"
                       classes={{
                         root: 'min-w-0',
                         label: 'text-muted-foreground font-medium text-xs',
                       }}
                     >
                       <Select
-                        value={selectedSheet()}
+                        value={dateFormat()}
                         onValueChange={(value) => {
                           if (value !== undefined) {
-                            setSelectedSheet(value)
+                            setDateFormat(value)
                           }
                         }}
-                        items={sheetNames().map((s) => ({ value: s, label: s }))}
+                        items={DATE_FORMAT_ITEMS}
                       />
                     </Field>
                   </ToolOptions>
