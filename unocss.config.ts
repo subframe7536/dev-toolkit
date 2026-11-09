@@ -99,7 +99,7 @@ export default defineConfig<PresetWind4Theme>({
         '[&_[data-slot=switch]]:items-center',
         ...[
           'input',
-          'input-number',
+          'number-input',
           'select-control',
           'multi-select-control',
           'slider',

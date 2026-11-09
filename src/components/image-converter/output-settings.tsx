@@ -1,4 +1,4 @@
-import { Field, InputNumber, Select, Slider, Switch } from 'moraine'
+import { Field, NumberInput, Select, Slider, Switch } from 'moraine'
 import type { Component } from 'solid-js'
 import { Show } from 'solid-js'
 
@@ -70,7 +70,7 @@ export const OutputSettings: Component<OutputSettingsProps> = (props) => {
         </p>
         <div class="flex gap-2">
           <Field hiddenLabel="Global Width" classes={{ root: 'min-w-0 flex-1' }}>
-            <InputNumber
+            <NumberInput
               classes={{ root: 'min-w-0 flex-1' }}
               orientation="vertical"
               placeholder="Width"
@@ -86,7 +86,7 @@ export const OutputSettings: Component<OutputSettingsProps> = (props) => {
             />
           </Field>
           <Field hiddenLabel="Global Height" classes={{ root: 'min-w-0 flex-1' }}>
-            <InputNumber
+            <NumberInput
               classes={{ root: 'min-w-0 flex-1' }}
               orientation="vertical"
               placeholder="Height"

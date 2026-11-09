@@ -1,4 +1,4 @@
-import { Field, Button, InputNumber, Tabs, CopyButton, Toast } from 'moraine'
+import { Field, Button, NumberInput, Tabs, CopyButton, Toast } from 'moraine'
 import { createRoute } from 'solid-file-router'
 import { createSignal, For, onMount, Show } from 'solid-js'
 
@@ -42,8 +42,8 @@ function UUIDGenerator() {
     }
   }
 
-  const handleCustomInput = (value: number) => {
-    const newCount = Math.trunc(value) || 1
+  const handleCustomInput = (value: number | undefined) => {
+    const newCount = Math.trunc(value ?? 0) || 1
     setCount(newCount)
     // Update tab selection if it matches a preset
     if (PRESET_COUNTS.includes(newCount as any)) {
@@ -81,7 +81,7 @@ function UUIDGenerator() {
             label="Custom Count"
             classes={{ root: 'min-w-0 w-32', label: 'text-muted-foreground font-medium text-xs' }}
           >
-            <InputNumber
+            <NumberInput
               minValue={1}
               maxValue={100}
               rawValue={count()}

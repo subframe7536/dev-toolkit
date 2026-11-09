@@ -1,4 +1,4 @@
-import { Field, Button, InputNumber } from 'moraine'
+import { Field, Button, NumberInput } from 'moraine'
 import type { Component } from 'solid-js'
 import { createEffect, on, Show } from 'solid-js'
 
@@ -75,7 +75,7 @@ export const ImageCard: Component<ImageCardProps> = (props) => {
 
       <div class="mt-2 space-y-2">
         <Field hiddenLabel={`Width for ${props.image.file.name}`} classes={{ root: 'min-w-0' }}>
-          <InputNumber
+          <NumberInput
             orientation="vertical"
             placeholder="Width"
             classes={{ root: 'h-8', input: 'text-xs' }}
@@ -90,7 +90,7 @@ export const ImageCard: Component<ImageCardProps> = (props) => {
         </Field>
 
         <Field hiddenLabel={`Height for ${props.image.file.name}`} classes={{ root: 'min-w-0' }}>
-          <InputNumber
+          <NumberInput
             orientation="vertical"
             placeholder="Height"
             classes={{ root: 'h-8', input: 'text-xs' }}
