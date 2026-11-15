@@ -74,15 +74,10 @@ export const OutputSettings: Component<OutputSettingsProps> = (props) => {
               classes={{ root: 'min-w-0 flex-1' }}
               orientation="vertical"
               placeholder="Width"
-              value={props.globalWidth ? `${props.globalWidth}` : ''}
+              value={props.globalWidth}
               onValueChange={(value) =>
-                props.onGlobalWidthChange(value ? Number.parseInt(value) : undefined)
+                props.onGlobalWidthChange(value === undefined ? undefined : Math.trunc(value))
               }
-              onInput={(event) => {
-                if (event.target instanceof HTMLInputElement && event.target.value === '') {
-                  props.onGlobalWidthChange(undefined)
-                }
-              }}
             />
           </Field>
           <Field hiddenLabel="Global Height" classes={{ root: 'min-w-0 flex-1' }}>
@@ -90,15 +85,10 @@ export const OutputSettings: Component<OutputSettingsProps> = (props) => {
               classes={{ root: 'min-w-0 flex-1' }}
               orientation="vertical"
               placeholder="Height"
-              value={props.globalHeight ? `${props.globalHeight}` : ''}
+              value={props.globalHeight}
               onValueChange={(value) =>
-                props.onGlobalHeightChange(value ? Number.parseInt(value) : undefined)
+                props.onGlobalHeightChange(value === undefined ? undefined : Math.trunc(value))
               }
-              onInput={(event) => {
-                if (event.target instanceof HTMLInputElement && event.target.value === '') {
-                  props.onGlobalHeightChange(undefined)
-                }
-              }}
             />
           </Field>
         </div>

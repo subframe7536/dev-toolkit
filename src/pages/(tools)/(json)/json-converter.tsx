@@ -170,7 +170,7 @@ function JSONConverter() {
             <Select
               value={mode()}
               onValueChange={(value) => {
-                if (value !== undefined) {
+                if (value !== null) {
                   setMode(value)
                 }
               }}

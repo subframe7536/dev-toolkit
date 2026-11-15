@@ -52,7 +52,7 @@ function App(props: RouteSectionProps) {
     <ToolSearchProvider>
       <ThemeProvider>
         <Sidebar
-          width="15rem"
+          width={240}
           class="h-dvh"
           classes={{
             panel: 'bg-sidebar text-sidebar-foreground',

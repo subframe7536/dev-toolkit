@@ -84,8 +84,8 @@ function UUIDGenerator() {
             <NumberInput
               minValue={1}
               maxValue={100}
-              rawValue={count()}
-              onRawValueChange={(val) => handleCustomInput(val)}
+              value={count()}
+              onValueChange={handleCustomInput}
               classes={{ root: 'h-13 md:h-10', input: 'text-center' }}
             />
           </Field>

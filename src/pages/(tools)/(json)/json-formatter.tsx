@@ -220,7 +220,7 @@ function JSONFormatter() {
             <Select
               value={targetCase()}
               onValueChange={(value) => {
-                if (value !== undefined) {
+                if (value !== null) {
                   setTargetCase(value)
                 }
               }}

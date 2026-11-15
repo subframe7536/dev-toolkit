@@ -21,8 +21,8 @@ interface ImageCardProps {
 }
 
 export const ImageCard: Component<ImageCardProps> = (props) => {
-  const handleWidthChange = (val: string) => {
-    const width = val ? Number.parseInt(val) : undefined
+  const handleWidthChange = (val: number | undefined) => {
+    const width = val === undefined ? undefined : Math.trunc(val)
     const updates: Partial<ImageFileData> = { targetWidth: width }
 
     if (props.aspectRatio && width && props.image.origin) {
@@ -33,8 +33,8 @@ export const ImageCard: Component<ImageCardProps> = (props) => {
     props.onUpdate(props.image.id, updates)
   }
 
-  const handleHeightChange = (val: string) => {
-    const height = val ? Number.parseInt(val) : undefined
+  const handleHeightChange = (val: number | undefined) => {
+    const height = val === undefined ? undefined : Math.trunc(val)
     const updates: Partial<ImageFileData> = { targetHeight: height }
 
     if (props.aspectRatio && height && props.image.origin) {
@@ -79,13 +79,8 @@ export const ImageCard: Component<ImageCardProps> = (props) => {
             orientation="vertical"
             placeholder="Width"
             classes={{ root: 'h-8', input: 'text-xs' }}
-            value={props.image.targetWidth ? `${props.image.targetWidth}` : ''}
+            value={props.image.targetWidth}
             onValueChange={handleWidthChange}
-            onInput={(event) => {
-              if (event.target instanceof HTMLInputElement && event.target.value === '') {
-                handleWidthChange('')
-              }
-            }}
           />
         </Field>
 
@@ -94,13 +89,8 @@ export const ImageCard: Component<ImageCardProps> = (props) => {
             orientation="vertical"
             placeholder="Height"
             classes={{ root: 'h-8', input: 'text-xs' }}
-            value={props.image.targetHeight ? `${props.image.targetHeight}` : ''}
+            value={props.image.targetHeight}
             onValueChange={handleHeightChange}
-            onInput={(event) => {
-              if (event.target instanceof HTMLInputElement && event.target.value === '') {
-                handleHeightChange('')
-              }
-            }}
           />
         </Field>
       </div>

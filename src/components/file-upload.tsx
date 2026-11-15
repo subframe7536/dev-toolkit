@@ -21,7 +21,7 @@ interface MultipleFileProps {
 }
 
 type Props = SingleFileProps | MultipleFileProps
-type FileRejections = Parameters<NonNullable<FileUploadProps['onFileReject']>>[0]
+type FileRejections = Parameters<NonNullable<FileUploadProps['onReject']>>[0]
 
 export function FileUpload(props: Props) {
   const info = createMemo(
@@ -60,9 +60,9 @@ export function FileUpload(props: Props) {
         label="Drag or Click to upload"
         maxFiles={200}
         multiple={props.multiple}
-        onFileReject={handleFileReject}
+        onReject={handleFileReject}
         onValueChange={handleValueChange}
-        preview={false}
+        fileList={false}
         classes={{
           control: 'h-81',
         }}

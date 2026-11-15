@@ -227,7 +227,7 @@ export function ExportDialog() {
                   <Select
                     value={exportFormat()}
                     onValueChange={(value) => {
-                      if (value !== undefined) {
+                      if (value !== null) {
                         setExportFormat(value)
                       }
                     }}

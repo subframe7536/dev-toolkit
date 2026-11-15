@@ -91,7 +91,7 @@ export function ToolSearchDialog() {
           groups={groups()}
           searchTerm={query()}
           onSearchTermChange={setQuery}
-          disableFilter
+          filterItems={({ groups }) => groups}
           placeholder="Search tools by name or task..."
           inputProps={{ 'aria-label': 'Search tools' }}
           listboxProps={{ 'aria-label': 'Tools' }}

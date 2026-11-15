@@ -1,4 +1,4 @@
-import type { CellContext } from '@tanstack/solid-table'
+import type { CellContext } from '@tanstack/table-core'
 import { Button, Textarea } from 'moraine'
 import type { DataTableT } from 'moraine/data-table'
 import { DataTable as MoraineDataTable, createDataTable } from 'moraine/data-table'

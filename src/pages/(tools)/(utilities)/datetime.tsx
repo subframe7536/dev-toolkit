@@ -201,7 +201,7 @@ function DateTimeTool() {
                     <Select
                       value={selectedLocale()}
                       onValueChange={(value) => {
-                        if (value !== undefined) {
+                        if (value !== null) {
                           setSelectedLocale(value)
                         }
                       }}
@@ -218,7 +218,7 @@ function DateTimeTool() {
                     <Select
                       value={selectedTimeZone()}
                       onValueChange={(value) => {
-                        if (value !== undefined) {
+                        if (value !== null) {
                           setSelectedTimeZone(value)
                         }
                       }}

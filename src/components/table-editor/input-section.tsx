@@ -345,7 +345,7 @@ export function InputSection() {
                         <Select
                           value={selectedSheet()}
                           onValueChange={(value) => {
-                            if (value !== undefined) {
+                            if (value !== null) {
                               setSelectedSheet(value)
                             }
                           }}
@@ -363,7 +363,7 @@ export function InputSection() {
                       <Select
                         value={dateFormat()}
                         onValueChange={(value) => {
-                          if (value !== undefined) {
+                          if (value !== null) {
                             setDateFormat(value)
                           }
                         }}
