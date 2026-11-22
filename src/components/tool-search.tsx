@@ -61,7 +61,7 @@ export function ToolSearchDialog() {
   const tools = getTools()
   const groups = createMemo(() => [
     {
-      id: 'tools',
+      type: 'group' as const,
       items: searchTools(tools, query()).map((tool) => ({
         value: tool.path,
         label: tool.info.title,
@@ -88,18 +88,18 @@ export function ToolSearchDialog() {
     >
       <Dialog.Content aria-label="Find a tool">
         <CommandPalette
-          groups={groups()}
-          searchTerm={query()}
-          onSearchTermChange={setQuery}
-          filterItems={({ groups }) => groups}
+          items={groups()}
+          searchValue={query()}
+          onSearchValueChange={setQuery}
+          filterMethod={false}
           placeholder="Search tools by name or task..."
           inputProps={{ 'aria-label': 'Search tools' }}
           listboxProps={{ 'aria-label': 'Tools' }}
           closable
-          onClose={() => context.setOpen(false)}
+          onCloseRequest={() => context.setOpen(false)}
           onSelect={(item) => {
             context.setOpen(false)
-            if (sidebar.isMobile()) {
+            if (sidebar.mobile()) {
               sidebar.setOpen(false)
             }
             navigate(item.value)

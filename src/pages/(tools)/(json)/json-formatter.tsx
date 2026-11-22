@@ -235,7 +235,7 @@ function JSONFormatter() {
             min={2}
             max={8}
             step={2}
-            marker
+            markers
             class="min-w-0 w-44 self-end"
           />
         </div>

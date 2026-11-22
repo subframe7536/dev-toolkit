@@ -75,7 +75,7 @@ function AppContent(props: RouteSectionProps) {
 
   return (
     <>
-      <Show when={sidebar.isMobile()}>
+      <Show when={sidebar.mobile()}>
         <Sidebar.Panel aria-label="Tools navigation">
           <Sidebar.Header>
             <A
@@ -102,7 +102,7 @@ function AppContent(props: RouteSectionProps) {
                             href={tool.path}
                             title={tool.info.title}
                             leading={tool.info.icon}
-                            isActive={props.location.pathname === tool.path}
+                            active={props.location.pathname === tool.path}
                           >
                             {tool.info.title}
                           </Sidebar.MenuButton>
@@ -159,7 +159,7 @@ function AppContent(props: RouteSectionProps) {
             </a>
           </footer>
           <ToolSearchDialog />
-          <Toast visibleToasts={4} preventDuplicate />
+          <Toast maxVisible={4} preventDuplicate />
         </div>
       </Sidebar.Inset>
     </>
@@ -186,7 +186,7 @@ function AppToolbar(props: { pathname: string }) {
         </div>
         <nav aria-label="Tool navigation" class="flex shrink-0 items-center sm:gap-1">
           <Show
-            when={!sidebar.isMobile()}
+            when={!sidebar.mobile()}
             fallback={
               <Sidebar.Trigger
                 as={Button}

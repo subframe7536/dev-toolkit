@@ -21,8 +21,8 @@ interface ImageCardProps {
 }
 
 export const ImageCard: Component<ImageCardProps> = (props) => {
-  const handleWidthChange = (val: number | undefined) => {
-    const width = val === undefined ? undefined : Math.trunc(val)
+  const handleWidthChange = (val: number | null) => {
+    const width = val === null ? undefined : Math.trunc(val)
     const updates: Partial<ImageFileData> = { targetWidth: width }
 
     if (props.aspectRatio && width && props.image.origin) {
@@ -33,8 +33,8 @@ export const ImageCard: Component<ImageCardProps> = (props) => {
     props.onUpdate(props.image.id, updates)
   }
 
-  const handleHeightChange = (val: number | undefined) => {
-    const height = val === undefined ? undefined : Math.trunc(val)
+  const handleHeightChange = (val: number | null) => {
+    const height = val === null ? undefined : Math.trunc(val)
     const updates: Partial<ImageFileData> = { targetHeight: height }
 
     if (props.aspectRatio && height && props.image.origin) {
@@ -79,7 +79,7 @@ export const ImageCard: Component<ImageCardProps> = (props) => {
             orientation="vertical"
             placeholder="Width"
             classes={{ root: 'h-8', input: 'text-xs' }}
-            value={props.image.targetWidth}
+            value={props.image.targetWidth ?? null}
             onValueChange={handleWidthChange}
           />
         </Field>
@@ -89,7 +89,7 @@ export const ImageCard: Component<ImageCardProps> = (props) => {
             orientation="vertical"
             placeholder="Height"
             classes={{ root: 'h-8', input: 'text-xs' }}
-            value={props.image.targetHeight}
+            value={props.image.targetHeight ?? null}
             onValueChange={handleHeightChange}
           />
         </Field>

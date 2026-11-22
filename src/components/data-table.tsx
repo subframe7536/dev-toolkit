@@ -131,7 +131,7 @@ export function DataTable(props: DataTableProps) {
           aria-label={`Editing ${cellProps.name}`}
           class="min-h-0 w-full"
           rows={2}
-          autofocus
+          autoFocus
           value={draft()}
           onValueChange={setDraft}
           onBlur={save}

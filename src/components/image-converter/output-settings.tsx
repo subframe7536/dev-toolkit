@@ -74,9 +74,9 @@ export const OutputSettings: Component<OutputSettingsProps> = (props) => {
               classes={{ root: 'min-w-0 flex-1' }}
               orientation="vertical"
               placeholder="Width"
-              value={props.globalWidth}
+              value={props.globalWidth ?? null}
               onValueChange={(value) =>
-                props.onGlobalWidthChange(value === undefined ? undefined : Math.trunc(value))
+                props.onGlobalWidthChange(value === null ? undefined : Math.trunc(value))
               }
             />
           </Field>
@@ -85,9 +85,9 @@ export const OutputSettings: Component<OutputSettingsProps> = (props) => {
               classes={{ root: 'min-w-0 flex-1' }}
               orientation="vertical"
               placeholder="Height"
-              value={props.globalHeight}
+              value={props.globalHeight ?? null}
               onValueChange={(value) =>
-                props.onGlobalHeightChange(value === undefined ? undefined : Math.trunc(value))
+                props.onGlobalHeightChange(value === null ? undefined : Math.trunc(value))
               }
             />
           </Field>

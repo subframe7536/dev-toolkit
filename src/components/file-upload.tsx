@@ -1,4 +1,4 @@
-import type { FileUploadProps, FileUploadT } from 'moraine'
+import type { FileUploadT } from 'moraine'
 import { Field, FileUpload as MoraineFileUpload, Toast } from 'moraine'
 import { createMemo } from 'solid-js'
 
@@ -21,7 +21,6 @@ interface MultipleFileProps {
 }
 
 type Props = SingleFileProps | MultipleFileProps
-type FileRejections = Parameters<NonNullable<FileUploadProps['onReject']>>[0]
 
 export function FileUpload(props: Props) {
   const info = createMemo(
@@ -41,11 +40,11 @@ export function FileUpload(props: Props) {
     }
   }
 
-  const handleFileReject = (info: FileRejections) => {
-    for (const i of info) {
+  const handleFileReject = ({ rejections }: FileUploadT.ValueInvalidDetails) => {
+    for (const i of rejections) {
       Toast.error({
         title: `Failed to upload ${i.file.name}`,
-        description: i.errors.join(', '),
+        description: i.reasons.join(', '),
       })
     }
   }
@@ -60,7 +59,7 @@ export function FileUpload(props: Props) {
         label="Drag or Click to upload"
         maxFiles={200}
         multiple={props.multiple}
-        onReject={handleFileReject}
+        onValueInvalid={handleFileReject}
         onValueChange={handleValueChange}
         fileList={false}
         classes={{

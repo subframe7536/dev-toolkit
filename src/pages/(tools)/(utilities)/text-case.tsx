@@ -52,7 +52,7 @@ function TextCase() {
       >
         <Textarea
           value={input()}
-          modelModifiers={{ lazy: true }}
+          modifiers={{ lazy: true }}
           onValueChange={setInput}
           classes={{ root: 'tool-editor' }}
           placeholder="Enter text to convert..."
