@@ -41,6 +41,10 @@ export function manualPwa(options: ManualPwaOptions): Plugin {
       })
     },
     generateBundle(_, bundle) {
+      if (this.environment?.name === 'ssr' || config.build?.ssr) {
+        return
+      }
+
       const manifest = createManifest(options)
       const bundleAssets = getBundleAssets(bundle)
       const precacheUrls = unique(['.', ...PUBLIC_ASSETS, ...bundleAssets])
@@ -156,11 +160,36 @@ const resolveUrl = url => new URL(url, self.registration.scope).toString()
 const isLegacyCache = cacheName => cacheName.startsWith(${JSON.stringify(LEGACY_CACHE_PREFIX)})
 const hasLegacyCaches = () => caches.keys().then(cacheNames => cacheNames.some(isLegacyCache))
 
+const isHashedAsset = url => url.startsWith('assets/')
+
 self.addEventListener('install', event => {
   event.waitUntil(
     (async () => {
       const cache = await caches.open(CACHE_NAME)
-      await cache.addAll(PRECACHE_URLS.map(url => new Request(resolveUrl(url), { cache: 'reload' })))
+      const canReuse = typeof caches.match === 'function' && typeof cache.put === 'function'
+      const urlsToFetch = []
+
+      if (canReuse) {
+        await Promise.all(
+          PRECACHE_URLS.map(async url => {
+            const resolved = resolveUrl(url)
+            if (isHashedAsset(url)) {
+              const existing = await caches.match(resolved).catch(() => undefined)
+              if (existing && existing.status === 200 && !existing.redirected) {
+                await cache.put(resolved, existing)
+                return
+              }
+            }
+            urlsToFetch.push(resolved)
+          }),
+        )
+      } else {
+        urlsToFetch.push(...PRECACHE_URLS.map(resolveUrl))
+      }
+
+      if (urlsToFetch.length > 0) {
+        await cache.addAll(urlsToFetch.map(url => new Request(url, { cache: 'reload' })))
+      }
 
       // Replace the legacy worker without waiting for a prompt its clients may never show.
       if (await hasLegacyCaches()) {
@@ -220,30 +249,53 @@ self.addEventListener('fetch', event => {
   }
 
   if (request.mode === 'navigate') {
-    event.respondWith(networkFirstNavigation(request))
+    event.respondWith(cacheFirstNavigation(event, requestUrl))
     return
   }
 
-  event.respondWith(cacheFirst(request))
+  event.respondWith(cacheFirst(event))
 })
 
-async function networkFirstNavigation(request) {
+async function matchNavigationCache(cache, request, requestUrl) {
+  const cachedResponse = await cache.match(request, { ignoreSearch: true })
+  if (cachedResponse) {
+    return cachedResponse
+  }
+
+  if (requestUrl.pathname === new URL('index.html', self.registration.scope).pathname) {
+    return cache.match(resolveUrl('.'))
+  }
+
+  return undefined
+}
+
+async function cacheFirstNavigation(event, requestUrl) {
+  const { request } = event
   const cache = await caches.open(CACHE_NAME)
+  const cachedResponse = await matchNavigationCache(cache, request, requestUrl)
+
+  if (cachedResponse) {
+    return cachedResponse
+  }
 
   try {
     const response = await fetch(request)
 
-    if (response.status === 200) {
-      await cache.put(request, response.clone())
+    if (response.status === 200 && !response.redirected) {
+      const cacheWrite = cache.put(request, response.clone()).catch(() => {})
+      if (typeof event.waitUntil === 'function') {
+        event.waitUntil(cacheWrite)
+      }
     }
 
     return response
   } catch {
-    return (await cache.match(request)) ?? (await cache.match(resolveUrl('.'))) ?? Response.error()
+    return (await cache.match(resolveUrl('.'))) ?? Response.error()
   }
 }
 
-async function cacheFirst(request) {
+async function cacheFirst(event) {
+  const { request } = event
   const cache = await caches.open(CACHE_NAME)
   const cachedResponse = await cache.match(request)
 
@@ -254,8 +306,11 @@ async function cacheFirst(request) {
   try {
     const response = await fetch(request)
 
-    if (response.status === 200) {
-      await cache.put(request, response.clone())
+    if (response.status === 200 && !response.redirected) {
+      const cacheWrite = cache.put(request, response.clone()).catch(() => {})
+      if (typeof event.waitUntil === 'function') {
+        event.waitUntil(cacheWrite)
+      }
     }
 
     return response

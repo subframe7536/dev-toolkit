@@ -10,6 +10,23 @@
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <link rel="manifest" href="%BASE_URL%manifest.webmanifest" />
     <title>Dev Toolkit</title>
+    <style>
+      html {
+        background-color: rgb(248, 247, 244);
+        color: rgb(26, 31, 46);
+      }
+      html.dark {
+        background-color: rgb(37, 39, 38);
+        color: rgb(220, 220, 220);
+      }
+    </style>
+    <script>
+      ;(() => {
+        const dark = window.matchMedia('(prefers-color-scheme: dark)').matches
+        document.documentElement.classList.toggle('dark', dark)
+        document.documentElement.classList.toggle('light', !dark)
+      })()
+    </script>
   </head>
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>
